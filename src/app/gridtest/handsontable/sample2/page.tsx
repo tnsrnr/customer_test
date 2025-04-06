@@ -118,7 +118,7 @@ export default function Handsontable2Page() {
   };
   
   // 퍼센트 포맷터
-  const percentRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string, value: number, cellProperties: any) => {
+  const percentRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: number, cellProperties: any) => {
     td.innerHTML = `${value}%`;
     
     // 80% 이상이면 녹색, 50-80%면 노란색, 50% 미만이면 빨간색
@@ -142,7 +142,7 @@ export default function Handsontable2Page() {
   };
   
   // 숫자 포맷터
-  const numericRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string, value: number, cellProperties: any) => {
+  const numericRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: number, cellProperties: any) => {
     td.innerHTML = value.toString();
     
     // 마지막 행(합계)인 경우 배경색 설정
@@ -155,7 +155,7 @@ export default function Handsontable2Page() {
   };
   
   // 부서명 포맷터
-  const departmentRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string, value: string, cellProperties: any) => {
+  const departmentRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: string, cellProperties: any) => {
     td.innerHTML = value;
     
     // 마지막 행(합계)인 경우 배경색 설정

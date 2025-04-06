@@ -199,21 +199,23 @@ export function Sidebar() {
     const isOpen = openMenus[item.href] || (active && openMenus[item.href] !== false);
     const hasSubmenu = !!item.submenu?.length;
 
+    const commonClasses = cn(
+      "sidebar-menu-item flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
+      active ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+    );
+
     return (
       <div key={item.href} className="space-y-1">
-        <Link 
-          href={item.href} 
-          className={cn(
-            "flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
-            active ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-          )}
-          onClick={(e) => toggleMenu(item.href, hasSubmenu, e)}
-        >
-          <div className="flex items-center gap-2">
-            {item.icon}
-            <span>{item.title}</span>
-          </div>
-          {hasSubmenu && (
+        {hasSubmenu ? (
+          // 서브메뉴가 있는 경우 div로 렌더링 (링크 없음)
+          <div 
+            className={cn(commonClasses, "cursor-pointer")}
+            onClick={(e) => toggleMenu(item.href, hasSubmenu, e)}
+          >
+            <div className="flex items-center gap-2">
+              {item.icon}
+              <span>{item.title}</span>
+            </div>
             <div className="flex items-center">
               {isOpen ? (
                 <ChevronDown className="h-4 w-4" />
@@ -221,8 +223,19 @@ export function Sidebar() {
                 <ChevronRight className="h-4 w-4" />
               )}
             </div>
-          )}
-        </Link>
+          </div>
+        ) : (
+          // 서브메뉴가 없는 경우 Link로 렌더링
+          <Link
+            href={item.href}
+            className={commonClasses}
+          >
+            <div className="flex items-center gap-2">
+              {item.icon}
+              <span>{item.title}</span>
+            </div>
+          </Link>
+        )}
         {item.submenu && isOpen && (
           <div className="ml-4 border-l pl-2 pt-1">
             {item.submenu.map((subItem) => renderMenuItem(subItem))}

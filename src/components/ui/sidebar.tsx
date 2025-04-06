@@ -37,6 +37,7 @@ interface MenuItem {
 export function Sidebar() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+  const [selectedMenu, setSelectedMenu] = useState<string>("");
 
   const menuItems: MenuItem[] = [
     {
@@ -169,7 +170,8 @@ export function Sidebar() {
     if (href === "/") {
       return pathname === href;
     }
-    return pathname.startsWith(href);
+    // 선택된 메뉴와 현재 메뉴가 일치하는 경우도 활성화된 것으로 처리
+    return pathname.startsWith(href) || href === selectedMenu;
   };
 
   // 링크 클래스 생성 함수
@@ -182,8 +184,11 @@ export function Sidebar() {
     );
   };
 
-  // 메뉴 토글 함수
+  // 메뉴 토글 및 선택 함수
   const toggleMenu = (href: string, hasSubmenu: boolean, event: React.MouseEvent) => {
+    // 클릭된 메뉴를 선택된 메뉴로 설정
+    setSelectedMenu(href);
+    
     if (hasSubmenu) {
       event.preventDefault();
       setOpenMenus(prev => ({
@@ -249,16 +254,38 @@ export function Sidebar() {
   useEffect(() => {
     // 현재 경로에 맞는 메뉴들 자동으로 열기
     const newOpenMenus: Record<string, boolean> = {};
+    let isPathInMenu = false;
     
     // 메인 메뉴 체크
     menuItems.forEach(item => {
       if (pathname.startsWith(item.href) && item.href !== "/") {
         newOpenMenus[item.href] = true;
+        isPathInMenu = true;
       }
+      
+      // 서브메뉴 확인
+      item.submenu?.forEach(subItem => {
+        if (pathname.startsWith(subItem.href)) {
+          newOpenMenus[item.href] = true; // 상위 메뉴 열기
+          isPathInMenu = true;
+          
+          // 3단계 서브메뉴 확인
+          subItem.submenu?.forEach(subSubItem => {
+            if (pathname.startsWith(subSubItem.href)) {
+              newOpenMenus[subItem.href] = true; // 2단계 메뉴도 열기
+            }
+          });
+        }
+      });
     });
     
+    // 초기 선택 메뉴 설정: 경로와 일치하는 가장 깊은 메뉴 찾기
+    if (isPathInMenu) {
+      setSelectedMenu(""); // 경로 기반으로 하이라이트를 표시할 것이므로 선택 메뉴 초기화
+    }
+    
     setOpenMenus(newOpenMenus);
-  }, [pathname]);
+  }, [pathname, menuItems]);
 
   return (
     <div className="hidden border-r bg-card md:block md:w-64">

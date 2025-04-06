@@ -103,7 +103,7 @@ interface ColumnDefinition {
   title: string;
   readOnly?: boolean;
   type?: string;
-  renderer?: (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string, value: any, cellProperties: any) => HTMLTableCellElement;
+  renderer?: (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) => HTMLTableCellElement;
 }
 
 // 페이징 옵션
@@ -300,7 +300,7 @@ export default function Handsontable5Page() {
   };
   
   // 출근율 렌더러
-  const rateRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string, value: number, cellProperties: any) => {
+  const rateRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: number, cellProperties: any) => {
     td.innerHTML = `${value}%`;
     
     if (value < 80) {
@@ -370,7 +370,7 @@ export default function Handsontable5Page() {
       }
     },
     // 컬럼 이동 후 콜백
-    afterColumnMove: (movedColumns: number[], finalIndex: number, dropIndex: number, movePossible: boolean) => {
+    afterColumnMove: (movedColumns: number[], finalIndex: number, dropIndex: number | undefined, movePossible: boolean, orderChanged: boolean) => {
       if (movePossible && hotTableRef.current && hotTableRef.current.hotInstance) {
         // 핸드손테이블의 현재 컬럼 순서를 반영
         const instance = hotTableRef.current.hotInstance;
@@ -414,7 +414,7 @@ export default function Handsontable5Page() {
         }
       }
     }
-  };
+  } as any;
   
   // 컬럼 표시/숨기기 토글
   const toggleColumn = (columnName: string) => {

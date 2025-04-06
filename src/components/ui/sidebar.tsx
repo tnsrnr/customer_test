@@ -15,6 +15,12 @@ import {
   Users,
   LayoutGrid,
   Table2,
+  Bell,
+  MessageSquare,
+  FileStack,
+  LineChart,
+  FormInput,
+  TestTube
 } from "lucide-react";
 
 export function Sidebar() {
@@ -111,6 +117,38 @@ export function Sidebar() {
       title: "공통 관리",
       href: "/com",
       icon: <Settings className="w-4 h-4" />,
+    },
+    {
+      title: "기타 테스트",
+      href: "/other_test",
+      icon: <TestTube className="w-4 h-4" />,
+      submenu: [
+        {
+          title: "토스트 메시지",
+          href: "/other_test/toast-demo",
+          icon: <Bell className="w-4 h-4" />,
+        },
+        {
+          title: "다이얼로그/모달",
+          href: "/other_test/dialog-demo",
+          icon: <MessageSquare className="w-4 h-4" />,
+        },
+        {
+          title: "폼 밸리데이션",
+          href: "/other_test/form-validation",
+          icon: <FormInput className="w-4 h-4" />,
+        },
+        {
+          title: "데이터 필터링",
+          href: "/other_test/data-filter",
+          icon: <FileStack className="w-4 h-4" />,
+        },
+        {
+          title: "스켈레톤 UI",
+          href: "/other_test/skeleton-demo",
+          icon: <LineChart className="w-4 h-4" />,
+        }
+      ],
     },
   ];
 

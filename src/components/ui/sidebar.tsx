@@ -37,7 +37,6 @@ interface MenuItem {
 export function Sidebar() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-  const [selectedMenu, setSelectedMenu] = useState<string>("");
 
   const menuItems: MenuItem[] = [
     {
@@ -170,32 +169,16 @@ export function Sidebar() {
     if (href === "/") {
       return pathname === href;
     }
-    // 선택된 메뉴와 현재 메뉴가 일치하는 경우도 활성화된 것으로 처리
-    return pathname.startsWith(href) || href === selectedMenu;
+    return pathname.startsWith(href);
   };
 
-  // 링크 클래스 생성 함수
-  const linkClass = (href: string) => {
-    return cn(
-      "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
-      isActive(href)
-        ? "bg-primary text-primary-foreground"
-        : "hover:bg-muted"
-    );
-  };
-
-  // 메뉴 토글 및 선택 함수
-  const toggleMenu = (href: string, hasSubmenu: boolean, event: React.MouseEvent) => {
-    // 클릭된 메뉴를 선택된 메뉴로 설정
-    setSelectedMenu(href);
-    
-    if (hasSubmenu) {
-      event.preventDefault();
-      setOpenMenus(prev => ({
-        ...prev,
-        [href]: !prev[href]
-      }));
-    }
+  // 메뉴 토글 함수
+  const toggleMenu = (href: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    setOpenMenus(prev => ({
+      ...prev,
+      [href]: !prev[href]
+    }));
   };
 
   // 서브메뉴가 있는 아이템 렌더링 함수
@@ -204,19 +187,18 @@ export function Sidebar() {
     const isOpen = openMenus[item.href] || (active && openMenus[item.href] !== false);
     const hasSubmenu = !!item.submenu?.length;
 
-    const commonClasses = cn(
-      "sidebar-menu-item flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
-      active ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+    // 공통 클래스 스타일
+    const itemClasses = cn(
+      "flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
+      active ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+      hasSubmenu && "cursor-pointer"
     );
 
     return (
       <div key={item.href} className="space-y-1">
         {hasSubmenu ? (
-          // 서브메뉴가 있는 경우 div로 렌더링 (링크 없음)
-          <div 
-            className={cn(commonClasses, "cursor-pointer")}
-            onClick={(e) => toggleMenu(item.href, hasSubmenu, e)}
-          >
+          // 서브메뉴가 있는 경우 토글만 처리
+          <div className={itemClasses} onClick={(e) => toggleMenu(item.href, e)}>
             <div className="flex items-center gap-2">
               {item.icon}
               <span>{item.title}</span>
@@ -230,11 +212,8 @@ export function Sidebar() {
             </div>
           </div>
         ) : (
-          // 서브메뉴가 없는 경우 Link로 렌더링
-          <Link
-            href={item.href}
-            className={commonClasses}
-          >
+          // 서브메뉴가 없는 경우 페이지 이동 처리
+          <Link href={item.href} className={itemClasses}>
             <div className="flex items-center gap-2">
               {item.icon}
               <span>{item.title}</span>
@@ -254,36 +233,22 @@ export function Sidebar() {
   useEffect(() => {
     // 현재 경로에 맞는 메뉴들 자동으로 열기
     const newOpenMenus: Record<string, boolean> = {};
-    let isPathInMenu = false;
     
-    // 메인 메뉴 체크
-    menuItems.forEach(item => {
-      if (pathname.startsWith(item.href) && item.href !== "/") {
-        newOpenMenus[item.href] = true;
-        isPathInMenu = true;
-      }
-      
-      // 서브메뉴 확인
-      item.submenu?.forEach(subItem => {
-        if (pathname.startsWith(subItem.href)) {
-          newOpenMenus[item.href] = true; // 상위 메뉴 열기
-          isPathInMenu = true;
+    // 열린 메뉴 상태 설정을 위한 함수
+    const checkAndOpenParents = (items: MenuItem[], level = 0) => {
+      for (const item of items) {
+        if (pathname.startsWith(item.href) && item.href !== "/") {
+          newOpenMenus[item.href] = true;
           
-          // 3단계 서브메뉴 확인
-          subItem.submenu?.forEach(subSubItem => {
-            if (pathname.startsWith(subSubItem.href)) {
-              newOpenMenus[subItem.href] = true; // 2단계 메뉴도 열기
-            }
-          });
+          // 서브메뉴 확인
+          if (item.submenu) {
+            checkAndOpenParents(item.submenu, level + 1);
+          }
         }
-      });
-    });
+      }
+    };
     
-    // 초기 선택 메뉴 설정: 경로와 일치하는 가장 깊은 메뉴 찾기
-    if (isPathInMenu) {
-      setSelectedMenu(""); // 경로 기반으로 하이라이트를 표시할 것이므로 선택 메뉴 초기화
-    }
-    
+    checkAndOpenParents(menuItems);
     setOpenMenus(newOpenMenus);
   }, [pathname, menuItems]);
 

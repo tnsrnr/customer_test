@@ -23,7 +23,12 @@ import {
   FormInput,
   TestTube,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  SortAsc,
+  FileSearch,
+  Edit3,
+  PieChart,
+  Smartphone
 } from "lucide-react";
 
 // 메뉴 항목의 타입 정의
@@ -103,11 +108,11 @@ export function Sidebar() {
           href: "/gridtest/handsontable", 
           icon: <Table2 className="w-4 h-4" />,
           submenu: [
-            { title: "Handsontable 샘플1", href: "/gridtest/handsontable/sample1", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable 샘플2", href: "/gridtest/handsontable/sample2", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable 샘플3", href: "/gridtest/handsontable/sample3", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable 샘플4", href: "/gridtest/handsontable/sample4", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable 샘플5", href: "/gridtest/handsontable/sample5", icon: <Table2 className="w-4 h-4" /> }
+            { title: "Handsontable샘플1", href: "/gridtest/handsontable/sample1", icon: <Table2 className="w-4 h-4" /> },
+            { title: "Handsontable샘플2", href: "/gridtest/handsontable/sample2", icon: <Table2 className="w-4 h-4" /> },
+            { title: "Handsontable샘플3", href: "/gridtest/handsontable/sample3", icon: <Table2 className="w-4 h-4" /> },
+            { title: "Handsontable샘플4", href: "/gridtest/handsontable/sample4", icon: <Table2 className="w-4 h-4" /> },
+            { title: "Handsontable샘플5", href: "/gridtest/handsontable/sample5", icon: <Table2 className="w-4 h-4" /> }
           ]
         },
         { 
@@ -115,7 +120,11 @@ export function Sidebar() {
           href: "/gridtest/tabulator", 
           icon: <Table2 className="w-4 h-4" />,
           submenu: [
-            { title: "Tabulator 샘플", href: "/gridtest/tabulator/sample", icon: <Table2 className="w-4 h-4" /> }
+            { title: "기본 테이블 및 정렬", href: "/gridtest/tabulator/sample1", icon: <SortAsc className="w-4 h-4" /> },
+            { title: "필터링 및 검색", href: "/gridtest/tabulator/sample2", icon: <FileSearch className="w-4 h-4" /> },
+            { title: "편집 가능한 테이블", href: "/gridtest/tabulator/sample3", icon: <Edit3 className="w-4 h-4" /> },
+            { title: "데이터 시각화 및 집계", href: "/gridtest/tabulator/sample4", icon: <PieChart className="w-4 h-4" /> },
+            { title: "반응형 레이아웃 및 테마", href: "/gridtest/tabulator/sample5", icon: <Smartphone className="w-4 h-4" /> }
           ]
         }
       ],

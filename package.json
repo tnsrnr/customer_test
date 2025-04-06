@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/tabulator-tables": "^6.2.5",
     "postcss-import": "^16.1.0",
     "postcss-nested": "^7.0.2"
   }

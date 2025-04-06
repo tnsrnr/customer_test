@@ -1,0 +1,32 @@
+## Component Guidelines
+
+### ShadCN Components
+
+- 모든 UI 컴포넌트는 ShadCN을 사용해야 합니다.
+- 컴포넌트 사용 전 설치 여부를 확인해야 합니다: `/component/ui` 디렉토리 체크
+- 컴포넌트 설치 명령어를 사용해야 합니다: `npx shadcn@latest add [component-name]`
+  - 주의: `npx shadcn-ui@latest add` 명령어는 deprecated. 반드시 `npx shadcn@latest add` 사용해야 합니다.
+
+
+  ### Icons
+
+  - 모든 아이콘은 Lucide React를 사용해야 합니다.
+  - 아이콘 임포트 방법: `import { IconName } from "lucide-react"`
+  - 예시: `import { Search, Menu } from "lucide-react"`
+
+  ### Component Structure
+
+  - 컴포넌트 `/components` 디렉토리에 위치해야 합니다.
+  - UI 컴포넌트는 `/components/ui` 디렉토리에 위치해야 합니다.
+  - 페이지별 컴포넌트는 `/app` 디렉토리 내 해당 라우트에 위치해야 합니다.
+
+  ## Base Practices
+
+   - TypeScript 타입은 반드시 정의해야 합니다.
+   - 컴포넌트는 재사용 가능하도록 설계해야 합니다.
+
+ ## AG Grid를 사용한 데이터 테이블 구현
+ ## REST API 연동을 위한 API 클라이언트 설정 /Axios/관리 도구로 Zustand
+ ## 각 섹션별 상세 페이지 구현
+ ## 상태 관리 도구 추가 (예: Redux Toolkit 또는 Zustand)
+ ## 인증/인가 시스템 구현

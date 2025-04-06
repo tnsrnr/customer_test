@@ -33,7 +33,7 @@ export default function TabulatorSample() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<AttendanceStatus>("전체");
   const tableRef = useRef<HTMLDivElement>(null);
-  const [tableInstance, setTableInstance] = useState<any>(null);
+  const [tableInstance, setTableInstance] = useState<import('tabulator-tables').TabulatorFull | null>(null);
 
   // 더미 데이터 생성
   const dummyData: AttendanceRecord[] = [
@@ -64,7 +64,7 @@ export default function TabulatorSample() {
     if (tableRef.current) {
       try {
         // 근무시간 계산 함수
-        const calculateWorkingHours = (cell: any) => {
+        const calculateWorkingHours = (cell: import('tabulator-tables').CellComponent): string => {
           const row = cell.getRow();
           const clockIn = row.getData().clockIn;
           const clockOut = row.getData().clockOut;
@@ -83,8 +83,26 @@ export default function TabulatorSample() {
           return row.getData().workingHours;
         };
 
-        // 테이블 인스턴스 생성 - 타입 에러 방지를 위해 옵션을 any로 설정
-        const tableOptions: any = {
+        // 테이블 인스턴스 생성
+        const tableOptions: {
+          data: AttendanceRecord[];
+          layout: string;
+          responsiveLayout: string;
+          pagination: boolean;
+          paginationSize: number;
+          movableColumns: boolean;
+          clipboard: boolean;
+          clipboardCopyConfig: {
+            columnHeaders: boolean;
+            columnGroups: boolean;
+            rowGroups: boolean;
+            columnCalcs: boolean;
+            dataTree: boolean;
+            formatCells: boolean;
+          };
+          selectable: boolean;
+          columns: any[];
+        } = {
           data: dummyData,
           layout: "fitColumns",
           responsiveLayout: "hide",
@@ -114,7 +132,7 @@ export default function TabulatorSample() {
               width: 100, 
               headerSort: true, 
               editor: "input",
-              cellEdited: function(cell) {
+              cellEdited: function(cell: import('tabulator-tables').CellComponent) {
                 // 출근시간이 변경되면 근무시간 재계산
                 const workingHours = calculateWorkingHours(cell);
                 cell.getRow().update({ workingHours: workingHours });
@@ -126,7 +144,7 @@ export default function TabulatorSample() {
               width: 100, 
               headerSort: true, 
               editor: "input",
-              cellEdited: function(cell) {
+              cellEdited: function(cell: import('tabulator-tables').CellComponent) {
                 // 퇴근시간이 변경되면 근무시간 재계산
                 const workingHours = calculateWorkingHours(cell);
                 cell.getRow().update({ workingHours: workingHours });
@@ -166,7 +184,17 @@ export default function TabulatorSample() {
                 return value;
               }
             },
-            { title: "비고", field: "note", width: 150, headerSort: true, editor: "input" }
+            { title: "비고", field: "note", width: 150, headerSort: true, editor: "input" },
+            { 
+              title: "셀 클릭", 
+              field: "", 
+              width: 100, 
+              headerSort: false,
+              cellClick: function(e: Event, cell: import('tabulator-tables').CellComponent) {
+                // 셀 클릭 시 작업
+                console.log("셀 클릭됨:", cell.getValue());
+              }
+            }
           ]
         };
 
@@ -194,10 +222,11 @@ export default function TabulatorSample() {
 
     // 검색어가 있는 경우
     if (searchTerm) {
-      tableInstance.setFilter([
-        { field: "employeeId", type: "like", value: searchTerm },
-        { field: "name", type: "like", value: searchTerm }
-      ], "or");
+      // 배열 대신 다중 조건 필터링을 위한 함수 사용
+      tableInstance.setFilter(function(data: any){
+        // 사번이나 이름에 검색어가 포함된 경우만 반환
+        return data.employeeId.includes(searchTerm) || data.name.includes(searchTerm);
+      });
     }
 
     // 상태 필터링

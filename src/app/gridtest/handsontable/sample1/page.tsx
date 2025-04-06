@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -157,15 +157,27 @@ export default function Sample1() {
         }
       }
     },
-    cells: function(row: number, col: number, prop: string) {
+    cells: useCallback((row: number, col: number, prop: string | number) => {
       const cellProperties: any = {};
+      const rowData = data[row] || {};
       
+      // 특정 열에 대한 스타일 적용
       if (prop === 'status') {
-        cellProperties.renderer = statusCellRenderer;
+        const status = rowData.status;
+        
+        if (status === '정상') {
+          cellProperties.className = 'status-normal';
+        } else if (status === '지각' || status === '조퇴') {
+          cellProperties.className = 'status-warning';
+        } else if (status === '결근') {
+          cellProperties.className = 'status-absent';
+        } else if (status === '휴가') {
+          cellProperties.className = 'status-vacation';
+        }
       }
       
       return cellProperties;
-    }
+    }, [data])
   };
   
   // 더미 데이터 생성

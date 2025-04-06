@@ -256,7 +256,7 @@ export default function Handsontable4Page() {
   };
   
   // 출근율 렌더러
-  const rateRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string, value: number, cellProperties: any) => {
+  const rateRenderer = (instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) => {
     td.innerHTML = `${value.toFixed(1)}%`;
     
     if (value < 80) {

@@ -11,12 +11,11 @@ import { useEmployeeStore } from '@/lib/store/employeeStore';
 
 interface EmployeeFormProps {
   employee?: Employee;
-  onCancel?: () => void;
 }
 
-export default function EmployeeForm({ employee, onCancel }: EmployeeFormProps) {
+export default function EmployeeForm({ employee }: EmployeeFormProps) {
   const router = useRouter();
-  const { addEmployee, updateEmployee } = useEmployeeStore();
+  const { createEmployee, updateEmployee } = useEmployeeStore();
   
   const [formData, setFormData] = useState<Omit<Employee, 'id'>>({
     name: employee?.name || '',
@@ -95,18 +94,11 @@ export default function EmployeeForm({ employee, onCancel }: EmployeeFormProps) 
 
     if (employee) {
       // Update existing employee
-      updateEmployee({
-        ...formData,
-        id: employee.id
-      });
+      updateEmployee(employee.id, formData);
       router.push(`/hrs/employees/${employee.id}`);
     } else {
       // Add new employee
-      const newEmployee = {
-        ...formData,
-        id: `EMP${Date.now().toString().slice(-6)}` // Simple ID generation
-      };
-      addEmployee(newEmployee);
+      createEmployee(formData);
       router.push('/hrs/employees');
     }
   };
@@ -195,7 +187,7 @@ export default function EmployeeForm({ employee, onCancel }: EmployeeFormProps) 
             <Button 
               type="button" 
               variant="outline" 
-              onClick={onCancel || (() => router.back())}
+              onClick={() => router.back()}
             >
               취소
             </Button>

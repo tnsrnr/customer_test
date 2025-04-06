@@ -41,10 +41,18 @@ export default function EditEmployeePage() {
       </div>
       
       <div className="max-w-2xl mx-auto">
-        <EmployeeForm 
-          employee={employee} 
-          onCancel={() => window.location.href = `/hrs/employees/${employee.id}`} 
-        />
+        {employee ? (
+          <EmployeeForm 
+            employee={employee} 
+          />
+        ) : (
+          <div className="text-center p-8">
+            <p className="text-lg mb-4">해당 직원 정보를 찾을 수 없습니다.</p>
+            <Button asChild>
+              <Link href="/hrs/employees">직원 목록으로 돌아가기</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </main>
   );

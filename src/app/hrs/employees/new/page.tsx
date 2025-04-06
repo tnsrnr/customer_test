@@ -14,7 +14,7 @@ export default function NewEmployeePage() {
       </div>
       
       <div className="max-w-2xl mx-auto">
-        <EmployeeForm onCancel={() => window.location.href = '/hrs/employees'} />
+        <EmployeeForm />
       </div>
     </main>
   );

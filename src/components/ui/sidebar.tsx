@@ -33,6 +33,16 @@ export function Sidebar() {
       icon: <Home className="w-4 h-4" />,
     },
     {
+      title: "관리자 관리",
+      href: "/admin",
+      icon: <User className="w-4 h-4" />,
+    },
+    {
+      title: "공통 관리",
+      href: "/com",
+      icon: <Settings className="w-4 h-4" />,
+    },
+    {
       title: "인사 관리",
       href: "/hrs",
       icon: <Briefcase className="w-4 h-4" />,
@@ -107,16 +117,6 @@ export function Sidebar() {
           ]
         }
       ],
-    },
-    {
-      title: "관리자 관리",
-      href: "/admin",
-      icon: <User className="w-4 h-4" />,
-    },
-    {
-      title: "공통 관리",
-      href: "/com",
-      icon: <Settings className="w-4 h-4" />,
     },
     {
       title: "기타 테스트",

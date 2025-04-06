@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Briefcase,
   Building2,
@@ -99,16 +99,6 @@ export function Sidebar() {
       icon: <LayoutGrid className="w-4 h-4" />,
       submenu: [
         { 
-          title: "AG Grid", 
-          href: "/gridtest/aggrid", 
-          icon: <LayoutGrid className="w-4 h-4" />,
-          submenu: [
-            { title: "AG Grid 샘플 1", href: "/gridtest/aggrid/sample1", icon: <LayoutGrid className="w-4 h-4" /> },
-            { title: "AG Grid 샘플 2", href: "/gridtest/aggrid/sample2", icon: <LayoutGrid className="w-4 h-4" /> },
-            { title: "AG Grid 샘플 3", href: "/gridtest/aggrid/sample3", icon: <LayoutGrid className="w-4 h-4" /> }
-          ]
-        },
-        { 
           title: "Handsontable", 
           href: "/gridtest/handsontable", 
           icon: <Table2 className="w-4 h-4" />,
@@ -164,93 +154,112 @@ export function Sidebar() {
     },
   ];
 
-  // 현재 경로와 메뉴 아이템 경로가 일치하는지 확인하는 함수
-  const isActive = (href: string) => {
+  // 현재 경로가 메뉴 항목의 경로와 일치하는지 확인
+  const isActive = useCallback((href: string) => {
     if (href === "/") {
       return pathname === href;
     }
     return pathname.startsWith(href);
-  };
+  }, [pathname]);
 
   // 메뉴 토글 함수
-  const toggleMenu = (href: string, event: React.MouseEvent) => {
-    event.preventDefault();
+  const toggleMenu = useCallback((href: string) => {
     setOpenMenus(prev => ({
       ...prev,
       [href]: !prev[href]
     }));
-  };
+  }, []);
 
-  // 서브메뉴가 있는 아이템 렌더링 함수
-  const renderMenuItem = (item: MenuItem) => {
+  // 메뉴 항목 렌더링 함수
+  const renderMenuItem = useCallback((item: MenuItem, level = 0) => {
     const active = isActive(item.href);
-    const isOpen = openMenus[item.href] || (active && openMenus[item.href] !== false);
     const hasSubmenu = !!item.submenu?.length;
+    const isOpen = openMenus[item.href] || (active && openMenus[item.href] !== false);
+    
+    const handleClick = (e: React.MouseEvent) => {
+      if (hasSubmenu) {
+        e.preventDefault();
+        toggleMenu(item.href);
+      }
+    };
 
-    // 공통 클래스 스타일
-    const itemClasses = cn(
-      "flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
-      active ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-      hasSubmenu && "cursor-pointer"
-    );
+    // 각 메뉴 레벨에 맞는 패딩 설정
+    const paddingLeft = level * 12 + 'px';
 
     return (
-      <div key={item.href} className="space-y-1">
-        {hasSubmenu ? (
-          // 서브메뉴가 있는 경우 토글만 처리
-          <div className={itemClasses} onClick={(e) => toggleMenu(item.href, e)}>
-            <div className="flex items-center gap-2">
-              {item.icon}
-              <span>{item.title}</span>
-            </div>
-            <div className="flex items-center">
-              {isOpen ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </div>
-          </div>
-        ) : (
-          // 서브메뉴가 없는 경우 페이지 이동 처리
-          <Link href={item.href} className={itemClasses}>
-            <div className="flex items-center gap-2">
-              {item.icon}
-              <span>{item.title}</span>
-            </div>
-          </Link>
-        )}
-        {item.submenu && isOpen && (
-          <div className="ml-4 border-l pl-2 pt-1">
-            {item.submenu.map((subItem) => renderMenuItem(subItem))}
+      <div key={item.href} className="mb-1">
+        <div
+          className={cn(
+            "flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
+            active ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+            "cursor-pointer"
+          )}
+          onClick={handleClick}
+          style={{ paddingLeft: hasSubmenu ? paddingLeft : undefined }}
+        >
+          {hasSubmenu ? (
+            <>
+              <div className="flex items-center gap-2">
+                {item.icon}
+                <span>{item.title}</span>
+              </div>
+              <div className="flex items-center">
+                {isOpen ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </div>
+            </>
+          ) : (
+            <Link href={item.href} className="flex w-full">
+              <div className="flex items-center gap-2">
+                {item.icon}
+                <span>{item.title}</span>
+              </div>
+            </Link>
+          )}
+        </div>
+
+        {hasSubmenu && isOpen && (
+          <div className="mt-1 ml-4 border-l border-border pl-2">
+            {item.submenu?.map(subItem => renderMenuItem(subItem, level + 1))}
           </div>
         )}
       </div>
     );
-  };
+  }, [isActive, openMenus, toggleMenu]);
 
-  // 컴포넌트 마운트 시 현재 경로에 해당하는 메뉴를 열기
+  // 초기 메뉴 상태 설정 (페이지 로드 시)
   useEffect(() => {
-    // 현재 경로에 맞는 메뉴들 자동으로 열기
     const newOpenMenus: Record<string, boolean> = {};
     
-    // 열린 메뉴 상태 설정을 위한 함수
-    const checkAndOpenParents = (items: MenuItem[], level = 0) => {
+    // 현재 경로에 맞는 메뉴들을 모두 열기
+    const findAndOpenMenus = (items: MenuItem[], parentPaths: string[] = []) => {
       for (const item of items) {
         if (pathname.startsWith(item.href) && item.href !== "/") {
+          // 현재 메뉴 열기
           newOpenMenus[item.href] = true;
+          
+          // 부모 메뉴들도 모두 열기
+          parentPaths.forEach(path => {
+            newOpenMenus[path] = true;
+          });
           
           // 서브메뉴 확인
           if (item.submenu) {
-            checkAndOpenParents(item.submenu, level + 1);
+            findAndOpenMenus(item.submenu, [...parentPaths, item.href]);
           }
+        } else if (item.submenu) {
+          // 현재 경로와 일치하지 않더라도 서브메뉴 확인
+          findAndOpenMenus(item.submenu, [...parentPaths, item.href]);
         }
       }
     };
     
-    checkAndOpenParents(menuItems);
+    findAndOpenMenus(menuItems);
     setOpenMenus(newOpenMenus);
-  }, [pathname, menuItems]);
+  }, [pathname]);
 
   return (
     <div className="hidden border-r bg-card md:block md:w-64">
@@ -260,7 +269,7 @@ export function Sidebar() {
         </div>
         <div className="flex-1 overflow-auto p-4">
           <nav className="flex flex-col gap-1">
-            {menuItems.map((item) => renderMenuItem(item))}
+            {menuItems.map(item => renderMenuItem(item))}
           </nav>
         </div>
         <div className="border-t p-4">

@@ -60,7 +60,7 @@ export default function TabulatorCopyPasteEnhanced() {
           selectablePersistence: false, // 선택 내용 유지 (클릭 시 선택 해제되지 않음)
           clipboard: true, // 클립보드 기능 활성화
           clipboardPasteAction: "replace", // 복사된 데이터를 어떻게 처리할지 설정 (replace, append, update)
-          clipboardCopySelector: "table", // 전체 테이블 선택 (cell 옵션이 작동하지 않는 문제 해결)
+          clipboardCopySelector: "active", // "active": 활성 셀만, "table": 전체 테이블, "selected": 선택된 셀
           clipboardCopyStyled: false, // 스타일 정보 없이 순수 텍스트만 복사
           clipboardCopyConfig: {
             columnHeaders: true, // 열 헤더 포함
@@ -106,81 +106,12 @@ export default function TabulatorCopyPasteEnhanced() {
           tableRef.current.addEventListener('keydown', (e) => {
             // Ctrl+C 또는 Cmd+C가 눌렸을 때
             if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+              // 이벤트 기본 동작 방지
+              e.preventDefault();
+              
               // 선택된 셀이 있으면 클립보드에 복사
               if (selectedCells.length > 0) {
-                try {
-                  // 선택된 셀만 복사하는 커스텀 방식
-                  let copyData = "";
-                  let lastRow = -1;
-                  // 명시적 타입 선언으로 'never' 오류 해결
-                  let selectedCellsArray: Array<Array<any>> = [];
-                  
-                  // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-                  const cells = table.getSelectedCells();
-                  
-                  if(cells && cells.length > 0) {
-                    // 선택된 셀들을 행과 열 기준으로 정렬
-                    cells.sort((a, b) => {
-                      const rowDiff = a.getRow().getPosition() - b.getRow().getPosition();
-                      if(rowDiff === 0) {
-                        return a.getColumn().getPosition() - b.getColumn().getPosition();
-                      }
-                      return rowDiff;
-                    });
-                    
-                    // 선택된 셀들의 데이터를 2차원 배열로 구성
-                    cells.forEach(cell => {
-                      const rowPosition = cell.getRow().getPosition();
-                      const colPosition = cell.getColumn().getPosition();
-                      
-                      if(!selectedCellsArray[rowPosition]) {
-                        selectedCellsArray[rowPosition] = [];
-                      }
-                      selectedCellsArray[rowPosition][colPosition] = cell.getValue();
-                    });
-                    
-                    // 2차원 배열을 탭으로 구분된 텍스트로 변환 (엑셀 호환 형식)
-                    copyData = selectedCellsArray
-                      .filter(row => row) // undefined 행 필터링
-                      .map(row => 
-                        row
-                          .filter(cell => cell !== undefined) // undefined 셀 필터링
-                          .join('\t')
-                      )
-                      .join('\n');
-                    
-                    // 클립보드에 복사
-                    navigator.clipboard.writeText(copyData)
-                      .then(() => {
-                        toast.success("선택한 데이터가 클립보드에 복사되었습니다.");
-                      })
-                      .catch(err => {
-                        console.error("클립보드 복사 오류:", err);
-                        toast.error("클립보드 접근 권한이 없습니다.");
-                        
-                        // 대체 방법: 내장 copyToClipboard 시도
-                        // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-                        table.copyToClipboard("selected", false);
-                      });
-                  } else {
-                    // 내장 메서드 사용 시도
-                    // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-                    table.copyToClipboard("selected", false);
-                    toast.success("선택한 데이터가 클립보드에 복사되었습니다.");
-                  }
-                } catch (error) {
-                  console.error("클립보드 복사 오류:", error);
-                  toast.error("클립보드 복사 중 오류가 발생했습니다.");
-                  
-                  // 마지막 시도: 내장 메서드 사용
-                  try {
-                    // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-                    table.copyToClipboard("table", false);
-                    toast.info("전체 테이블 데이터가 복사되었습니다.");
-                  } catch (e) {
-                    console.error("전체 테이블 복사 오류:", e);
-                  }
-                }
+                copyOnlySelectedCells(table);
               } else {
                 toast.warning("복사할 셀을 먼저 선택해주세요.");
               }
@@ -347,77 +278,70 @@ export default function TabulatorCopyPasteEnhanced() {
     }
   };
 
+  // 선택된 셀만 복사하는 데 사용할 함수 - 직접 선택 영역을 가져오고 복사
+  const copyOnlySelectedCells = async (tabulatorInstance: Tabulator) => {
+    try {
+      // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+      const selectedCells = tabulatorInstance.getSelectedCells();
+      
+      if (!selectedCells || selectedCells.length === 0) {
+        toast.warning("복사할 셀을 먼저 선택해주세요.");
+        return;
+      }
+      
+      // 셀 위치 정보 수집
+      const cellPositions: {row: number, col: number, value: any}[] = [];
+      selectedCells.forEach(cell => {
+        cellPositions.push({
+          row: cell.getRow().getPosition(),
+          col: cell.getColumn().getPosition(),
+          value: cell.getValue()
+        });
+      });
+      
+      // 행별로 그룹화
+      const rowGroups = new Map<number, {col: number, value: any}[]>();
+      cellPositions.forEach(cell => {
+        if (!rowGroups.has(cell.row)) {
+          rowGroups.set(cell.row, []);
+        }
+        rowGroups.get(cell.row)?.push({
+          col: cell.col,
+          value: cell.value
+        });
+      });
+      
+      // 각 행의 셀을 열 순서대로 정렬
+      rowGroups.forEach((cells, row) => {
+        cells.sort((a, b) => a.col - b.col);
+      });
+      
+      // 행 번호 순서대로 정렬
+      const sortedRows = Array.from(rowGroups.keys()).sort((a, b) => a - b);
+      
+      // 탭으로 구분된 텍스트 생성
+      let copyText = "";
+      sortedRows.forEach(rowIndex => {
+        const cells = rowGroups.get(rowIndex) || [];
+        const rowText = cells.map(cell => cell.value !== null && cell.value !== undefined ? cell.value : "").join('\t');
+        copyText += rowText + '\n';
+      });
+      
+      // 클립보드에 복사
+      await navigator.clipboard.writeText(copyText.trim());
+      toast.success("선택한 셀 범위가 클립보드에 복사되었습니다.");
+      return true;
+    } catch (error) {
+      console.error("클립보드 복사 오류:", error);
+      toast.error("클립보드 복사 중 오류가 발생했습니다.");
+      return false;
+    }
+  };
+
   // 선택된 내용만 클립보드에 복사
   const copySelectedToClipboard = () => {
     if (tabulator && selectedCells.length > 0) {
-      try {
-        // 선택된 셀만 복사하는 커스텀 방식
-        // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-        const cells = tabulator.getSelectedCells();
-        
-        if(cells && cells.length > 0) {
-          // 선택된 셀들을 행과 열 기준으로 정렬
-          cells.sort((a, b) => {
-            const rowDiff = a.getRow().getPosition() - b.getRow().getPosition();
-            if(rowDiff === 0) {
-              return a.getColumn().getPosition() - b.getColumn().getPosition();
-            }
-            return rowDiff;
-          });
-          
-          // 선택된 셀들의 데이터를 2차원 배열로 구성
-          // 명시적 타입 선언으로 'never' 오류 해결
-          let selectedCellsArray: Array<Array<any>> = [];
-          cells.forEach(cell => {
-            const rowPosition = cell.getRow().getPosition();
-            const colPosition = cell.getColumn().getPosition();
-            
-            if(!selectedCellsArray[rowPosition]) {
-              selectedCellsArray[rowPosition] = [];
-            }
-            selectedCellsArray[rowPosition][colPosition] = cell.getValue();
-          });
-          
-          // 2차원 배열을 탭으로 구분된 텍스트로 변환 (엑셀 호환 형식)
-          const copyData = selectedCellsArray
-            .filter(row => row) // undefined 행 필터링
-            .map(row => 
-              row
-                .filter(cell => cell !== undefined) // undefined 셀 필터링
-                .join('\t')
-            )
-            .join('\n');
-          
-          // 클립보드에 복사
-          navigator.clipboard.writeText(copyData)
-            .then(() => {
-              toast.success("선택한 데이터가 클립보드에 복사되었습니다.");
-            })
-            .catch(err => {
-              console.error("클립보드 복사 오류:", err);
-              // 대체 방법 시도
-              // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-              tabulator.copyToClipboard("selected", false);
-              toast.success("선택한 데이터가 클립보드에 복사되었습니다.");
-            });
-        } else {
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.copyToClipboard("selected", false);
-          toast.success("선택한 데이터가 클립보드에 복사되었습니다.");
-        }
-      } catch (error) {
-        console.error("클립보드 복사 오류:", error);
-        toast.error("클립보드 복사 중 오류가 발생했습니다.");
-        
-        // 마지막 시도: 내장 메서드 사용
-        try {
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.copyToClipboard("visible", false);
-          toast.info("보이는 테이블 데이터가 복사되었습니다.");
-        } catch (e) {
-          console.error("보이는 데이터 복사 오류:", e);
-        }
-      }
+      copyOnlySelectedCells(tabulator);
     } else {
       toast.warning("복사할 셀을 먼저 선택해주세요.");
     }

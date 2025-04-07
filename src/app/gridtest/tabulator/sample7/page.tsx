@@ -119,10 +119,25 @@ export default function TabulatorCopyPasteEnhanced() {
               };
               isSelecting = true;
               
-              // 기존 선택 해제
+              // 기존 선택 해제 (수정: deselectCell 메서드 대신 clearCellSelection 사용)
               if (!e.shiftKey && !e.ctrlKey && !e.metaKey) {
-                // @ts-ignore
-                table.deselectCell();
+                try {
+                  // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+                  if (typeof table.deselectRow === 'function') {
+                    table.deselectRow(); // 모든 행 선택 해제
+                  }
+                  
+                  // DOM 방식으로 선택된 셀 스타일 제거
+                  const selectedCellElements = tableRef.current?.querySelectorAll('.tabulator-cell.tabulator-selected');
+                  selectedCellElements?.forEach(cellEl => {
+                    cellEl.classList.remove('tabulator-selected');
+                  });
+                  
+                  // React 상태 업데이트
+                  setSelectedCells([]);
+                } catch (error) {
+                  console.error("셀 선택 해제 오류:", error);
+                }
               }
             }
           });
@@ -135,16 +150,50 @@ export default function TabulatorCopyPasteEnhanced() {
                 const currentRow = parseInt(cellElement.getAttribute('data-row') || '0', 10);
                 const currentCol = parseInt(cellElement.getAttribute('data-col') || '0', 10);
                 
-                // 범위 선택 처리
+                // 범위 선택 처리 (수정: selectRange 메서드 대신 DOM 방식으로 구현)
                 if (currentRow !== undefined && currentCol !== undefined) {
-                  // Tabulator의 selectRange 메서드가 있는지 확인
-                  // @ts-ignore
-                  if (typeof table.selectRange === 'function') {
-                    // @ts-ignore
-                    table.selectRange(
-                      {row: startCell.row, col: startCell.col},
-                      {row: currentRow, col: currentCol}
-                    );
+                  try {
+                    // 현재 선택된 범위 계산
+                    const minRow = Math.min(startCell.row, currentRow);
+                    const maxRow = Math.max(startCell.row, currentRow);
+                    const minCol = Math.min(startCell.col, currentCol);
+                    const maxCol = Math.max(startCell.col, currentCol);
+                    
+                    // 선택된 셀들 수집
+                    const newSelectedCells = [];
+                    
+                    // 테이블의 모든 셀 순회하면서 범위 내에 있는지 확인
+                    const allCells = tableRef.current?.querySelectorAll('.tabulator-cell');
+                    allCells?.forEach(cellEl => {
+                      const rowIdx = parseInt(cellEl.getAttribute('data-row') || '-1', 10);
+                      const colIdx = parseInt(cellEl.getAttribute('data-col') || '-1', 10);
+                      
+                      // 범위 내에 있으면 선택 표시 및 배열에 추가
+                      if (rowIdx >= minRow && rowIdx <= maxRow && colIdx >= minCol && colIdx <= maxCol) {
+                        cellEl.classList.add('tabulator-selected');
+                        newSelectedCells.push({
+                          row: rowIdx,
+                          col: colIdx
+                        });
+                      } else {
+                        // 범위 밖이면 선택 해제
+                        if (!e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                          cellEl.classList.remove('tabulator-selected');
+                        }
+                      }
+                    });
+                    
+                    // 선택된 셀 상태 업데이트
+                    if (newSelectedCells.length > 0) {
+                      // 타입 오류 해결을 위한 인터페이스 정의
+                      interface SelectedCell {
+                        row: number;
+                        col: number;
+                      }
+                      setSelectedCells(newSelectedCells as SelectedCell[]);
+                    }
+                  } catch (error) {
+                    console.error("셀 범위 선택 오류:", error);
                   }
                 }
               }

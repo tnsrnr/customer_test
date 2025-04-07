@@ -102,6 +102,61 @@ export default function TabulatorCopyPasteEnhanced() {
 
         // 셀 범위 선택을 위한 마우스 이벤트 처리
         if (tableRef.current) {
+          // 범위 선택 시작 위치 추적을 위한 변수
+          let startCell: any = null;
+          let isSelecting = false;
+
+          // 마우스 다운 이벤트
+          tableRef.current.addEventListener('mousedown', function(e) {
+            // tabulator-cell 클래스를 가진 요소 찾기
+            let cellElement = (e.target as Element).closest('.tabulator-cell');
+            if (cellElement) {
+              startCell = {
+                element: cellElement,
+                // 데이터셋에서 행과 열 인덱스 가져오기 또는 인덱스 계산
+                row: parseInt(cellElement.getAttribute('data-row') || '0', 10),
+                col: parseInt(cellElement.getAttribute('data-col') || '0', 10)
+              };
+              isSelecting = true;
+              
+              // 기존 선택 해제
+              if (!e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                // @ts-ignore
+                table.deselectCell();
+              }
+            }
+          });
+
+          // 마우스 무브 이벤트
+          tableRef.current.addEventListener('mousemove', function(e) {
+            if (isSelecting && startCell) {
+              let cellElement = (e.target as Element).closest('.tabulator-cell');
+              if (cellElement) {
+                const currentRow = parseInt(cellElement.getAttribute('data-row') || '0', 10);
+                const currentCol = parseInt(cellElement.getAttribute('data-col') || '0', 10);
+                
+                // 범위 선택 처리
+                if (currentRow !== undefined && currentCol !== undefined) {
+                  // Tabulator의 selectRange 메서드가 있는지 확인
+                  // @ts-ignore
+                  if (typeof table.selectRange === 'function') {
+                    // @ts-ignore
+                    table.selectRange(
+                      {row: startCell.row, col: startCell.col},
+                      {row: currentRow, col: currentCol}
+                    );
+                  }
+                }
+              }
+            }
+          });
+
+          // 마우스 업 이벤트
+          tableRef.current.addEventListener('mouseup', function() {
+            isSelecting = false;
+            startCell = null;
+          });
+
           // 테이블에 키보드 이벤트 리스너 추가
           tableRef.current.addEventListener('keydown', (e) => {
             // Ctrl+C 또는 Cmd+C가 눌렸을 때
@@ -109,7 +164,7 @@ export default function TabulatorCopyPasteEnhanced() {
               // 이벤트 기본 동작 방지
               e.preventDefault();
               
-              // 선택된 셀이 있으면 클립보드에 복사
+              // 선택된 셀이 있으면 커스텀 함수로 클립보드에 복사
               if (selectedCells.length > 0) {
                 copyOnlySelectedCells(table);
               } else {
@@ -224,15 +279,23 @@ export default function TabulatorCopyPasteEnhanced() {
             // 모든 행 선택 해제
             cell.getTable().deselectRow();
             
-            // cell.select() 메서드 대신 다른 접근 방식 사용
-            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-            if (typeof cell.getElement().select === 'function') {
-              // @ts-ignore
-              cell.getElement().select();
-            } else {
-              // 대체 방식: selectCell API 사용
-              // @ts-ignore
-              cell.getTable().selectCell(cell.getRow(), cell.getColumn());
+            // 셀 선택 방식 변경 - 직접 셀을 선택
+            try {
+              // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+              cell.select();
+            } catch (error) {
+              console.error("셀 선택 오류:", error);
+              // 직접 DOM 요소에 선택된 클래스 추가
+              try {
+                const element = cell.getElement();
+                if (element) {
+                  element.classList.add("tabulator-selected");
+                  // 선택된 셀 상태 수동 업데이트
+                  setSelectedCells([{row: cell.getRow().getPosition(), col: cell.getColumn().getPosition()}]);
+                }
+              } catch (err) {
+                console.error("DOM 선택 오류:", err);
+              }
             }
           }
         });
@@ -281,27 +344,52 @@ export default function TabulatorCopyPasteEnhanced() {
   // 선택된 셀만 복사하는 데 사용할 함수 - 직접 선택 영역을 가져오고 복사
   const copyOnlySelectedCells = async (tabulatorInstance: Tabulator) => {
     try {
-      // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-      const selectedCells = tabulatorInstance.getSelectedCells();
-      
-      if (!selectedCells || selectedCells.length === 0) {
-        toast.warning("복사할 셀을 먼저 선택해주세요.");
-        return;
+      // 선택된 셀들 가져오기
+      // 명시적 타입 선언으로 'never' 오류 해결
+      interface CellData {
+        row: number;
+        col: number; 
+        value: any;
       }
       
-      // 셀 위치 정보 수집
-      const cellPositions: {row: number, col: number, value: any}[] = [];
-      selectedCells.forEach(cell => {
-        cellPositions.push({
-          row: cell.getRow().getPosition(),
-          col: cell.getColumn().getPosition(),
-          value: cell.getValue()
-        });
-      });
+      // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+      let selectedCellsData: CellData[] = [];
+      
+      // React 상태에서 선택된 셀 정보 사용
+      if (selectedCells && selectedCells.length > 0) {
+        // 선택된 셀들에서 실제 데이터 가져오기
+        for (let cell of selectedCells) {
+          try {
+            // @ts-ignore
+            const row = tabulatorInstance.getRows().find(r => r.getPosition() === cell.row);
+            if (row) {
+              // @ts-ignore
+              const cellData = row.getData();
+              const columns = tabulatorInstance.getColumns();
+              if (cellData && columns && columns.length > cell.col) {
+                const fieldName = columns[cell.col].getField();
+                selectedCellsData.push({
+                  row: cell.row,
+                  col: cell.col,
+                  value: cellData[fieldName]
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("셀 데이터 접근 오류:", err);
+          }
+        }
+      }
+      
+      // 선택된 셀이 없으면 리턴
+      if (selectedCellsData.length === 0) {
+        toast.warning("복사할 셀을 먼저 선택해주세요.");
+        return false;
+      }
       
       // 행별로 그룹화
       const rowGroups = new Map<number, {col: number, value: any}[]>();
-      cellPositions.forEach(cell => {
+      selectedCellsData.forEach((cell: CellData) => {
         if (!rowGroups.has(cell.row)) {
           rowGroups.set(cell.row, []);
         }
@@ -327,6 +415,9 @@ export default function TabulatorCopyPasteEnhanced() {
         copyText += rowText + '\n';
       });
       
+      // 디버깅용 로그
+      console.log("복사할 텍스트:", copyText);
+      
       // 클립보드에 복사
       await navigator.clipboard.writeText(copyText.trim());
       toast.success("선택한 셀 범위가 클립보드에 복사되었습니다.");
@@ -334,6 +425,14 @@ export default function TabulatorCopyPasteEnhanced() {
     } catch (error) {
       console.error("클립보드 복사 오류:", error);
       toast.error("클립보드 복사 중 오류가 발생했습니다.");
+      
+      // 오류 상세 정보 로깅
+      console.error("오류 상세 정보:", {
+        selectedCells,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined
+      });
+      
       return false;
     }
   };

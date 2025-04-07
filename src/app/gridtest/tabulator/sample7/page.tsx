@@ -55,6 +55,9 @@ export default function TabulatorCopyPasteEnhanced() {
           pagination: true,
           paginationSize: 10,
           selectable: true, // 행 선택 가능
+          selectableRange: "cell", // 셀 범위 선택 활성화
+          selectableRollingSelection: true, // 드래그 선택 활성화
+          selectablePersistence: false, // 선택 내용 유지 (클릭 시 선택 해제되지 않음)
           clipboard: true, // 클립보드 기능 활성화
           clipboardPasteAction: "replace", // 복사된 데이터를 어떻게 처리할지 설정 (replace, append, update)
           clipboardCopySelector: "selected", // 선택된 셀만 복사
@@ -169,15 +172,61 @@ export default function TabulatorCopyPasteEnhanced() {
         const style = document.createElement('style');
         style.innerHTML = `
           .tabulator-cell.tabulator-selected {
-            background-color: rgba(59, 130, 246, 0.1) !important;
+            background-color: rgba(59, 130, 246, 0.2) !important;
             border: 1px solid rgba(59, 130, 246, 0.5) !important;
           }
           .tabulator-cell:focus {
             outline: 2px solid rgba(59, 130, 246, 0.8) !important;
             z-index: 10 !important;
           }
+          .tabulator-row.tabulator-selected .tabulator-cell {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+          }
+          .tabulator .tabulator-tableHolder .tabulator-table {
+            user-select: none; /* 텍스트 선택 방지 */
+          }
+          .tabulator-row {
+            cursor: default;
+          }
         `;
         document.head.appendChild(style);
+        
+        // 테이블에 직접 셀 선택 이벤트 추가
+        table.on("cellSelected", function(cell){
+          // 셀이 선택될 때 실행되는 콜백
+          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+          const selectedCells = table.getSelectedCells();
+          if (selectedCells && Array.isArray(selectedCells)) {
+            setSelectedCells(selectedCells.map(cell => ({
+              row: cell.getRow().getPosition(), 
+              col: cell.getColumn().getPosition()
+            })));
+          }
+        });
+
+        table.on("cellDeselected", function(cell){
+          // 셀 선택이 해제될 때 실행되는 콜백
+          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+          const selectedCells = table.getSelectedCells();
+          if (selectedCells && Array.isArray(selectedCells)) {
+            setSelectedCells(selectedCells.map(cell => ({
+              row: cell.getRow().getPosition(), 
+              col: cell.getColumn().getPosition()
+            })));
+          } else {
+            setSelectedCells([]);
+          }
+        });
+
+        // 테이블 클릭 시 셀 선택 상태를 유지하도록 설정
+        table.on("cellClick", function(e, cell){
+          e.stopPropagation(); // 이벤트 버블링 방지
+          // 이미 선택된 셀을 다시 클릭하는 경우 선택 유지
+          if(!e.shiftKey && !e.ctrlKey && !e.metaKey) {
+            cell.getTable().deselectRow();
+            cell.select();
+          }
+        });
         
       } catch (error) {
         console.error("테이블 초기화 오류:", error);

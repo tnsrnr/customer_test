@@ -20,10 +20,24 @@ interface Product {
   lastUpdated: string;
 }
 
+// 선택된 셀 인터페이스
+interface SelectedCell {
+  row: number;
+  col: number;
+}
+
+// 셀 데이터 인터페이스
+interface CellData extends SelectedCell {
+  value: any;
+}
+
 export default function TabulatorCopyPasteEnhanced() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [tabulator, setTabulator] = useState<Tabulator | null>(null);
-  const [selectedCells, setSelectedCells] = useState<{row: number, col: number}[]>([]);
+  const [selectedCells, setSelectedCells] = useState<SelectedCell[]>([]);
+  const [selectionStart, setSelectionStart] = useState<SelectedCell | null>(null);
+  const [selectionEnd, setSelectionEnd] = useState<SelectedCell | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
 
   // 샘플 데이터
   const products: Product[] = [
@@ -94,7 +108,7 @@ export default function TabulatorCopyPasteEnhanced() {
               row.update({ lastUpdated: dateString });
             }
           },
-          cellSelectionChanged: function(data, rows) {
+          cellSelectionChanged: function(data: SelectedCell[], rows: any[]) {
             // 셀 선택 상태 변경 시 처리
             setSelectedCells(data);
           }
@@ -108,6 +122,8 @@ export default function TabulatorCopyPasteEnhanced() {
 
           // 마우스 다운 이벤트
           tableRef.current.addEventListener('mousedown', function(e) {
+            if (!tableRef.current) return;
+            
             // tabulator-cell 클래스를 가진 요소 찾기
             let cellElement = (e.target as Element).closest('.tabulator-cell');
             if (cellElement) {
@@ -125,7 +141,7 @@ export default function TabulatorCopyPasteEnhanced() {
               // data-row, data-col 속성 설정 확인 및 설정
               if (cellElement.getAttribute('data-row') === null) {
                 // 행 인덱스 계산 시도
-                const rowEls = Array.from(tableRef.current?.querySelectorAll('.tabulator-row') || []);
+                const rowEls = Array.from(tableRef.current.querySelectorAll('.tabulator-row'));
                 const rowEl = cellElement.closest('.tabulator-row');
                 if (rowEl) {
                   const rowIndex = rowEls.indexOf(rowEl);
@@ -153,7 +169,7 @@ export default function TabulatorCopyPasteEnhanced() {
                   }
                   
                   // DOM 방식으로 선택된 셀 스타일 제거
-                  const selectedCellElements = tableRef.current?.querySelectorAll('.tabulator-cell.tabulator-selected');
+                  const selectedCellElements = tableRef.current.querySelectorAll('.tabulator-cell.tabulator-selected');
                   selectedCellElements?.forEach(cellEl => {
                     cellEl.classList.remove('tabulator-selected');
                   });
@@ -162,13 +178,6 @@ export default function TabulatorCopyPasteEnhanced() {
                   cellElement.classList.add('tabulator-selected');
                   
                   // React 상태 업데이트
-                  // SelectedCell 인터페이스 정의
-                  interface SelectedCell {
-                    row: number;
-                    col: number;
-                  }
-                  
-                  // 타입 캐스팅으로 오류 해결
                   const newSelectedCell: SelectedCell = {row: startCell.row, col: startCell.col};
                   setSelectedCells([newSelectedCell]);
                 } catch (error) {
@@ -180,6 +189,8 @@ export default function TabulatorCopyPasteEnhanced() {
 
           // 마우스 무브 이벤트
           tableRef.current.addEventListener('mousemove', function(e) {
+            if (!tableRef.current) return;
+            
             if (isSelecting && startCell) {
               let cellElement = (e.target as Element).closest('.tabulator-cell');
               if (cellElement) {
@@ -196,10 +207,10 @@ export default function TabulatorCopyPasteEnhanced() {
                     const maxCol = Math.max(startCell.col, currentCol);
                     
                     // 선택된 셀들 수집
-                    const newSelectedCells = [];
+                    const newSelectedCells: SelectedCell[] = [];
                     
                     // 테이블의 모든 셀 순회하면서 범위 내에 있는지 확인
-                    const allCells = tableRef.current?.querySelectorAll('.tabulator-cell');
+                    const allCells = tableRef.current.querySelectorAll('.tabulator-cell');
                     allCells?.forEach(cellEl => {
                       const rowIdx = parseInt(cellEl.getAttribute('data-row') || '-1', 10);
                       const colIdx = parseInt(cellEl.getAttribute('data-col') || '-1', 10);
@@ -221,12 +232,7 @@ export default function TabulatorCopyPasteEnhanced() {
                     
                     // 선택된 셀 상태 업데이트
                     if (newSelectedCells.length > 0) {
-                      // 타입 오류 해결을 위한 인터페이스 정의
-                      interface SelectedCell {
-                        row: number;
-                        col: number;
-                      }
-                      setSelectedCells(newSelectedCells as SelectedCell[]);
+                      setSelectedCells(newSelectedCells);
                     }
                   } catch (error) {
                     console.error("셀 범위 선택 오류:", error);
@@ -605,14 +611,8 @@ export default function TabulatorCopyPasteEnhanced() {
   // 선택된 셀 요소들을 직접 복사하는 함수
   const copySelectedElementsToClipboard = async (selectedElements: NodeListOf<Element>, tabulatorInstance: Tabulator) => {
     try {
-      interface CellInfo {
-        row: number;
-        col: number;
-        value: any;
-      }
-      
       // 선택된 셀 정보 수집
-      const selectedCellsInfo: CellInfo[] = [];
+      const selectedCellsInfo: CellData[] = [];
       
       // 각 선택된 셀에서 정보 추출
       selectedElements.forEach(element => {
@@ -654,7 +654,7 @@ export default function TabulatorCopyPasteEnhanced() {
       console.log(`${selectedCellsInfo.length}개의 셀 데이터를 추출했습니다.`);
       
       // 행별로 그룹화
-      const rowGroups = new Map<number, CellInfo[]>();
+      const rowGroups = new Map<number, CellData[]>();
       selectedCellsInfo.forEach(info => {
         if (!rowGroups.has(info.row)) {
           rowGroups.set(info.row, []);
@@ -693,7 +693,12 @@ export default function TabulatorCopyPasteEnhanced() {
 
   // 선택된 내용만 클립보드에 복사
   const copySelectedToClipboard = () => {
-    const selectedElements = tableRef.current?.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
+    if (!tableRef.current) {
+      toast.error("테이블이 초기화되지 않았습니다.");
+      return;
+    }
+
+    const selectedElements = tableRef.current.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
     
     if (selectedElements && selectedElements.length > 0 && tabulator) {
       copySelectedElementsToClipboard(selectedElements, tabulator);
@@ -701,6 +706,29 @@ export default function TabulatorCopyPasteEnhanced() {
       copyOnlySelectedCells(tabulator);
     } else {
       toast.warning("복사할 셀을 먼저 선택해주세요.");
+    }
+  };
+
+  // 마우스 이벤트 핸들러 수정
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!tableRef.current) return;
+    
+    const cell = (e.target as HTMLElement).closest('.tabulator-cell');
+    if (!cell) return;
+    
+    const rowIndex = parseInt(cell.getAttribute('data-row') || '-1', 10);
+    const colIndex = parseInt(cell.getAttribute('data-col') || '-1', 10);
+    
+    if (rowIndex >= 0 && colIndex >= 0) {
+      const newCell: SelectedCell = { row: rowIndex, col: colIndex };
+      setSelectionStart(newCell);
+      setSelectionEnd(newCell);
+      setIsSelecting(true);
+      
+      // 셀 선택 상태 업데이트
+      const newSelectedCells = new Set<SelectedCell>();
+      newSelectedCells.add(newCell);
+      setSelectedCells(Array.from(newSelectedCells));
     }
   };
 

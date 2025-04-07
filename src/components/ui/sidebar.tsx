@@ -28,7 +28,8 @@ import {
   FileSearch,
   Edit3,
   PieChart,
-  Smartphone
+  Smartphone,
+  Clipboard
 } from "lucide-react";
 
 // 메뉴 항목의 타입 정의
@@ -124,7 +125,9 @@ export function Sidebar() {
             { title: "필터링 및 검색", href: "/gridtest/tabulator/sample2", icon: <FileSearch className="w-4 h-4" /> },
             { title: "편집 가능한 테이블", href: "/gridtest/tabulator/sample3", icon: <Edit3 className="w-4 h-4" /> },
             { title: "데이터 시각화 및 집계", href: "/gridtest/tabulator/sample4", icon: <PieChart className="w-4 h-4" /> },
-            { title: "반응형 레이아웃 및 테마", href: "/gridtest/tabulator/sample5", icon: <Smartphone className="w-4 h-4" /> }
+            { title: "반응형 레이아웃 및 테마", href: "/gridtest/tabulator/sample5", icon: <Smartphone className="w-4 h-4" /> },
+            { title: "출석 기록 샘플", href: "/gridtest/tabulator/sample", icon: <Calendar className="w-4 h-4" /> },
+            { title: "엑셀 복사/붙여넣기", href: "/gridtest/tabulator/sample6", icon: <Clipboard className="w-4 h-4" /> }
           ]
         }
       ],

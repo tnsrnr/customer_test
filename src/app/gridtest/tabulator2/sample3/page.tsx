@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -95,13 +95,19 @@ export default function TabulatorSpreadsheetExample() {
       try {
         // @ts-ignore
         tabulator.deselectRow(); // 행 선택 해제
-        
-        // 셀 선택 초기화
-        // 선택된 셀에서 tabulator-selected 클래스 제거
-        const selectedCells = document.querySelectorAll('.tabulator-cell.tabulator-selected');
-        selectedCells.forEach(cell => {
+
+        // 셀 선택 초기화 - DOM 조작과 API 함께 사용
+        document.querySelectorAll('.tabulator-cell.tabulator-selected').forEach(cell => {
           cell.classList.remove('tabulator-selected');
         });
+
+        // 셀 범위 선택 상태를 리셋하기 위한 추가 조치
+        if (tableRef.current) {
+          const rangeEl = tableRef.current.querySelector('.tabulator-range-overlay');
+          if (rangeEl) {
+            rangeEl.remove();
+          }
+        }
         
         setSelectedData("선택 영역이 초기화되었습니다.");
       } catch (err) {
@@ -111,11 +117,12 @@ export default function TabulatorSpreadsheetExample() {
   };
 
   // 테이블 외부 클릭 이벤트 핸들러
-  const handleOutsideClick = (event: MouseEvent) => {
+  const handleOutsideClick = useCallback((event: MouseEvent) => {
+    // 테이블 외부 클릭 시 선택 영역 초기화
     if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
       clearSelection();
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (tableRef.current) {
@@ -202,18 +209,22 @@ export default function TabulatorSpreadsheetExample() {
       setTabulator(table);
     }
     
-    // 문서 클릭 이벤트 핸들러 등록
+    // 문서 클릭 이벤트 리스너 등록
     document.addEventListener('mousedown', handleOutsideClick);
     
-    // 클린업 함수
     return () => {
       tabulator?.destroy();
       document.removeEventListener('mousedown', handleOutsideClick);
     };
-  }, []);
+  }, [handleOutsideClick]);
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-6" onClick={(e) => {
+      // 컨테이너 영역 클릭 시 테이블이 아닌 곳을 클릭했는지 확인
+      if (e.target === e.currentTarget && tableRef.current) {
+        clearSelection();
+      }
+    }}>
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -231,20 +242,20 @@ export default function TabulatorSpreadsheetExample() {
         <Card>
           <CardHeader>
             <CardTitle>셀 범위 선택 및 스프레드시트 기능</CardTitle>
-            <div className="flex space-x-2 mt-2">
-              <Button onClick={copySelectedCells} size="sm">
+            <div className="flex flex-wrap space-x-2 mt-2">
+              <Button onClick={copySelectedCells} size="sm" className="mb-2">
                 <Copy className="h-4 w-4 mr-2" />
                 선택한 범위 복사
               </Button>
-              <Button onClick={copyEntireTable} size="sm" variant="outline">
+              <Button onClick={copyEntireTable} size="sm" variant="outline" className="mb-2">
                 <ClipboardCopy className="h-4 w-4 mr-2" />
                 전체 테이블 복사
               </Button>
-              <Button onClick={copyVisibleData} size="sm" variant="outline">
+              <Button onClick={copyVisibleData} size="sm" variant="outline" className="mb-2">
                 <Clipboard className="h-4 w-4 mr-2" />
                 보이는 데이터 복사
               </Button>
-              <Button onClick={clearSelection} size="sm" variant="destructive">
+              <Button onClick={clearSelection} size="sm" variant="destructive" className="mb-2">
                 <X className="h-4 w-4 mr-2" />
                 선택 초기화
               </Button>

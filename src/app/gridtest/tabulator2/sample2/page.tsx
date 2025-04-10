@@ -52,11 +52,26 @@ export default function TabulatorClipboardExample() {
   // 선택한 셀 복사 함수
   const copySelectedCells = () => {
     if (tabulator) {
+      // 범위 선택된 셀이 있는지 확인
       // @ts-ignore
-      tabulator.copyToClipboard("selected");
-      // 선택된 데이터 확인
-      const selectedRows = tabulator.getSelectedData();
-      setSelectedData(`선택된 행 수: ${selectedRows.length}`);
+      const cells = tabulator.getSelectedCells();
+      
+      if (cells && cells.length > 0) {
+        // @ts-ignore
+        tabulator.copyToClipboard("selected");
+        setSelectedData(`선택된 셀: ${cells.length}개 복사됨`);
+      } else {
+        // 선택된 행 정보 확인
+        // @ts-ignore
+        const selectedRows = tabulator.getSelectedRows();
+        if (selectedRows && selectedRows.length > 0) {
+          // @ts-ignore
+          tabulator.copyToClipboard("selected");
+          setSelectedData(`선택된 행: ${selectedRows.length}개 복사됨`);
+        } else {
+          setSelectedData("복사할 영역을 먼저 선택해주세요.");
+        }
+      }
     }
   };
 
@@ -88,16 +103,24 @@ export default function TabulatorClipboardExample() {
         paginationSize: 5,
         height: "100%",
         selectable: true,
-        selectableRangeMode: "click",
-        selectableRollingSelection: false,
-        selectablePersistence: false,
+        selectableRange: true,       // 셀 범위 선택 활성화
+        selectableRangeMode: "cell", // cell, row, column 중 cell로 설정
         clipboard: true,
-        clipboardCopySelector: "selected",
+        clipboardCopyRowRange: "selected", // 선택된 행만 복사
+        clipboardCopySelector: "selected", // 선택된 셀만 복사
         clipboardCopyStyled: true,
+        clipboardPasteAction: "replace",   // 붙여넣기 시 대체
         clipboardCopyConfig: {
           columnHeaders: true,
           rowGroups: false,
           columnCalcs: false,
+        },
+        // 셀 선택 완료 시 이벤트
+        cellSelectionChanged: function(selected, cells) {
+          if (selected && cells.length > 0) {
+            // 선택 영역 정보 표시
+            setSelectedData(`선택된 셀: ${cells.length}개 (${cells[0].getColumn().getField()}부터)`);
+          }
         },
         columns: [
           { title: "ID", field: "id", sorter: "number", width: 60 },
@@ -120,9 +143,6 @@ export default function TabulatorClipboardExample() {
           { title: "전화번호", field: "phone", sorter: "string" },
           { title: "상태", field: "status", sorter: "string", headerFilter: true }
         ],
-        rowSelectionChanged: function(data, rows) {
-          setSelectedData(`선택된 행 수: ${data.length}`);
-        },
       });
       
       setTabulator(table);

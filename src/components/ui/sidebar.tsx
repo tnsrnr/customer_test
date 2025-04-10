@@ -129,7 +129,9 @@ export function Sidebar() {
             { title: "반응형 레이아웃 및 테마", href: "/gridtest/tabulator/sample5", icon: <Smartphone className="w-4 h-4" /> },
             { title: "출석 기록 샘플", href: "/gridtest/tabulator/sample", icon: <Calendar className="w-4 h-4" /> },
             { title: "엑셀 복사/붙여넣기", href: "/gridtest/tabulator/sample6", icon: <ClipboardCopy className="w-4 h-4" /> },
-            { title: "향상된 범위 선택", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> }
+            { title: "향상된 범위 선택", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> },
+            { title: "근태 관리 시스템", href: "/gridtest/tabulator/sample8", icon: <Clock className="w-4 h-4" /> },
+            { title: "직원 관리 시스템", href: "/gridtest/tabulator/sample9", icon: <Users className="w-4 h-4" /> }
           ]
         }
       ],

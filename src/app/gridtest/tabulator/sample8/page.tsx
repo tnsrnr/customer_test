@@ -125,7 +125,7 @@ export default function TabulatorSample8() {
         setCurrentPage(1);
       }
     }
-  }, [allData, filterDepartment, filterPosition, searchQuery, pageSize, currentPage]);
+  }, [allData, filterDepartment, filterPosition, searchQuery, pageSize]);
   
   // 필터링된 데이터 계산 함수 (상태 업데이트 없이 데이터만 반환)
   const getFilteredData = () => {
@@ -276,8 +276,10 @@ export default function TabulatorSample8() {
   useEffect(() => {
     if (!tableRef.current || filteredData.length === 0) return;
     
+    // 기존에 tabulator 인스턴스가 있다면 제거
     if (tabulator) {
       tabulator.destroy();
+      setTabulator(null);
     }
     
     const table = new Tabulator(tableRef.current, {
@@ -400,18 +402,18 @@ export default function TabulatorSample8() {
         rowGroups: false,
         columnCalcs: false,
       },
+      // 이벤트 핸들러 사용 최소화
       pageLoaded: function(pageno) {
-        // 이벤트 핸들러가 상태를 직접 업데이트하지 않도록 하기
-        // 테이블이 자체적으로 페이지 관리
+        // 빈 핸들러
       },
       pageChanged: function(data) {
-        // 현재 페이지 변경 시 조건부 업데이트
+        // React 상태와 동기화 - 조건부로만 실행
         if (data.page !== currentPage) {
           setCurrentPage(data.page);
         }
       },
       pageSizeChanged: function(size) {
-        // 페이지 크기 변경 시 조건부 업데이트
+        // React 상태와 동기화 - 조건부로만 실행
         if (size !== pageSize) {
           setPageSize(size as PageSize);
         }
@@ -421,11 +423,9 @@ export default function TabulatorSample8() {
     setTabulator(table);
     
     return () => {
-      if (table) {
-        table.destroy();
-      }
+      table.destroy();
     };
-  // tabulator가 업데이트될 때마다 재생성되지 않게 의존성에서 제외
+  // JSON.stringify를 사용하여 객체 구조 비교, currentPage는 의존성에서 제외
   }, [filteredData.length, pageSize, JSON.stringify(visibleColumns)]);
   
   // 컬럼 표시/숨김 토글

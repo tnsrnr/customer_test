@@ -93,20 +93,28 @@ export default function TabulatorSpreadsheetExample() {
   const clearSelection = () => {
     if (tabulator) {
       try {
+        // 셀 선택 초기화를 위한 다양한 접근 방식 시도
+        
+        // 1. API 방식 시도
         // @ts-ignore
-        tabulator.deselectRow(); // 행 선택 해제
-
-        // 셀 선택 초기화 - DOM 조작과 API 함께 사용
-        document.querySelectorAll('.tabulator-cell.tabulator-selected').forEach(cell => {
-          cell.classList.remove('tabulator-selected');
-        });
-
-        // 셀 범위 선택 상태를 리셋하기 위한 추가 조치
+        tabulator.deselectRow();
+        // @ts-ignore
+        if (typeof tabulator.clearCellSelection === 'function') {
+          // @ts-ignore
+          tabulator.clearCellSelection();
+        }
+        
+        // 2. DOM 직접 조작
         if (tableRef.current) {
-          const rangeEl = tableRef.current.querySelector('.tabulator-range-overlay');
-          if (rangeEl) {
-            rangeEl.remove();
-          }
+          // 선택된 셀 클래스 제거
+          tableRef.current.querySelectorAll('.tabulator-cell.tabulator-selected').forEach(cell => {
+            cell.classList.remove('tabulator-selected');
+          });
+          
+          // 범위 선택 오버레이 제거
+          tableRef.current.querySelectorAll('.tabulator-range-overlay').forEach(el => {
+            el.remove();
+          });
         }
         
         setSelectedData("선택 영역이 초기화되었습니다.");
@@ -115,15 +123,24 @@ export default function TabulatorSpreadsheetExample() {
       }
     }
   };
-
-  // 테이블 외부 클릭 이벤트 핸들러
-  const handleOutsideClick = useCallback((event: MouseEvent) => {
+  
+  // 전역 클릭 이벤트 핸들러
+  const handleGlobalClick = useCallback((event: MouseEvent) => {
+    // tabulator-table 또는 하위 요소를 클릭했는지 확인
+    const isTableClick = event.target instanceof Node && 
+      tableRef.current && 
+      (tableRef.current.contains(event.target) || 
+       // 테이블 셀 또는 선택 영역 클릭 시 무시
+       (event.target as Element).closest('.tabulator-cell') || 
+       (event.target as Element).closest('.tabulator-range-overlay'));
+    
     // 테이블 외부 클릭 시 선택 영역 초기화
-    if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
+    if (!isTableClick) {
       clearSelection();
     }
   }, []);
 
+  // 페이지 로드 및 테이블 초기화
   useEffect(() => {
     if (tableRef.current) {
       // 테이블 초기화
@@ -197,9 +214,10 @@ export default function TabulatorSpreadsheetExample() {
           { title: "상태", field: "status", sorter: "string", headerFilter: true }
         ],
         
-        // 셀 선택 시 이벤트
+        // 셀 선택 완료 시 이벤트 - 디버깅용 로그 추가
         // @ts-ignore
         cellSelectionChanged: function(cells, selected) {
+          console.log("셀 선택 변경:", cells?.length, selected);
           if (selected && cells && cells.length > 0) {
             setSelectedData(`선택된 셀: ${cells.length}개`);
           }
@@ -207,21 +225,25 @@ export default function TabulatorSpreadsheetExample() {
       });
       
       setTabulator(table);
+      
+      // 명시적으로 전역 이벤트 리스너를 window에 등록
+      window.addEventListener('mousedown', handleGlobalClick);
     }
     
-    // 문서 클릭 이벤트 리스너 등록
-    document.addEventListener('mousedown', handleOutsideClick);
-    
     return () => {
-      tabulator?.destroy();
-      document.removeEventListener('mousedown', handleOutsideClick);
+      // 컴포넌트 언마운트 시 이벤트 리스너와 테이블 정리
+      window.removeEventListener('mousedown', handleGlobalClick);
+      if (tabulator) {
+        tabulator.destroy();
+      }
     };
-  }, [handleOutsideClick]);
+  }, [handleGlobalClick]);
 
   return (
-    <div className="container mx-auto py-6" onClick={(e) => {
-      // 컨테이너 영역 클릭 시 테이블이 아닌 곳을 클릭했는지 확인
-      if (e.target === e.currentTarget && tableRef.current) {
+    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
+      // 컨테이너 직접 클릭 시 선택 초기화 (이벤트 버블링 방지)
+      if (e.currentTarget === e.target) {
+        e.stopPropagation();
         clearSelection();
       }
     }}>

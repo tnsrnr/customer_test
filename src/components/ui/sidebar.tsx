@@ -130,6 +130,14 @@ export function Sidebar() {
             { title: "향상된 범위 선택", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> },
             { title: "근태 관리 시스템", href: "/gridtest/tabulator/sample8", icon: <Clock className="w-4 h-4" /> }
           ]
+        },
+        { 
+          title: "Tabulator2", 
+          href: "/gridtest/tabulator2", 
+          icon: <Table2 className="w-4 h-4" />,
+          submenu: [
+            { title: "기본 테이블 및 정렬", href: "/gridtest/tabulator2/sample1", icon: <SortAsc className="w-4 h-4" /> }
+          ]
         }
       ],
     },

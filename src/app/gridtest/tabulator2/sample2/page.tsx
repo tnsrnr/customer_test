@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ClipboardCopy, Copy, Clipboard } from 'lucide-react';
+import { ArrowLeft, ClipboardCopy, Copy, Clipboard, X } from 'lucide-react';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
@@ -89,6 +89,57 @@ export default function TabulatorClipboardExample() {
     }
   };
 
+  // 선택한 셀 영역 초기화 함수
+  const clearSelection = () => {
+    if (tabulator) {
+      try {
+        // 셀 선택 초기화를 위한 다양한 접근 방식 시도
+        
+        // 1. API 방식 시도
+        // @ts-ignore
+        tabulator.deselectRow();
+        // @ts-ignore
+        if (typeof tabulator.clearCellSelection === 'function') {
+          // @ts-ignore
+          tabulator.clearCellSelection();
+        }
+        
+        // 2. DOM 직접 조작
+        if (tableRef.current) {
+          // 선택된 셀 클래스 제거
+          tableRef.current.querySelectorAll('.tabulator-cell.tabulator-selected').forEach(cell => {
+            cell.classList.remove('tabulator-selected');
+          });
+          
+          // 범위 선택 오버레이 제거
+          tableRef.current.querySelectorAll('.tabulator-range-overlay').forEach(el => {
+            el.remove();
+          });
+        }
+        
+        setSelectedData("선택 영역이 초기화되었습니다.");
+      } catch (err) {
+        console.error("선택 초기화 오류:", err);
+      }
+    }
+  };
+  
+  // 전역 클릭 이벤트 핸들러
+  const handleGlobalClick = useCallback((event: MouseEvent) => {
+    // tabulator-table 또는 하위 요소를 클릭했는지 확인
+    const isTableClick = event.target instanceof Node && 
+      tableRef.current && 
+      (tableRef.current.contains(event.target) || 
+       // 테이블 셀 또는 선택 영역 클릭 시 무시
+       (event.target as Element).closest('.tabulator-cell') || 
+       (event.target as Element).closest('.tabulator-range-overlay'));
+    
+    // 테이블 외부 클릭 시 선택 영역 초기화
+    if (!isTableClick) {
+      clearSelection();
+    }
+  }, []);
+
   useEffect(() => {
     if (tableRef.current) {
       // 테이블 초기화
@@ -165,6 +216,7 @@ export default function TabulatorClipboardExample() {
         // 셀 선택 시 이벤트
         // @ts-ignore
         cellSelectionChanged: function(cells, selected) {
+          console.log("셀 선택 변경:", cells?.length, selected);
           if (selected && cells && cells.length > 0) {
             setSelectedData(`선택된 셀: ${cells.length}개`);
           }
@@ -172,15 +224,28 @@ export default function TabulatorClipboardExample() {
       });
       
       setTabulator(table);
+      
+      // 명시적으로 전역 이벤트 리스너를 window에 등록
+      window.addEventListener('mousedown', handleGlobalClick);
     }
     
     return () => {
-      tabulator?.destroy();
+      // 컴포넌트 언마운트 시 이벤트 리스너와 테이블 정리
+      window.removeEventListener('mousedown', handleGlobalClick);
+      if (tabulator) {
+        tabulator.destroy();
+      }
     };
-  }, []);
+  }, [handleGlobalClick]);
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
+      // 컨테이너 직접 클릭 시 선택 초기화 (이벤트 버블링 방지)
+      if (e.currentTarget === e.target) {
+        e.stopPropagation();
+        clearSelection();
+      }
+    }}>
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -198,18 +263,22 @@ export default function TabulatorClipboardExample() {
         <Card>
           <CardHeader>
             <CardTitle>셀 범위 선택 및 클립보드 기능</CardTitle>
-            <div className="flex space-x-2 mt-2">
-              <Button onClick={copySelectedCells} size="sm">
+            <div className="flex flex-wrap space-x-2 mt-2">
+              <Button onClick={copySelectedCells} size="sm" className="mb-2">
                 <Copy className="h-4 w-4 mr-2" />
                 선택한 범위 복사
               </Button>
-              <Button onClick={copyEntireTable} size="sm" variant="outline">
+              <Button onClick={copyEntireTable} size="sm" variant="outline" className="mb-2">
                 <ClipboardCopy className="h-4 w-4 mr-2" />
                 전체 테이블 복사
               </Button>
-              <Button onClick={copyVisibleData} size="sm" variant="outline">
+              <Button onClick={copyVisibleData} size="sm" variant="outline" className="mb-2">
                 <Clipboard className="h-4 w-4 mr-2" />
                 보이는 데이터 복사
+              </Button>
+              <Button onClick={clearSelection} size="sm" variant="destructive" className="mb-2">
+                <X className="h-4 w-4 mr-2" />
+                선택 초기화
               </Button>
             </div>
             {selectedData && (
@@ -222,6 +291,8 @@ export default function TabulatorClipboardExample() {
             <p className="mb-4 text-sm text-gray-500">
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
               다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
+              <br />
+              <strong>선택 해제:</strong> 테이블 외부를 클릭하거나 선택 초기화 버튼을 누르면 선택 영역이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 

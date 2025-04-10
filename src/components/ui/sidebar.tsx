@@ -124,9 +124,7 @@ export function Sidebar() {
           submenu: [
             { title: "기본 테이블 및 정렬", href: "/gridtest/tabulator/sample1", icon: <SortAsc className="w-4 h-4" /> },
             { title: "필터링 및 검색", href: "/gridtest/tabulator/sample2", icon: <FileSearch className="w-4 h-4" /> },
-            { title: "편집 가능한 테이블", href: "/gridtest/tabulator/sample3", icon: <Edit3 className="w-4 h-4" /> },
             { title: "데이터 시각화 및 집계", href: "/gridtest/tabulator/sample4", icon: <PieChart className="w-4 h-4" /> },
-            { title: "반응형 레이아웃 및 테마", href: "/gridtest/tabulator/sample5", icon: <Smartphone className="w-4 h-4" /> },
             { title: "출석 기록 샘플", href: "/gridtest/tabulator/sample", icon: <Calendar className="w-4 h-4" /> },
             { title: "엑셀 복사/붙여넣기", href: "/gridtest/tabulator/sample6", icon: <ClipboardCopy className="w-4 h-4" /> },
             { title: "향상된 범위 선택", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> },

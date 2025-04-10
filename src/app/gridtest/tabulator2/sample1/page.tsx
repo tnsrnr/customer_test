@@ -35,38 +35,47 @@ export default function TabulatorBasicExample() {
 
   // 선택 영역 초기화 함수
   const clearSelection = () => {
-    if (tabulator) {
+    if (tabulator && tableRef.current) {
       try {
-        // @ts-ignore
-        tabulator.deselectRow();
+        // 방법 1: 테이블을 새로 그려서 선택 상태를 초기화
+        tabulator.redraw(true);
         
-        // DOM 직접 조작으로 선택된 셀 클래스 제거
-        if (tableRef.current) {
-          tableRef.current.querySelectorAll('.tabulator-cell.tabulator-selected').forEach(cell => {
-            cell.classList.remove('tabulator-selected');
-          });
-          
-          tableRef.current.querySelectorAll('.tabulator-range-overlay').forEach(el => {
-            el.remove();
-          });
-        }
+        // 방법 2: DOM 조작으로 선택된 셀 클래스 제거
+        const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-range-overlay');
+        selectedCells.forEach(cell => {
+          cell.classList.remove('tabulator-selected');
+          if (cell.classList.contains('tabulator-range-overlay')) {
+            cell.remove();
+          }
+        });
+        
+        console.log('샘플1: 선택 영역 초기화 실행됨');
       } catch (err) {
         console.error("선택 초기화 오류:", err);
       }
     }
   };
   
-  // 전역 클릭 이벤트 핸들러
-  const handleGlobalClick = useCallback((event: MouseEvent) => {
-    const isTableClick = event.target instanceof Node && 
-      tableRef.current && 
-      (tableRef.current.contains(event.target) || 
-       (event.target as Element).closest('.tabulator-cell') || 
-       (event.target as Element).closest('.tabulator-range-overlay'));
+  // 전역 클릭 이벤트 핸들러 - 캡처 단계 활용
+  useEffect(() => {
+    // 캡처 단계에서 이벤트를 가로채기 (이벤트 버블링보다 먼저 실행됨)
+    const handleClickCapture = (event: MouseEvent) => {
+      // 테이블 내부 클릭인지 확인
+      const isTableClick = event.target instanceof Node && 
+        tableRef.current && tableRef.current.contains(event.target as Node);
+      
+      // 테이블 외부 클릭 시 선택 초기화
+      if (!isTableClick) {
+        clearSelection();
+      }
+    };
     
-    if (!isTableClick) {
-      clearSelection();
-    }
+    // true를 전달하여 캡처 단계에서 이벤트 처리
+    document.addEventListener('mousedown', handleClickCapture, true);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickCapture, true);
+    };
   }, []);
 
   useEffect(() => {
@@ -118,19 +127,35 @@ export default function TabulatorBasicExample() {
             },
           },
         },
+        // 셀 선택 이벤트 - 선택 변경 시 console에 로그 출력
+        cellSelectionChanged: function(cells, selected) {
+          console.log("샘플1 - 셀 선택 변경:", cells?.length, selected);
+        },
       });
       
       setTabulator(table);
-      
-      // 전역 이벤트 리스너 등록
-      window.addEventListener('mousedown', handleGlobalClick);
     }
     
     return () => {
-      window.removeEventListener('mousedown', handleGlobalClick);
       tabulator?.destroy();
     };
-  }, [handleGlobalClick]);
+  }, []);
+
+  // 페이지 자체에 keydown 이벤트 추가 - ESC 키로 선택 해제
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // ESC 키로 선택 초기화
+      if (event.key === 'Escape') {
+        clearSelection();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
@@ -156,7 +181,9 @@ export default function TabulatorBasicExample() {
       <Card>
         <CardContent className="pt-6">
           <p className="mb-4 text-sm text-gray-500">
-            <strong>셀 선택:</strong> 셀을 드래그하여 범위를 선택할 수 있습니다. 테이블 외부를 클릭하면 선택이 해제됩니다.
+            <strong>셀 선택:</strong> 셀을 드래그하여 범위를 선택할 수 있습니다. 
+            <strong>선택 해제 방법 1:</strong> 테이블 외부를 클릭하면 선택이 해제됩니다. (캡처 이벤트 방식)
+            <strong>선택 해제 방법 2:</strong> ESC 키를 누르면 선택이 해제됩니다.
           </p>
           <div ref={tableRef} className="w-full"></div>
         </CardContent>

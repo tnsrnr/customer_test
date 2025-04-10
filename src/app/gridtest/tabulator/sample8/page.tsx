@@ -89,23 +89,52 @@ export default function TabulatorSample8() {
   const [filterPosition, setFilterPosition] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   
-  // 더미 데이터 생성
+  // 부서 목록과 직급 목록을 상태로 관리
+  const [departments, setDepartments] = useState<string[]>([]);
+  const [positions, setPositions] = useState<string[]>([]);
+  
+  // 더미 데이터 생성 및 필터 옵션 초기화
   useEffect(() => {
-    generateDummyData();
+    const dummyData = generateDummyData();
+    setAllData(dummyData);
+    
+    // 부서 및 직급 목록 추출
+    const deptSet = new Set<string>();
+    const posSet = new Set<string>();
+    
+    dummyData.forEach(item => {
+      deptSet.add(item.department);
+      posSet.add(item.position);
+    });
+    
+    setDepartments(Array.from(deptSet));
+    setPositions(Array.from(posSet));
   }, []);
   
   // 필터링된 데이터가 변경될 때마다 페이지 카운트 업데이트
   useEffect(() => {
-    updateFilteredData();
-  }, [allData, filterDepartment, filterPosition, searchQuery]);
+    if (allData.length > 0) {
+      const newFilteredData = getFilteredData();
+      setFilteredData(newFilteredData);
+      
+      // 페이지 범위를 벗어난 경우 첫 페이지로 이동
+      const newTotalPages = Math.ceil(newFilteredData.length / pageSize);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(1);
+      }
+    }
+  }, [allData, filterDepartment, filterPosition, searchQuery, pageSize]);
   
-  // 총 페이지 수 계산
+  // 총 페이지 수 계산 - 중복 업데이트 제거
   useEffect(() => {
-    setTotalPages(Math.ceil(filteredData.length / pageSize));
-  }, [filteredData, pageSize]);
+    const newTotalPages = Math.ceil(filteredData.length / pageSize);
+    if (newTotalPages !== totalPages) {
+      setTotalPages(newTotalPages);
+    }
+  }, [filteredData.length, pageSize, totalPages]);
   
-  // 필터링된 데이터 업데이트
-  const updateFilteredData = () => {
+  // 필터링된 데이터 계산 함수 (상태 업데이트 없이 데이터만 반환)
+  const getFilteredData = () => {
     let filtered = [...allData];
     
     // 부서 필터링
@@ -129,25 +158,20 @@ export default function TabulatorSample8() {
       );
     }
     
-    setFilteredData(filtered);
-    
-    // 페이지 범위를 벗어난 경우 첫 페이지로 이동
-    if (currentPage > Math.ceil(filtered.length / pageSize)) {
-      setCurrentPage(1);
-    }
+    return filtered;
   };
   
   const generateDummyData = () => {
-    const departments = ["개발팀", "인사팀", "마케팅팀", "영업팀", "경영지원팀"];
-    const positions = ["사원", "대리", "과장", "차장", "부장"];
+    const departmentsList = ["개발팀", "인사팀", "마케팅팀", "영업팀", "경영지원팀"];
+    const positionsList = ["사원", "대리", "과장", "차장", "부장"];
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [2022, 2023];
     
     const dummyData: EmployeeData[] = [];
     
     // 더 많은 데이터 생성 (약 500개 정도)
-    for (let deptIndex = 0; deptIndex < departments.length; deptIndex++) {
-      for (let posIndex = 0; posIndex < positions.length; posIndex++) {
+    for (let deptIndex = 0; deptIndex < departmentsList.length; deptIndex++) {
+      for (let posIndex = 0; posIndex < positionsList.length; posIndex++) {
         // 각 부서/직급 조합당 직원 수 증가
         const employeeCount = Math.floor(Math.random() * 5) + 3;
         
@@ -155,8 +179,8 @@ export default function TabulatorSample8() {
           // 직원 기본 정보
           const id = `EMP${(deptIndex * 100 + posIndex * 10 + empIndex).toString().padStart(3, '0')}`;
           const name = generateRandomName();
-          const department = departments[deptIndex];
-          const position = positions[posIndex];
+          const department = departmentsList[deptIndex];
+          const position = positionsList[posIndex];
           
           // 모든 월과 년도의 데이터 생성
           for (let year of years) {
@@ -197,7 +221,7 @@ export default function TabulatorSample8() {
       }
     }
     
-    setAllData(dummyData);
+    return dummyData;
   };
   
   // 랜덤 이름 생성 함수
@@ -211,15 +235,9 @@ export default function TabulatorSample8() {
            lastNames[Math.floor(Math.random() * lastNames.length)];
   };
   
-  // 부서 목록
-  const departments = Array.from(new Set(allData.map(item => item.department)));
-  
-  // 직급 목록
-  const positions = Array.from(new Set(allData.map(item => item.position)));
-  
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
       if (tabulator) {
         tabulator.setPage(page);
@@ -230,9 +248,11 @@ export default function TabulatorSample8() {
   // 페이지 크기 변경 핸들러
   const handlePageSizeChange = (size: string) => {
     const newSize = parseInt(size) as PageSize;
-    setPageSize(newSize);
-    if (tabulator) {
-      tabulator.setPageSize(newSize);
+    if (newSize !== pageSize) {
+      setPageSize(newSize);
+      if (tabulator) {
+        tabulator.setPageSize(newSize);
+      }
     }
   };
   
@@ -260,141 +280,152 @@ export default function TabulatorSample8() {
   
   // 테이블 초기화
   useEffect(() => {
-    if (tableRef.current && filteredData.length > 0) {
-      const table = new Tabulator(tableRef.current, {
-        data: filteredData,
-        layout: "fitColumns",
-        responsiveLayout: "hide",
-        pagination: true,
-        paginationSize: pageSize,
-        paginationSizeSelector: [10, 20, 50, 100],
-        paginationButtonCount: 5,
-        columns: [
-          { 
-            title: "ID", 
-            field: "id", 
-            sorter: "string",
-            headerFilter: true,
-            visible: visibleColumns.id
-          },
-          { 
-            title: "이름", 
-            field: "name", 
-            sorter: "string",
-            headerFilter: true,
-            visible: visibleColumns.name
-          },
-          { 
-            title: "부서", 
-            field: "department", 
-            sorter: "string",
-            headerFilter: true,
-            visible: visibleColumns.department
-          },
-          { 
-            title: "직급", 
-            field: "position", 
-            sorter: "string",
-            headerFilter: true,
-            visible: visibleColumns.position
-          },
-          { 
-            title: "년도", 
-            field: "year", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.year
-          },
-          { 
-            title: "월", 
-            field: "month", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.month
-          },
-          { 
-            title: "근무일수", 
-            field: "workDays", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.workDays
-          },
-          { 
-            title: "출근일수", 
-            field: "attendanceDays", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.attendanceDays
-          },
-          { 
-            title: "지각", 
-            field: "lateDays", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.lateDays
-          },
-          { 
-            title: "조퇴", 
-            field: "leaveEarlyDays", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.leaveEarlyDays
-          },
-          { 
-            title: "결근", 
-            field: "absentDays", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.absentDays
-          },
-          { 
-            title: "휴가", 
-            field: "vacationDays", 
-            sorter: "number",
-            headerFilter: true,
-            visible: visibleColumns.vacationDays
-          },
-          { 
-            title: "출근율", 
-            field: "attendanceRate", 
-            sorter: "number",
-            headerFilter: true,
-            formatter: function(cell) {
-              const value = cell.getValue();
-              let color = "green";
-              if (value < 90) color = "red";
-              else if (value < 95) color = "orange";
-              return `<span style="color: ${color}">${value}%</span>`;
-            },
-            visible: visibleColumns.attendanceRate
-          }
-        ],
-        selectable: true,
-        selectableRangeMode: "click",
-        selectableRollingSelection: true,
-        selectablePersistence: false,
-        clipboard: true,
-        clipboardCopySelector: "active",
-        clipboardCopyStyled: false,
-        clipboardCopyConfig: {
-          columnHeaders: true,
-          rowGroups: false,
-          columnCalcs: false,
+    if (!tableRef.current || filteredData.length === 0) return;
+    
+    if (tabulator) {
+      tabulator.destroy();
+    }
+    
+    const table = new Tabulator(tableRef.current, {
+      data: filteredData,
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      pagination: true,
+      paginationSize: pageSize,
+      paginationSizeSelector: [10, 20, 50, 100],
+      paginationButtonCount: 5,
+      columns: [
+        { 
+          title: "ID", 
+          field: "id", 
+          sorter: "string",
+          headerFilter: true,
+          visible: visibleColumns.id
         },
-        dataChanged: function(data) {
-          setFilteredData(data);
+        { 
+          title: "이름", 
+          field: "name", 
+          sorter: "string",
+          headerFilter: true,
+          visible: visibleColumns.name
         },
-        pageChanged: function(data) {
+        { 
+          title: "부서", 
+          field: "department", 
+          sorter: "string",
+          headerFilter: true,
+          visible: visibleColumns.department
+        },
+        { 
+          title: "직급", 
+          field: "position", 
+          sorter: "string",
+          headerFilter: true,
+          visible: visibleColumns.position
+        },
+        { 
+          title: "년도", 
+          field: "year", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.year
+        },
+        { 
+          title: "월", 
+          field: "month", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.month
+        },
+        { 
+          title: "근무일수", 
+          field: "workDays", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.workDays
+        },
+        { 
+          title: "출근일수", 
+          field: "attendanceDays", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.attendanceDays
+        },
+        { 
+          title: "지각", 
+          field: "lateDays", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.lateDays
+        },
+        { 
+          title: "조퇴", 
+          field: "leaveEarlyDays", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.leaveEarlyDays
+        },
+        { 
+          title: "결근", 
+          field: "absentDays", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.absentDays
+        },
+        { 
+          title: "휴가", 
+          field: "vacationDays", 
+          sorter: "number",
+          headerFilter: true,
+          visible: visibleColumns.vacationDays
+        },
+        { 
+          title: "출근율", 
+          field: "attendanceRate", 
+          sorter: "number",
+          headerFilter: true,
+          formatter: function(cell) {
+            const value = cell.getValue();
+            let color = "green";
+            if (value < 90) color = "red";
+            else if (value < 95) color = "orange";
+            return `<span style="color: ${color}">${value}%</span>`;
+          },
+          visible: visibleColumns.attendanceRate
+        }
+      ],
+      selectable: true,
+      selectableRangeMode: "click",
+      selectableRollingSelection: true,
+      selectablePersistence: false,
+      clipboard: true,
+      clipboardCopySelector: "active",
+      clipboardCopyStyled: false,
+      clipboardCopyConfig: {
+        columnHeaders: true,
+        rowGroups: false,
+        columnCalcs: false,
+      },
+      pageChanged: function(data) {
+        if (data.page !== currentPage) {
           setCurrentPage(data.page);
-        },
-        pageSizeChanged: function(size) {
+        }
+      },
+      pageSizeChanged: function(size) {
+        if (size !== pageSize) {
           setPageSize(size as PageSize);
         }
-      });
-      
-      setTabulator(table);
-    }
-  }, [filteredData, pageSize, visibleColumns]);
+      }
+    });
+    
+    setTabulator(table);
+    
+    return () => {
+      if (table) {
+        table.destroy();
+      }
+    };
+  }, [filteredData.length, pageSize, visibleColumns]);
   
   // 컬럼 표시/숨김 토글
   const toggleColumn = (columnName: string) => {

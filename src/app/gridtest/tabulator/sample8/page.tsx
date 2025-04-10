@@ -111,27 +111,21 @@ export default function TabulatorSample8() {
     setPositions(Array.from(posSet));
   }, []);
   
-  // 필터링된 데이터가 변경될 때마다 페이지 카운트 업데이트
+  // 필터링된 데이터와 페이지 업데이트
   useEffect(() => {
     if (allData.length > 0) {
       const newFilteredData = getFilteredData();
       setFilteredData(newFilteredData);
       
-      // 페이지 범위를 벗어난 경우 첫 페이지로 이동
       const newTotalPages = Math.ceil(newFilteredData.length / pageSize);
+      setTotalPages(newTotalPages);
+      
+      // 페이지 범위를 벗어난 경우 첫 페이지로 이동
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(1);
       }
     }
-  }, [allData, filterDepartment, filterPosition, searchQuery, pageSize]);
-  
-  // 총 페이지 수 계산 - 중복 업데이트 제거
-  useEffect(() => {
-    const newTotalPages = Math.ceil(filteredData.length / pageSize);
-    if (newTotalPages !== totalPages) {
-      setTotalPages(newTotalPages);
-    }
-  }, [filteredData.length, pageSize, totalPages]);
+  }, [allData, filterDepartment, filterPosition, searchQuery, pageSize, currentPage]);
   
   // 필터링된 데이터 계산 함수 (상태 업데이트 없이 데이터만 반환)
   const getFilteredData = () => {
@@ -406,12 +400,18 @@ export default function TabulatorSample8() {
         rowGroups: false,
         columnCalcs: false,
       },
+      pageLoaded: function(pageno) {
+        // 이벤트 핸들러가 상태를 직접 업데이트하지 않도록 하기
+        // 테이블이 자체적으로 페이지 관리
+      },
       pageChanged: function(data) {
+        // 현재 페이지 변경 시 조건부 업데이트
         if (data.page !== currentPage) {
           setCurrentPage(data.page);
         }
       },
       pageSizeChanged: function(size) {
+        // 페이지 크기 변경 시 조건부 업데이트
         if (size !== pageSize) {
           setPageSize(size as PageSize);
         }
@@ -425,7 +425,8 @@ export default function TabulatorSample8() {
         table.destroy();
       }
     };
-  }, [filteredData.length, pageSize, visibleColumns]);
+  // tabulator가 업데이트될 때마다 재생성되지 않게 의존성에서 제외
+  }, [filteredData.length, pageSize, JSON.stringify(visibleColumns)]);
   
   // 컬럼 표시/숨김 토글
   const toggleColumn = (columnName: string) => {

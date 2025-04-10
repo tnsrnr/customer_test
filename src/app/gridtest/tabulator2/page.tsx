@@ -17,6 +17,7 @@ import {
   Calendar,
   ClipboardCopy,
   Clock,
+  Table2,
 } from "lucide-react";
 
 export default function TabulatorPage() {
@@ -57,6 +58,23 @@ export default function TabulatorPage() {
             <CardContent>
               <p className="text-sm text-gray-500">
                 셀 범위 선택과 클립보드 복사 기능을 제공하는 Tabulator2 그리드 예제입니다.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/gridtest/tabulator2/sample3">
+          <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+            <CardHeader>
+              <Table2 className="h-8 w-8 mb-2 text-primary" />
+              <CardTitle>스프레드시트 기능</CardTitle>
+              <CardDescription>
+                셀 편집 및 범위 선택 기능
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500">
+                스프레드시트처럼 셀을 편집하고 범위를 선택할 수 있는 Tabulator2 그리드 예제입니다.
               </p>
             </CardContent>
           </Card>

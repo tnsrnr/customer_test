@@ -137,7 +137,8 @@ export function Sidebar() {
           icon: <Table2 className="w-4 h-4" />,
           submenu: [
             { title: "기본 테이블 및 정렬", href: "/gridtest/tabulator2/sample1", icon: <SortAsc className="w-4 h-4" /> },
-            { title: "클립보드 기능", href: "/gridtest/tabulator2/sample2", icon: <ClipboardCopy className="w-4 h-4" /> }
+            { title: "클립보드 기능", href: "/gridtest/tabulator2/sample2", icon: <ClipboardCopy className="w-4 h-4" /> },
+            { title: "스프레드시트 기능", href: "/gridtest/tabulator2/sample3", icon: <Table2 className="w-4 h-4" /> }
           ]
         }
       ],

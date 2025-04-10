@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ClipboardCopy, Copy, Clipboard } from 'lucide-react';
+import { ArrowLeft, ClipboardCopy, Copy, Clipboard, X } from 'lucide-react';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
@@ -86,6 +86,34 @@ export default function TabulatorSpreadsheetExample() {
       } catch (err) {
         console.error("보이는 데이터 복사 오류:", err);
       }
+    }
+  };
+
+  // 선택한 셀 영역 초기화 함수
+  const clearSelection = () => {
+    if (tabulator) {
+      try {
+        // @ts-ignore
+        tabulator.deselectRow(); // 행 선택 해제
+        
+        // 셀 선택 초기화
+        // 선택된 셀에서 tabulator-selected 클래스 제거
+        const selectedCells = document.querySelectorAll('.tabulator-cell.tabulator-selected');
+        selectedCells.forEach(cell => {
+          cell.classList.remove('tabulator-selected');
+        });
+        
+        setSelectedData("선택 영역이 초기화되었습니다.");
+      } catch (err) {
+        console.error("선택 초기화 오류:", err);
+      }
+    }
+  };
+
+  // 테이블 외부 클릭 이벤트 핸들러
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
+      clearSelection();
     }
   };
 
@@ -174,8 +202,13 @@ export default function TabulatorSpreadsheetExample() {
       setTabulator(table);
     }
     
+    // 문서 클릭 이벤트 핸들러 등록
+    document.addEventListener('mousedown', handleOutsideClick);
+    
+    // 클린업 함수
     return () => {
       tabulator?.destroy();
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
 
@@ -211,6 +244,10 @@ export default function TabulatorSpreadsheetExample() {
                 <Clipboard className="h-4 w-4 mr-2" />
                 보이는 데이터 복사
               </Button>
+              <Button onClick={clearSelection} size="sm" variant="destructive">
+                <X className="h-4 w-4 mr-2" />
+                선택 초기화
+              </Button>
             </div>
             {selectedData && (
               <div className="mt-2 text-sm text-muted-foreground">
@@ -222,6 +259,8 @@ export default function TabulatorSpreadsheetExample() {
             <p className="mb-4 text-sm text-gray-500">
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
               다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
+              <br />
+              <strong>선택 해제:</strong> 테이블 외부를 클릭하거나 선택 초기화 버튼을 누르면 선택 영역이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 

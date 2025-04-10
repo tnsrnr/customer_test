@@ -52,25 +52,13 @@ export default function TabulatorClipboardExample() {
   // 선택한 셀 복사 함수
   const copySelectedCells = () => {
     if (tabulator) {
-      // 범위 선택된 셀이 있는지 확인
-      // @ts-ignore
-      const cells = tabulator.getSelectedCells();
-      
-      if (cells && cells.length > 0) {
+      try {
         // @ts-ignore
-        tabulator.copyToClipboard("selected");
-        setSelectedData(`선택된 셀: ${cells.length}개 복사됨`);
-      } else {
-        // 선택된 행 정보 확인
-        // @ts-ignore
-        const selectedRows = tabulator.getSelectedRows();
-        if (selectedRows && selectedRows.length > 0) {
-          // @ts-ignore
-          tabulator.copyToClipboard("selected");
-          setSelectedData(`선택된 행: ${selectedRows.length}개 복사됨`);
-        } else {
-          setSelectedData("복사할 영역을 먼저 선택해주세요.");
-        }
+        tabulator.copyToClipboard("range");
+        setSelectedData(`선택된 셀 범위가 복사되었습니다.`);
+      } catch (err) {
+        console.error("복사 오류:", err);
+        setSelectedData(`복사 중 오류가 발생했습니다.`);
       }
     }
   };
@@ -78,18 +66,26 @@ export default function TabulatorClipboardExample() {
   // 테이블 전체 복사 함수
   const copyEntireTable = () => {
     if (tabulator) {
-      // @ts-ignore
-      tabulator.copyToClipboard("table");
-      setSelectedData(`전체 테이블 복사 (${data.length}행)`);
+      try {
+        // @ts-ignore
+        tabulator.copyToClipboard("table");
+        setSelectedData(`전체 테이블 복사 (${data.length}행)`);
+      } catch (err) {
+        console.error("전체 테이블 복사 오류:", err);
+      }
     }
   };
   
   // 현재 볼 수 있는 데이터만 복사
   const copyVisibleData = () => {
     if (tabulator) {
-      // @ts-ignore
-      tabulator.copyToClipboard("visible");
-      setSelectedData(`현재 보이는 데이터 복사`);
+      try {
+        // @ts-ignore
+        tabulator.copyToClipboard("visible");
+        setSelectedData(`현재 보이는 데이터 복사`);
+      } catch (err) {
+        console.error("보이는 데이터 복사 오류:", err);
+      }
     }
   };
 
@@ -102,28 +98,50 @@ export default function TabulatorClipboardExample() {
         pagination: true,
         paginationSize: 5,
         height: "100%",
+        
+        // 범위 선택 관련 설정
         selectable: true,
-        selectableRange: true,       // 셀 범위 선택 활성화
-        selectableRangeMode: "cell", // cell, row, column 중 cell로 설정
+        selectableRange: 1,
+        selectableRangeColumns: true,
+        selectableRangeRows: true,
+        selectableRangeClearCells: true,
+
+        // 편집 관련 설정
+        editTriggerEvent: "dblclick",
+        
+        // 클립보드 관련 설정
         clipboard: true,
-        clipboardCopyRowRange: "selected", // 선택된 행만 복사
-        clipboardCopySelector: "selected", // 선택된 셀만 복사
-        clipboardCopyStyled: true,
-        clipboardPasteAction: "replace",   // 붙여넣기 시 대체
+        clipboardCopyStyled: false,
         clipboardCopyConfig: {
-          columnHeaders: true,
-          rowGroups: false,
-          columnCalcs: false,
+          rowHeaders: false,
+          columnHeaders: false,
         },
-        // 셀 선택 완료 시 이벤트
-        cellSelectionChanged: function(selected, cells) {
-          if (selected && cells.length > 0) {
-            // 선택 영역 정보 표시
-            setSelectedData(`선택된 셀: ${cells.length}개 (${cells[0].getColumn().getField()}부터)`);
-          }
+        clipboardCopyRowRange: "range",
+        clipboardPasteParser: "range",
+        clipboardPasteAction: "range",
+
+        // 행 헤더 설정
+        rowHeader: {
+          resizable: false, 
+          frozen: true, 
+          width: 40, 
+          hozAlign: "center", 
+          formatter: "rownum", 
+          cssClass: "range-header-col", 
+          editor: false
         },
+
+        // 컬럼 기본 설정
+        columnDefaults: {
+          headerSort: true,
+          headerHozAlign: "center",
+          editor: "input",
+          resizable: "header",
+          width: 120,
+        },
+        
         columns: [
-          { title: "ID", field: "id", sorter: "number", width: 60 },
+          { title: "ID", field: "id", sorter: "number", width: 60, editor: false },
           { title: "이름", field: "name", sorter: "string", headerFilter: true },
           { title: "직책", field: "position", sorter: "string", headerFilter: true },
           { title: "부서", field: "department", sorter: "string", headerFilter: true },
@@ -143,6 +161,14 @@ export default function TabulatorClipboardExample() {
           { title: "전화번호", field: "phone", sorter: "string" },
           { title: "상태", field: "status", sorter: "string", headerFilter: true }
         ],
+        
+        // 셀 선택 시 이벤트
+        // @ts-ignore
+        cellSelectionChanged: function(cells, selected) {
+          if (selected && cells && cells.length > 0) {
+            setSelectedData(`선택된 셀: ${cells.length}개`);
+          }
+        },
       });
       
       setTabulator(table);
@@ -164,18 +190,18 @@ export default function TabulatorClipboardExample() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">클립보드 기능</h1>
-          <p className="text-gray-500 mt-1">셀 선택 및 복사 기능 예제입니다. 셀 범위를 드래그하여 선택하세요.</p>
+          <p className="text-gray-500 mt-1">셀 범위를 드래그하여 선택한 후 복사하세요. 셀을 더블클릭하면 편집 가능합니다.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>클립보드 기능</CardTitle>
+            <CardTitle>셀 범위 선택 및 클립보드 기능</CardTitle>
             <div className="flex space-x-2 mt-2">
               <Button onClick={copySelectedCells} size="sm">
                 <Copy className="h-4 w-4 mr-2" />
-                선택한 셀 복사
+                선택한 범위 복사
               </Button>
               <Button onClick={copyEntireTable} size="sm" variant="outline">
                 <ClipboardCopy className="h-4 w-4 mr-2" />
@@ -194,8 +220,8 @@ export default function TabulatorClipboardExample() {
           </CardHeader>
           <CardContent className="pt-0">
             <p className="mb-4 text-sm text-gray-500">
-              <strong>사용법:</strong> 마우스로 셀 영역을 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
-              다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다.
+              <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
+              다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
             </p>
             <div 
               ref={tableRef} 

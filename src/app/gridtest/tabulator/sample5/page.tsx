@@ -79,68 +79,82 @@ export default function TabulatorResponsiveExample() {
 
   // 초기 테이블 설정
   useEffect(() => {
-    if (tableRef.current) {
-      initializeTable();
-    }
+    let table: Tabulator | null = null;
+    let initialized = false;
+    
+    const init = () => {
+      if (!tableRef.current) return;
+      
+      try {
+        // 테이블 초기화
+        table = new Tabulator(tableRef.current, {
+          data: data,
+          layout: "fitColumns",
+          pagination: true,
+          paginationSize: 5,
+          movableColumns: true,
+          tooltips: true,
+          columns: getColumns(),
+          initialSort: [
+            { column: "dueDate", dir: "asc" }
+          ],
+          rowFormatter: function(row) {
+            // 완료된 작업은 회색으로 표시
+            const data = row.getData();
+            const element = row.getElement();
+            
+            if (data.status === "완료") {
+              element.style.backgroundColor = darkMode ? "#1f2937" : "#f3f4f6";
+              element.style.color = darkMode ? "#9ca3af" : "#6b7280";
+            } else {
+              element.style.backgroundColor = "";
+              element.style.color = "";
+            }
+          },
+        });
+        
+        // 테이블 완전히 렌더링 후 상태 업데이트
+        table.on("tableBuilt", function() {
+          setTabulator(table);
+          initialized = true;
+        });
+        
+      } catch (error) {
+        console.error("테이블 초기화 오류:", error);
+      }
+    };
+    
+    // 테이블 초기화
+    init();
     
     return () => {
-      tabulator?.destroy();
+      if (table) {
+        table.destroy();
+      }
     };
   }, []);
 
-  // 다크모드 변경 감지
+  // 테마 및 레이아웃 변경 감지
   useEffect(() => {
-    if (tabulator) {
-      applyTheme();
-    }
-  }, [darkMode, tabulator]);
+    if (!tabulator) return;
+    
+    const applyChanges = () => {
+      try {
+        applyTheme();
+        applyLayout();
+      } catch (error) {
+        console.error("테마/레이아웃 적용 오류:", error);
+      }
+    };
+    
+    // DOM이 렌더링된 후에만 변경사항 적용
+    const timer = setTimeout(applyChanges, 200);
+    
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [darkMode, currentLayout, responsiveMode, tabulator]);
 
-  // 레이아웃 변경 감지
-  useEffect(() => {
-    if (tabulator) {
-      applyLayout();
-    }
-  }, [currentLayout, responsiveMode, tabulator]);
-
-  // 테이블 초기화 함수
-  const initializeTable = () => {
-    if (!tableRef.current) return;
-    
-    const table = new Tabulator(tableRef.current, {
-      data: data,
-      layout: "fitColumns",
-      pagination: true,
-      paginationSize: 5,
-      movableColumns: true,
-      tooltips: true,
-      columns: getColumns(),
-      initialSort: [
-        { column: "dueDate", dir: "asc" }
-      ],
-      rowFormatter: function(row) {
-        // 완료된 작업은 회색으로 표시
-        const data = row.getData();
-        const element = row.getElement();
-        
-        if (data.status === "완료") {
-          element.style.backgroundColor = darkMode ? "#1f2937" : "#f3f4f6";
-          element.style.color = darkMode ? "#9ca3af" : "#6b7280";
-        } else {
-          element.style.backgroundColor = "";
-          element.style.color = "";
-        }
-      },
-    });
-    
-    setTabulator(table);
-    
-    // 초기 테마와 레이아웃 적용
-    setTimeout(() => {
-      applyTheme();
-      applyLayout();
-    }, 100);
-  };
-  
   // 컬럼 설정
   const getColumns = () => {
     return [
@@ -329,71 +343,89 @@ export default function TabulatorResponsiveExample() {
       });
     }
     
-    // 테이블 다시 그리기
-    tabulator.redraw(true);
+    // 테이블 다시 그리기 - requestAnimationFrame 사용
+    if (tabulator) {
+      try {
+        requestAnimationFrame(() => {
+          if (tabulator && document.body.contains(tableRef.current)) {
+            tabulator.redraw(false); // 완전히 다시 그리지 않고 업데이트만
+          }
+        });
+      } catch (err) {
+        console.error("테이블 다시 그리기 오류:", err);
+      }
+    }
   };
   
   // 레이아웃 적용
   const applyLayout = () => {
-    if (!tabulator) return;
+    if (!tabulator || !tableRef.current || !document.body.contains(tableRef.current)) return;
     
-    if (responsiveMode === "responsive") {
-      // 반응형 레이아웃 적용
-      let cols: any;
-      
-      switch(currentLayout) {
-        case "mobile":
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("400px");
-          cols = getColumns().filter(col => col.responsive <= 0);
-          break;
-        case "tablet":
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("500px");
-          cols = getColumns().filter(col => col.responsive <= 1);
-          break;
-        case "laptop":
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("600px");
-          cols = getColumns().filter(col => col.responsive <= 2);
-          break;
-        default:
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("auto");
-          cols = getColumns();
+    try {
+      if (responsiveMode === "responsive") {
+        // 반응형 레이아웃 적용
+        let cols: any;
+        
+        switch(currentLayout) {
+          case "mobile":
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight("400px");
+            cols = getColumns().filter(col => col.responsive <= 0);
+            break;
+          case "tablet":
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight("500px");
+            cols = getColumns().filter(col => col.responsive <= 1);
+            break;
+          case "laptop":
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight("600px");
+            cols = getColumns().filter(col => col.responsive <= 2);
+            break;
+          default:
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight();
+            cols = getColumns();
+        }
+        
+        tabulator.setColumns(cols);
+      } else {
+        // 전체 컬럼 표시
+        tabulator.setColumns(getColumns());
+        
+        // 디바이스별 레이아웃 설정
+        switch(currentLayout) {
+          case "mobile":
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight("400px");
+            tabulator.setData(data.slice(0, 3));
+            break;
+          case "tablet":
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight("500px");
+            tabulator.setData(data.slice(0, 5));
+            break;
+          case "laptop":
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight("600px");
+            tabulator.setData(data.slice(0, 8));
+            break;
+          default:
+            // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
+            tabulator.setHeight();
+            tabulator.setData(data);
+        }
       }
       
-      tabulator.setColumns(cols);
-    } else {
-      // 전체 컬럼 표시
-      tabulator.setColumns(getColumns());
-      
-      // 디바이스별 레이아웃 설정
-      switch(currentLayout) {
-        case "mobile":
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("400px");
-          tabulator.setData(data.slice(0, 3));
-          break;
-        case "tablet":
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("500px");
-          tabulator.setData(data.slice(0, 5));
-          break;
-        case "laptop":
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("600px");
-          tabulator.setData(data.slice(0, 8));
-          break;
-        default:
-          // @ts-ignore: Tabulator 인터페이스 정의 오류 우회
-          tabulator.setHeight("auto");
-          tabulator.setData(data);
-      }
+      // 테이블 다시 그리기 - requestAnimationFrame 사용
+      requestAnimationFrame(() => {
+        if (tabulator && document.body.contains(tableRef.current)) {
+          tabulator.redraw(false); // 완전히 다시 그리지 않고 업데이트만
+        }
+      });
+    } catch (err) {
+      console.error("레이아웃 적용 오류:", err);
     }
-    
-    // 테이블 다시 그리기
-    tabulator.redraw(true);
   };
 
   // PDF 내보내기

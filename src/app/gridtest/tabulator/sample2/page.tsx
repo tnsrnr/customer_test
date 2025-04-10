@@ -178,7 +178,7 @@ export default function TabulatorFilteringExample() {
                   <SelectValue placeholder="부서 선택" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">모든 부서</SelectItem>
+                  <SelectItem value="all">모든 부서</SelectItem>
                   {departments.map((dept) => (
                     <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                   ))}

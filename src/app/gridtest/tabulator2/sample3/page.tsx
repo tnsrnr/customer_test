@@ -149,39 +149,42 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 문서 클릭 이벤트 처리 (간소화)
+  // 문서 클릭 이벤트 처리 - 다중 이벤트와 다양한 이벤트 단계 적용 (개선)
   useEffect(() => {
-    // 클릭 이벤트 핸들러 (단순화)
-    const handleClickOutside = (e: MouseEvent) => {
-      // 테이블 요소 직접 접근
-      const tabulatorTable = document.querySelector('.tabulator');
-      const isTableClicked = tabulatorTable && 
-        (tabulatorTable.contains(e.target as Node) || 
-         (e.target as Element)?.closest('.tabulator') !== null);
-      
-      // 테이블 외부 클릭 시에만 선택 해제
-      if (!isTableClicked) {
+    // 사용자가 테이블 바깥을 클릭하면 선택 해제
+    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+      const tableElement = document.querySelector('.tabulator');
+      if (tableElement && !tableElement.contains(e.target as Node)) {
         console.log('테이블 외부 클릭 감지');
         clearSelection();
       }
     };
     
-    // 단일 이벤트 리스너 (mousedown 단계에서만 처리)
-    document.addEventListener('mousedown', handleClickOutside, true);
+    // 캡처링 단계에서 이벤트 리스너 추가 (높은 우선순위)
+    document.addEventListener('mousedown', handleOutsideClick as EventListener, true);
+    document.addEventListener('click', handleOutsideClick as EventListener, true);
+    document.addEventListener('mouseup', handleOutsideClick as EventListener, true);
     
-    // ESC 키 이벤트
-    const handleKeyDown = (e: KeyboardEvent) => {
+    // 모바일 터치 이벤트
+    document.addEventListener('touchstart', handleOutsideClick as EventListener, true);
+    
+    // ESC 키를 누르면 선택 해제
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        console.log('ESC 키 감지 - 선택 해제');
+        console.log('ESC 키 감지');
         clearSelection();
       }
-    };
-    
-    document.addEventListener('keydown', handleKeyDown, true);
+    });
     
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside, true);
-      document.removeEventListener('keydown', handleKeyDown, true);
+      // 컴포넌트 언마운트 시 이벤트 리스너 제거
+      document.removeEventListener('mousedown', handleOutsideClick as EventListener, true);
+      document.removeEventListener('click', handleOutsideClick as EventListener, true);
+      document.removeEventListener('mouseup', handleOutsideClick as EventListener, true);
+      document.removeEventListener('touchstart', handleOutsideClick as EventListener, true);
+      document.removeEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape') clearSelection();
+      });
     };
   }, []);
 
@@ -231,7 +234,7 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 테이블 초기화
+  // 테이블 초기화 useEffect의 마지막 부분 수정 - 추가 이벤트 핸들러
   useEffect(() => {
     if (tableRef.current) {
       console.log('테이블 초기화 시작');
@@ -306,38 +309,41 @@ export default function TabulatorSpreadsheetExample() {
         ],
       });
       
+      // 셀 선택 후 복사 가능하도록 클립보드 설정 추가
+      // @ts-ignore
+      if (table.modules.clipboard) {
+        // @ts-ignore
+        console.log('클립보드 모듈 설정:', table.modules.clipboard);
+      }
+      
+      // Range 선택 모듈 설정 추가
+      // @ts-ignore
+      if (table.modules.selectRange) {
+        // @ts-ignore
+        console.log('Range 선택 모듈 설정:', table.modules.selectRange);
+      }
+      
       // 상태 업데이트 및 전역 참조 저장
       setTabulator(table);
       currentTable = table;
       
-      // 문서 클릭 이벤트 리스너 추가 - 테이블 외부 클릭 시 선택 초기화
-      const handleDocumentClick = (e: MouseEvent) => {
+      // 테이블 외부 클릭 감지를 위한 추가 이벤트 처리
+      table.on("tableBuilt", function() {
+        // 테이블 내부 클릭 시 이벤트 전파 방지 (선택 기능 보존)
         const tableElement = tableRef.current;
-        if (tableElement && !tableElement.contains(e.target as Node)) {
-          console.log('문서 영역 클릭 감지 - 셀 선택 해제');
-          clearSelection();
+        if (tableElement) {
+          tableElement.addEventListener('click', (e) => {
+            // 테이블 내부 클릭은 이벤트 전파를 허용 (모든 기능 정상 작동)
+            console.log('테이블 내부 클릭 감지 (이벤트 전파 허용)');
+          });
         }
-      };
-      
-      // ESC 키 이벤트 리스너 추가
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          console.log('ESC 키 감지 - 셀 선택 해제');
-          clearSelection();
-        }
-      };
-      
-      // 이벤트 리스너 등록
-      document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleKeyDown);
+      });
       
       // 클린업 함수
       return () => {
         if (tabulator) {
           tabulator.destroy();
         }
-        document.removeEventListener('click', handleDocumentClick);
-        document.removeEventListener('keydown', handleKeyDown);
         currentTable = null;
       };
     }

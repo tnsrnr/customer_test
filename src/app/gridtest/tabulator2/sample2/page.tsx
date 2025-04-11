@@ -4,8 +4,9 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ClipboardCopy, Copy, Clipboard, X } from 'lucide-react';
+import { ArrowLeft, ClipboardCopy, Copy, Clipboard, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
 interface Employee {
@@ -24,6 +25,10 @@ export default function TabulatorSpreadsheetExample() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [tabulator, setTabulator] = useState<Tabulator | null>(null);
   const [selectedData, setSelectedData] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
 
   // 샘플 데이터
   const data: Employee[] = [
@@ -43,7 +48,6 @@ export default function TabulatorSpreadsheetExample() {
 
   // 전역 참조 변수
   let currentTable: Tabulator | null = null;
-
 
   // 선택한 셀 영역 초기화 함수 (DOM 직접 조작 방식)
   const clearSelection = () => {
@@ -141,7 +145,22 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
+  // 페이지 이동 함수
+  const goToPage = (page: number) => {
+    if (tabulator) {
+      tabulator.setPage(page);
+      setCurrentPage(page);
+    }
+  };
 
+  // 페이지 크기 변경 함수
+  const handlePageSizeChange = (size: string) => {
+    const newSize = parseInt(size);
+    if (tabulator && newSize > 0) {
+      tabulator.setPageSize(newSize);
+      setPageSize(newSize);
+    }
+  };
 
   // 테이블 초기화
   useEffect(() => {
@@ -167,14 +186,29 @@ export default function TabulatorSpreadsheetExample() {
         clipboardCopyRowRange: "selected",
         clipboardCopySelector: "range",
         
+        // 페이징 설정
+        pagination: true,
+        paginationSize: pageSize,
+        paginationSizeSelector: [5, 10, 15, 20, 50, 100],
+        paginationCounter: "rows",
+        
         // 초기화 완료 콜백
         tableBuilt: function() {
           console.log("테이블 빌드 완료");
           // 전역 변수에 저장 (중요)
           currentTable = table;
+          
+          // 페이징 정보 초기화
+          setTotalRecords(data.length);
+          setTotalPages(Math.ceil(data.length / pageSize));
         },
         
-   
+        // 페이지 변경 콜백
+        pageLoaded: function(pageno) {
+          console.log("페이지 로드:", pageno);
+          setCurrentPage(pageno);
+          setTotalPages(table.getPageMax());
+        },
         
         // 열 정의
         columns: [
@@ -226,7 +260,7 @@ export default function TabulatorSpreadsheetExample() {
         currentTable = null;
       };
     }
-  }, []);
+  }, [pageSize]);
 
   return (
     <div className="container mx-auto py-6">
@@ -255,6 +289,72 @@ export default function TabulatorSpreadsheetExample() {
             className="w-full h-[500px]" 
             tabIndex={0}
           ></div>
+          
+          {/* 커스텀 페이징 UI */}
+          <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-200">
+            <div className="text-sm text-gray-500">
+              전체 {totalRecords}개 중 {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalRecords)}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
+                <SelectTrigger className="w-[100px]">
+                  <SelectValue placeholder="페이지 크기" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5개씩</SelectItem>
+                  <SelectItem value="10">10개씩</SelectItem>
+                  <SelectItem value="15">15개씩</SelectItem>
+                  <SelectItem value="20">20개씩</SelectItem>
+                  <SelectItem value="50">50개씩</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <div className="flex items-center space-x-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(1)}
+                >
+                  <span className="sr-only">처음</span>
+                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4 -ml-2" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(currentPage - 1)}
+                >
+                  <span className="sr-only">이전</span>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm mx-2">
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(currentPage + 1)}
+                >
+                  <span className="sr-only">다음</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(totalPages)}
+                >
+                  <span className="sr-only">마지막</span>
+                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 -ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

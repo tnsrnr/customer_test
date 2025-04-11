@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ClipboardCopy, Copy, Clipboard, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
 interface Employee {
@@ -25,26 +24,63 @@ export default function TabulatorSpreadsheetExample() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [tabulator, setTabulator] = useState<Tabulator | null>(null);
   const [selectedData, setSelectedData] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(5);
-  const [totalRecords, setTotalRecords] = useState<number>(0);
 
   // 샘플 데이터
-  const data: Employee[] = [
-    { id: 1, name: "김철수", position: "개발자", department: "개발팀", salary: 5000000, startDate: "2020-03-15", email: "kim@example.com", phone: "010-1234-5678", status: "정규직" },
-    { id: 2, name: "이영희", position: "디자이너", department: "디자인팀", salary: 4800000, startDate: "2021-05-20", email: "lee@example.com", phone: "010-2345-6789", status: "정규직" },
-    { id: 3, name: "박준호", position: "매니저", department: "인사팀", salary: 6200000, startDate: "2018-11-10", email: "park@example.com", phone: "010-3456-7890", status: "정규직" },
-    { id: 4, name: "정미영", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2019-07-22", email: "jung@example.com", phone: "010-4567-8901", status: "정규직" },
-    { id: 5, name: "강동원", position: "마케터", department: "마케팅팀", salary: 4200000, startDate: "2022-01-15", email: "kang@example.com", phone: "010-5678-9012", status: "계약직" },
-    { id: 6, name: "한지민", position: "회계사", department: "재무팀", salary: 5900000, startDate: "2017-09-05", email: "han@example.com", phone: "010-6789-0123", status: "정규직" },
-    { id: 7, name: "오세진", position: "주니어 개발자", department: "개발팀", salary: 3800000, startDate: "2022-06-10", email: "oh@example.com", phone: "010-7890-1234", status: "인턴" },
-    { id: 8, name: "홍길동", position: "팀장", department: "경영진", salary: 8000000, startDate: "2015-04-01", email: "hong@example.com", phone: "010-8901-2345", status: "정규직" },
-    { id: 9, name: "나은혜", position: "인사담당자", department: "인사팀", salary: 4500000, startDate: "2020-10-15", email: "na@example.com", phone: "010-9012-3456", status: "정규직" },
-    { id: 10, name: "임지현", position: "프론트엔드 개발자", department: "개발팀", salary: 5100000, startDate: "2019-11-20", email: "lim@example.com", phone: "010-0123-4567", status: "정규직" },
-    { id: 11, name: "최상철", position: "백엔드 개발자", department: "개발팀", salary: 5200000, startDate: "2019-08-15", email: "choi@example.com", phone: "010-1111-2222", status: "정규직" },
-    { id: 12, name: "우현우", position: "데이터 분석가", department: "마케팅팀", salary: 5300000, startDate: "2020-02-10", email: "woo@example.com", phone: "010-2222-3333", status: "정규직" },
-  ];
+  const generateData = (): Employee[] => {
+    const baseData: Employee[] = [
+      { id: 1, name: "김철수", position: "개발자", department: "개발팀", salary: 5000000, startDate: "2020-03-15", email: "kim@example.com", phone: "010-1234-5678", status: "정규직" },
+      { id: 2, name: "이영희", position: "디자이너", department: "디자인팀", salary: 4800000, startDate: "2021-05-20", email: "lee@example.com", phone: "010-2345-6789", status: "정규직" },
+      { id: 3, name: "박준호", position: "매니저", department: "인사팀", salary: 6200000, startDate: "2018-11-10", email: "park@example.com", phone: "010-3456-7890", status: "정규직" },
+      { id: 4, name: "정미영", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2019-07-22", email: "jung@example.com", phone: "010-4567-8901", status: "정규직" },
+      { id: 5, name: "강동원", position: "마케터", department: "마케팅팀", salary: 4200000, startDate: "2022-01-15", email: "kang@example.com", phone: "010-5678-9012", status: "계약직" },
+      { id: 6, name: "한지민", position: "회계사", department: "재무팀", salary: 5900000, startDate: "2017-09-05", email: "han@example.com", phone: "010-6789-0123", status: "정규직" },
+      { id: 7, name: "오세진", position: "주니어 개발자", department: "개발팀", salary: 3800000, startDate: "2022-06-10", email: "oh@example.com", phone: "010-7890-1234", status: "인턴" },
+      { id: 8, name: "홍길동", position: "팀장", department: "경영진", salary: 8000000, startDate: "2015-04-01", email: "hong@example.com", phone: "010-8901-2345", status: "정규직" },
+      { id: 9, name: "나은혜", position: "인사담당자", department: "인사팀", salary: 4500000, startDate: "2020-10-15", email: "na@example.com", phone: "010-9012-3456", status: "정규직" },
+      { id: 10, name: "임지현", position: "프론트엔드 개발자", department: "개발팀", salary: 5100000, startDate: "2019-11-20", email: "lim@example.com", phone: "010-0123-4567", status: "정규직" },
+      { id: 11, name: "최상철", position: "백엔드 개발자", department: "개발팀", salary: 5200000, startDate: "2019-08-15", email: "choi@example.com", phone: "010-1111-2222", status: "정규직" },
+      { id: 12, name: "우현우", position: "데이터 분석가", department: "마케팅팀", salary: 5300000, startDate: "2020-02-10", email: "woo@example.com", phone: "010-2222-3333", status: "정규직" },
+    ];
+    
+    const extendedData: Employee[] = [];
+    
+    // 원본 데이터 추가
+    extendedData.push(...baseData);
+    
+    // 두 번째 세트 - 이름만 약간 변형
+    baseData.forEach((emp, index) => {
+      extendedData.push({
+        ...emp,
+        id: emp.id + 100,
+        name: emp.name + "(B)",
+        email: `${emp.email.split('@')[0]}B@example.com`,
+        phone: emp.phone.replace(/\d{4}$/, (match) => String(parseInt(match) + 1000).padStart(4, '0')),
+        startDate: emp.startDate.replace(/\d{4}/, (year) => String(parseInt(year) + 1))
+      });
+    });
+    
+    // 세 번째 세트 - 이름과 부서 변형
+    baseData.forEach((emp, index) => {
+      const depts = ["개발팀", "디자인팀", "인사팀", "마케팅팀", "재무팀", "경영진", "고객지원팀", "영업팀"];
+      const positions = ["개발자", "시니어 개발자", "주니어 개발자", "디자이너", "매니저", "마케터", "회계사", "인사담당자"];
+      
+      extendedData.push({
+        ...emp,
+        id: emp.id + 200,
+        name: emp.name + "(C)",
+        department: depts[Math.floor(Math.random() * depts.length)],
+        position: positions[Math.floor(Math.random() * positions.length)],
+        email: `${emp.email.split('@')[0]}C@example.com`,
+        phone: emp.phone.replace(/\d{4}$/, (match) => String(parseInt(match) + 2000).padStart(4, '0')),
+        salary: Math.round(emp.salary * (0.8 + Math.random() * 0.4)),
+        startDate: emp.startDate.replace(/\d{4}/, (year) => String(parseInt(year) + 2))
+      });
+    });
+    
+    return extendedData;
+  };
+  
+  const data = generateData();
 
   // 전역 참조 변수
   let currentTable: Tabulator | null = null;
@@ -145,23 +181,6 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 페이지 이동 함수
-  const goToPage = (page: number) => {
-    if (tabulator) {
-      tabulator.setPage(page);
-      setCurrentPage(page);
-    }
-  };
-
-  // 페이지 크기 변경 함수
-  const handlePageSizeChange = (size: string) => {
-    const newSize = parseInt(size);
-    if (tabulator && newSize > 0) {
-      tabulator.setPageSize(newSize);
-      setPageSize(newSize);
-    }
-  };
-
   // 테이블 초기화
   useEffect(() => {
     if (tableRef.current) {
@@ -188,8 +207,8 @@ export default function TabulatorSpreadsheetExample() {
         
         // 페이징 설정
         pagination: true,
-        paginationSize: pageSize,
-        paginationSizeSelector: [5, 10, 15, 20, 50, 100],
+        paginationSize: 10,
+        paginationSizeSelector: [5, 10, 20, 50, 100],
         paginationCounter: "rows",
         
         // 초기화 완료 콜백
@@ -197,17 +216,6 @@ export default function TabulatorSpreadsheetExample() {
           console.log("테이블 빌드 완료");
           // 전역 변수에 저장 (중요)
           currentTable = table;
-          
-          // 페이징 정보 초기화
-          setTotalRecords(data.length);
-          setTotalPages(Math.ceil(data.length / pageSize));
-        },
-        
-        // 페이지 변경 콜백
-        pageLoaded: function(pageno) {
-          console.log("페이지 로드:", pageno);
-          setCurrentPage(pageno);
-          setTotalPages(table.getPageMax());
         },
         
         // 열 정의
@@ -260,7 +268,7 @@ export default function TabulatorSpreadsheetExample() {
         currentTable = null;
       };
     }
-  }, [pageSize]);
+  }, []);
 
   return (
     <div className="container mx-auto py-6">
@@ -289,72 +297,6 @@ export default function TabulatorSpreadsheetExample() {
             className="w-full h-[500px]" 
             tabIndex={0}
           ></div>
-          
-          {/* 커스텀 페이징 UI */}
-          <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-200">
-            <div className="text-sm text-gray-500">
-              전체 {totalRecords}개 중 {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalRecords)}
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="페이지 크기" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5개씩</SelectItem>
-                  <SelectItem value="10">10개씩</SelectItem>
-                  <SelectItem value="15">15개씩</SelectItem>
-                  <SelectItem value="20">20개씩</SelectItem>
-                  <SelectItem value="50">50개씩</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <div className="flex items-center space-x-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={currentPage === 1}
-                  onClick={() => goToPage(1)}
-                >
-                  <span className="sr-only">처음</span>
-                  <ChevronLeft className="h-4 w-4" />
-                  <ChevronLeft className="h-4 w-4 -ml-2" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={currentPage === 1}
-                  onClick={() => goToPage(currentPage - 1)}
-                >
-                  <span className="sr-only">이전</span>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm mx-2">
-                  {currentPage} / {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={currentPage === totalPages}
-                  onClick={() => goToPage(currentPage + 1)}
-                >
-                  <span className="sr-only">다음</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={currentPage === totalPages}
-                  onClick={() => goToPage(totalPages)}
-                >
-                  <span className="sr-only">마지막</span>
-                  <ChevronRight className="h-4 w-4" />
-                  <ChevronRight className="h-4 w-4 -ml-2" />
-                </Button>
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

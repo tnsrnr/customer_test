@@ -57,7 +57,26 @@ export default function TabulatorSpreadsheetExample() {
     console.log('셀 선택 해제 시도 - DOM 직접 조작');
     
     try {
-      // 1. 선택된 셀 클래스 제거 (DOM 전용 방식)
+      // 1. Tabulator API 호출 시도
+      if (tabulator) {
+        try {
+          // @ts-ignore
+          tabulator.deselectRow(); // 행 선택 해제
+          
+          // @ts-ignore
+          if (tabulator.modules && tabulator.modules.selectRange) {
+            // @ts-ignore
+            tabulator.modules.selectRange.clearRange();
+          }
+          
+          // @ts-ignore
+          tabulator.element.dispatchEvent(new Event('rangeClear')); // 이벤트 발생
+        } catch (apiErr) {
+          console.log('Tabulator API 호출 실패:', apiErr);
+        }
+      }
+      
+      // 2. 선택된 셀 클래스 제거 (DOM 전용 방식)
       const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected, .tabulator-range-selected');
       console.log('선택된 셀 개수:', selectedCells.length);
       selectedCells.forEach(el => {
@@ -65,24 +84,24 @@ export default function TabulatorSpreadsheetExample() {
         el.classList.remove('tabulator-range-selected');
       });
       
-      // 2. 오버레이 요소 제거
+      // 3. 오버레이 요소 제거
       const overlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-cell-selecting, .tabulator-selected-ranges');
       console.log('오버레이 요소 개수:', overlays.length);
       overlays.forEach(el => {
         el.remove();
       });
       
-      // 3. 전역 선택 객체 초기화
+      // 4. 전역 선택 객체 초기화
       if (document.getSelection) {
         document.getSelection()?.removeAllRanges();
       }
       
-      // 4. 활성 요소에서 포커스 제거
+      // 5. 활성 요소에서 포커스 제거
       if (document.activeElement && document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
       
-      // 5. CSS 스타일로 강제 초기화
+      // 6. CSS 스타일로 강제 초기화
       const style = document.createElement('style');
       style.setAttribute('id', 'tabulator-reset-style');
       style.textContent = `
@@ -118,6 +137,12 @@ export default function TabulatorSpreadsheetExample() {
         const remainingSelected = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
         const remainingOverlays = document.querySelectorAll('.tabulator-range-overlay');
         console.log('선택 초기화 결과 - 남은 셀:', remainingSelected.length, '남은 오버레이:', remainingOverlays.length);
+        
+        // 강제로 다시 시도
+        if (remainingSelected.length > 0 || remainingOverlays.length > 0) {
+          remainingSelected.forEach(el => el.classList.remove('tabulator-selected'));
+          remainingOverlays.forEach(el => el.remove());
+        }
       }, 200);
     } catch (err) {
       console.error('선택 해제 중 오류:', err);
@@ -228,7 +253,7 @@ export default function TabulatorSpreadsheetExample() {
         clipboard: true,
         clipboardCopyStyled: true,
         clipboardCopyRowRange: "selected",
-        clipboardCopySelector: "table",
+        clipboardCopySelector: "range",
         
         // 초기화 완료 콜백
         tableBuilt: function() {
@@ -242,6 +267,18 @@ export default function TabulatorSpreadsheetExample() {
           if (cells && cells.length > 0) {
             console.log('셀 선택 변경:', cells.length, '개 셀');
             setSelectedData(`선택된 셀: ${cells.length}개`);
+            
+            // 10초 후 자동 선택 해제 (사용자 편의성)
+            const selectionTimeout = setTimeout(() => {
+              const currentSelected = document.querySelectorAll('.tabulator-selected');
+              if (currentSelected.length > 0) {
+                console.log('자동 선택 해제 (10초 타임아웃)');
+                clearSelection();
+              }
+            }, 10000);
+            
+            // 이전 타이머 정리
+            return () => clearTimeout(selectionTimeout);
           }
         },
         
@@ -273,22 +310,37 @@ export default function TabulatorSpreadsheetExample() {
       setTabulator(table);
       currentTable = table;
       
-      // 문서 클릭 이벤트 리스너 추가 (한 번만)
-      document.addEventListener('click', (e: MouseEvent) => {
+      // 문서 클릭 이벤트 리스너 추가 - 테이블 외부 클릭 시 선택 초기화
+      const handleDocumentClick = (e: MouseEvent) => {
         const tableElement = tableRef.current;
         if (tableElement && !tableElement.contains(e.target as Node)) {
-          console.log('문서 클릭 감지 - 선택 해제');
-          setTimeout(clearSelection, 10); // 약간의 지연 추가
+          console.log('문서 영역 클릭 감지 - 셀 선택 해제');
+          clearSelection();
         }
-      });
+      };
+      
+      // ESC 키 이벤트 리스너 추가
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          console.log('ESC 키 감지 - 셀 선택 해제');
+          clearSelection();
+        }
+      };
+      
+      // 이벤트 리스너 등록
+      document.addEventListener('click', handleDocumentClick);
+      document.addEventListener('keydown', handleKeyDown);
+      
+      // 클린업 함수
+      return () => {
+        if (tabulator) {
+          tabulator.destroy();
+        }
+        document.removeEventListener('click', handleDocumentClick);
+        document.removeEventListener('keydown', handleKeyDown);
+        currentTable = null;
+      };
     }
-    
-    return () => {
-      if (tabulator) {
-        tabulator.destroy();
-      }
-      currentTable = null;
-    };
   }, []);
 
   return (
@@ -342,7 +394,7 @@ export default function TabulatorSpreadsheetExample() {
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
               다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
               <br />
-              <strong>선택 해제:</strong> 테이블 바깥 영역을 클릭하면 선택이 해제됩니다.
+              <strong>선택 해제:</strong> 테이블 바깥 영역을 클릭하거나 ESC 키를 누르면 선택이 해제됩니다. 10초 후 자동으로 선택이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 

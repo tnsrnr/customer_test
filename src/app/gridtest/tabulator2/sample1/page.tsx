@@ -33,14 +33,33 @@ export default function TabulatorBasicExample() {
     { id: 8, name: "홍길동", age: 45, gender: "남성", department: "경영진", salary: 8000000 },
   ];
 
+  // 콘솔 로그에 Tabulator 인스턴스 정보 출력
+  useEffect(() => {
+    if (tabulator) {
+      console.log('Tabulator 인스턴스 정보:', tabulator);
+      console.log('Tabulator 버전:', tabulator.version);
+      // @ts-ignore
+      console.log('Tabulator 모듈 목록:', Object.keys(tabulator.modules || {}));
+      
+      // 인스턴스 메서드 확인
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(tabulator));
+      console.log('Tabulator 사용 가능한 메서드:', methods);
+    }
+  }, [tabulator]);
+
   // 셀 선택 해제 함수 (직접 DOM 접근 방식 추가)
   const clearSelection = () => {
-    console.log('셀 선택 해제 시도');
+    console.log('셀 선택 해제 시도 - 디버깅 시작 ========');
     
     // Tabulator API 공식 메서드 호출 (Tabulator 6.3 기준)
     if (tabulator) {
+      console.log('tabulator 인스턴스 존재함');
+      
       try {
-        // 1. 공식 문서의 clearSelectionRange 메서드 사용
+        // 1. 공식 문서의 clearSelectionRange 메서드 확인
+        // @ts-ignore
+        console.log('clearSelectionRange 메서드 존재 여부:', typeof tabulator.clearSelectionRange === 'function');
+        
         // @ts-ignore
         if (typeof tabulator.clearSelectionRange === 'function') {
           // @ts-ignore
@@ -48,11 +67,17 @@ export default function TabulatorBasicExample() {
           console.log('clearSelectionRange 메서드 호출됨');
         }
         
-        // 2. selectRange 모듈에 직접 접근
+        // 2. selectRange 모듈에 직접 접근 시도
+        // @ts-ignore
+        console.log('tabulator.modules 존재 여부:', !!tabulator.modules);
+        // @ts-ignore
+        console.log('selectRange 모듈 존재 여부:', !!(tabulator.modules && tabulator.modules.selectRange));
+        
         // @ts-ignore
         if (tabulator.modules && tabulator.modules.selectRange) {
           // @ts-ignore
           const selectRangeModule = tabulator.modules.selectRange;
+          console.log('selectRange 모듈 메서드:', Object.getOwnPropertyNames(Object.getPrototypeOf(selectRangeModule)));
           
           // selectRange 모듈의 clearRange 메서드 호출
           if (typeof selectRangeModule.clearRange === 'function') {
@@ -64,6 +89,8 @@ export default function TabulatorBasicExample() {
           else if (typeof selectRangeModule.clear === 'function') {
             selectRangeModule.clear();
             console.log('selectRange.clear 메서드 호출됨');
+          } else {
+            console.log('selectRange 모듈에 clearRange 또는 clear 메서드가 없음');
           }
         }
         

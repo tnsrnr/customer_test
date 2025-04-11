@@ -137,7 +137,7 @@ export default function TabulatorClipboardExample() {
       
       // 테이블 외부 클릭 시에만 선택 해제
       if (!isTableClicked) {
-        console.log('테이블 외부 클릭 감지');
+        console.log('테이블 외부 클릭 감지 - 이벤트 정보:', e.type, e.target);
         clearSelection();
       }
     };
@@ -201,60 +201,35 @@ export default function TabulatorClipboardExample() {
   // 테이블 초기화
   useEffect(() => {
     if (tableRef.current) {
-      // 테이블 초기화
+      // console.log('Tabulator 옵션 확인:', tabulatorOptions);
+      console.log('테이블 초기화 시작');
+      
+      // 테이블 초기화 - 이벤트 콜백 제거하고 간단하게 설정
       const table = new Tabulator(tableRef.current, {
         data: data,
         layout: "fitColumns",
-        pagination: true,
-        paginationSize: 5,
-        height: "100%",
+        height: "500px",
         
         // 범위 선택 관련 설정
         selectable: true,
-        selectableRange: true,  // true로 설정 (1 대신)
+        selectableRange: true,
         selectableRangeColumns: true,
         selectableRangeRows: true,
+        
+        // 선택 해제 옵션 추가 (핵심!)
         selectableRangeClearCells: true,
-
-        // 편집 관련 설정
-        editTriggerEvent: "dblclick",
         
         // 클립보드 관련 설정
         clipboard: true,
         clipboardCopyStyled: true,
-        clipboardCopyConfig: {
-          rowHeaders: false,
-          columnHeaders: false,
-        },
         clipboardCopyRowRange: "selected",
-        clipboardPasteParser: "range",
-        clipboardPasteAction: "range",
-
-        // 행 헤더 설정
-        rowHeader: {
-          resizable: false, 
-          frozen: true, 
-          width: 40, 
-          hozAlign: "center", 
-          formatter: "rownum", 
-          cssClass: "range-header-col", 
-          editor: false
-        },
-
-        // 컬럼 기본 설정
-        columnDefaults: {
-          headerSort: true,
-          headerHozAlign: "center",
-          editor: "input",
-          resizable: "header",
-          width: 120,
-        },
         
+        // 열 정의
         columns: [
-          { title: "ID", field: "id", sorter: "number", width: 60, editor: false },
-          { title: "이름", field: "name", sorter: "string", headerFilter: true },
-          { title: "직책", field: "position", sorter: "string", headerFilter: true },
-          { title: "부서", field: "department", sorter: "string", headerFilter: true },
+          { title: "ID", field: "id", sorter: "number", width: 60 },
+          { title: "이름", field: "name", sorter: "string" },
+          { title: "직책", field: "position", sorter: "string" },
+          { title: "부서", field: "department", sorter: "string" },
           { 
             title: "급여", 
             field: "salary", 
@@ -266,35 +241,38 @@ export default function TabulatorClipboardExample() {
               precision: 0
             }
           },
-          { title: "입사일", field: "startDate", sorter: "date", headerFilter: true },
+          { title: "입사일", field: "startDate", sorter: "date" },
           { title: "이메일", field: "email", sorter: "string" },
           { title: "전화번호", field: "phone", sorter: "string" },
-          { title: "상태", field: "status", sorter: "string", headerFilter: true }
+          { title: "상태", field: "status", sorter: "string" }
         ],
-        
-        // 셀 선택 시 이벤트
-        // @ts-ignore
-        cellSelectionChanged: function(cells, selected) {
-          console.log("샘플2 - 셀 선택 변경:", cells?.length, selected);
-          if (selected && cells && cells.length > 0) {
-            setSelectedData(`선택된 셀: ${cells.length}개`);
-            
-            // 선택 이벤트 발생 후 약간의 지연 시간을 두고 선택 해제
-            setTimeout(() => {
-              clearSelection();
-            }, 500); // 선택 후 0.5초 후 자동 해제
-          }
-        },
-        
-        // 모든 클릭 관련 이벤트에 선택 해제 콜백 추가
-        rowClick: function(e, row) {
-          setTimeout(clearSelection, 100);
-        },
-        cellClick: function(e, cell) {
-          setTimeout(clearSelection, 100);
-        },
       });
       
+      console.log('테이블 생성 완료, 인스턴스:', table);
+      
+      // Tabulator 버전 확인
+      // @ts-ignore
+      console.log('Tabulator 버전:', table.version);
+      
+      // 모듈 및 메서드 확인
+      // @ts-ignore
+      if (table.modules) {
+        // @ts-ignore
+        console.log('Tabulator 모듈 목록:', Object.keys(table.modules));
+      }
+      
+      // 기본 이벤트 설정
+      table.on("tableBuilt", function() {
+        console.log("테이블 구축 완료!");
+      });
+      
+      // 셀 선택 변경 이벤트 
+      table.on("cellSelectionChanged", function(data, rows) {
+        const cells = data || [];
+        console.log("셀 선택 변경 감지:", cells.length, "개 셀 선택됨");
+      });
+      
+      // Tabulator 인스턴스 저장
       setTabulator(table);
       
       // 초기화 직후 바로 이벤트 핸들러 추가
@@ -302,19 +280,7 @@ export default function TabulatorClipboardExample() {
       
       // 테이블 내부 이벤트 전파 중지
       tableElement.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-      
-      // 윈도우 클릭 이벤트에서 clearSelectionRange 직접 호출
-      window.addEventListener('click', (e) => {
-        if (!tableElement.contains(e.target as Node)) {
-          console.log('윈도우 클릭 감지 - clearSelectionRange 호출');
-          // @ts-ignore
-          if (typeof table.clearSelectionRange === 'function') {
-            // @ts-ignore
-            table.clearSelectionRange();
-          }
-        }
+        // e.stopPropagation();
       });
     }
     

@@ -96,26 +96,39 @@ export default function TabulatorBasicExample() {
         
         // 3. 데이터 변경 이벤트를 발생시켜 선택 초기화 시도
         // @ts-ignore
-        tabulator.refreshFilter();
+        console.log('refreshFilter 메서드 존재 여부:', typeof tabulator.refreshFilter === 'function');
+        // @ts-ignore
+        if (typeof tabulator.refreshFilter === 'function') {
+          // @ts-ignore
+          tabulator.refreshFilter();
+          console.log('refreshFilter 메서드 호출됨');
+        }
         
         // 4. 활성 요소에서 포커스 제거
         if (document.activeElement) {
           (document.activeElement as HTMLElement).blur();
+          console.log('activeElement에서 blur() 호출됨');
         }
         
         // 5. document.getSelection() 메서드로 선택 취소
         if (document.getSelection) {
           const selection = document.getSelection();
+          console.log('현재 selection 객체:', selection);
           selection?.removeAllRanges();
+          console.log('selection.removeAllRanges() 호출됨');
         }
         
         // 6. DOM 조작으로 선택된 셀 클래스 제거
-        document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected').forEach(el => {
+        const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
+        console.log('선택된 셀 요소 개수:', selectedCells.length);
+        selectedCells.forEach(el => {
           el.classList.remove('tabulator-selected');
         });
         
         // 7. 범위 오버레이 요소 제거
-        document.querySelectorAll('.tabulator-range-overlay, .tabulator-selected-ranges').forEach(el => {
+        const overlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-selected-ranges');
+        console.log('오버레이 요소 개수:', overlays.length);
+        overlays.forEach(el => {
           el.remove();
         });
         
@@ -124,16 +137,46 @@ export default function TabulatorBasicExample() {
         style.textContent = `
           .tabulator-selected { background-color: transparent !important; }
           .tabulator-range-overlay { display: none !important; }
+          .tabulator-cell { outline: none !important; }
+          .tabulator-range-selected { background-color: transparent !important; }
         `;
         document.head.appendChild(style);
+        console.log('임시 스타일 요소 추가됨');
         
         // 잠시 후 스타일 제거
         setTimeout(() => {
           document.head.removeChild(style);
+          console.log('임시 스타일 요소 제거됨');
         }, 100);
+        
+        // 추가: selectCell 메서드 확인
+        // @ts-ignore
+        console.log('getSelectedCells 메서드 존재 여부:', typeof tabulator.getSelectedCells === 'function');
+        
+        // @ts-ignore
+        if (typeof tabulator.getSelectedCells === 'function') {
+          try {
+            // @ts-ignore
+            const selectedCells = tabulator.getSelectedCells();
+            console.log('API로 조회한 선택된 셀 개수:', selectedCells?.length || 0);
+          } catch (e) {
+            console.error('getSelectedCells 호출 오류:', e);
+          }
+        }
+        
+        // 추가: 선택 취소 후 DOM 상태 확인
+        setTimeout(() => {
+          const remainingSelected = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
+          const remainingOverlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-selected-ranges');
+          console.log('선택 해제 후 - 남아있는 선택된 셀:', remainingSelected.length);
+          console.log('선택 해제 후 - 남아있는 오버레이:', remainingOverlays.length);
+          console.log('셀 선택 해제 시도 - 디버깅 종료 ========');
+        }, 200);
       } catch (err) {
         console.error("Tabulator API 오류:", err);
       }
+    } else {
+      console.log('tabulator 인스턴스가 존재하지 않음');
     }
   };
 
@@ -146,18 +189,18 @@ export default function TabulatorBasicExample() {
       
       // 테이블 외부 클릭 시에만 선택 해제
       if (!isTableClicked) {
-        console.log('테이블 외부 클릭 감지');
+        console.log('테이블 외부 클릭 감지', '이벤트 타입:', e.type, '대상 요소:', e.target);
         clearSelection();
       }
     };
     
     // 문서 클릭 이벤트 리스너
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('click', handleClickOutside); // click도 추가
+    document.addEventListener('mousedown', handleClickOutside, true); // 캡처링 단계에서 실행 (맨 처음)
+    document.addEventListener('click', handleClickOutside, true);
     
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside, true);
+      document.removeEventListener('click', handleClickOutside, true);
     };
   }, []);
 
@@ -180,8 +223,12 @@ export default function TabulatorBasicExample() {
         selectableRangeClearCells: true,
         
         // 이벤트 핸들러 추가
-        cellClick: function(e, cell) {
-          e.stopPropagation(); // 이벤트 전파 방지
+        cellSelected: function(cell) {
+          console.log("셀 선택됨:", cell.getData(), cell.getField());
+        },
+        
+        cellDeselected: function(cell) {
+          console.log("셀 선택 해제됨:", cell.getData(), cell.getField());
         },
         
         columns: [
@@ -221,25 +268,46 @@ export default function TabulatorBasicExample() {
       
       setTabulator(table);
       
+      // 기본 이벤트 리스너 추가
+      table.on("tableBuilt", function() {
+        console.log("테이블 구축 완료!");
+        
+        // 메서드 및 모듈 확인
+        // @ts-ignore
+        console.log('Tabulator 버전 확인:', table.version);
+        // @ts-ignore
+        console.log('모듈 목록:', Object.keys(table.modules || {}));
+        console.log('사용 가능한 메서드:', Object.getOwnPropertyNames(Object.getPrototypeOf(table)));
+      });
+      
+      // 선택 변경 이벤트 리스너 추가 (중요!)
+      table.on("cellSelectionChanged", function(data, rows) {
+        console.log("셀 선택 변경 감지:", data ? data.length : 0, "개 셀 선택됨");
+      });
+      
       // 초기화 직후 바로 이벤트 핸들러 추가
       const tableElement = tableRef.current;
       
-      // 테이블 내부 이벤트 전파 중지
+      // 테이블 내부 이벤트 전파 중지 (기존 코드 수정)
       tableElement.addEventListener('click', (e) => {
+        console.log('테이블 내부 클릭 - stopPropagation 실행');
         e.stopPropagation();
-      });
+      }, true);
       
-      // 윈도우 클릭 이벤트에서 clearSelectionRange 직접 호출
+      // 윈도우 클릭 이벤트에서 clearSelectionRange 직접 호출 코드 수정
       window.addEventListener('click', (e) => {
         if (!tableElement.contains(e.target as Node)) {
-          console.log('윈도우 클릭 감지 - clearSelectionRange 호출');
+          console.log('윈도우 클릭 감지 - clearSelectionRange 호출 시도');
           // @ts-ignore
           if (typeof table.clearSelectionRange === 'function') {
             // @ts-ignore
             table.clearSelectionRange();
+            console.log('window 이벤트에서 clearSelectionRange 호출됨');
+          } else {
+            console.log('window 이벤트에서 clearSelectionRange 메서드 없음');
           }
         }
-      });
+      }, true);
     }
     
     return () => {

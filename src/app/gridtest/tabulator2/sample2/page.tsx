@@ -27,7 +27,7 @@ export default function TabulatorSpreadsheetExample() {
 
   // 샘플 데이터
   const data: Employee[] = [
-    // 기본 데이터
+    // 기본 데이터 (세트 A) - 15개
     { id: 1, name: "김철수", position: "개발자", department: "개발팀", salary: 5000000, startDate: "2020-03-15", email: "kim@example.com", phone: "010-1234-5678", status: "정규직" },
     { id: 2, name: "이영희", position: "디자이너", department: "디자인팀", salary: 4800000, startDate: "2021-05-20", email: "lee@example.com", phone: "010-2345-6789", status: "정규직" },
     { id: 3, name: "박준호", position: "매니저", department: "인사팀", salary: 6200000, startDate: "2018-11-10", email: "park@example.com", phone: "010-3456-7890", status: "정규직" },
@@ -40,8 +40,11 @@ export default function TabulatorSpreadsheetExample() {
     { id: 10, name: "임지현", position: "프론트엔드 개발자", department: "개발팀", salary: 5100000, startDate: "2019-11-20", email: "lim@example.com", phone: "010-0123-4567", status: "정규직" },
     { id: 11, name: "최상철", position: "백엔드 개발자", department: "개발팀", salary: 5200000, startDate: "2019-08-15", email: "choi@example.com", phone: "010-1111-2222", status: "정규직" },
     { id: 12, name: "우현우", position: "데이터 분석가", department: "마케팅팀", salary: 5300000, startDate: "2020-02-10", email: "woo@example.com", phone: "010-2222-3333", status: "정규직" },
+    { id: 13, name: "송지은", position: "그래픽 디자이너", department: "디자인팀", salary: 4700000, startDate: "2021-03-22", email: "song@example.com", phone: "010-3333-4444", status: "정규직" },
+    { id: 14, name: "유재석", position: "영업 담당자", department: "영업팀", salary: 5400000, startDate: "2019-05-05", email: "yoo@example.com", phone: "010-4444-5555", status: "정규직" },
+    { id: 15, name: "조현우", position: "QA 엔지니어", department: "개발팀", salary: 4800000, startDate: "2020-11-11", email: "cho@example.com", phone: "010-5555-6666", status: "정규직" },
     
-    // 두 번째 세트
+    // 두 번째 세트 (세트 B) - 15개
     { id: 101, name: "김철수(B)", position: "개발자", department: "개발팀", salary: 5100000, startDate: "2021-03-15", email: "kimB@example.com", phone: "010-1234-6678", status: "정규직" },
     { id: 102, name: "이영희(B)", position: "디자이너", department: "디자인팀", salary: 4900000, startDate: "2022-05-20", email: "leeB@example.com", phone: "010-2345-7789", status: "정규직" },
     { id: 103, name: "박준호(B)", position: "매니저", department: "인사팀", salary: 6300000, startDate: "2019-11-10", email: "parkB@example.com", phone: "010-3456-8890", status: "정규직" },
@@ -54,8 +57,11 @@ export default function TabulatorSpreadsheetExample() {
     { id: 110, name: "임지현(B)", position: "프론트엔드 개발자", department: "개발팀", salary: 5200000, startDate: "2020-11-20", email: "limB@example.com", phone: "010-0123-5567", status: "정규직" },
     { id: 111, name: "최상철(B)", position: "백엔드 개발자", department: "개발팀", salary: 5300000, startDate: "2020-08-15", email: "choiB@example.com", phone: "010-1111-3222", status: "정규직" },
     { id: 112, name: "우현우(B)", position: "데이터 분석가", department: "마케팅팀", salary: 5400000, startDate: "2021-02-10", email: "wooB@example.com", phone: "010-2222-4333", status: "정규직" },
+    { id: 113, name: "송지은(B)", position: "그래픽 디자이너", department: "디자인팀", salary: 4800000, startDate: "2022-03-22", email: "songB@example.com", phone: "010-3333-5444", status: "정규직" },
+    { id: 114, name: "유재석(B)", position: "영업 담당자", department: "영업팀", salary: 5500000, startDate: "2020-05-05", email: "yooB@example.com", phone: "010-4444-6555", status: "정규직" },
+    { id: 115, name: "조현우(B)", position: "QA 엔지니어", department: "개발팀", salary: 4900000, startDate: "2021-11-11", email: "choB@example.com", phone: "010-5555-7666", status: "정규직" },
     
-    // 세 번째 세트
+    // 세 번째 세트 (세트 C) - 15개
     { id: 201, name: "김철수(C)", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2022-03-15", email: "kimC@example.com", phone: "010-1234-7678", status: "정규직" },
     { id: 202, name: "이영희(C)", position: "UX 디자이너", department: "디자인팀", salary: 5100000, startDate: "2023-05-20", email: "leeC@example.com", phone: "010-2345-8789", status: "정규직" },
     { id: 203, name: "박준호(C)", position: "인사팀장", department: "인사팀", salary: 6800000, startDate: "2020-11-10", email: "parkC@example.com", phone: "010-3456-9890", status: "정규직" },
@@ -68,6 +74,9 @@ export default function TabulatorSpreadsheetExample() {
     { id: 210, name: "임지현(C)", position: "리액트 개발자", department: "개발팀", salary: 5400000, startDate: "2021-11-20", email: "limC@example.com", phone: "010-0123-6567", status: "정규직" },
     { id: 211, name: "최상철(C)", position: "자바 개발자", department: "개발팀", salary: 5600000, startDate: "2021-08-15", email: "choiC@example.com", phone: "010-1111-4222", status: "정규직" },
     { id: 212, name: "우현우(C)", position: "AI 엔지니어", department: "개발팀", salary: 5900000, startDate: "2022-02-10", email: "wooC@example.com", phone: "010-2222-5333", status: "정규직" },
+    { id: 213, name: "송지은(C)", position: "UI 디자이너", department: "디자인팀", salary: 5200000, startDate: "2023-03-22", email: "songC@example.com", phone: "010-3333-6444", status: "정규직" },
+    { id: 214, name: "유재석(C)", position: "영업 관리자", department: "영업팀", salary: 6200000, startDate: "2021-05-05", email: "yooC@example.com", phone: "010-4444-7555", status: "정규직" },
+    { id: 215, name: "조현우(C)", position: "테스트 리드", department: "개발팀", salary: 5500000, startDate: "2022-11-11", email: "choC@example.com", phone: "010-5555-8666", status: "정규직" },
   ];
 
   // 전역 참조 변수

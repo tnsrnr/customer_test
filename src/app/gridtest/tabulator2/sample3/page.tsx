@@ -49,48 +49,18 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 선택한 셀 복사 함수
-  const copySelectedCells = () => {
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("range");
-        setSelectedData(`선택된 셀 범위가 복사되었습니다.`);
-      } catch (err) {
-        console.error("복사 오류:", err);
-        setSelectedData(`복사 중 오류가 발생했습니다.`);
-      }
-    }
-  };
-
-  // 테이블 전체 복사 함수
-  const copyEntireTable = () => {
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("table");
-        setSelectedData(`전체 테이블 복사 (${data.length}행)`);
-      } catch (err) {
-        console.error("전체 테이블 복사 오류:", err);
-      }
-    }
-  };
-  
-  // 현재 볼 수 있는 데이터만 복사
-  const copyVisibleData = () => {
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("visible");
-        setSelectedData(`현재 보이는 데이터 복사`);
-      } catch (err) {
-        console.error("보이는 데이터 복사 오류:", err);
-      }
-    }
-  };
-
-  // 선택한 셀 영역 초기화 함수 (간단하게 구현)
+  // 선택한 셀 영역 초기화 함수 (직접 DOM 접근 방식 추가)
   const clearSelection = () => {
+    console.log('샘플3: 셀 선택 해제 시도');
+    
+    // 정의된 CSS 스타일로 테이블 선택 영역 초기화
+    const style = document.createElement('style');
+    style.textContent = `
+      .tabulator-selected { background-color: transparent !important; }
+      .tabulator-range-overlay { display: none !important; }
+    `;
+    document.head.appendChild(style);
+    
     // 활성 요소에서 포커스 제거
     if (document.activeElement) {
       (document.activeElement as HTMLElement).blur();
@@ -131,23 +101,81 @@ export default function TabulatorSpreadsheetExample() {
       el.remove();
     });
     
+    // 잠시 후 스타일 제거
+    setTimeout(() => {
+      document.head.removeChild(style);
+    }, 100);
+    
     setSelectedData("선택 영역이 초기화되었습니다.");
   };
 
-  // 문서 클릭 이벤트 처리
+  // 문서 클릭 이벤트 처리 - 특정 영역만 타겟팅
   useEffect(() => {
-    const handleDocumentClick = () => {
-      clearSelection();
+    // 클릭 이벤트 핸들러
+    const handleClickOutside = (e: MouseEvent) => {
+      // 테이블 영역 체크
+      const isTableClicked = tableRef.current && tableRef.current.contains(e.target as Node);
+      
+      // 테이블 외부 클릭 시에만 선택 해제
+      if (!isTableClicked) {
+        console.log('테이블 외부 클릭 감지');
+        clearSelection();
+      }
     };
     
-    document.addEventListener('click', handleDocumentClick);
-    document.addEventListener('mousedown', handleDocumentClick);
+    // 문서 클릭 이벤트 리스너
+    document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
-      document.removeEventListener('click', handleDocumentClick);
-      document.removeEventListener('mousedown', handleDocumentClick);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // 선택한 셀 복사 함수 (이벤트 전파 중지)
+  const copySelectedCells = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 전파 중지
+    
+    if (tabulator) {
+      try {
+        // @ts-ignore
+        tabulator.copyToClipboard("range");
+        setSelectedData(`선택된 셀 범위가 복사되었습니다.`);
+      } catch (err) {
+        console.error("복사 오류:", err);
+        setSelectedData(`복사 중 오류가 발생했습니다.`);
+      }
+    }
+  };
+
+  // 테이블 전체 복사 함수 (이벤트 전파 중지)
+  const copyEntireTable = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 전파 중지
+    
+    if (tabulator) {
+      try {
+        // @ts-ignore
+        tabulator.copyToClipboard("table");
+        setSelectedData(`전체 테이블 복사 (${data.length}행)`);
+      } catch (err) {
+        console.error("전체 테이블 복사 오류:", err);
+      }
+    }
+  };
+  
+  // 현재 볼 수 있는 데이터만 복사 (이벤트 전파 중지)
+  const copyVisibleData = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 전파 중지
+    
+    if (tabulator) {
+      try {
+        // @ts-ignore
+        tabulator.copyToClipboard("visible");
+        setSelectedData(`현재 보이는 데이터 복사`);
+      } catch (err) {
+        console.error("보이는 데이터 복사 오류:", err);
+      }
+    }
+  };
 
   // 테이블 초기화
   useEffect(() => {
@@ -234,6 +262,14 @@ export default function TabulatorSpreadsheetExample() {
       });
       
       setTabulator(table);
+      
+      // 초기화 직후 바로 이벤트 핸들러 추가
+      const tableElement = tableRef.current;
+      
+      // 테이블 내부 이벤트 전파 중지
+      tableElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
     }
     
     return () => {
@@ -244,13 +280,7 @@ export default function TabulatorSpreadsheetExample() {
   }, []);
 
   return (
-    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
-      // 컨테이너 직접 클릭 시 선택 초기화 (이벤트 버블링 방지)
-      if (e.currentTarget === e.target) {
-        e.stopPropagation();
-        clearSelection();
-      }
-    }}>
+    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }}>
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -281,7 +311,10 @@ export default function TabulatorSpreadsheetExample() {
                 <Clipboard className="h-4 w-4 mr-2" />
                 보이는 데이터 복사
               </Button>
-              <Button onClick={clearSelection} size="sm" variant="destructive" className="mb-2">
+              <Button onClick={(e) => {
+                e.stopPropagation();
+                clearSelection();
+              }} size="sm" variant="destructive" className="mb-2">
                 <X className="h-4 w-4 mr-2" />
                 선택 초기화
               </Button>
@@ -297,14 +330,13 @@ export default function TabulatorSpreadsheetExample() {
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
               다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
               <br />
-              <strong>선택 해제:</strong> 마우스를 클릭하면 선택 영역이 해제됩니다.
+              <strong>선택 해제:</strong> 테이블 바깥 영역을 클릭하면 선택이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 
               className="w-full h-[500px]" 
               onPaste={onPasteCaptured}
               tabIndex={0}
-              onClick={(e) => e.stopPropagation()}
             ></div>
           </CardContent>
         </Card>

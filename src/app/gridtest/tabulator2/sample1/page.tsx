@@ -33,8 +33,18 @@ export default function TabulatorBasicExample() {
     { id: 8, name: "홍길동", age: 45, gender: "남성", department: "경영진", salary: 8000000 },
   ];
 
-  // 셀 선택 해제 함수 (간단하게 구현)
+  // 셀 선택 해제 함수 (직접 DOM 접근 방식 추가)
   const clearSelection = () => {
+    console.log('셀 선택 해제 시도');
+    
+    // 정의된 CSS 스타일로 테이블 선택 영역 초기화
+    const style = document.createElement('style');
+    style.textContent = `
+      .tabulator-selected { background-color: transparent !important; }
+      .tabulator-range-overlay { display: none !important; }
+    `;
+    document.head.appendChild(style);
+    
     // 활성 요소에서 포커스 제거
     if (document.activeElement) {
       (document.activeElement as HTMLElement).blur();
@@ -74,20 +84,32 @@ export default function TabulatorBasicExample() {
     document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
       el.remove();
     });
+    
+    // 잠시 후 스타일 제거
+    setTimeout(() => {
+      document.head.removeChild(style);
+    }, 100);
   };
 
-  // 문서 클릭 이벤트 처리
+  // 문서 클릭 이벤트 처리 - 특정 영역만 타겟팅
   useEffect(() => {
-    const handleDocumentClick = () => {
-      clearSelection();
+    // 클릭 이벤트 핸들러
+    const handleClickOutside = (e: MouseEvent) => {
+      // 테이블 영역 체크
+      const isTableClicked = tableRef.current && tableRef.current.contains(e.target as Node);
+      
+      // 테이블 외부 클릭 시에만 선택 해제
+      if (!isTableClicked) {
+        console.log('테이블 외부 클릭 감지');
+        clearSelection();
+      }
     };
     
-    document.addEventListener('click', handleDocumentClick);
-    document.addEventListener('mousedown', handleDocumentClick);
+    // 문서 클릭 이벤트 리스너
+    document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
-      document.removeEventListener('click', handleDocumentClick);
-      document.removeEventListener('mousedown', handleDocumentClick);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -142,6 +164,14 @@ export default function TabulatorBasicExample() {
       });
       
       setTabulator(table);
+      
+      // 초기화 직후 바로 이벤트 핸들러 추가
+      const tableElement = tableRef.current;
+      
+      // 테이블 내부 이벤트 전파 중지
+      tableElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
     }
     
     return () => {

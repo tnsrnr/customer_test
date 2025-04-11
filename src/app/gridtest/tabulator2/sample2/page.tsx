@@ -44,12 +44,6 @@ export default function TabulatorSpreadsheetExample() {
   // 전역 참조 변수
   let currentTable: Tabulator | null = null;
 
-  // 클립보드 데이터 읽기
-  const onPasteCaptured = (event: React.ClipboardEvent) => {
-    if (tabulator) {
-      const clipboardData = event.clipboardData.getData('text');
-    }
-  };
 
   // 선택한 셀 영역 초기화 함수 (DOM 직접 조작 방식)
   const clearSelection = () => {
@@ -218,33 +212,24 @@ export default function TabulatorSpreadsheetExample() {
           clearSelection();
         }
       };
-      
-      // ESC 키 이벤트 리스너 추가
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          console.log('ESC 키 감지 - 셀 선택 해제');
-          clearSelection();
-        }
-      };
+
       
       // 이벤트 리스너 등록
       document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleKeyDown);
       
       // 클린업 함수
       return () => {
         if (tabulator) {
           tabulator.destroy();
         }
-        document.removeEventListener('click', handleDocumentClick);
-        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('click', handleDocumentClick);//메모리 누수 방지
         currentTable = null;
       };
     }
   }, []);
 
   return (
-    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }}>
+    <div className="container mx-auto py-6">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -258,31 +243,20 @@ export default function TabulatorSpreadsheetExample() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>셀 범위 선택 및 스프레드시트 기능</CardTitle>
-            <div className="flex flex-wrap space-x-2 mt-2">
-           
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          {selectedData && (
+            <div className="mb-4 text-sm text-muted-foreground">
+              {selectedData}
             </div>
-            {selectedData && (
-              <div className="mt-2 text-sm text-muted-foreground">
-                {selectedData}
-              </div>
-            )}
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="mb-4 text-sm text-gray-500">
-            </p>
-            <div 
-              ref={tableRef} 
-              className="w-full h-[500px]" 
-              onPaste={onPasteCaptured}
-              tabIndex={0}
-            ></div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+          <div 
+            ref={tableRef} 
+            className="w-full h-[500px]" 
+            tabIndex={0}
+          ></div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 

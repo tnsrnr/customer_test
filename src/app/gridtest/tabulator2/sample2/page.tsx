@@ -91,12 +91,42 @@ export default function TabulatorClipboardExample() {
 
   // 선택한 셀 영역 초기화 함수 (간단하게 구현)
   const clearSelection = () => {
-    // 모든 선택된 셀의 클래스 제거
+    // 활성 요소에서 포커스 제거
+    if (document.activeElement) {
+      (document.activeElement as HTMLElement).blur();
+    }
+    
+    // Tabulator API 호출
+    if (tabulator) {
+      try {
+        // @ts-ignore
+        if (typeof tabulator.clearCellSelection === 'function') {
+          // @ts-ignore
+          tabulator.clearCellSelection();
+        }
+        
+        // @ts-ignore
+        if (typeof tabulator.getEditedCells === 'function') {
+          // @ts-ignore
+          tabulator.getEditedCells().forEach(cell => cell.cancelEdit());
+        }
+        
+        // @ts-ignore
+        if (typeof tabulator.deselectRow === 'function') {
+          // @ts-ignore
+          tabulator.deselectRow();
+        }
+      } catch (err) {
+        console.error("Tabulator API 오류:", err);
+      }
+    }
+    
+    // DOM 조작으로 선택된 셀 클래스 제거
     document.querySelectorAll('.tabulator-selected').forEach(el => {
       el.classList.remove('tabulator-selected');
     });
     
-    // 모든 범위 오버레이 요소 제거
+    // 범위 오버레이 요소 제거
     document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
       el.remove();
     });
@@ -111,9 +141,11 @@ export default function TabulatorClipboardExample() {
     };
     
     document.addEventListener('click', handleDocumentClick);
+    document.addEventListener('mousedown', handleDocumentClick);
     
     return () => {
       document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('mousedown', handleDocumentClick);
     };
   }, []);
 

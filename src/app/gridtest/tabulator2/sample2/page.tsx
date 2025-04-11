@@ -53,60 +53,79 @@ export default function TabulatorClipboardExample() {
   const clearSelection = () => {
     console.log('샘플2: 셀 선택 해제 시도');
     
-    // 정의된 CSS 스타일로 테이블 선택 영역 초기화
-    const style = document.createElement('style');
-    style.textContent = `
-      .tabulator-selected { background-color: transparent !important; }
-      .tabulator-range-overlay { display: none !important; }
-    `;
-    document.head.appendChild(style);
-    
-    // 활성 요소에서 포커스 제거
-    if (document.activeElement) {
-      (document.activeElement as HTMLElement).blur();
-    }
-    
-    // Tabulator API 호출
+    // Tabulator API 공식 메서드 호출 (Tabulator 6.3 기준)
     if (tabulator) {
       try {
+        // 1. 공식 문서의 clearSelectionRange 메서드 사용
         // @ts-ignore
-        if (typeof tabulator.clearCellSelection === 'function') {
+        if (typeof tabulator.clearSelectionRange === 'function') {
           // @ts-ignore
-          tabulator.clearCellSelection();
+          tabulator.clearSelectionRange();
+          console.log('clearSelectionRange 메서드 호출됨');
         }
         
+        // 2. selectRange 모듈에 직접 접근
         // @ts-ignore
-        if (typeof tabulator.getEditedCells === 'function') {
+        if (tabulator.modules && tabulator.modules.selectRange) {
           // @ts-ignore
-          tabulator.getEditedCells().forEach(cell => cell.cancelEdit());
+          const selectRangeModule = tabulator.modules.selectRange;
+          
+          // selectRange 모듈의 clearRange 메서드 호출
+          if (typeof selectRangeModule.clearRange === 'function') {
+            selectRangeModule.clearRange();
+            console.log('selectRange.clearRange 메서드 호출됨');
+          }
+          
+          // clearRange 메서드가 없으면 clear 메서드 시도
+          else if (typeof selectRangeModule.clear === 'function') {
+            selectRangeModule.clear();
+            console.log('selectRange.clear 메서드 호출됨');
+          }
         }
         
+        // 3. 데이터 변경 이벤트를 발생시켜 선택 초기화 시도
         // @ts-ignore
-        if (typeof tabulator.deselectRow === 'function') {
-          // @ts-ignore
-          tabulator.deselectRow();
+        tabulator.refreshFilter();
+        
+        // 4. 활성 요소에서 포커스 제거
+        if (document.activeElement) {
+          (document.activeElement as HTMLElement).blur();
         }
+        
+        // 5. document.getSelection() 메서드로 선택 취소
+        if (document.getSelection) {
+          const selection = document.getSelection();
+          selection?.removeAllRanges();
+        }
+        
+        // 6. DOM 조작으로 선택된 셀 클래스 제거
+        document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected').forEach(el => {
+          el.classList.remove('tabulator-selected');
+        });
+        
+        // 7. 범위 오버레이 요소 제거
+        document.querySelectorAll('.tabulator-range-overlay, .tabulator-selected-ranges').forEach(el => {
+          el.remove();
+        });
+        
+        // 8. 정의된 CSS 스타일로 테이블 선택 영역 초기화
+        const style = document.createElement('style');
+        style.textContent = `
+          .tabulator-selected { background-color: transparent !important; }
+          .tabulator-range-overlay { display: none !important; }
+        `;
+        document.head.appendChild(style);
+        
+        // 잠시 후 스타일 제거
+        setTimeout(() => {
+          document.head.removeChild(style);
+        }, 100);
+        
+        setSelectedData("선택 영역이 초기화되었습니다.");
       } catch (err) {
         console.error("Tabulator API 오류:", err);
       }
     }
-    
-    // DOM 조작으로 선택된 셀 클래스 제거
-    document.querySelectorAll('.tabulator-selected').forEach(el => {
-      el.classList.remove('tabulator-selected');
-    });
-    
-    // 범위 오버레이 요소 제거
-    document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
-      el.remove();
-    });
-    
-    // 잠시 후 스타일 제거
-    setTimeout(() => {
-      document.head.removeChild(style);
-    }, 100);
-    
-    setSelectedData("선택 영역이 초기화되었습니다.");
   };
 
   // 문서 클릭 이벤트 처리 - 특정 영역만 타겟팅
@@ -125,9 +144,11 @@ export default function TabulatorClipboardExample() {
     
     // 문서 클릭 이벤트 리스너
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside); // click도 추가
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -190,7 +211,7 @@ export default function TabulatorClipboardExample() {
         
         // 범위 선택 관련 설정
         selectable: true,
-        selectableRange: 1,
+        selectableRange: true,  // true로 설정 (1 대신)
         selectableRangeColumns: true,
         selectableRangeRows: true,
         selectableRangeClearCells: true,
@@ -200,12 +221,12 @@ export default function TabulatorClipboardExample() {
         
         // 클립보드 관련 설정
         clipboard: true,
-        clipboardCopyStyled: false,
+        clipboardCopyStyled: true,
         clipboardCopyConfig: {
           rowHeaders: false,
           columnHeaders: false,
         },
-        clipboardCopyRowRange: "range",
+        clipboardCopyRowRange: "selected",
         clipboardPasteParser: "range",
         clipboardPasteAction: "range",
 
@@ -282,6 +303,18 @@ export default function TabulatorClipboardExample() {
       // 테이블 내부 이벤트 전파 중지
       tableElement.addEventListener('click', (e) => {
         e.stopPropagation();
+      });
+      
+      // 윈도우 클릭 이벤트에서 clearSelectionRange 직접 호출
+      window.addEventListener('click', (e) => {
+        if (!tableElement.contains(e.target as Node)) {
+          console.log('윈도우 클릭 감지 - clearSelectionRange 호출');
+          // @ts-ignore
+          if (typeof table.clearSelectionRange === 'function') {
+            // @ts-ignore
+            table.clearSelectionRange();
+          }
+        }
       });
     }
     

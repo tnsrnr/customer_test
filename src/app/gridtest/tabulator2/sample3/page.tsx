@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ClipboardCopy, Copy, Clipboard, X } from 'lucide-react';
-import { TabulatorFull as Tabulator } from 'tabulator-tables';
-import "tabulator-tables/dist/css/tabulator.min.css";
+import { ArrowLeft } from 'lucide-react';
+import TabulatorGrid, { TabulatorGridRef } from '@/components/common/TabulatorGrid';
 
 interface Employee {
   id: number;
@@ -21,12 +20,11 @@ interface Employee {
 }
 
 export default function TabulatorSpreadsheetExample() {
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [tabulator, setTabulator] = useState<Tabulator | null>(null);
-  const [selectedData, setSelectedData] = useState<string>("");
-
+  const gridRef = useRef<TabulatorGridRef>(null);
+  
   // 샘플 데이터
   const data: Employee[] = [
+    // 기본 데이터 (세트 A) - 15개
     { id: 1, name: "김철수", position: "개발자", department: "개발팀", salary: 5000000, startDate: "2020-03-15", email: "kim@example.com", phone: "010-1234-5678", status: "정규직" },
     { id: 2, name: "이영희", position: "디자이너", department: "디자인팀", salary: 4800000, startDate: "2021-05-20", email: "lee@example.com", phone: "010-2345-6789", status: "정규직" },
     { id: 3, name: "박준호", position: "매니저", department: "인사팀", salary: 6200000, startDate: "2018-11-10", email: "park@example.com", phone: "010-3456-7890", status: "정규직" },
@@ -39,312 +37,70 @@ export default function TabulatorSpreadsheetExample() {
     { id: 10, name: "임지현", position: "프론트엔드 개발자", department: "개발팀", salary: 5100000, startDate: "2019-11-20", email: "lim@example.com", phone: "010-0123-4567", status: "정규직" },
     { id: 11, name: "최상철", position: "백엔드 개발자", department: "개발팀", salary: 5200000, startDate: "2019-08-15", email: "choi@example.com", phone: "010-1111-2222", status: "정규직" },
     { id: 12, name: "우현우", position: "데이터 분석가", department: "마케팅팀", salary: 5300000, startDate: "2020-02-10", email: "woo@example.com", phone: "010-2222-3333", status: "정규직" },
+    { id: 13, name: "송지은", position: "그래픽 디자이너", department: "디자인팀", salary: 4700000, startDate: "2021-03-22", email: "song@example.com", phone: "010-3333-4444", status: "정규직" },
+    { id: 14, name: "유재석", position: "영업 담당자", department: "영업팀", salary: 5400000, startDate: "2019-05-05", email: "yoo@example.com", phone: "010-4444-5555", status: "정규직" },
+    { id: 15, name: "조현우", position: "QA 엔지니어", department: "개발팀", salary: 4800000, startDate: "2020-11-11", email: "cho@example.com", phone: "010-5555-6666", status: "정규직" },
+    
+    // 두 번째 세트 (세트 B) - 15개
+    { id: 101, name: "김철수(B)", position: "개발자", department: "개발팀", salary: 5100000, startDate: "2021-03-15", email: "kimB@example.com", phone: "010-1234-6678", status: "정규직" },
+    { id: 102, name: "이영희(B)", position: "디자이너", department: "디자인팀", salary: 4900000, startDate: "2022-05-20", email: "leeB@example.com", phone: "010-2345-7789", status: "정규직" },
+    { id: 103, name: "박준호(B)", position: "매니저", department: "인사팀", salary: 6300000, startDate: "2019-11-10", email: "parkB@example.com", phone: "010-3456-8890", status: "정규직" },
+    { id: 104, name: "정미영(B)", position: "시니어 개발자", department: "개발팀", salary: 5600000, startDate: "2020-07-22", email: "jungB@example.com", phone: "010-4567-9901", status: "정규직" },
+    { id: 105, name: "강동원(B)", position: "마케터", department: "마케팅팀", salary: 4300000, startDate: "2023-01-15", email: "kangB@example.com", phone: "010-5678-0012", status: "계약직" },
+    { id: 106, name: "한지민(B)", position: "회계사", department: "재무팀", salary: 6000000, startDate: "2018-09-05", email: "hanB@example.com", phone: "010-6789-1123", status: "정규직" },
+    { id: 107, name: "오세진(B)", position: "주니어 개발자", department: "개발팀", salary: 3900000, startDate: "2023-06-10", email: "ohB@example.com", phone: "010-7890-2234", status: "인턴" },
+    { id: 108, name: "홍길동(B)", position: "팀장", department: "경영진", salary: 8100000, startDate: "2016-04-01", email: "hongB@example.com", phone: "010-8901-3345", status: "정규직" },
+    { id: 109, name: "나은혜(B)", position: "인사담당자", department: "인사팀", salary: 4600000, startDate: "2021-10-15", email: "naB@example.com", phone: "010-9012-4456", status: "정규직" },
+    { id: 110, name: "임지현(B)", position: "프론트엔드 개발자", department: "개발팀", salary: 5200000, startDate: "2020-11-20", email: "limB@example.com", phone: "010-0123-5567", status: "정규직" },
+    { id: 111, name: "최상철(B)", position: "백엔드 개발자", department: "개발팀", salary: 5300000, startDate: "2020-08-15", email: "choiB@example.com", phone: "010-1111-3222", status: "정규직" },
+    { id: 112, name: "우현우(B)", position: "데이터 분석가", department: "마케팅팀", salary: 5400000, startDate: "2021-02-10", email: "wooB@example.com", phone: "010-2222-4333", status: "정규직" },
+    { id: 113, name: "송지은(B)", position: "그래픽 디자이너", department: "디자인팀", salary: 4800000, startDate: "2022-03-22", email: "songB@example.com", phone: "010-3333-5444", status: "정규직" },
+    { id: 114, name: "유재석(B)", position: "영업 담당자", department: "영업팀", salary: 5500000, startDate: "2020-05-05", email: "yooB@example.com", phone: "010-4444-6555", status: "정규직" },
+    { id: 115, name: "조현우(B)", position: "QA 엔지니어", department: "개발팀", salary: 4900000, startDate: "2021-11-11", email: "choB@example.com", phone: "010-5555-7666", status: "정규직" },
+    
+    // 세 번째 세트 (세트 C) - 15개
+    { id: 201, name: "김철수(C)", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2022-03-15", email: "kimC@example.com", phone: "010-1234-7678", status: "정규직" },
+    { id: 202, name: "이영희(C)", position: "UX 디자이너", department: "디자인팀", salary: 5100000, startDate: "2023-05-20", email: "leeC@example.com", phone: "010-2345-8789", status: "정규직" },
+    { id: 203, name: "박준호(C)", position: "인사팀장", department: "인사팀", salary: 6800000, startDate: "2020-11-10", email: "parkC@example.com", phone: "010-3456-9890", status: "정규직" },
+    { id: 204, name: "정미영(C)", position: "아키텍트", department: "개발팀", salary: 6200000, startDate: "2021-07-22", email: "jungC@example.com", phone: "010-4567-0901", status: "정규직" },
+    { id: 205, name: "강동원(C)", position: "콘텐츠 제작자", department: "마케팅팀", salary: 4800000, startDate: "2024-01-15", email: "kangC@example.com", phone: "010-5678-1012", status: "계약직" },
+    { id: 206, name: "한지민(C)", position: "재무팀장", department: "재무팀", salary: 6500000, startDate: "2019-09-05", email: "hanC@example.com", phone: "010-6789-2123", status: "정규직" },
+    { id: 207, name: "오세진(C)", position: "프론트엔드 개발자", department: "개발팀", salary: 4500000, startDate: "2024-06-10", email: "ohC@example.com", phone: "010-7890-3234", status: "인턴" },
+    { id: 208, name: "홍길동(C)", position: "이사", department: "경영진", salary: 8800000, startDate: "2017-04-01", email: "hongC@example.com", phone: "010-8901-4345", status: "정규직" },
+    { id: 209, name: "나은혜(C)", position: "인사담당자", department: "인사팀", salary: 4900000, startDate: "2022-10-15", email: "naC@example.com", phone: "010-9012-5456", status: "정규직" },
+    { id: 210, name: "임지현(C)", position: "리액트 개발자", department: "개발팀", salary: 5400000, startDate: "2021-11-20", email: "limC@example.com", phone: "010-0123-6567", status: "정규직" },
+    { id: 211, name: "최상철(C)", position: "자바 개발자", department: "개발팀", salary: 5600000, startDate: "2021-08-15", email: "choiC@example.com", phone: "010-1111-4222", status: "정규직" },
+    { id: 212, name: "우현우(C)", position: "AI 엔지니어", department: "개발팀", salary: 5900000, startDate: "2022-02-10", email: "wooC@example.com", phone: "010-2222-5333", status: "정규직" },
+    { id: 213, name: "송지은(C)", position: "UI 디자이너", department: "디자인팀", salary: 5200000, startDate: "2023-03-22", email: "songC@example.com", phone: "010-3333-6444", status: "정규직" },
+    { id: 214, name: "유재석(C)", position: "영업 관리자", department: "영업팀", salary: 6200000, startDate: "2021-05-05", email: "yooC@example.com", phone: "010-4444-7555", status: "정규직" },
+    { id: 215, name: "조현우(C)", position: "테스트 리드", department: "개발팀", salary: 5500000, startDate: "2022-11-11", email: "choC@example.com", phone: "010-5555-8666", status: "정규직" },
   ];
 
-  // 전역 참조 변수
-  let currentTable: Tabulator | null = null;
-
-  // 클립보드 데이터 읽기
-  const onPasteCaptured = (event: React.ClipboardEvent) => {
-    if (tabulator) {
-      const clipboardData = event.clipboardData.getData('text');
-      setSelectedData(`붙여넣기 데이터: ${clipboardData}`);
-    }
-  };
-
-  // 선택한 셀 영역 초기화 함수 (DOM 직접 조작 방식)
-  const clearSelection = () => {
-    console.log('셀 선택 해제 시도 - DOM 직접 조작');
-    
-    try {
-      // 1. Tabulator API 호출 시도
-      if (tabulator) {
-        try {
-          // @ts-ignore
-          tabulator.deselectRow(); // 행 선택 해제
-          
-          // @ts-ignore
-          if (tabulator.modules && tabulator.modules.selectRange) {
-            // @ts-ignore
-            tabulator.modules.selectRange.clearRange();
-          }
-          
-          // @ts-ignore
-          tabulator.element.dispatchEvent(new Event('rangeClear')); // 이벤트 발생
-        } catch (apiErr) {
-          console.log('Tabulator API 호출 실패:', apiErr);
-        }
+  // 컬럼 정의
+  const columns = [
+    { title: "ID", field: "id", sorter: "number", width: 60 },
+    { title: "이름", field: "name", sorter: "string" },
+    { title: "직책", field: "position", sorter: "string" },
+    { title: "부서", field: "department", sorter: "string" },
+    { 
+      title: "급여", 
+      field: "salary", 
+      sorter: "number",
+      formatter: "money",
+      formatterParams: {
+        thousand: ",",
+        symbol: "₩",
+        precision: 0
       }
-      
-      // 2. 선택된 셀 클래스 제거 (DOM 전용 방식)
-      const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected, .tabulator-range-selected');
-      console.log('선택된 셀 개수:', selectedCells.length);
-      selectedCells.forEach(el => {
-        el.classList.remove('tabulator-selected');
-        el.classList.remove('tabulator-range-selected');
-      });
-      
-      // 3. 오버레이 요소 제거
-      const overlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-cell-selecting, .tabulator-selected-ranges');
-      console.log('오버레이 요소 개수:', overlays.length);
-      overlays.forEach(el => {
-        el.remove();
-      });
-      
-      // 4. 전역 선택 객체 초기화
-      if (document.getSelection) {
-        document.getSelection()?.removeAllRanges();
-      }
-      
-      // 5. 활성 요소에서 포커스 제거
-      if (document.activeElement && document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
-      }
-      
-      // 6. CSS 스타일로 강제 초기화
-      const style = document.createElement('style');
-      style.setAttribute('id', 'tabulator-reset-style');
-      style.textContent = `
-        .tabulator-selected, 
-        .tabulator-cell.tabulator-selected, 
-        .tabulator-row.tabulator-selected,
-        .tabulator-range-selected { 
-          background-color: transparent !important; 
-          border: none !important;
-          outline: none !important;
-        }
-        .tabulator-range-overlay, 
-        .tabulator-cell-selecting,
-        .tabulator-selected-ranges { 
-          display: none !important;
-          opacity: 0 !important; 
-          visibility: hidden !important;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // 상태 업데이트
-      setSelectedData("선택 영역이 초기화되었습니다.");
-      
-      // 일정 시간 후 스타일 제거
-      setTimeout(() => {
-        const tempStyle = document.getElementById('tabulator-reset-style');
-        if (tempStyle) {
-          tempStyle.remove();
-        }
-        
-        // 성공 여부 확인
-        const remainingSelected = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
-        const remainingOverlays = document.querySelectorAll('.tabulator-range-overlay');
-        console.log('선택 초기화 결과 - 남은 셀:', remainingSelected.length, '남은 오버레이:', remainingOverlays.length);
-        
-        // 강제로 다시 시도
-        if (remainingSelected.length > 0 || remainingOverlays.length > 0) {
-          remainingSelected.forEach(el => el.classList.remove('tabulator-selected'));
-          remainingOverlays.forEach(el => el.remove());
-        }
-      }, 200);
-    } catch (err) {
-      console.error('선택 해제 중 오류:', err);
-    }
-  };
-
-  // 문서 클릭 이벤트 처리 (간소화)
-  useEffect(() => {
-    // 클릭 이벤트 핸들러 (단순화)
-    const handleClickOutside = (e: MouseEvent) => {
-      // 테이블 요소 직접 접근
-      const tabulatorTable = document.querySelector('.tabulator');
-      const isTableClicked = tabulatorTable && 
-        (tabulatorTable.contains(e.target as Node) || 
-         (e.target as Element)?.closest('.tabulator') !== null);
-      
-      // 테이블 외부 클릭 시에만 선택 해제
-      if (!isTableClicked) {
-        console.log('테이블 외부 클릭 감지');
-        clearSelection();
-      }
-    };
-    
-    // 단일 이벤트 리스너 (mousedown 단계에서만 처리)
-    document.addEventListener('mousedown', handleClickOutside, true);
-    
-    // ESC 키 이벤트
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        console.log('ESC 키 감지 - 선택 해제');
-        clearSelection();
-      }
-    };
-    
-    document.addEventListener('keydown', handleKeyDown, true);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside, true);
-      document.removeEventListener('keydown', handleKeyDown, true);
-    };
-  }, []);
-
-  // 선택한 셀 복사 함수 (이벤트 전파 중지)
-  const copySelectedCells = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 전파 중지
-    
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("range");
-        setSelectedData(`선택된 셀 범위가 복사되었습니다.`);
-      } catch (err) {
-        console.error("복사 오류:", err);
-        setSelectedData(`복사 중 오류가 발생했습니다.`);
-      }
-    }
-  };
-
-  // 테이블 전체 복사 함수 (이벤트 전파 중지)
-  const copyEntireTable = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 전파 중지
-    
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("table");
-        setSelectedData(`전체 테이블 복사 (${data.length}행)`);
-      } catch (err) {
-        console.error("전체 테이블 복사 오류:", err);
-      }
-    }
-  };
+    },
+    { title: "입사일", field: "startDate", sorter: "date" },
+    { title: "이메일", field: "email", sorter: "string" },
+    { title: "전화번호", field: "phone", sorter: "string" },
+    { title: "상태", field: "status", sorter: "string" }
+  ];
   
-  // 현재 볼 수 있는 데이터만 복사 (이벤트 전파 중지)
-  const copyVisibleData = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 전파 중지
-    
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("visible");
-        setSelectedData(`현재 보이는 데이터 복사`);
-      } catch (err) {
-        console.error("보이는 데이터 복사 오류:", err);
-      }
-    }
-  };
-
-  // 테이블 초기화
-  useEffect(() => {
-    if (tableRef.current) {
-      console.log('테이블 초기화 시작');
-      
-      // 테이블 초기화
-      const table = new Tabulator(tableRef.current, {
-        data: data,
-        layout: "fitColumns",
-        height: "500px",
-        
-        // 셀 선택 설정
-        selectable: true,
-        selectableRange: true,
-        selectableRangeColumns: true,
-        selectableRangeRows: true,
-        selectableRangeClearCells: true,
-        
-        // 클립보드 설정
-        clipboard: true,
-        clipboardCopyStyled: true,
-        clipboardCopyRowRange: "selected",
-        clipboardCopySelector: "range",
-        
-        // 초기화 완료 콜백
-        tableBuilt: function() {
-          console.log("테이블 빌드 완료");
-          // 전역 변수에 저장 (중요)
-          currentTable = table;
-        },
-        
-        // 셀 선택 변경 이벤트
-        cellSelectionChanged: function(cells, rows) {
-          if (cells && cells.length > 0) {
-            console.log('셀 선택 변경:', cells.length, '개 셀');
-            setSelectedData(`선택된 셀: ${cells.length}개`);
-            
-            // 10초 후 자동 선택 해제 (사용자 편의성)
-            const selectionTimeout = setTimeout(() => {
-              const currentSelected = document.querySelectorAll('.tabulator-selected');
-              if (currentSelected.length > 0) {
-                console.log('자동 선택 해제 (10초 타임아웃)');
-                clearSelection();
-              }
-            }, 10000);
-            
-            // 이전 타이머 정리
-            return () => clearTimeout(selectionTimeout);
-          }
-        },
-        
-        // 열 정의
-        columns: [
-          { title: "ID", field: "id", sorter: "number", width: 60 },
-          { title: "이름", field: "name", sorter: "string" },
-          { title: "직책", field: "position", sorter: "string" },
-          { title: "부서", field: "department", sorter: "string" },
-          { 
-            title: "급여", 
-            field: "salary", 
-            sorter: "number",
-            formatter: "money",
-            formatterParams: {
-              thousand: ",",
-              symbol: "₩",
-              precision: 0
-            }
-          },
-          { title: "입사일", field: "startDate", sorter: "date" },
-          { title: "이메일", field: "email", sorter: "string" },
-          { title: "전화번호", field: "phone", sorter: "string" },
-          { title: "상태", field: "status", sorter: "string" }
-        ],
-      });
-      
-      // 상태 업데이트 및 전역 참조 저장
-      setTabulator(table);
-      currentTable = table;
-      
-      // 문서 클릭 이벤트 리스너 추가 - 테이블 외부 클릭 시 선택 초기화
-      const handleDocumentClick = (e: MouseEvent) => {
-        const tableElement = tableRef.current;
-        if (tableElement && !tableElement.contains(e.target as Node)) {
-          console.log('문서 영역 클릭 감지 - 셀 선택 해제');
-          clearSelection();
-        }
-      };
-      
-      // ESC 키 이벤트 리스너 추가
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          console.log('ESC 키 감지 - 셀 선택 해제');
-          clearSelection();
-        }
-      };
-      
-      // 이벤트 리스너 등록
-      document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleKeyDown);
-      
-      // 클린업 함수
-      return () => {
-        if (tabulator) {
-          tabulator.destroy();
-        }
-        document.removeEventListener('click', handleDocumentClick);
-        document.removeEventListener('keydown', handleKeyDown);
-        currentTable = null;
-      };
-    }
-  }, []);
-
   return (
-    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }}>
+    <div className="container mx-auto py-6">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -353,57 +109,68 @@ export default function TabulatorSpreadsheetExample() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">스프레드시트 기능</h1>
-          <p className="text-gray-500 mt-1">셀 범위를 드래그하여 선택한 후 복사하세요. 셀을 더블클릭하면 편집 가능합니다.</p>
+          <h1 className="text-3xl font-bold">샘플 3: 셀 선택 최적화</h1>
+          <p className="text-gray-500 mt-1">셀 범위 선택 및 복사 기능이 최적화된 Tabulator 구현</p>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>셀 범위 선택 및 스프레드시트 기능</CardTitle>
-            <div className="flex flex-wrap space-x-2 mt-2">
-              <Button onClick={copySelectedCells} size="sm" className="mb-2">
-                <Copy className="h-4 w-4 mr-2" />
-                선택한 범위 복사
-              </Button>
-              <Button onClick={copyEntireTable} size="sm" variant="outline" className="mb-2">
-                <ClipboardCopy className="h-4 w-4 mr-2" />
-                전체 테이블 복사
-              </Button>
-              <Button onClick={copyVisibleData} size="sm" variant="outline" className="mb-2">
-                <Clipboard className="h-4 w-4 mr-2" />
-                보이는 데이터 복사
-              </Button>
-              <Button onClick={(e) => {
-                e.stopPropagation();
-                clearSelection();
-              }} size="sm" variant="destructive" className="mb-2">
-                <X className="h-4 w-4 mr-2" />
-                선택 초기화
-              </Button>
-            </div>
-            {selectedData && (
-              <div className="mt-2 text-sm text-muted-foreground">
-                {selectedData}
-              </div>
-            )}
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="mb-4 text-sm text-gray-500">
-              <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
-              다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
-              <br />
-              <strong>선택 해제:</strong> 테이블 바깥 영역을 클릭하거나 ESC 키를 누르면 선택이 해제됩니다. 10초 후 자동으로 선택이 해제됩니다.
-            </p>
-            <div 
-              ref={tableRef} 
-              className="w-full h-[500px]" 
-              onPaste={onPasteCaptured}
-              tabIndex={0}
-            ></div>
-          </CardContent>
-        </Card>
+      
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="mb-4 flex gap-2">
+            <Button 
+              onClick={() => gridRef.current?.copySelection()} 
+              size="sm" 
+              className="flex items-center"
+            >
+              선택 영역 복사
+            </Button>
+            <Button 
+              onClick={() => gridRef.current?.clearSelection()} 
+              size="sm" 
+              variant="outline"
+            >
+              선택 초기화
+            </Button>
+          </div>
+          
+          <div className="border rounded">
+            <TabulatorGrid
+              ref={gridRef}
+              data={data}
+              columns={columns}
+              height="500px"
+              layout="fitColumns"
+              pagination={true}
+              paginationSize={20}
+              paginationSizeSelector={[5, 10, 20, 50, 100]}
+              selectable={true}
+              selectableRange={true}
+              selectableRangeColumns={true}
+              selectableRangeRows={true}
+              selectableRangeClearCells={true}
+              enableClipboard={true}
+              clipboardCopyStyled={false}
+              editable={true}
+              additionalOptions={{
+                clipboardCopyConfig: {
+                  rowHeaders: false,
+                  columnHeaders: false,
+                },
+                clipboardCopyRowRange: "range",
+                clipboardCopySelector: "range",
+              }}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      
+      <div className="bg-muted p-4 rounded-md">
+        <h3 className="text-lg font-medium mb-2">개선사항</h3>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>공통 TabulatorGrid 컴포넌트를 사용하여 코드 재사용성 향상</li>
+          <li>최적화된 셀 선택 기능 구현</li>
+          <li>더 안정적인 클립보드 복사 기능</li>
+        </ul>
       </div>
     </div>
   );

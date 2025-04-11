@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Copy } from 'lucide-react';
-import { TabulatorFull as Tabulator } from 'tabulator-tables';
-import "tabulator-tables/dist/css/tabulator.min.css";
+import { ArrowLeft } from 'lucide-react';
+import TabulatorGrid, { TabulatorGridRef } from '@/components/common/TabulatorGrid';
 
 interface Employee {
   id: number;
@@ -21,10 +20,8 @@ interface Employee {
 }
 
 export default function TabulatorSpreadsheetExample() {
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [tabulator, setTabulator] = useState<Tabulator | null>(null);
-  const [selectedData, setSelectedData] = useState<string>("");
-
+  const gridRef = useRef<TabulatorGridRef>(null);
+  
   // 샘플 데이터
   const data: Employee[] = [
     // 기본 데이터 (세트 A) - 15개
@@ -79,242 +76,29 @@ export default function TabulatorSpreadsheetExample() {
     { id: 215, name: "조현우(C)", position: "테스트 리드", department: "개발팀", salary: 5500000, startDate: "2022-11-11", email: "choC@example.com", phone: "010-5555-8666", status: "정규직" },
   ];
 
-  // 전역 참조 변수
-  let currentTable: Tabulator | null = null;
-
-  // 선택한 영역 복사 함수
-  const copySelectedRange = () => {
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        tabulator.copyToClipboard("range");
-        setSelectedData("선택한 영역이 클립보드에 복사되었습니다.");
-        
-        // 3초 후 메시지 제거
-        setTimeout(() => {
-          setSelectedData("");
-        }, 3000);
-      } catch (err) {
-        console.error("복사 실패:", err);
+  // 컬럼 정의
+  const columns = [
+    { title: "ID", field: "id", sorter: "number", width: 60 },
+    { title: "이름", field: "name", sorter: "string" },
+    { title: "직책", field: "position", sorter: "string" },
+    { title: "부서", field: "department", sorter: "string" },
+    { 
+      title: "급여", 
+      field: "salary", 
+      sorter: "number",
+      formatter: "money",
+      formatterParams: {
+        thousand: ",",
+        symbol: "₩",
+        precision: 0
       }
-    }
-  };
-
-  // 선택한 셀 영역 초기화 함수 (DOM 직접 조작 방식)
-  const clearSelection = () => {
-    console.log('셀 선택 해제 시도 - DOM 직접 조작');
-    
-    try {
-      // 1. Tabulator API 호출 시도
-      if (tabulator) {
-        try {
-          // @ts-ignore
-          tabulator.deselectRow(); // 행 선택 해제
-          
-          // @ts-ignore
-          if (tabulator.modules && tabulator.modules.selectRange) {
-            // @ts-ignore
-            tabulator.modules.selectRange.clearRange();
-          }
-          
-          // @ts-ignore
-          tabulator.element.dispatchEvent(new Event('rangeClear')); // 이벤트 발생
-        } catch (apiErr) {
-          console.log('Tabulator API 호출 실패:', apiErr);
-        }
-      }
-      
-      // 2. 선택된 셀 클래스 제거 (DOM 전용 방식)
-      const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected, .tabulator-range-selected');
-      console.log('선택된 셀 개수:', selectedCells.length);
-      selectedCells.forEach(el => {
-        el.classList.remove('tabulator-selected');
-        el.classList.remove('tabulator-range-selected');
-      });
-      
-      // 3. 오버레이 요소 제거
-      const overlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-cell-selecting, .tabulator-selected-ranges');
-      console.log('오버레이 요소 개수:', overlays.length);
-      overlays.forEach(el => {
-        el.remove();
-      });
-      
-      // 4. 전역 선택 객체 초기화
-      if (document.getSelection) {
-        document.getSelection()?.removeAllRanges();
-      }
-      
-      // 5. 활성 요소에서 포커스 제거
-      if (document.activeElement && document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
-      }
-      
-      // 6. CSS 스타일로 강제 초기화
-      const style = document.createElement('style');
-      style.setAttribute('id', 'tabulator-reset-style');
-      style.textContent = `
-        .tabulator-selected, 
-        .tabulator-cell.tabulator-selected, 
-        .tabulator-row.tabulator-selected,
-        .tabulator-range-selected { 
-          background-color: transparent !important; 
-          border: none !important;
-          outline: none !important;
-        }
-        .tabulator-range-overlay, 
-        .tabulator-cell-selecting,
-        .tabulator-selected-ranges { 
-          display: none !important;
-          opacity: 0 !important; 
-          visibility: hidden !important;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // 상태 메시지 초기화
-      setSelectedData("");
-      
-      // 일정 시간 후 스타일 제거
-      setTimeout(() => {
-        const tempStyle = document.getElementById('tabulator-reset-style');
-        if (tempStyle) {
-          tempStyle.remove();
-        }
-        
-        // 성공 여부 확인
-        const remainingSelected = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
-        const remainingOverlays = document.querySelectorAll('.tabulator-range-overlay');
-        console.log('선택 초기화 결과 - 남은 셀:', remainingSelected.length, '남은 오버레이:', remainingOverlays.length);
-        
-        // 강제로 다시 시도
-        if (remainingSelected.length > 0 || remainingOverlays.length > 0) {
-          remainingSelected.forEach(el => el.classList.remove('tabulator-selected'));
-          remainingOverlays.forEach(el => el.remove());
-        }
-      }, 200);
-    } catch (err) {
-      console.error('선택 해제 중 오류:', err);
-    }
-  };
-
-  // 테이블 초기화
-  useEffect(() => {
-    if (tableRef.current) {
-      console.log('테이블 초기화 시작');
-      
-      // 테이블 초기화
-      const table = new Tabulator(tableRef.current, {
-        data: data,
-        layout: "fitColumns",
-        height: "500px",
-        
-        // 셀 선택 범위 설정 - 공식 예제 참고
-        selectableRange: true,         // 범위 선택 활성화
-        selectableRangeColumns: true,  // 열 범위 선택 활성화
-        selectableRangeRows: true,     // 행 범위 선택 활성화
-        selectableRangeClearCells: true, // 셀 범위 선택 초기화 활성화
-        
-        // 편집 모드 트리거 설정
-        editTriggerEvent: "dblclick",  // 더블 클릭으로 편집 시작
-        
-        // 클립보드 설정 - 공식 예제 참고
-        clipboard: true,               // 클립보드 기능 활성화
-        clipboardCopyStyled: false,    // 스타일 없이 복사
-        clipboardCopyConfig: {
-          rowHeaders: false,           // 행 헤더 제외
-          columnHeaders: false,        // 열 헤더 제외
-        },
-        clipboardCopyRowRange: "range", // 선택한 범위만 행 복사
-        clipboardCopySelector: "range", // 선택한 범위만 복사
-        
-        // 페이징 설정
-        pagination: true,
-        paginationSize: 20,
-        paginationSizeSelector: [5, 10, 20, 50, 100],
-        paginationCounter: "rows",
-        
-        // 클립보드 복사 이벤트
-        clipboardCopied: function(clipboard) {
-          console.log("클립보드에 복사됨:", clipboard);
-          setSelectedData("선택한 영역이 클립보드에 복사되었습니다.");
-          
-          // 3초 후 메시지 제거
-          setTimeout(() => {
-            setSelectedData("");
-          }, 3000);
-        },
-        
-        // 셀 선택 이벤트
-        cellSelectionChanged: function(cell, range) {
-          console.log("셀 선택됨:", range);
-          setSelectedData("셀 범위가 선택되었습니다. Ctrl+C 또는 복사 버튼을 클릭하세요.");
-        },
-        
-        // 초기화 완료 콜백
-        tableBuilt: function() {
-          console.log("테이블 빌드 완료");
-          currentTable = table;
-        },
-        
-        // 열 정의
-        columns: [
-          { title: "ID", field: "id", sorter: "number", width: 60 },
-          { title: "이름", field: "name", sorter: "string" },
-          { title: "직책", field: "position", sorter: "string" },
-          { title: "부서", field: "department", sorter: "string" },
-          { 
-            title: "급여", 
-            field: "salary", 
-            sorter: "number",
-            formatter: "money",
-            formatterParams: {
-              thousand: ",",
-              symbol: "₩",
-              precision: 0
-            }
-          },
-          { title: "입사일", field: "startDate", sorter: "date" },
-          { title: "이메일", field: "email", sorter: "string" },
-          { title: "전화번호", field: "phone", sorter: "string" },
-          { title: "상태", field: "status", sorter: "string" }
-        ],
-      });
-      
-      // 상태 업데이트 및 전역 참조 저장
-      setTabulator(table);
-      currentTable = table;
-      
-      // 문서 클릭 이벤트 리스너 - 테이블 외부 클릭 시 선택 초기화
-      const handleDocumentClick = (e: MouseEvent) => {
-        const tableElement = tableRef.current;
-        if (tableElement && !tableElement.contains(e.target as Node)) {
-          clearSelection();
-        }
-      };
-      
-      // 키보드 이벤트 리스너 - ESC 키 누를 때 선택 초기화
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          clearSelection();
-        }
-      };
-      
-      // 이벤트 리스너 등록
-      document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleKeyDown);
-      
-      // 클린업 함수
-      return () => {
-        if (tabulator) {
-          tabulator.destroy();
-        }
-        document.removeEventListener('click', handleDocumentClick);
-        document.removeEventListener('keydown', handleKeyDown);
-        currentTable = null;
-      };
-    }
-  }, []);
-
+    },
+    { title: "입사일", field: "startDate", sorter: "date" },
+    { title: "이메일", field: "email", sorter: "string" },
+    { title: "전화번호", field: "phone", sorter: "string" },
+    { title: "상태", field: "status", sorter: "string" }
+  ];
+  
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center mb-6">
@@ -325,38 +109,68 @@ export default function TabulatorSpreadsheetExample() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">스프레드시트 기능</h1>
-          <p className="text-gray-500 mt-1">셀 범위를 드래그하여 선택한 후 복사하세요. Ctrl+C 또는 복사 버튼을 사용할 수 있습니다.</p>
+          <h1 className="text-3xl font-bold">스프레드시트 기능 예제</h1>
+          <p className="text-gray-500 mt-1">셀 선택 및 복사 기능이 가능한 Tabulator 구현</p>
         </div>
       </div>
-
+      
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="flex justify-between items-center mb-4">
-            {selectedData && (
-              <div className="text-sm text-muted-foreground">
-                {selectedData}
-              </div>
-            )}
-            
+          <div className="mb-4 flex gap-2">
             <Button 
+              onClick={() => gridRef.current?.copySelection()} 
               size="sm" 
-              variant="outline" 
-              className="flex items-center" 
-              onClick={copySelectedRange}
+              className="flex items-center"
             >
-              <Copy className="h-4 w-4 mr-2" />
               선택 영역 복사
+            </Button>
+            <Button 
+              onClick={() => gridRef.current?.clearSelection()} 
+              size="sm" 
+              variant="outline"
+            >
+              선택 초기화
             </Button>
           </div>
           
-          <div 
-            ref={tableRef} 
-            className="w-full h-[500px]" 
-            tabIndex={0}
-          ></div>
+          <div className="border rounded">
+            <TabulatorGrid
+              ref={gridRef}
+              data={data}
+              columns={columns}
+              height="500px"
+              layout="fitColumns"
+              pagination={true}
+              paginationSize={20}
+              paginationSizeSelector={[5, 10, 20, 50, 100]}
+              selectable={true}
+              selectableRange={true}
+              selectableRangeColumns={true}
+              selectableRangeRows={true}
+              selectableRangeClearCells={true}
+              enableClipboard={true}
+              clipboardCopyStyled={false}
+              editable={true}
+              additionalOptions={{
+                clipboardCopyConfig: {
+                  rowHeaders: false,
+                  columnHeaders: false,
+                },
+              }}
+            />
+          </div>
         </CardContent>
       </Card>
+      
+      <div className="bg-muted p-4 rounded-md">
+        <h3 className="text-lg font-medium mb-2">사용 방법</h3>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>셀 영역 선택: 마우스로 드래그하여 선택합니다.</li>
+          <li>데이터 복사: 선택 후 Ctrl+C 또는 '선택 영역 복사' 버튼을 클릭합니다.</li>
+          <li>셀 편집: 해당 셀을 더블 클릭하여 편집 모드를 시작합니다.</li>
+          <li>행/열 정렬: 열 헤더를 클릭하여 정렬할 수 있습니다.</li>
+        </ul>
+      </div>
     </div>
   );
 } 

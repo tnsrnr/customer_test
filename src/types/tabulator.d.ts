@@ -53,12 +53,53 @@ declare module 'tabulator-tables' {
     reloadHeaderFilter(): void;
   }
 
+  export interface ColumnDefinition {
+    title?: string;
+    field?: string;
+    columns?: ColumnDefinition[];
+    headerSort?: boolean;
+    headerFilter?: boolean;
+    sorter?: string | Function;
+    formatter?: string | Function;
+    formatterParams?: any;
+    width?: number | string;
+    minWidth?: number;
+    maxWidth?: number;
+    visible?: boolean;
+    responsive?: number;
+    cssClass?: string;
+    headerTooltip?: string;
+    [key: string]: any;
+  }
+
+  export interface Options {
+    data?: any[];
+    columns?: ColumnDefinition[];
+    height?: string | number;
+    layout?: string;
+    pagination?: boolean;
+    paginationSize?: number;
+    paginationSizeSelector?: number[];
+    movableColumns?: boolean;
+    clipboard?: boolean;
+    clipboardCopyConfig?: any;
+    clipboardCopyStyled?: boolean;
+    clipboardCopySelector?: string;
+    clipboardCopyRowRange?: string;
+    selectable?: boolean;
+    selectableRange?: boolean;
+    selectableRangeColumns?: boolean;
+    selectableRangeRows?: boolean;
+    selectableRangeClearCells?: boolean;
+    [key: string]: any;
+  }
+
   export interface Tabulator {
     [key: string]: any;
   }
 
   export class TabulatorFull implements Tabulator {
-    constructor(element: HTMLElement | string, options?: any);
+    constructor(element: HTMLElement | string, options?: Options);
     setData(data: any[]): Promise<void>;
     getData(): any[];
     on(event: string, callback: Function): void;
@@ -94,5 +135,6 @@ declare module 'tabulator-tables' {
     blockRedraw(): void;
     restoreRedraw(): void;
     destroy(): void;
+    copyToClipboard(type: string): void;
   }
 } 

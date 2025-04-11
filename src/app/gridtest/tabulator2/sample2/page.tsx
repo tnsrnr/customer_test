@@ -89,141 +89,32 @@ export default function TabulatorClipboardExample() {
     }
   };
 
-  // 선택한 셀 영역 초기화 함수
+  // 선택한 셀 영역 초기화 함수 (간단하게 구현)
   const clearSelection = () => {
-    if (tabulator) {
-      try {
-        // 방법 1: tabulator API 호출로 초기화
-        // @ts-ignore
-        if (typeof tabulator.clearCellSelection === 'function') {
-          // @ts-ignore
-          tabulator.clearCellSelection();
-        } else {
-          // @ts-ignore
-          tabulator.deselectRow();
-        }
-        
-        // 방법 2: Tabulator 내부 DOM 요소에 초기화 트리거 이벤트 발송
-        if (tableRef.current) {
-          // 테이블에 직접 선택 해제 커스텀 이벤트 발송
-          const clearEvent = new CustomEvent('clearCellSelection');
-          tableRef.current.dispatchEvent(clearEvent);
-          
-          // tabulator-selected 클래스를 가진 모든 요소 찾기
-          const selectedElements = tableRef.current.querySelectorAll('.tabulator-selected');
-          
-          // 클래스 제거
-          selectedElements.forEach(el => {
-            el.classList.remove('tabulator-selected');
-          });
-          
-          // 오버레이 요소 제거
-          const overlays = tableRef.current.querySelectorAll('.tabulator-range-overlay, .tabulator-range-overlay-active');
-          overlays.forEach(el => el.remove());
-        }
-        
-        setSelectedData("선택 영역이 초기화되었습니다. (MutationObserver + blur 방식)");
-        console.log('샘플2: 선택 영역 초기화 실행됨');
-      } catch (err) {
-        console.error("선택 초기화 오류:", err);
-      }
-    }
+    // 모든 선택된 셀의 클래스 제거
+    document.querySelectorAll('.tabulator-selected').forEach(el => {
+      el.classList.remove('tabulator-selected');
+    });
+    
+    // 모든 범위 오버레이 요소 제거
+    document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
+      el.remove();
+    });
+    
+    setSelectedData("선택 영역이 초기화되었습니다.");
   };
 
-  // MutationObserver를 사용하여 DOM 변경 감시
+  // 문서 클릭 이벤트 처리
   useEffect(() => {
-    if (!tableRef.current) return;
-    
-    // 선택 영역 오버레이가 추가될 때 감지하는 observer
-    const observer = new MutationObserver((mutations) => {
-      // tabulator-range-overlay 클래스를 가진 요소가 추가되었는지 확인
-      const hasSelectionOverlay = mutations.some(mutation => 
-        Array.from(mutation.addedNodes).some(node => 
-          node instanceof HTMLElement && 
-          (node.classList.contains('tabulator-range-overlay') || 
-           node.querySelector('.tabulator-range-overlay'))
-        )
-      );
-      
-      if (hasSelectionOverlay) {
-        console.log('샘플2: 선택 오버레이 감지됨');
-        // 선택 상태가 변경되면 selectedData 상태 업데이트
-        const selectedCells = document.querySelectorAll('.tabulator-cell.tabulator-selected');
-        if (selectedCells.length > 0) {
-          setSelectedData(`선택된 셀: ${selectedCells.length}개 (MutationObserver 감지)`);
-        }
-      }
-    });
-    
-    // DOM 변경 감시 설정
-    observer.observe(tableRef.current, { 
-      childList: true, 
-      subtree: true, 
-      attributes: true, 
-      attributeFilter: ['class']
-    });
-    
-    // 컴포넌트 해제 시 observer 정리
-    return () => observer.disconnect();
-  }, [tableRef.current]);
-  
-  // 페이지를 떠날 때 blur 이벤트로 선택 해제
-  useEffect(() => {
-    const handleBlur = () => {
-      // 현재 포커스가 테이블 내부에 있는지 확인
-      const isTableFocused = document.activeElement && 
-        tableRef.current && 
-        tableRef.current.contains(document.activeElement);
-      
-      if (!isTableFocused) {
-        clearSelection();
-      }
-    };
-    
-    // 페이지 전체에 blur 이벤트 추가
-    window.addEventListener('blur', handleBlur);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        clearSelection();
-      }
-    });
-    
-    return () => {
-      window.removeEventListener('blur', handleBlur);
-      document.removeEventListener('visibilitychange', handleBlur);
-    };
-  }, []);
-
-  // 더블 클릭으로 선택 영역 해제
-  useEffect(() => {
-    const handleDoubleClick = (event: MouseEvent) => {
-      // 테이블 외부 더블클릭 시에만 작동
-      if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
-        clearSelection();
-      }
-    };
-    
-    document.addEventListener('dblclick', handleDoubleClick);
-    
-    return () => {
-      document.removeEventListener('dblclick', handleDoubleClick);
-    };
-  }, []);
-
-  // 전역 클릭 이벤트 핸들러
-  const handleGlobalClick = useCallback((event: MouseEvent) => {
-    // tabulator-table 또는 하위 요소를 클릭했는지 확인
-    const isTableClick = event.target instanceof Node && 
-      tableRef.current && 
-      (tableRef.current.contains(event.target) || 
-       // 테이블 셀 또는 선택 영역 클릭 시 무시
-       (event.target as Element).closest('.tabulator-cell') || 
-       (event.target as Element).closest('.tabulator-range-overlay'));
-    
-    // 테이블 외부 클릭 시 선택 영역 초기화
-    if (!isTableClick) {
+    const handleDocumentClick = () => {
       clearSelection();
-    }
+    };
+    
+    document.addEventListener('click', handleDocumentClick);
+    
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
   }, []);
 
   // 테이블 초기화
@@ -303,36 +194,38 @@ export default function TabulatorClipboardExample() {
         // 셀 선택 시 이벤트
         // @ts-ignore
         cellSelectionChanged: function(cells, selected) {
-          console.log("셀 선택 변경:", cells?.length, selected);
+          console.log("샘플2 - 셀 선택 변경:", cells?.length, selected);
           if (selected && cells && cells.length > 0) {
             setSelectedData(`선택된 셀: ${cells.length}개`);
+            
+            // 선택 이벤트 발생 후 약간의 지연 시간을 두고 선택 해제
+            setTimeout(() => {
+              clearSelection();
+            }, 500); // 선택 후 0.5초 후 자동 해제
           }
+        },
+        
+        // 모든 클릭 관련 이벤트에 선택 해제 콜백 추가
+        rowClick: function(e, row) {
+          setTimeout(clearSelection, 100);
+        },
+        cellClick: function(e, cell) {
+          setTimeout(clearSelection, 100);
         },
       });
       
       setTabulator(table);
-      
-      // 명시적으로 전역 이벤트 리스너를 window에 등록
-      window.addEventListener('mousedown', handleGlobalClick);
     }
     
     return () => {
-      // 컴포넌트 언마운트 시 이벤트 리스너와 테이블 정리
-      window.removeEventListener('mousedown', handleGlobalClick);
       if (tabulator) {
         tabulator.destroy();
       }
     };
-  }, [handleGlobalClick]);
+  }, []);
 
   return (
-    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
-      // 컨테이너 직접 클릭 시 선택 초기화 (이벤트 버블링 방지)
-      if (e.currentTarget === e.target) {
-        e.stopPropagation();
-        clearSelection();
-      }
-    }}>
+    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={clearSelection}>
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -379,15 +272,14 @@ export default function TabulatorClipboardExample() {
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
               다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
               <br />
-              <strong>선택 해제 방법 1:</strong> 테이블 외부 영역을 <strong>더블클릭</strong>하면 선택이 해제됩니다.
-              <br />
-              <strong>선택 해제 방법 2:</strong> 브라우저 탭/창의 포커스가 바뀌면 선택이 해제됩니다.
+              <strong>선택 해제:</strong> 마우스를 클릭하면 선택 영역이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 
               className="w-full h-[500px]" 
               onPaste={onPasteCaptured}
               tabIndex={0}
+              onClick={(e) => e.stopPropagation()}
             ></div>
           </CardContent>
         </Card>

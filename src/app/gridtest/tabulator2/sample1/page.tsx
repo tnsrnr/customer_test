@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
@@ -33,48 +33,29 @@ export default function TabulatorBasicExample() {
     { id: 8, name: "홍길동", age: 45, gender: "남성", department: "경영진", salary: 8000000 },
   ];
 
-  // 선택 영역 초기화 함수
+  // 셀 선택 해제 함수 (간단하게 구현)
   const clearSelection = () => {
-    if (tabulator && tableRef.current) {
-      try {
-        // 방법 1: 테이블을 새로 그려서 선택 상태를 초기화
-        tabulator.redraw(true);
-        
-        // 방법 2: DOM 조작으로 선택된 셀 클래스 제거
-        const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-range-overlay');
-        selectedCells.forEach(cell => {
-          cell.classList.remove('tabulator-selected');
-          if (cell.classList.contains('tabulator-range-overlay')) {
-            cell.remove();
-          }
-        });
-        
-        console.log('샘플1: 선택 영역 초기화 실행됨');
-      } catch (err) {
-        console.error("선택 초기화 오류:", err);
-      }
-    }
+    // 모든 선택된 셀의 클래스 제거
+    document.querySelectorAll('.tabulator-selected').forEach(el => {
+      el.classList.remove('tabulator-selected');
+    });
+    
+    // 모든 범위 오버레이 요소 제거
+    document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
+      el.remove();
+    });
   };
-  
-  // 전역 클릭 이벤트 핸들러 - 캡처 단계 활용
+
+  // 문서 클릭 이벤트 처리
   useEffect(() => {
-    // 캡처 단계에서 이벤트를 가로채기 (이벤트 버블링보다 먼저 실행됨)
-    const handleClickCapture = (event: MouseEvent) => {
-      // 테이블 내부 클릭인지 확인
-      const isTableClick = event.target instanceof Node && 
-        tableRef.current && tableRef.current.contains(event.target as Node);
-      
-      // 테이블 외부 클릭 시 선택 초기화
-      if (!isTableClick) {
-        clearSelection();
-      }
+    const handleDocumentClick = () => {
+      clearSelection();
     };
     
-    // true를 전달하여 캡처 단계에서 이벤트 처리
-    document.addEventListener('mousedown', handleClickCapture, true);
+    document.addEventListener('click', handleDocumentClick);
     
     return () => {
-      document.removeEventListener('mousedown', handleClickCapture, true);
+      document.removeEventListener('click', handleDocumentClick);
     };
   }, []);
 
@@ -92,7 +73,6 @@ export default function TabulatorBasicExample() {
         selectableRange: 1,
         selectableRangeColumns: true,
         selectableRangeRows: true,
-        selectableRangeClearCells: true,
         
         columns: [
           { title: "ID", field: "id", sorter: "number", width: 80 },
@@ -127,10 +107,6 @@ export default function TabulatorBasicExample() {
             },
           },
         },
-        // 셀 선택 이벤트 - 선택 변경 시 console에 로그 출력
-        cellSelectionChanged: function(cells, selected) {
-          console.log("샘플1 - 셀 선택 변경:", cells?.length, selected);
-        },
       });
       
       setTabulator(table);
@@ -141,30 +117,8 @@ export default function TabulatorBasicExample() {
     };
   }, []);
 
-  // 페이지 자체에 keydown 이벤트 추가 - ESC 키로 선택 해제
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // ESC 키로 선택 초기화
-      if (event.key === 'Escape') {
-        clearSelection();
-      }
-    };
-    
-    document.addEventListener('keydown', handleKeyDown);
-    
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
   return (
-    <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
-      // 컨테이너 직접 클릭 시 선택 초기화
-      if (e.currentTarget === e.target) {
-        e.stopPropagation();
-        clearSelection();
-      }
-    }}>
+    <div className="container mx-auto py-6">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" asChild className="mr-4">
           <Link href="/gridtest/tabulator2">
@@ -181,11 +135,13 @@ export default function TabulatorBasicExample() {
       <Card>
         <CardContent className="pt-6">
           <p className="mb-4 text-sm text-gray-500">
-            <strong>셀 선택:</strong> 셀을 드래그하여 범위를 선택할 수 있습니다. 
-            <strong>선택 해제 방법 1:</strong> 테이블 외부를 클릭하면 선택이 해제됩니다. (캡처 이벤트 방식)
-            <strong>선택 해제 방법 2:</strong> ESC 키를 누르면 선택이 해제됩니다.
+            <strong>셀 선택:</strong> 셀을 드래그하여 범위를 선택할 수 있습니다. 마우스를 클릭하면 선택이 해제됩니다.
           </p>
-          <div ref={tableRef} className="w-full"></div>
+          <div 
+            ref={tableRef} 
+            className="w-full"
+            onClick={(e) => e.stopPropagation()}
+          ></div>
         </CardContent>
       </Card>
     </div>

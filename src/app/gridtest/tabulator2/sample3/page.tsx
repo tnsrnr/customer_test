@@ -89,163 +89,35 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 선택한 셀 영역 초기화 함수 - Tabulator API 직접 호출 방식
+  // 선택한 셀 영역 초기화 함수 (간단하게 구현)
   const clearSelection = () => {
-    if (tabulator) {
-      try {
-        console.log('샘플3: 선택 영역 초기화 시도');
-        
-        // 방법 1: 내부 API 직접 접근 - private 메서드 활용
-        // @ts-ignore
-        if (tabulator.modules && tabulator.modules.selectRange) {
-          // @ts-ignore
-          tabulator.modules.selectRange.clearRange();
-          console.log('샘플3: selectRange.clearRange() 메서드 실행');
-        }
-        
-        // 방법 2: 테이블 데이터 유지하면서 다시 렌더링
-        // @ts-ignore
-        tabulator.refreshFilter();
-        
-        // 방법 3: DOM에서 직접 선택된 셀 클래스 제거
-        document.querySelectorAll('.tabulator-selected').forEach(el => {
-          el.classList.remove('tabulator-selected');
-        });
-        
-        // 범위 선택 오버레이 요소 제거
-        document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
-          el.remove();
-        });
-        
-        setSelectedData("선택 영역이 초기화되었습니다. (API + touchEvent 방식)");
-      } catch (err) {
-        console.error("선택 초기화 오류:", err);
-      }
-    }
+    // 모든 선택된 셀의 클래스 제거
+    document.querySelectorAll('.tabulator-selected').forEach(el => {
+      el.classList.remove('tabulator-selected');
+    });
+    
+    // 모든 범위 오버레이 요소 제거
+    document.querySelectorAll('.tabulator-range-overlay').forEach(el => {
+      el.remove();
+    });
+    
+    setSelectedData("선택 영역이 초기화되었습니다.");
   };
-  
-  // 터치 이벤트 핸들러 추가 - 모바일 환경 지원
-  useEffect(() => {
-    const handleTouchStart = (event: TouchEvent) => {
-      // 터치 이벤트 발생 시 터치 지점이 테이블 외부인지 확인
-      const touch = event.touches[0];
-      const touchElement = document.elementFromPoint(touch.clientX, touch.clientY);
-      
-      const isTableTouch = touchElement && 
-        tableRef.current && 
-        tableRef.current.contains(touchElement);
-      
-      if (!isTableTouch) {
-        clearSelection();
-      }
-    };
-    
-    // 터치 이벤트 리스너 등록
-    document.addEventListener('touchstart', handleTouchStart);
-    
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-    };
-  }, []);
-  
-  // 특정 시간이 지나면 자동으로 선택 해제
-  useEffect(() => {
-    let selectionTimeout: NodeJS.Timeout | null = null;
-    
-    // 셀 선택 후 일정 시간이 지나면 자동으로 선택 해제
-    const resetSelectionAfterDelay = () => {
-      // 이전 타이머 취소
-      if (selectionTimeout) {
-        clearTimeout(selectionTimeout);
-      }
-      
-      // 20초 후 선택 영역 자동 해제
-      selectionTimeout = setTimeout(() => {
-        clearSelection();
-        console.log('샘플3: 20초 타임아웃으로 선택 해제됨');
-      }, 20000);
-    };
-    
-    // 셀 선택 변화 감지 시 타이머 재설정
-    const handleSelectionChange = () => {
-      const hasSelection = document.querySelectorAll('.tabulator-selected').length > 0;
-      
-      if (hasSelection) {
-        resetSelectionAfterDelay();
-      } else if (selectionTimeout) {
-        clearTimeout(selectionTimeout);
-      }
-    };
-    
-    // MutationObserver로 선택 변화 감지
-    if (tableRef.current) {
-      const observer = new MutationObserver(handleSelectionChange);
-      
-      observer.observe(tableRef.current, {
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class'],
-      });
-      
-      return () => {
-        observer.disconnect();
-        if (selectionTimeout) {
-          clearTimeout(selectionTimeout);
-        }
-      };
-    }
-  }, []);
-  
-  // 테이블 외부 클릭 시 선택 영역 초기화
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (tableRef.current && !tableRef.current.contains(event.target as Node)) {
-        // 클릭 이벤트가 테이블 외부에서 발생한 경우
-        clearSelection();
-      }
-    };
-    
-    // 중요: 스타일 추가로 테이블 외부 영역 클릭 가능하게 만들기
-    const addClickableOverlay = () => {
-      const style = document.createElement('style');
-      style.id = 'tabulator-clickable-style';
-      style.textContent = `
-        .tabulator-cell { pointer-events: auto !important; }
-        .tabulator { z-index: 1; }
-        .container { min-height: 100vh; }
-      `;
-      document.head.appendChild(style);
-    };
-    
-    addClickableOverlay();
-    document.addEventListener('mousedown', handleOutsideClick);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      const style = document.getElementById('tabulator-clickable-style');
-      if (style) {
-        style.remove();
-      }
-    };
-  }, []);
 
-  // 전역 클릭 이벤트 핸들러
-  const handleGlobalClick = useCallback((event: MouseEvent) => {
-    // tabulator-table 또는 하위 요소를 클릭했는지 확인
-    const isTableClick = event.target instanceof Node && 
-      tableRef.current && 
-      (tableRef.current.contains(event.target) || 
-       // 테이블 셀 또는 선택 영역 클릭 시 무시
-       (event.target as Element).closest('.tabulator-cell') || 
-       (event.target as Element).closest('.tabulator-range-overlay'));
-    
-    // 테이블 외부 클릭 시 선택 영역 초기화
-    if (!isTableClick) {
+  // 문서 클릭 이벤트 처리
+  useEffect(() => {
+    const handleDocumentClick = () => {
       clearSelection();
-    }
+    };
+    
+    document.addEventListener('click', handleDocumentClick);
+    
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
   }, []);
 
-  // 페이지 로드 및 테이블 초기화
+  // 테이블 초기화
   useEffect(() => {
     if (tableRef.current) {
       // 테이블 초기화
@@ -330,19 +202,14 @@ export default function TabulatorSpreadsheetExample() {
       });
       
       setTabulator(table);
-      
-      // 명시적으로 전역 이벤트 리스너를 window에 등록
-      window.addEventListener('mousedown', handleGlobalClick);
     }
     
     return () => {
-      // 컴포넌트 언마운트 시 이벤트 리스너와 테이블 정리
-      window.removeEventListener('mousedown', handleGlobalClick);
       if (tabulator) {
         tabulator.destroy();
       }
     };
-  }, [handleGlobalClick]);
+  }, []);
 
   return (
     <div className="container mx-auto py-6" style={{ minHeight: '100vh' }} onClick={(e) => {
@@ -398,17 +265,14 @@ export default function TabulatorSpreadsheetExample() {
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
               다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
               <br />
-              <strong>선택 해제 방법 1:</strong> 테이블 외부를 클릭하면 선택이 해제됩니다. (CSS 포인터 이벤트 최적화)
-              <br />
-              <strong>선택 해제 방법 2:</strong> 모바일에서는 테이블 외부를 터치하면 선택이 해제됩니다.
-              <br />
-              <strong>선택 해제 방법 3:</strong> 선택 후 20초가 지나면 자동으로 선택이 해제됩니다.
+              <strong>선택 해제:</strong> 마우스를 클릭하면 선택 영역이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 
               className="w-full h-[500px]" 
               onPaste={onPasteCaptured}
               tabIndex={0}
+              onClick={(e) => e.stopPropagation()}
             ></div>
           </CardContent>
         </Card>

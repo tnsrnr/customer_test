@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -41,156 +41,58 @@ export default function TabulatorSpreadsheetExample() {
     { id: 12, name: "우현우", position: "데이터 분석가", department: "마케팅팀", salary: 5300000, startDate: "2020-02-10", email: "woo@example.com", phone: "010-2222-3333", status: "정규직" },
   ];
 
-  // 전역 참조 변수
-  let currentTable: Tabulator | null = null;
-
-  // 클립보드 데이터 읽기
-  const onPasteCaptured = (event: React.ClipboardEvent) => {
-    if (tabulator) {
-      const clipboardData = event.clipboardData.getData('text');
-      setSelectedData(`붙여넣기 데이터: ${clipboardData}`);
-    }
-  };
-
-  // 선택한 셀 영역 초기화 함수 (DOM 직접 조작 방식)
+  // 선택한 셀 영역 초기화 함수
   const clearSelection = () => {
-    console.log('셀 선택 해제 시도 - DOM 직접 조작');
+    console.log('셀 선택 해제 시도');
     
     try {
-      // 1. Tabulator API 호출 시도
+      // Tabulator API 호출
       if (tabulator) {
-        try {
-          // @ts-ignore
-          tabulator.deselectRow(); // 행 선택 해제
-          
-          // @ts-ignore
-          if (tabulator.modules && tabulator.modules.selectRange) {
-            // @ts-ignore
-            tabulator.modules.selectRange.clearRange();
-          }
-          
-          // @ts-ignore
-          tabulator.element.dispatchEvent(new Event('rangeClear')); // 이벤트 발생
-        } catch (apiErr) {
-          console.log('Tabulator API 호출 실패:', apiErr);
-        }
+        // @ts-ignore
+        tabulator.deselectRow();
       }
       
-      // 2. 선택된 셀 클래스 제거 (DOM 전용 방식)
-      const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected, .tabulator-range-selected');
-      console.log('선택된 셀 개수:', selectedCells.length);
+      // 선택된 셀 클래스 제거
+      const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
       selectedCells.forEach(el => {
         el.classList.remove('tabulator-selected');
-        el.classList.remove('tabulator-range-selected');
       });
       
-      // 3. 오버레이 요소 제거
-      const overlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-cell-selecting, .tabulator-selected-ranges');
-      console.log('오버레이 요소 개수:', overlays.length);
-      overlays.forEach(el => {
-        el.remove();
-      });
-      
-      // 4. 전역 선택 객체 초기화
-      if (document.getSelection) {
-        document.getSelection()?.removeAllRanges();
-      }
-      
-      // 5. 활성 요소에서 포커스 제거
-      if (document.activeElement && document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
-      }
-      
-      // 6. CSS 스타일로 강제 초기화
-      const style = document.createElement('style');
-      style.setAttribute('id', 'tabulator-reset-style');
-      style.textContent = `
-        .tabulator-selected, 
-        .tabulator-cell.tabulator-selected, 
-        .tabulator-row.tabulator-selected,
-        .tabulator-range-selected { 
-          background-color: transparent !important; 
-          border: none !important;
-          outline: none !important;
-        }
-        .tabulator-range-overlay, 
-        .tabulator-cell-selecting,
-        .tabulator-selected-ranges { 
-          display: none !important;
-          opacity: 0 !important; 
-          visibility: hidden !important;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // 상태 업데이트
       setSelectedData("선택 영역이 초기화되었습니다.");
-      
-      // 일정 시간 후 스타일 제거
-      setTimeout(() => {
-        const tempStyle = document.getElementById('tabulator-reset-style');
-        if (tempStyle) {
-          tempStyle.remove();
-        }
-        
-        // 성공 여부 확인
-        const remainingSelected = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
-        const remainingOverlays = document.querySelectorAll('.tabulator-range-overlay');
-        console.log('선택 초기화 결과 - 남은 셀:', remainingSelected.length, '남은 오버레이:', remainingOverlays.length);
-        
-        // 강제로 다시 시도
-        if (remainingSelected.length > 0 || remainingOverlays.length > 0) {
-          remainingSelected.forEach(el => el.classList.remove('tabulator-selected'));
-          remainingOverlays.forEach(el => el.remove());
-        }
-      }, 200);
     } catch (err) {
       console.error('선택 해제 중 오류:', err);
     }
   };
 
-  // 문서 클릭 이벤트 처리 - 다중 이벤트와 다양한 이벤트 단계 적용 (개선)
+  // 테이블 외부 클릭 처리
   useEffect(() => {
-    // 사용자가 테이블 바깥을 클릭하면 선택 해제
-    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
-      const tableElement = document.querySelector('.tabulator');
+    const handleOutsideClick = (e: MouseEvent) => {
+      const tableElement = tableRef.current;
       if (tableElement && !tableElement.contains(e.target as Node)) {
-        console.log('테이블 외부 클릭 감지');
         clearSelection();
       }
     };
     
-    // 캡처링 단계에서 이벤트 리스너 추가 (높은 우선순위)
-    document.addEventListener('mousedown', handleOutsideClick as EventListener, true);
-    document.addEventListener('click', handleOutsideClick as EventListener, true);
-    document.addEventListener('mouseup', handleOutsideClick as EventListener, true);
-    
-    // 모바일 터치 이벤트
-    document.addEventListener('touchstart', handleOutsideClick as EventListener, true);
+    document.addEventListener('mousedown', handleOutsideClick);
     
     // ESC 키를 누르면 선택 해제
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        console.log('ESC 키 감지');
         clearSelection();
       }
     });
     
     return () => {
-      // 컴포넌트 언마운트 시 이벤트 리스너 제거
-      document.removeEventListener('mousedown', handleOutsideClick as EventListener, true);
-      document.removeEventListener('click', handleOutsideClick as EventListener, true);
-      document.removeEventListener('mouseup', handleOutsideClick as EventListener, true);
-      document.removeEventListener('touchstart', handleOutsideClick as EventListener, true);
+      document.removeEventListener('mousedown', handleOutsideClick);
       document.removeEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Escape') clearSelection();
       });
     };
   }, []);
 
-  // 선택한 셀 복사 함수 (이벤트 전파 중지)
+  // 선택한 셀 복사 함수
   const copySelectedCells = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 전파 중지
+    e.stopPropagation();
     
     if (tabulator) {
       try {
@@ -204,9 +106,9 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 테이블 전체 복사 함수 (이벤트 전파 중지)
+  // 테이블 전체 복사 함수
   const copyEntireTable = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 전파 중지
+    e.stopPropagation();
     
     if (tabulator) {
       try {
@@ -219,9 +121,9 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
   
-  // 현재 볼 수 있는 데이터만 복사 (이벤트 전파 중지)
+  // 현재 볼 수 있는 데이터만 복사
   const copyVisibleData = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 전파 중지
+    e.stopPropagation();
     
     if (tabulator) {
       try {
@@ -234,11 +136,9 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 테이블 초기화 useEffect의 마지막 부분 수정 - 추가 이벤트 핸들러
+  // 테이블 초기화
   useEffect(() => {
     if (tableRef.current) {
-      console.log('테이블 초기화 시작');
-      
       // 테이블 초기화
       const table = new Tabulator(tableRef.current, {
         data: data,
@@ -248,42 +148,10 @@ export default function TabulatorSpreadsheetExample() {
         // 셀 선택 설정
         selectable: true,
         selectableRange: true,
-        selectableRangeColumns: true,
-        selectableRangeRows: true,
-        selectableRangeClearCells: true,
         
         // 클립보드 설정
         clipboard: true,
-        clipboardCopyStyled: true,
-        clipboardCopyRowRange: "selected",
         clipboardCopySelector: "range",
-        
-        // 초기화 완료 콜백
-        tableBuilt: function() {
-          console.log("테이블 빌드 완료");
-          // 전역 변수에 저장 (중요)
-          currentTable = table;
-        },
-        
-        // 셀 선택 변경 이벤트
-        cellSelectionChanged: function(cells, rows) {
-          if (cells && cells.length > 0) {
-            console.log('셀 선택 변경:', cells.length, '개 셀');
-            setSelectedData(`선택된 셀: ${cells.length}개`);
-            
-            // 10초 후 자동 선택 해제 (사용자 편의성)
-            const selectionTimeout = setTimeout(() => {
-              const currentSelected = document.querySelectorAll('.tabulator-selected');
-              if (currentSelected.length > 0) {
-                console.log('자동 선택 해제 (10초 타임아웃)');
-                clearSelection();
-              }
-            }, 10000);
-            
-            // 이전 타이머 정리
-            return () => clearTimeout(selectionTimeout);
-          }
-        },
         
         // 열 정의
         columns: [
@@ -309,42 +177,12 @@ export default function TabulatorSpreadsheetExample() {
         ],
       });
       
-      // 셀 선택 후 복사 가능하도록 클립보드 설정 추가
-      // @ts-ignore
-      if (table.modules.clipboard) {
-        // @ts-ignore
-        console.log('클립보드 모듈 설정:', table.modules.clipboard);
-      }
-      
-      // Range 선택 모듈 설정 추가
-      // @ts-ignore
-      if (table.modules.selectRange) {
-        // @ts-ignore
-        console.log('Range 선택 모듈 설정:', table.modules.selectRange);
-      }
-      
-      // 상태 업데이트 및 전역 참조 저장
+      // 상태 업데이트
       setTabulator(table);
-      currentTable = table;
-      
-      // 테이블 외부 클릭 감지를 위한 추가 이벤트 처리
-      table.on("tableBuilt", function() {
-        // 테이블 내부 클릭 시 이벤트 전파 방지 (선택 기능 보존)
-        const tableElement = tableRef.current;
-        if (tableElement) {
-          tableElement.addEventListener('click', (e) => {
-            // 테이블 내부 클릭은 이벤트 전파를 허용 (모든 기능 정상 작동)
-            console.log('테이블 내부 클릭 감지 (이벤트 전파 허용)');
-          });
-        }
-      });
       
       // 클린업 함수
       return () => {
-        if (tabulator) {
-          tabulator.destroy();
-        }
-        currentTable = null;
+        table.destroy();
       };
     }
   }, []);
@@ -398,14 +236,13 @@ export default function TabulatorSpreadsheetExample() {
           <CardContent className="pt-0">
             <p className="mb-4 text-sm text-gray-500">
               <strong>사용법:</strong> 마우스로 셀 영역을 드래그하여 선택한 후 복사 버튼을 누르거나 Ctrl+C(Command+C)를 누르세요.
-              다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다. 셀을 더블클릭하여 편집할 수 있습니다.
+              다른 스프레드시트나 텍스트 편집기에 붙여넣기가 가능합니다.
               <br />
-              <strong>선택 해제:</strong> 테이블 바깥 영역을 클릭하거나 ESC 키를 누르면 선택이 해제됩니다. 10초 후 자동으로 선택이 해제됩니다.
+              <strong>선택 해제:</strong> 테이블 바깥 영역을 클릭하거나 ESC 키를 누르면 선택이 해제됩니다.
             </p>
             <div 
               ref={tableRef} 
               className="w-full h-[500px]" 
-              onPaste={onPasteCaptured}
               tabIndex={0}
             ></div>
           </CardContent>

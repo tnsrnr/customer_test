@@ -106,29 +106,18 @@ export function Sidebar() {
       icon: <LayoutGrid className="w-4 h-4" />,
       submenu: [
         { 
-          title: "Handsontable", 
-          href: "/gridtest/handsontable", 
-          icon: <Table2 className="w-4 h-4" />,
-          submenu: [
-            { title: "Handsontable샘플1", href: "/gridtest/handsontable/sample1", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable샘플2", href: "/gridtest/handsontable/sample2", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable샘플3", href: "/gridtest/handsontable/sample3", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable샘플4", href: "/gridtest/handsontable/sample4", icon: <Table2 className="w-4 h-4" /> },
-            { title: "Handsontable샘플5", href: "/gridtest/handsontable/sample5", icon: <Table2 className="w-4 h-4" /> }
-          ]
-        },
-        { 
           title: "Tabulator", 
           href: "/gridtest/tabulator", 
           icon: <Table2 className="w-4 h-4" />,
           submenu: [
-            { title: "기본 테이블 및 정렬", href: "/gridtest/tabulator/sample1", icon: <SortAsc className="w-4 h-4" /> },
-            { title: "필터링 및 검색", href: "/gridtest/tabulator/sample2", icon: <FileSearch className="w-4 h-4" /> },
-            { title: "데이터 시각화 및 집계", href: "/gridtest/tabulator/sample4", icon: <PieChart className="w-4 h-4" /> },
-            { title: "출석 기록 샘플", href: "/gridtest/tabulator/sample", icon: <Calendar className="w-4 h-4" /> },
-            { title: "엑셀 복사/붙여넣기", href: "/gridtest/tabulator/sample6", icon: <ClipboardCopy className="w-4 h-4" /> },
-            { title: "향상된 범위 선택", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> },
-            { title: "근태 관리 시스템", href: "/gridtest/tabulator/sample8", icon: <Clock className="w-4 h-4" /> }
+            { title: "sample1", href: "/gridtest/tabulator/sample1", icon: <SortAsc className="w-4 h-4" /> },
+            { title: "sample2", href: "/gridtest/tabulator/sample2", icon: <FileSearch className="w-4 h-4" /> },
+            { title: "sample3", href: "/gridtest/tabulator/sample3", icon: <Calendar className="w-4 h-4" /> },
+            { title: "sample4", href: "/gridtest/tabulator/sample4", icon: <PieChart className="w-4 h-4" /> },
+            { title: "sample5", href: "/gridtest/tabulator/sample5", icon: <PieChart className="w-4 h-4" /> },
+            { title: "sample6", href: "/gridtest/tabulator/sample6", icon: <ClipboardCopy className="w-4 h-4" /> },
+            { title: "sample7", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> },
+            { title: "sample8", href: "/gridtest/tabulator/sample8", icon: <Clock className="w-4 h-4" /> }
           ]
         },
         { 

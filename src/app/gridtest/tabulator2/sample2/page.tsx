@@ -100,28 +100,100 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 선택 영역 초기화 함수
+  // 선택한 셀 영역 초기화 함수 (DOM 직접 조작 방식)
   const clearSelection = () => {
-    if (tabulator) {
-      try {
-        // @ts-ignore
-        if (tabulator.modules && tabulator.modules.selectRange) {
+    console.log('셀 선택 해제 시도 - DOM 직접 조작');
+    
+    try {
+      // 1. Tabulator API 호출 시도
+      if (tabulator) {
+        try {
           // @ts-ignore
-          tabulator.modules.selectRange.clearRange();
+          tabulator.deselectRow(); // 행 선택 해제
+          
+          // @ts-ignore
+          if (tabulator.modules && tabulator.modules.selectRange) {
+            // @ts-ignore
+            tabulator.modules.selectRange.clearRange();
+          }
+          
+          // @ts-ignore
+          tabulator.element.dispatchEvent(new Event('rangeClear')); // 이벤트 발생
+        } catch (apiErr) {
+          console.log('Tabulator API 호출 실패:', apiErr);
+        }
+      }
+      
+      // 2. 선택된 셀 클래스 제거 (DOM 전용 방식)
+      const selectedCells = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected, .tabulator-range-selected');
+      console.log('선택된 셀 개수:', selectedCells.length);
+      selectedCells.forEach(el => {
+        el.classList.remove('tabulator-selected');
+        el.classList.remove('tabulator-range-selected');
+      });
+      
+      // 3. 오버레이 요소 제거
+      const overlays = document.querySelectorAll('.tabulator-range-overlay, .tabulator-cell-selecting, .tabulator-selected-ranges');
+      console.log('오버레이 요소 개수:', overlays.length);
+      overlays.forEach(el => {
+        el.remove();
+      });
+      
+      // 4. 전역 선택 객체 초기화
+      if (document.getSelection) {
+        document.getSelection()?.removeAllRanges();
+      }
+      
+      // 5. 활성 요소에서 포커스 제거
+      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      
+      // 6. CSS 스타일로 강제 초기화
+      const style = document.createElement('style');
+      style.setAttribute('id', 'tabulator-reset-style');
+      style.textContent = `
+        .tabulator-selected, 
+        .tabulator-cell.tabulator-selected, 
+        .tabulator-row.tabulator-selected,
+        .tabulator-range-selected { 
+          background-color: transparent !important; 
+          border: none !important;
+          outline: none !important;
+        }
+        .tabulator-range-overlay, 
+        .tabulator-cell-selecting,
+        .tabulator-selected-ranges { 
+          display: none !important;
+          opacity: 0 !important; 
+          visibility: hidden !important;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // 상태 메시지 초기화
+      setSelectedData("");
+      
+      // 일정 시간 후 스타일 제거
+      setTimeout(() => {
+        const tempStyle = document.getElementById('tabulator-reset-style');
+        if (tempStyle) {
+          tempStyle.remove();
         }
         
-        // DOM 직접 조작으로 선택 영역 클래스 제거
-        const selectedElements = document.querySelectorAll('.tabulator-selected, .tabulator-range-selected');
-        selectedElements.forEach(el => el.classList.remove('tabulator-selected', 'tabulator-range-selected'));
+        // 성공 여부 확인
+        const remainingSelected = document.querySelectorAll('.tabulator-selected, .tabulator-cell.tabulator-selected');
+        const remainingOverlays = document.querySelectorAll('.tabulator-range-overlay');
+        console.log('선택 초기화 결과 - 남은 셀:', remainingSelected.length, '남은 오버레이:', remainingOverlays.length);
         
-        // 오버레이 요소 제거
-        const overlays = document.querySelectorAll('.tabulator-range-overlay');
-        overlays.forEach(el => el.remove());
-        
-        setSelectedData("");
-      } catch (err) {
-        console.error("선택 영역 초기화 실패:", err);
-      }
+        // 강제로 다시 시도
+        if (remainingSelected.length > 0 || remainingOverlays.length > 0) {
+          remainingSelected.forEach(el => el.classList.remove('tabulator-selected'));
+          remainingOverlays.forEach(el => el.remove());
+        }
+      }, 200);
+    } catch (err) {
+      console.error('선택 해제 중 오류:', err);
     }
   };
 

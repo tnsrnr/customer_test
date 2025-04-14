@@ -81,7 +81,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
   const {
     data,
     columns,
-    height = "500px",
+    height = "auto",
     layout = "fitColumns",
     pagination = true,
     paginationSize = 20,
@@ -91,14 +91,19 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
     selectableRollingSelection = false,
     enableCellSelection = true,
     enableClipboard = true,
-    showSelectionControls = true,
+    showSelectionControls = false,
     enableCellSelectionOnRowSelect = true,
     onRowSelected,
     onRowDeselected,
     onSelectionChanged,
     onCopySuccess,
     className = "",
-    additionalOptions = {}
+    additionalOptions = {
+      responsiveLayout: "hide",
+      autoResize: true,
+      layoutColumnsOnNewData: true,
+      maxHeight: "500px"
+    }
   } = props;
 
   // Refs

@@ -161,6 +161,26 @@ export function Sidebar() {
           title: "스켈레톤 UI",
           href: "/other_test/skeleton-demo",
           icon: <LineChart className="w-4 h-4" />,
+        },
+        {
+          title: "테마 전환",
+          href: "/other_test/theme-toggle",
+          icon: <Settings className="w-4 h-4" />,
+        },
+        {
+          title: "멀티스텝 폼",
+          href: "/other_test/multi-step-form",
+          icon: <FormInput className="w-4 h-4" />,
+        },
+        {
+          title: "드래그 앤 드롭 업로드",
+          href: "/other_test/drag-drop-upload",
+          icon: <FileStack className="w-4 h-4" />,
+        },
+        {
+          title: "무한 스크롤",
+          href: "/other_test/infinite-scroll",
+          icon: <Smartphone className="w-4 h-4" />,
         }
       ],
     },

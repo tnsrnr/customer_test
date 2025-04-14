@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, Table2, Bell, MessageSquare, FileStack, LineChart, FormInput } from 'lucide-react';
+import { LayoutGrid, Table2, Bell, MessageSquare, FileStack, LineChart, FormInput, SunMoon, Upload, Infinity, ArrowDownUp } from 'lucide-react';
 
 export default function OtherTestPage() {
   const testOptions = [
@@ -43,6 +43,37 @@ export default function OtherTestPage() {
       link: '/other_test/skeleton-demo',
       linkText: '스켈레톤 UI 데모 보기'
     },
+    {
+      title: '테마 전환 데모',
+      description: '라이트/다크 모드 테마 전환 기능 예제',
+      icon: <SunMoon className="h-10 w-10 text-primary" />,
+      link: '/other_test/theme-toggle',
+      linkText: '테마 전환 데모 보기'
+    },
+    {
+      title: '드래그 앤 드롭 업로드',
+      description: '파일을 끌어다 놓는 방식의 업로드 인터페이스',
+      icon: <Upload className="h-10 w-10 text-primary" />,
+      link: '/other_test/drag-drop-upload',
+      linkText: '드래그 앤 드롭 데모 보기',
+      isNew: true
+    },
+    {
+      title: '무한 스크롤 데모',
+      description: '스크롤에 따라 데이터를 지속적으로 로드하는 예제',
+      icon: <Infinity className="h-10 w-10 text-primary" />,
+      link: '/other_test/infinite-scroll',
+      linkText: '무한 스크롤 데모 보기',
+      isNew: true
+    },
+    {
+      title: '멀티스텝 폼 마법사',
+      description: '여러 단계로 진행되는 복잡한 폼 입력 마법사',
+      icon: <ArrowDownUp className="h-10 w-10 text-primary" />,
+      link: '/other_test/multi-step-form',
+      linkText: '멀티스텝 폼 데모 보기',
+      isNew: true
+    },
     { 
       title: 'AG Grid',
       description: 'JavaScript 데이터 그리드 컴포넌트 AG Grid 예제 모음',
@@ -79,13 +110,20 @@ export default function OtherTestPage() {
           <Card key={index} className="transition-all duration-300 hover:shadow-md">
             <CardHeader className="flex flex-row items-center gap-4">
               {option.icon}
-              <div>
-                <CardTitle>{option.title}</CardTitle>
+              <div className="flex-1">
+                <div className="flex items-center">
+                  <CardTitle>{option.title}</CardTitle>
+                  {option.isNew && (
+                    <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-primary text-primary-foreground rounded-full">
+                      NEW
+                    </span>
+                  )}
+                </div>
                 <CardDescription>{option.description}</CardDescription>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 클릭하여 {option.title}를 확인하세요.
               </p>
             </CardContent>

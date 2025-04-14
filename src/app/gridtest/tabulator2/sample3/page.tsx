@@ -8,23 +8,6 @@ import { ArrowLeft } from 'lucide-react';
 import TabulatorGrid, { TabulatorGridRef, DataType } from '@/components/common/TabulatorGrid';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
-// 인라인 스타일 정의
-const styles = {
-  cardWrapper: {
-    backgroundColor: 'white',
-    padding: '0',
-    overflow: 'hidden'
-  },
-  cardContent: {
-    backgroundColor: 'white',
-    padding: '1.5rem 1.5rem 1.5rem 1.5rem'
-  },
-  gridContainer: {
-    backgroundColor: 'white',
-    width: '100%'
-  }
-};
-
 interface Employee {
   id: number;
   name: string;
@@ -103,15 +86,13 @@ export default function TabulatorSpreadsheetExample() {
         </div>
       </div>
       
-      <Card className="mb-6" style={styles.cardWrapper}>
-        <CardContent className="pt-6" style={styles.cardContent}>
-          <div style={styles.gridContainer}>
-            <TabulatorGrid
-              ref={gridRef}
-              data={data}
-              columns={columns}
-            />
-          </div>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <TabulatorGrid
+            ref={gridRef}
+            data={data}
+            columns={columns}
+          />
         </CardContent>
       </Card>
     </div>

@@ -939,6 +939,99 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           tabulatorRef.current?.on("rowSelected", updateDataStats);
           tabulatorRef.current?.on("rowDeselected", updateDataStats);
           
+          // 모든 placeholder 요소에 흰색 배경 강제 적용
+          function forceWhitePlaceholder() {
+            // 모든 placeholder 요소 찾기
+            const allPlaceholderElements = document.querySelectorAll(
+              '.tabulator-placeholder, ' +
+              '.tabulator-tableholder, ' +
+              '.tabulator-placeholder-contents, ' + 
+              '.tabulator-placeholder span, ' +
+              '.tabulator-tableholder:empty, ' +
+              '.tabulator-calcs-holder, ' +
+              '.tabulator-tableholder .tabulator-placeholder'
+            );
+            
+            allPlaceholderElements.forEach(el => {
+              const element = el as HTMLElement;
+              element.style.setProperty('background', 'white', 'important');
+              element.style.setProperty('background-color', 'white', 'important');
+            });
+            
+            // 페이지네이션 영역도 흰색으로
+            const paginationElements = document.querySelectorAll(
+              '.tabulator-footer, ' +
+              '.tabulator-footer-contents, ' +
+              '.tabulator-paginator, ' +
+              '.tabulator-page'
+            );
+            
+            paginationElements.forEach(el => {
+              const element = el as HTMLElement;
+              element.style.setProperty('background', 'white', 'important');
+              element.style.setProperty('background-color', 'white', 'important');
+            });
+          }
+          
+          // 즉시 실행
+          forceWhitePlaceholder();
+          
+          // 이벤트 발생 시에도 실행 
+          tabulatorRef.current?.on("pageLoaded", forceWhitePlaceholder);
+          tabulatorRef.current?.on("dataLoaded", forceWhitePlaceholder);
+          tabulatorRef.current?.on("dataChanged", forceWhitePlaceholder);
+          
+          // 일정 시간 후에도 실행
+          setTimeout(forceWhitePlaceholder, 200);
+          setTimeout(forceWhitePlaceholder, 500);
+          setTimeout(forceWhitePlaceholder, 1000);
+          
+          // 빈 공간만 흰색으로 설정
+          const setEmptySpaceWhite = () => {
+            // 빈 공간만 타겟팅
+            const emptySpaces = document.querySelectorAll('.tabulator-placeholder, .tabulator-tableHolder');
+            emptySpaces.forEach(el => {
+              (el as HTMLElement).style.background = 'white';
+            });
+            
+            // 테이블 아래쪽 푸터 영역 (페이징 컨트롤)
+            const footerElement = document.querySelector('.tabulator-footer');
+            if (footerElement) {
+              (footerElement as HTMLElement).style.background = 'white';
+            }
+          };
+          
+          // 페이지 로드/변경 이벤트에 설정 함수 등록
+          setEmptySpaceWhite();
+          tabulatorRef.current?.on("pageLoaded", setEmptySpaceWhite);
+          tabulatorRef.current?.on("dataChanged", setEmptySpaceWhite);
+          tabulatorRef.current?.on("dataLoaded", setEmptySpaceWhite);
+          tabulatorRef.current?.on("scrollVertical", setEmptySpaceWhite);
+          
+          // 마지막 행 테두리 추가
+          const addLastRowBorder = () => {
+            const tableElement = document.querySelector('.tabulator') as HTMLElement;
+            if (tableElement) {
+              tableElement.style.borderBottom = '1px solid #e2e8f0';
+            }
+            
+            const lastRow = document.querySelector('.tabulator-row:last-child');
+            if (lastRow) {
+              const cells = lastRow.querySelectorAll('.tabulator-cell');
+              cells.forEach(cell => {
+                (cell as HTMLElement).style.borderBottom = '1px solid #e2e8f0';
+              });
+            }
+          };
+          
+          // 처음 한 번 실행
+          addLastRowBorder();
+          
+          // 테이블 데이터 변경 시 다시 실행
+          tabulatorRef.current?.on("dataChanged", addLastRowBorder);
+          tabulatorRef.current?.on("dataLoaded", addLastRowBorder);
+          tabulatorRef.current?.on("pageLoaded", addLastRowBorder);
+          
           // 체크박스 이벤트 핸들러 설정
           setupCheckboxHandlers();
           
@@ -1157,11 +1250,26 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           try {
             if (typeof (tabulatorRef.current as any).off === 'function') {
               const tabulator = tabulatorRef.current as any;
+              // 체크박스 이벤트 제거
               tabulator.off("dataLoaded", setupCheckboxHandlers);
               tabulator.off("dataFiltered", setupCheckboxHandlers);
               tabulator.off("dataSorted", setupCheckboxHandlers);
               tabulator.off("pageLoaded", setupCheckboxHandlers);
               tabulator.off("rowMoved", setupCheckboxHandlers);
+              
+              // 배경 관련 이벤트 제거 (함수 이름으로 직접 참조)
+              tabulator.off("pageLoaded", function forceWhitePlaceholder() {});
+              tabulator.off("dataLoaded", function forceWhitePlaceholder() {});
+              tabulator.off("dataChanged", function forceWhitePlaceholder() {});
+              
+              tabulator.off("pageLoaded", function setEmptySpaceWhite() {});
+              tabulator.off("dataChanged", function setEmptySpaceWhite() {});
+              tabulator.off("dataLoaded", function setEmptySpaceWhite() {});
+              tabulator.off("scrollVertical", function setEmptySpaceWhite() {});
+              
+              tabulator.off("dataChanged", function addLastRowBorder() {});
+              tabulator.off("dataLoaded", function addLastRowBorder() {});
+              tabulator.off("pageLoaded", function addLastRowBorder() {});
             }
           } catch (error) {
             console.warn("테이블 이벤트 제거 중 오류 발생:", error);

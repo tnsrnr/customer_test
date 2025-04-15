@@ -119,12 +119,49 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
   const lastSelectedCell = useRef<HTMLElement | null>(null);
   const shiftStartCell = useRef<HTMLElement | null>(null);
 
+  // 데이터 상태 정보
+  const [dataStats, setDataStats] = useState<{total: number, selected: number}>({
+    total: data.length,
+    selected: 0
+  });
+
+  // 데이터 상태 업데이트 함수
+  const updateDataStats = () => {
+    if (!tabulatorRef.current) return;
+    
+    try {
+      // 현재 표시된 전체 데이터 수 (필터링 적용된 상태)
+      const totalData = tabulatorRef.current.getData().length;
+      // 선택된 데이터 수
+      const selectedData = tabulatorRef.current.getSelectedData().length;
+      
+      setDataStats({
+        total: totalData,
+        selected: selectedData
+      });
+
+      // 푸터 요소 직접 업데이트
+      const totalElement = document.querySelector('.tabulator-footer-data-stats .total-count');
+      const selectedElement = document.querySelector('.tabulator-footer-data-stats .selected-count');
+      
+      if (totalElement) {
+        totalElement.textContent = totalData.toString();
+      }
+      
+      if (selectedElement) {
+        selectedElement.textContent = selectedData.toString();
+      }
+    } catch (e) {
+      console.warn("데이터 상태 업데이트 중 오류 발생", e);
+    }
+  };
+
   // 외부에서 접근 가능한 메서드 설정
   useImperativeHandle(ref, () => ({
     getTable: () => tabulatorRef.current,
     clearSelection: handleClearSelection,
     copySelection: handleCopySelection
-  })); 
+  }));
 
   // 셀 선택 추가
   const addCellSelection = (cell: HTMLElement) => {
@@ -609,6 +646,12 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         placeholder: "데이터가 없습니다.",
         placeholderBackground: "white",
         
+        // 데이터 상태 정보 푸터 요소
+        footerElement: `<div class="tabulator-footer-data-stats px-4 py-2 text-sm text-gray-500">
+          총 <span class="total-count font-medium text-gray-700">${data.length}</span>개 중 
+          <span class="selected-count font-medium text-gray-700">0</span>개 선택됨
+        </div>`,
+        
         // 행 선택 이벤트
         rowSelected: function(row: any) {
           // 행이 선택될 때마다 ID를 selectedRows에 추가
@@ -620,6 +663,9 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           console.log('행 선택 이벤트 - 모든 셀 선택 초기화');
           // 행 선택 시 모든 셀 선택 강제 초기화
           forceResetAllCellSelection();
+          
+          // 데이터 상태 업데이트
+          updateDataStats();
           
           // 외부 콜백 호출
           if (onRowSelected) {
@@ -637,10 +683,24 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           // 행 선택 해제 시에도 모든 셀 선택 강제 초기화
           forceResetAllCellSelection();
           
+          // 데이터 상태 업데이트
+          updateDataStats();
+          
           // 외부 콜백 호출
           if (onRowDeselected) {
             onRowDeselected(row);
           }
+        },
+        
+        // 데이터 변경 이벤트 (필터링, 정렬 등)
+        dataFiltered: function() {
+          updateDataStats();
+        },
+        dataLoaded: function() {
+          updateDataStats();
+        },
+        dataSorted: function() {
+          updateDataStats();
         },
         ...additionalOptions
       };
@@ -651,6 +711,17 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
       // 테이블 렌더링이 완료되면 이벤트 핸들러 추가
       tabulatorRef.current.on("tableBuilt", () => {
         setupCustomHandlers();
+        
+        // 초기 데이터 상태 정보 설정
+        updateDataStats();
+        
+        // 이벤트 리스너로 추가
+        tabulatorRef.current?.on("pageLoaded", updateDataStats);
+        tabulatorRef.current?.on("dataFiltered", updateDataStats);
+        tabulatorRef.current?.on("dataSorted", updateDataStats);
+        tabulatorRef.current?.on("dataChanged", updateDataStats);
+        tabulatorRef.current?.on("rowSelected", updateDataStats);
+        tabulatorRef.current?.on("rowDeselected", updateDataStats);
         
         // 모든 placeholder 요소에 흰색 배경 강제 적용
         function forceWhitePlaceholder() {
@@ -976,6 +1047,15 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           
           .tabulator-row.tabulator-selected .tabulator-cell {
             border-color: #c0d8ea !important;
+          }
+          
+          /* 푸터 데이터 상태 표시 스타일 */
+          .tabulator-footer-data-stats {
+            display: inline-block;
+            float: left;
+            margin-right: 10px;
+            padding: 5px 10px;
+            border-right: 1px solid #eee;
           }
         `;
         document.head.appendChild(style);

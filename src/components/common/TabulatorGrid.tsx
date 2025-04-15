@@ -4,6 +4,14 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import "tabulator-tables/dist/css/tabulator.min.css";
 
+// Tabulator 인터페이스 확장 (on/off 메소드 정의)
+declare module 'tabulator-tables' {
+  interface Tabulator {
+    on(event: string, callback: Function): void;
+    off(event: string, callback: Function): void;
+  }
+}
+
 // 타입 정의
 export interface DataType {
   [key: string]: any;
@@ -50,6 +58,7 @@ export interface TabulatorGridProps {
   data: DataType[];
   columns: ColumnDefinitionType[];
   height?: string;
+  minHeight?: string;
   layout?: string;
   pagination?: boolean;
   paginationSize?: number;
@@ -81,7 +90,8 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
   const {
     data,
     columns,
-    height = "500px",
+    height,
+    minHeight,
     layout = "fitColumns",
     pagination = true,
     paginationSize = 20,
@@ -124,6 +134,190 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
     total: data.length,
     selected: 0
   });
+  
+  // 커스텀 필터 상태
+  const [showCustomFilter, setShowCustomFilter] = useState<boolean>(false);
+  const [filterValues, setFilterValues] = useState<{[key: string]: string}>({});
+  
+  // 필터 토글 핸들러
+  const handleToggleFilter = () => {
+    const newState = !showCustomFilter;
+    setShowCustomFilter(newState);
+    
+    // 필터가 표시될 때 즉시 그리고 약간의 지연 후에도 컬럼 너비 측정
+    if (newState) {
+      setTimeout(() => syncFilterColumns(), 0);
+      setTimeout(() => syncFilterColumns(), 100);
+    }
+  };
+  
+  // 필터 컬럼을 그리드 컬럼과 동기화하는 함수
+  const syncFilterColumns = () => {
+    if (!tabulatorRef.current) return;
+    
+    // 테이블 헤더 컬럼 요소 가져오기
+    const headerCells = document.querySelectorAll('.tabulator-col:not(.tabulator-col-group)');
+    const filterArea = document.querySelector('.filter-area');
+    
+    if (!filterArea) return;
+    
+    // 필터 영역 기존 요소 제거
+    const filterContainer = filterArea.querySelector('.filter-columns-container');
+    if (filterContainer) {
+      filterContainer.innerHTML = '';
+    } else {
+      // 없으면 새로 생성
+      const newContainer = document.createElement('div');
+      newContainer.className = 'filter-columns-container flex w-full';
+      filterArea.innerHTML = '';
+      filterArea.appendChild(newContainer);
+    }
+    
+    const container = filterArea.querySelector('.filter-columns-container') as HTMLElement;
+    if (!container) return;
+    
+    // 전체 컨테이너 스타일 설정
+    container.style.display = 'flex';
+    container.style.width = '100%';
+    container.style.padding = '0';
+    container.style.margin = '0';
+    
+    // 각 헤더 셀에 대해 처리
+    headerCells.forEach(cell => {
+      const field = cell.getAttribute('tabulator-field');
+      
+      // 체크박스 컬럼('selected')의 경우 빈 공간만 생성
+      if (field === 'selected') {
+        const cellRect = (cell as HTMLElement).getBoundingClientRect();
+        const width = cellRect.width;
+        
+        // 빈 필터 공간 생성
+        const emptyColumn = document.createElement('div');
+        emptyColumn.className = 'filter-field empty-checkbox-column';
+        emptyColumn.style.boxSizing = 'border-box';
+        emptyColumn.style.width = `${width}px`;
+        emptyColumn.style.padding = '0';
+        emptyColumn.style.margin = '0';
+        emptyColumn.style.borderRight = '1px solid #dee2e6';
+        
+        container.appendChild(emptyColumn);
+        return;
+      }
+      
+      // 일반 컬럼에 대한 필터 생성
+      if (!field) return;
+      
+      // 컬럼 너비와 위치 정확히 가져오기
+      const cellRect = (cell as HTMLElement).getBoundingClientRect();
+      const width = cellRect.width;
+      const title = cell.querySelector('.tabulator-col-title')?.textContent || '';
+      
+      // 필터 컬럼 요소 생성
+      const filterColumn = document.createElement('div');
+      filterColumn.className = 'filter-field';
+      filterColumn.style.boxSizing = 'border-box';
+      filterColumn.style.width = `${width}px`;
+      filterColumn.style.padding = '0';
+      filterColumn.style.margin = '0';
+      filterColumn.style.borderRight = '1px solid #dee2e6';
+      
+      // 입력 필드 컨테이너 생성 (패딩을 위한 래퍼)
+      const inputContainer = document.createElement('div');
+      inputContainer.style.padding = '8px';
+      inputContainer.style.boxSizing = 'border-box';
+      inputContainer.style.width = '100%';
+      
+      // 입력 필드 생성
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500';
+      input.placeholder = title || '검색...';
+      input.value = filterValues[field] || '';
+      input.style.boxSizing = 'border-box';
+      input.style.width = '100%';
+      
+      // 입력 이벤트 처리
+      input.addEventListener('input', (e) => {
+        const value = (e.target as HTMLInputElement).value;
+        handleFilterChange(field, value);
+      });
+      
+      // 입력 필드를 컨테이너에 추가
+      inputContainer.appendChild(input);
+      filterColumn.appendChild(inputContainer);
+      container.appendChild(filterColumn);
+    });
+  };
+  
+  // 필터 값 변경 핸들러
+  const handleFilterChange = (field: string, value: string) => {
+    const newFilterValues = {...filterValues, [field]: value};
+    setFilterValues(newFilterValues);
+    
+    // 테이블에 필터 적용
+    applyFilters(newFilterValues);
+  };
+  
+  // 필터 적용 함수
+  const applyFilters = (filters: {[key: string]: string}) => {
+    if (!tabulatorRef.current) return;
+    
+    // 모든 필터 초기화
+    tabulatorRef.current.clearFilter();
+    
+    // 새 필터 적용
+    Object.entries(filters).forEach(([field, value]) => {
+      if (value && value.trim() !== '') {
+        tabulatorRef.current?.setFilter(field, 'like', value);
+      }
+    });
+  };
+  
+  // 모든 필터 초기화
+  const clearAllFilters = () => {
+    // 필터 값 상태 초기화
+    setFilterValues({});
+    
+    // 테이블 필터 초기화
+    if (tabulatorRef.current) {
+      try {
+        // true를 전달하여 모든 필터 강제 초기화
+        tabulatorRef.current.clearFilter(true);
+      } catch (err) {
+        console.warn('필터 초기화 중 오류:', err);
+      }
+    }
+    
+    // 필터 입력 필드 초기화 (DOM 직접 조작)
+    try {
+      const filterInputs = document.querySelectorAll('.filter-area input');
+      filterInputs.forEach(input => {
+        (input as HTMLInputElement).value = '';
+      });
+    } catch (err) {
+      console.warn('필터 필드 초기화 중 오류:', err);
+    }
+    
+    // 약간의 지연 후 필터 UI 강제 갱신 및 동기화
+    setTimeout(() => {
+      try {
+        // DOM에서 모든 필터 입력 요소 다시 찾아서 값 초기화 재시도
+        const allFilterInputs = document.querySelectorAll('.filter-area input');
+        allFilterInputs.forEach(input => {
+          (input as HTMLInputElement).value = '';
+        });
+        
+        // 필터 영역 컨테이너 전체 초기화 및 재생성
+        const filterArea = document.querySelector('.filter-area');
+        if (filterArea) {
+          filterArea.innerHTML = '<div class="filter-columns-container flex w-full"></div>';
+          syncFilterColumns();
+        }
+      } catch (syncErr) {
+        console.warn('필터 동기화 중 오류:', syncErr);
+      }
+    }, 50);
+  };
 
   // 데이터 상태 업데이트 함수
   const updateDataStats = () => {
@@ -629,8 +823,13 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
       // Tabulator 기본 옵션
       const options = {
         data: data,
-        columns: columns,
-        height: height,
+        columns: columns.map(col => ({
+          ...col,
+          headerFilter: false // 내장 헤더 필터 비활성화
+        })),
+        // 사용자가 지정한 경우만 높이 관련 옵션 추가
+        ...(height !== undefined ? { height } : {}),
+        ...(minHeight !== undefined ? { minHeight } : {}),
         layout: layout,
         pagination: pagination,
         paginationSize: paginationSize,
@@ -638,6 +837,19 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         movableColumns: movableColumns,
         selectable: selectable,
         selectableRollingSelection: selectableRollingSelection,
+        
+        // 컬럼 크기 조정 및 이동 이벤트 처리
+        columnResized: function() {
+          if (showCustomFilter) {
+            setTimeout(() => syncFilterColumns(), 0);
+          }
+        },
+        
+        columnMoved: function() {
+          if (showCustomFilter) {
+            setTimeout(() => syncFilterColumns(), 0);
+          }
+        },
         
         // 테두리 설정
         renderHorizontal: "basic",
@@ -709,242 +921,89 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
       // Tabulator 인스턴스 생성
       tabulatorRef.current = new Tabulator(tableRef.current, options);
 
+      // 전역 상태 초기화
+      (window as any)._isCheckboxProcessing = false;
+
       // 테이블 렌더링이 완료되면 이벤트 핸들러 추가
       tabulatorRef.current.on("tableBuilt", () => {
-        setupCustomHandlers();
-        
-        // 초기 데이터 상태 정보 설정
-        updateDataStats();
-        
-        // 이벤트 리스너로 추가
-        tabulatorRef.current?.on("pageLoaded", updateDataStats);
-        tabulatorRef.current?.on("dataFiltered", updateDataStats);
-        tabulatorRef.current?.on("dataSorted", updateDataStats);
-        tabulatorRef.current?.on("dataChanged", updateDataStats);
-        tabulatorRef.current?.on("rowSelected", updateDataStats);
-        tabulatorRef.current?.on("rowDeselected", updateDataStats);
-        
-        // 모든 placeholder 요소에 흰색 배경 강제 적용
-        function forceWhitePlaceholder() {
-          // 모든 placeholder 요소 찾기
-          const allPlaceholderElements = document.querySelectorAll(
-            '.tabulator-placeholder, ' +
-            '.tabulator-tableholder, ' +
-            '.tabulator-placeholder-contents, ' + 
-            '.tabulator-placeholder span, ' +
-            '.tabulator-tableholder:empty, ' +
-            '.tabulator-calcs-holder, ' +
-            '.tabulator-tableholder .tabulator-placeholder'
-          );
+          setupCustomHandlers();
           
-          allPlaceholderElements.forEach(el => {
-            const element = el as HTMLElement;
-            element.style.setProperty('background', 'white', 'important');
-            element.style.setProperty('background-color', 'white', 'important');
-          });
+          // 초기 데이터 상태 정보 설정
+          updateDataStats();
           
-          // 페이지네이션 영역도 흰색으로
-          const paginationElements = document.querySelectorAll(
-            '.tabulator-footer, ' +
-            '.tabulator-footer-contents, ' +
-            '.tabulator-paginator, ' +
-            '.tabulator-page'
-          );
+          // 이벤트 리스너로 추가
+          tabulatorRef.current?.on("pageLoaded", updateDataStats);
+          tabulatorRef.current?.on("dataFiltered", updateDataStats);
+          tabulatorRef.current?.on("dataSorted", updateDataStats);
+          tabulatorRef.current?.on("dataChanged", updateDataStats);
+          tabulatorRef.current?.on("rowSelected", updateDataStats);
+          tabulatorRef.current?.on("rowDeselected", updateDataStats);
           
-          paginationElements.forEach(el => {
-            const element = el as HTMLElement;
-            element.style.setProperty('background', 'white', 'important');
-            element.style.setProperty('background-color', 'white', 'important');
-          });
+          // 체크박스 이벤트 핸들러 설정
+          setupCheckboxHandlers();
+          
+          // 안전장치로 약간의 지연 후 체크박스 핸들러 재설정
+          setTimeout(setupCheckboxHandlers, 300);
+          
+          // 이벤트 등록
+          if (tabulatorRef.current) {
+            // TypeScript 오류 회피를 위해 any 타입으로 캐스팅
+            const tabulator = tabulatorRef.current as any;
+            tabulator.on("dataLoaded", setupCheckboxHandlers);
+            tabulator.on("dataFiltered", setupCheckboxHandlers);
+            tabulator.on("dataSorted", setupCheckboxHandlers);
+            tabulator.on("pageLoaded", setupCheckboxHandlers);
+            tabulator.on("rowMoved", setupCheckboxHandlers);
+          }
+      });
+
+      // 체크박스 셀 클릭 핸들러
+      const checkboxClickHandler = (e: Event) => {
+        if (!tabulatorRef.current) return;
+        
+        // 이미 처리 중인지 확인
+        if ((window as any)._isCheckboxProcessing) return;
+        (window as any)._isCheckboxProcessing = true;
+        
+        const cell = e.currentTarget as HTMLElement;
+        const rowElement = cell.closest('.tabulator-row');
+        if (!rowElement) {
+          (window as any)._isCheckboxProcessing = false;
+          return;
         }
         
-        // 즉시 실행
-        forceWhitePlaceholder();
+        e.stopPropagation();
+        e.preventDefault();
         
-        // 이벤트 발생 시에도 실행 
-        tabulatorRef.current?.on("pageLoaded", forceWhitePlaceholder);
-        tabulatorRef.current?.on("dataLoaded", forceWhitePlaceholder);
-        tabulatorRef.current?.on("dataChanged", forceWhitePlaceholder);
+        // 행의 선택 상태 직접 변경
+        if (rowElement.classList.contains('tabulator-selected')) {
+          tabulatorRef.current.deselectRow(rowElement);
+        } else {
+          tabulatorRef.current.selectRow(rowElement);
+        }
         
-        // 일정 시간 후에도 실행
-        setTimeout(forceWhitePlaceholder, 200);
-        setTimeout(forceWhitePlaceholder, 500);
-        setTimeout(forceWhitePlaceholder, 1000);
+        // 셀 선택 초기화
+        forceResetAllCellSelection();
         
-        // 빈 공간만 흰색으로 설정
-        const setEmptySpaceWhite = () => {
-          // 빈 공간만 타겟팅
-          const emptySpaces = document.querySelectorAll('.tabulator-placeholder, .tabulator-tableHolder');
-          emptySpaces.forEach(el => {
-            (el as HTMLElement).style.background = 'white';
+        // 상태 초기화 지연시간 늘림
+        setTimeout(() => {
+          (window as any)._isCheckboxProcessing = false;
+        }, 200);
+      };
+      
+      // 체크박스 이벤트 핸들러 설정 함수
+      const setupCheckboxHandlers = () => {
+        console.log("체크박스 핸들러 설정");
+        setTimeout(() => {
+          const checkboxCells = document.querySelectorAll('.tabulator-cell[tabulator-field="selected"]');
+          
+          checkboxCells.forEach(cell => {
+            // 기존 이벤트 제거 후 새로 추가
+            cell.removeEventListener('click', checkboxClickHandler);
+            cell.addEventListener('click', checkboxClickHandler);
           });
-          
-          // 테이블 아래쪽 푸터 영역 (페이징 컨트롤)
-          const footerElement = document.querySelector('.tabulator-footer');
-          if (footerElement) {
-            (footerElement as HTMLElement).style.background = 'white';
-          }
-        };
-        
-        // 페이지 로드/변경 이벤트에 설정 함수 등록
-        setEmptySpaceWhite();
-        tabulatorRef.current?.on("pageLoaded", setEmptySpaceWhite);
-        tabulatorRef.current?.on("dataChanged", setEmptySpaceWhite);
-        tabulatorRef.current?.on("dataLoaded", setEmptySpaceWhite);
-        tabulatorRef.current?.on("scrollVertical", setEmptySpaceWhite);
-        
-        // 테이블이 완전히 비어있을 때도 그리드 라인 표시
-        const enhanceEmptyTable = () => {
-          const placeholder = document.querySelector('.tabulator-placeholder') as HTMLElement;
-          if (placeholder) {
-            // 데이터가 없는 경우 그리드 라인을 그리기 위한 가상 요소 추가
-            placeholder.style.position = 'relative';
-            placeholder.style.border = '1px solid #dee2e6';
-            
-            // 가로 그리드 라인 (추가할 가상 행 수)
-            const rowCount = 5;
-            const height = placeholder.offsetHeight;
-            const rowHeight = height / (rowCount + 1);
-            
-            // 기존 가상 행 제거
-            const existingLines = placeholder.querySelectorAll('.virtual-grid-line');
-            existingLines.forEach(line => line.remove());
-            
-            // 가로 그리드 라인 추가
-            for (let i = 1; i <= rowCount; i++) {
-              const line = document.createElement('div');
-              line.className = 'virtual-grid-line horizontal';
-              line.style.position = 'absolute';
-              line.style.left = '0';
-              line.style.right = '0';
-              line.style.top = `${rowHeight * i}px`;
-              line.style.height = '1px';
-              line.style.backgroundColor = '#dee2e6';
-              line.style.pointerEvents = 'none';
-              placeholder.appendChild(line);
-            }
-            
-            // 세로 그리드 라인 (컬럼 수에 맞춰)
-            const columnCount = document.querySelectorAll('.tabulator-col').length;
-            if (columnCount > 0) {
-              const width = placeholder.offsetWidth;
-              const colWidth = width / columnCount;
-              
-              for (let i = 1; i < columnCount; i++) {
-                const line = document.createElement('div');
-                line.className = 'virtual-grid-line vertical';
-                line.style.position = 'absolute';
-                line.style.top = '0';
-                line.style.bottom = '0';
-                line.style.left = `${colWidth * i}px`;
-                line.style.width = '1px';
-                line.style.backgroundColor = '#dee2e6';
-                line.style.pointerEvents = 'none';
-                placeholder.appendChild(line);
-              }
-            }
-          }
-        };
-        
-        // 테이블 데이터 변경 시 처리
-        const handleDataChange = () => {
-          let rowCount = 0;
-          try {
-            // Tabulator의 데이터 배열 길이로 행 수 확인
-            const tableData = tabulatorRef.current?.getData() as any[];
-            rowCount = tableData?.length || 0;
-          } catch (e) {
-            rowCount = 0;
-          }
-          
-          if (rowCount === 0) {
-            // 데이터가 없는 경우 그리드 라인 처리
-            setTimeout(enhanceEmptyTable, 100);
-          }
-        };
-        
-        // 이벤트 등록
-        tabulatorRef.current?.on("dataLoaded", handleDataChange);
-        tabulatorRef.current?.on("dataChanged", handleDataChange);
-        
-        // 초기 실행
-        handleDataChange();
-        
-        // 마지막 행 테두리 추가
-        const addLastRowBorder = () => {
-          const tableElement = document.querySelector('.tabulator') as HTMLElement;
-          if (tableElement) {
-            tableElement.style.borderBottom = '1px solid #e2e8f0';
-          }
-          
-          const lastRow = document.querySelector('.tabulator-row:last-child');
-          if (lastRow) {
-            const cells = lastRow.querySelectorAll('.tabulator-cell');
-            cells.forEach(cell => {
-              (cell as HTMLElement).style.borderBottom = '1px solid #e2e8f0';
-            });
-          }
-        };
-        
-        // 처음 한 번 실행
-        addLastRowBorder();
-        
-        // 테이블 데이터 변경 시 다시 실행
-        tabulatorRef.current?.on("dataChanged", addLastRowBorder);
-        tabulatorRef.current?.on("dataLoaded", addLastRowBorder);
-        tabulatorRef.current?.on("pageLoaded", addLastRowBorder);
-        
-        // 페이지에서 모든 체크박스 클릭 이벤트를 감시
-        const handleGlobalClick = (e: MouseEvent) => {
-          const target = e.target as HTMLElement;
-          
-          // 체크박스 셀 또는 그 내부 요소인지 확인
-          const checkboxCell = target.closest('.tabulator-cell[tabulator-field="selected"]');
-          if (checkboxCell) {
-            console.log('체크박스 셀 클릭 감지');
-            
-            // 먼저 셀 선택 초기화 실행
-            forceResetAllCellSelection();
-            
-            // 이미 처리 중인지 체크
-            if ((window as any)._isCheckboxProcessing) return;
-            (window as any)._isCheckboxProcessing = true;
-            
-            // 체크박스 컴포넌트 확인
-            const isDirectCheckboxClick = !!target.closest('input[type="checkbox"]') || 
-                                        target.classList.contains('tabulator-checkbox') || 
-                                        !!target.closest('.tabulator-checkbox');
-            
-            // 체크박스가 직접 클릭되지 않았으면 행 선택 토글
-            if (!isDirectCheckboxClick) {
-              e.preventDefault(); // 기본 동작 방지
-              e.stopPropagation(); // 이벤트 버블링 방지
-              
-              // 행 요소 찾기
-              const row = checkboxCell.closest('.tabulator-row');
-              if (row) {
-                // 행의 선택 상태 토글
-                if (row.classList.contains('tabulator-selected')) {
-                  tabulatorRef.current?.deselectRow(row);
-                } else {
-                  tabulatorRef.current?.selectRow(row);
-                }
-              }
-            }
-            
-            // 처리 완료 플래그 초기화
-            setTimeout(() => {
-              (window as any)._isCheckboxProcessing = false;
-            }, 50);
-          }
-        };
-        
-        // 문서 레벨에서 클릭 이벤트 감시
-        document.addEventListener('click', handleGlobalClick, true);
-        
-        // 클린업 시 이벤트 제거를 위해 저장
-        (window as any)._handleGlobalClick = handleGlobalClick;
-      });
+        }, 100);
+      };
 
       // 스타일 추가
       const styleId = 'tabulator-grid-styles';
@@ -1019,6 +1078,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
             border-right: 1px solid #dee2e6 !important;
             position: relative;
             cursor: pointer;
+            z-index: 5 !important; /* z-index 높임 */
           }
           
           /* 체크박스 영역 확장을 위한 가상 요소 - 셀 전체 영역 커버 */
@@ -1029,7 +1089,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 5;
+            z-index: 6 !important; /* z-index 높임 */
             cursor: pointer;
           }
           
@@ -1037,7 +1097,9 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           .tabulator-cell[tabulator-field="selected"] input[type="checkbox"],
           .tabulator-cell[tabulator-field="selected"] .tabulator-checkbox {
             position: relative;
-            z-index: 6;
+            z-index: 7 !important; /* z-index 높임 */
+            cursor: pointer;
+            pointer-events: auto !important; /* 클릭 이벤트 보장 */
           }
           
           /* 선택된 행 강조 - 셀 드래그 선택 색상과 동일하게 조정 */
@@ -1061,28 +1123,79 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         document.head.appendChild(style);
       }
       
-      // 클린업 함수
+      // 클린업 함수 설정
       return () => {
-        // 테이블 이벤트 리스너 제거
-        if (tableRef.current) {
-          tableRef.current.removeEventListener('click', handleCellClick);
-          tableRef.current.removeEventListener('mousedown', handleMouseDown);
+        // 이벤트 리스너 제거
+        if (tableRef.current && enableCellSelection) {
+          const tableElement = tableRef.current;
+          tableElement.removeEventListener('click', handleCellClick);
+          tableElement.removeEventListener('mousedown', handleMouseDown);
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+          document.removeEventListener('keydown', handleKeyDown);
         }
         
-        // 문서 이벤트 리스너 제거
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('keydown', handleKeyDown);
-        
-        // 전역 체크박스 클릭 이벤트 리스너 제거
+        // Tabulator 글로벌 클릭 이벤트 제거
         if ((window as any)._handleGlobalClick) {
           document.removeEventListener('click', (window as any)._handleGlobalClick, true);
           delete (window as any)._handleGlobalClick;
         }
         
-        // Tabulator 인스턴스 제거
+        // 체크박스 셀 이벤트 제거
+        const checkboxCells = document.querySelectorAll('.tabulator-cell[tabulator-field="selected"]');
+        checkboxCells.forEach(cell => {
+          cell.removeEventListener('click', checkboxClickHandler);
+        });
+        
+        // 전역 상태 정리
+        if ((window as any)._isCheckboxProcessing !== undefined) {
+          delete (window as any)._isCheckboxProcessing;
+        }
+        
+        // Tabulator 이벤트 리스너 제거
         if (tabulatorRef.current) {
-          tabulatorRef.current.destroy();
+          try {
+            if (typeof (tabulatorRef.current as any).off === 'function') {
+              const tabulator = tabulatorRef.current as any;
+              tabulator.off("dataLoaded", setupCheckboxHandlers);
+              tabulator.off("dataFiltered", setupCheckboxHandlers);
+              tabulator.off("dataSorted", setupCheckboxHandlers);
+              tabulator.off("pageLoaded", setupCheckboxHandlers);
+              tabulator.off("rowMoved", setupCheckboxHandlers);
+            }
+          } catch (error) {
+            console.warn("테이블 이벤트 제거 중 오류 발생:", error);
+          }
+        }
+        
+        // 알림 포커스 클릭 이벤트 제거
+        if ((window as any)._handleNoticeClick) {
+          document.removeEventListener('click', (window as any)._handleNoticeClick);
+          delete (window as any)._handleNoticeClick;
+        }
+        
+        // 필터 토글 버튼 이벤트 제거
+        if ((window as any)._filterToggleButtons) {
+          delete (window as any)._filterToggleButtons;
+        }
+        
+        // 스타일 제거
+        const styleElement = document.getElementById('tabulator-grid-styles');
+        if (styleElement && styleElement.parentNode) {
+          styleElement.parentNode.removeChild(styleElement);
+        }
+        
+        // Tabulator 인스턴스 정리
+        if (tabulatorRef.current) {
+          try {
+            // 테이블 파괴
+            tabulatorRef.current.destroy();
+          } catch (e) {
+            console.warn('Tabulator 인스턴스 정리 중 오류가 발생했습니다.', e);
+          }
+          
+          // 레퍼런스 초기화
+          tabulatorRef.current = null;
         }
       };
     }
@@ -1091,6 +1204,39 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
   return (
     <div className={`tabulator-grid-wrapper ${className}`}>
       <div className="border rounded overflow-hidden" style={{ borderColor: '#e2e8f0' }}>
+        {/* 필터 컨트롤 영역 */}
+        <div className="filter-control-header flex items-center justify-between p-2 bg-gray-50 border-b border-gray-200">
+          <button
+            className={`filter-global-toggle flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded 
+              ${showCustomFilter ? 'bg-blue-100 text-blue-600 border-blue-200' : 'bg-gray-100 text-gray-600 border-gray-200'} 
+              border transition-colors duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500`}
+            onClick={handleToggleFilter}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <span>필터</span>
+          </button>
+          
+          {showCustomFilter && (
+            <button 
+              className="text-xs text-gray-500 hover:text-gray-700"
+              onClick={clearAllFilters}
+            >
+              필터 초기화
+            </button>
+          )}
+        </div>
+        
+        {/* 커스텀 필터 영역 */}
+        {showCustomFilter && (
+          <div className="filter-area bg-white border-b border-gray-200">
+            <div className="filter-columns-container flex w-full">
+              {/* 동적으로 생성되는 필터 필드 */}
+            </div>
+          </div>
+        )}
+        
         <div ref={tableRef} className="w-full"></div>
       </div>
       

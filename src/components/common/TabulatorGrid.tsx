@@ -910,11 +910,13 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
             if ((window as any)._isCheckboxProcessing) return;
             (window as any)._isCheckboxProcessing = true;
             
-            // 체크박스 요소 직접 찾기
-            const checkbox = checkboxCell.querySelector('input[type="checkbox"]') as HTMLInputElement;
+            // 체크박스 컴포넌트 확인
+            const isDirectCheckboxClick = !!target.closest('input[type="checkbox"]') || 
+                                        target.classList.contains('tabulator-checkbox') || 
+                                        !!target.closest('.tabulator-checkbox');
             
-            // 체크박스가 실제로 클릭되지 않았지만 셀 영역이 클릭된 경우 체크박스 상태 토글
-            if (target !== checkbox && !target.closest('.tabulator-checkbox')) {
+            // 체크박스가 직접 클릭되지 않았으면 행 선택 토글
+            if (!isDirectCheckboxClick) {
               e.preventDefault(); // 기본 동작 방지
               e.stopPropagation(); // 이벤트 버블링 방지
               
@@ -928,17 +930,12 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
                   tabulatorRef.current?.selectRow(row);
                 }
               }
-              
-              // 모든 셀 선택 강제 초기화
-              setTimeout(() => {
-                (window as any)._isCheckboxProcessing = false;
-              }, 50);
-            } else {
-              // 체크박스가 직접 클릭된 경우 일정 시간 후 처리 플래그 초기화
-              setTimeout(() => {
-                (window as any)._isCheckboxProcessing = false;
-              }, 50);
             }
+            
+            // 처리 완료 플래그 초기화
+            setTimeout(() => {
+              (window as any)._isCheckboxProcessing = false;
+            }, 50);
           }
         };
         
@@ -1016,7 +1013,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
             background-color: #f9fafb !important;
           }
           
-          /* 체크박스 셀 강조 */
+          /* 체크박스 셀 강조 및 전체 영역 클릭 가능하게 */
           .tabulator-cell[tabulator-field="selected"] {
             background-color: rgba(0, 0, 0, 0.03) !important;
             border-right: 1px solid #dee2e6 !important;

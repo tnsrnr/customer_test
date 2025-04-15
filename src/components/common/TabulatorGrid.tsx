@@ -170,7 +170,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
       if (!selectedCells.current.includes(cell)) {
         selectedCells.current.push(cell);
         onSelectionChanged?.(
-          `${selectedCells.current.length}개 셀 선택됨`
+          `${selectedCells.current.length}개 셀 선택`
         );
       }
     }
@@ -186,7 +186,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
       selectedCells.current.push(cell);
     }
     onSelectionChanged?.(
-      `${selectedCells.current.length}개 셀 선택됨`
+      `${selectedCells.current.length}개 셀 선택`
     );
   };
   
@@ -243,7 +243,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
     }
     
     onSelectionChanged?.(
-      `${(maxRowIndex - minRowIndex + 1) * (maxColIndex - minColIndex + 1)}개 셀 선택됨`
+      `${(maxRowIndex - minRowIndex + 1) * (maxColIndex - minColIndex + 1)}개 셀 선택`
     );
   };
 
@@ -377,7 +377,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
     
     isDragging.current = false;
     onSelectionChanged?.(
-      `${selectedCells.current.length}개 셀 선택됨`
+      `${selectedCells.current.length}개 셀 선택`
     );
   };
   
@@ -606,6 +606,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
 
   // 셀 선택 완전 초기화 (강제 리셋)
   const forceResetAllCellSelection = () => {
+    console.log('셀 선택 강제 초기화 실행');
     // 모든 셀 선택 표시 제거
     document.querySelectorAll('.selected-cell, .drag-selected').forEach(cell => {
       cell.classList.remove('selected-cell');
@@ -649,7 +650,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         // 데이터 상태 정보 푸터 요소
         footerElement: `<div class="tabulator-footer-data-stats px-4 py-2 text-sm text-gray-500">
           총 <span class="total-count font-medium text-gray-700">${data.length}</span>개 중 
-          <span class="selected-count font-medium text-gray-700">0</span>개 선택됨
+          <span class="selected-count font-medium text-gray-700">0</span>개 선택
         </div>`,
         
         // 행 선택 이벤트
@@ -902,6 +903,9 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           if (checkboxCell) {
             console.log('체크박스 셀 클릭 감지');
             
+            // 먼저 셀 선택 초기화 실행
+            forceResetAllCellSelection();
+            
             // 이미 처리 중인지 체크
             if ((window as any)._isCheckboxProcessing) return;
             (window as any)._isCheckboxProcessing = true;
@@ -927,7 +931,6 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
               
               // 모든 셀 선택 강제 초기화
               setTimeout(() => {
-                forceResetAllCellSelection();
                 (window as any)._isCheckboxProcessing = false;
               }, 50);
             } else {

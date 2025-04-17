@@ -1035,8 +1035,8 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
 
       // 테이블 렌더링이 완료되면 이벤트 핸들러 추가
       tabulatorRef.current.on("tableBuilt", () => {
-          setupCustomHandlers();
-          
+        setupCustomHandlers();
+        
           // 초기 데이터 상태 정보 설정
           updateDataStats();
           
@@ -1176,6 +1176,12 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            border: 1px solid #e2e8f0 !important;
+          }
+          
+          /* 테이블 상단 테두리 강화 */
+          .tabulator-header {
+            border-bottom: 1px solid #e2e8f0 !important;
           }
           
           /* 줄무늬 배경 패턴 */
@@ -1272,9 +1278,9 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           const tableElement = tableRef.current;
           tableElement.removeEventListener('click', handleCellClick);
           tableElement.removeEventListener('mousedown', handleMouseDown);
-          document.removeEventListener('mousemove', handleMouseMove);
-          document.removeEventListener('mouseup', handleMouseUp);
-          document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('keydown', handleKeyDown);
         }
         
         // Tabulator 글로벌 클릭 이벤트 제거
@@ -1353,7 +1359,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         if (tabulatorRef.current) {
           try {
             // 테이블 파괴
-            tabulatorRef.current.destroy();
+          tabulatorRef.current.destroy();
           } catch (e) {
             console.warn('Tabulator 인스턴스 정리 중 오류가 발생했습니다.', e);
           }

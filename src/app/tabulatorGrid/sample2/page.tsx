@@ -215,20 +215,17 @@ export default function TabulatorSpreadsheetExample() {
 
   return (
     <div className="container mx-auto py-6">
-      <Card className="mb-6 shadow-md border-0">
-        <CardContent className="pt-6 bg-white">
+      <Card className="mb-6 shadow-sm border-0 rounded-lg overflow-hidden">
+        <CardContent className="p-0">
           <TabulatorGrid
             ref={gridRef}
             data={data}
             columns={columns}
-            height="500px"
+            height="700px"
             selectable={true}
-            selectableRollingSelection={false}
             enableCellSelection={true}
             enableClipboard={true}
-            showSelectionControls={false}
-            enableCellSelectionOnRowSelect={true}
-            className="bg-white rounded overflow-hidden"
+            className="bg-white"
             additionalOptions={additionalOptions}
           />
         </CardContent>

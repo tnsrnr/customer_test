@@ -22,7 +22,7 @@ export const formatCurrency = (amount: number) => {
     currency: 'KRW',
     maximumFractionDigits: 0,
   }).format(amount);
-};
+}; 
 
 /**
  * 바이트 단위의 파일 크기를 사람이 읽기 쉬운 형태로 변환합니다.

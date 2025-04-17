@@ -817,6 +817,113 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
     shiftStartCell.current = null;
   };
 
+  // 체크박스 셀 클릭 핸들러 (단순화)
+  const checkboxClickHandler = (e: MouseEvent) => {
+    // 셀 선택 초기화 (최우선)
+    clearCellSelection();
+    forceResetAllCellSelection();
+    
+    // 체크박스 셀 찾기
+    const cell = e.currentTarget as HTMLElement;
+    if (!cell) return;
+    
+    // 행 요소 찾기
+    const row = cell.closest('.tabulator-row') as HTMLElement;
+    if (!row) return;
+    
+    // 현재 행의 선택 상태 확인
+    const isSelected = row.classList.contains('tabulator-selected');
+    
+    // 이벤트 전파 중지 (다른 이벤트와 충돌 방지)
+    e.stopPropagation();
+    
+    // 행 선택 상태 토글
+    if (isSelected) {
+      // 이미 선택된 경우 선택 해제
+      if (tabulatorRef.current) {
+        tabulatorRef.current.deselectRow(row);
+      }
+    } else {
+      // 선택되지 않은 경우 선택
+      if (tabulatorRef.current) {
+        tabulatorRef.current.selectRow(row);
+      }
+    }
+  };
+  
+  // 체크박스 핸들러 설정 (단순화)
+  const setupCheckboxHandlers = () => {
+    // 지연 후 핸들러 적용
+    setTimeout(() => {
+      // 체크박스 셀 찾기
+      const checkboxCells = document.querySelectorAll('.tabulator-cell[tabulator-field="selected"]');
+      
+      // 각 셀에 이벤트 핸들러 추가
+      checkboxCells.forEach(cell => {
+        // 기존 이벤트 리스너 제거
+        cell.removeEventListener('click', checkboxClickHandler as any);
+        
+        // 새 이벤트 리스너 추가
+        cell.addEventListener('click', checkboxClickHandler as any);
+        
+        // 스타일 추가
+        (cell as HTMLElement).style.position = 'relative';
+        (cell as HTMLElement).style.cursor = 'pointer';
+        
+        // 전체 영역 클릭 가능하도록 가상 요소 추가
+        if (!cell.querySelector('.checkbox-overlay')) {
+          const overlay = document.createElement('div');
+          overlay.className = 'checkbox-overlay';
+          overlay.style.position = 'absolute';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100%';
+          overlay.style.height = '100%';
+          overlay.style.cursor = 'pointer';
+          overlay.style.zIndex = '10';
+          
+          // 가운데 체크박스 영역은 클릭 이벤트가 통과하도록 함
+          const checkbox = cell.querySelector('.tabulator-checkbox');
+          if (checkbox) {
+            const rect = (checkbox as HTMLElement).getBoundingClientRect();
+            const cellRect = (cell as HTMLElement).getBoundingClientRect();
+            
+            const checkboxWidth = rect.width || 18;
+            const checkboxHeight = rect.height || 18;
+            
+            // 가운데 구멍을 뚫어 체크박스가 정상 동작하도록 함
+            overlay.style.background = 'transparent';
+            
+            // 클릭 이벤트 추가
+            overlay.addEventListener('click', (e) => {
+              clearCellSelection();
+              forceResetAllCellSelection();
+              
+              // 현재 행의 선택 상태 확인
+              const row = cell.closest('.tabulator-row') as HTMLElement;
+              if (!row) return;
+              
+              const isSelected = row.classList.contains('tabulator-selected');
+              
+              // 행 선택 상태 토글
+              if (isSelected) {
+                if (tabulatorRef.current) {
+                  tabulatorRef.current.deselectRow(row);
+                }
+              } else {
+                if (tabulatorRef.current) {
+                  tabulatorRef.current.selectRow(row);
+                }
+              }
+            });
+          }
+          
+          cell.appendChild(overlay);
+        }
+      });
+    }, 100);
+  };
+
   // 테이블 초기화
   useEffect(() => {
     if (tableRef.current) {
@@ -875,6 +982,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           
           console.log('행 선택 이벤트 - 모든 셀 선택 초기화');
           // 행 선택 시 모든 셀 선택 강제 초기화
+          clearCellSelection();
           forceResetAllCellSelection();
           
           // 데이터 상태 업데이트
@@ -894,6 +1002,7 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           }
           
           // 행 선택 해제 시에도 모든 셀 선택 강제 초기화
+          clearCellSelection();
           forceResetAllCellSelection();
           
           // 데이터 상태 업데이트
@@ -1050,54 +1159,6 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
           }
       });
 
-      // 체크박스 셀 클릭 핸들러
-      const checkboxClickHandler = (e: Event) => {
-        if (!tabulatorRef.current) return;
-        
-        // 이미 처리 중인지 확인
-        if ((window as any)._isCheckboxProcessing) return;
-        (window as any)._isCheckboxProcessing = true;
-        
-        const cell = e.currentTarget as HTMLElement;
-        const rowElement = cell.closest('.tabulator-row');
-        if (!rowElement) {
-          (window as any)._isCheckboxProcessing = false;
-          return;
-        }
-        
-        e.stopPropagation();
-        e.preventDefault();
-        
-        // 행의 선택 상태 직접 변경
-        if (rowElement.classList.contains('tabulator-selected')) {
-          tabulatorRef.current.deselectRow(rowElement);
-        } else {
-          tabulatorRef.current.selectRow(rowElement);
-        }
-        
-        // 셀 선택 초기화
-        forceResetAllCellSelection();
-        
-        // 상태 초기화 지연시간 늘림
-        setTimeout(() => {
-          (window as any)._isCheckboxProcessing = false;
-        }, 200);
-      };
-      
-      // 체크박스 이벤트 핸들러 설정 함수
-      const setupCheckboxHandlers = () => {
-        console.log("체크박스 핸들러 설정");
-        setTimeout(() => {
-          const checkboxCells = document.querySelectorAll('.tabulator-cell[tabulator-field="selected"]');
-          
-          checkboxCells.forEach(cell => {
-            // 기존 이벤트 제거 후 새로 추가
-            cell.removeEventListener('click', checkboxClickHandler);
-            cell.addEventListener('click', checkboxClickHandler);
-          });
-        }, 100);
-      };
-
       // 스타일 추가
       const styleId = 'tabulator-grid-styles';
       if (!document.getElementById(styleId)) {
@@ -1165,37 +1226,25 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
             background-color: #f9fafb !important;
           }
           
-          /* 체크박스 셀 강조 및 전체 영역 클릭 가능하게 */
+          /* 체크박스 셀 스타일 */
           .tabulator-cell[tabulator-field="selected"] {
             background-color: rgba(0, 0, 0, 0.03) !important;
             border-right: 1px solid #dee2e6 !important;
-            position: relative;
-            cursor: pointer;
-            z-index: 5 !important; /* z-index 높임 */
+            position: relative !important;
+            cursor: pointer !important;
+            z-index: 1;
+            text-align: center !important;
           }
           
-          /* 체크박스 영역 확장을 위한 가상 요소 - 셀 전체 영역 커버 */
-          .tabulator-cell[tabulator-field="selected"]::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 6 !important; /* z-index 높임 */
-            cursor: pointer;
-          }
-          
-          /* 체크박스 컴포넌트 위치 조정 */
-          .tabulator-cell[tabulator-field="selected"] input[type="checkbox"],
+          /* 체크박스 요소 스타일 */
           .tabulator-cell[tabulator-field="selected"] .tabulator-checkbox {
             position: relative;
-            z-index: 7 !important; /* z-index 높임 */
-            cursor: pointer;
-            pointer-events: auto !important; /* 클릭 이벤트 보장 */
+            z-index: 2;
+            cursor: pointer !important;
+            margin: 0 auto !important;
           }
           
-          /* 선택된 행 강조 - 셀 드래그 선택 색상과 동일하게 조정 */
+          /* 선택된 행 스타일 */
           .tabulator-row.tabulator-selected {
             background-color: rgba(33, 150, 243, 0.2) !important;
           }
@@ -1237,12 +1286,19 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         // 체크박스 셀 이벤트 제거
         const checkboxCells = document.querySelectorAll('.tabulator-cell[tabulator-field="selected"]');
         checkboxCells.forEach(cell => {
-          cell.removeEventListener('click', checkboxClickHandler);
+          cell.removeEventListener('click', checkboxClickHandler as any);
+          if ((window as any)._checkboxHandlerFunction) {
+            cell.removeEventListener('click', (window as any)._checkboxHandlerFunction);
+          }
         });
         
         // 전역 상태 정리
         if ((window as any)._isCheckboxProcessing !== undefined) {
           delete (window as any)._isCheckboxProcessing;
+        }
+        
+        if ((window as any)._checkboxHandlerFunction !== undefined) {
+          delete (window as any)._checkboxHandlerFunction;
         }
         
         // Tabulator 이벤트 리스너 제거

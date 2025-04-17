@@ -5,15 +5,8 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useCallback } from "react";
 import {
-  Briefcase,
-  Building2,
-  Calendar,
-  Clock,
-  CreditCard,
   Home,
   Settings,
-  User,
-  Users,
   LayoutGrid,
   Table2,
   Bell,
@@ -26,11 +19,9 @@ import {
   ChevronRight,
   SortAsc,
   FileSearch,
-  Edit3,
+  Calendar,
   PieChart,
   Smartphone,
-  ClipboardCopy,
-  Copy
 } from "lucide-react";
 
 // 메뉴 항목의 타입 정의
@@ -52,85 +43,14 @@ export function Sidebar() {
       icon: <Home className="w-4 h-4" />,
     },
     {
-      title: "관리자 관리",
-      href: "/admin",
-      icon: <User className="w-4 h-4" />,
-    },
-    {
-      title: "공통 관리",
-      href: "/com",
-      icon: <Settings className="w-4 h-4" />,
-    },
-    {
-      title: "인사 관리",
-      href: "/hrs",
-      icon: <Briefcase className="w-4 h-4" />,
-      submenu: [
-        {
-          title: "직원 관리",
-          href: "/hrs/employees",
-          icon: <Users className="w-4 h-4" />,
-        },
-        {
-          title: "부서 관리",
-          href: "/hrs/departments",
-          icon: <Building2 className="w-4 h-4" />,
-        },
-        {
-          title: "출결 관리",
-          href: "/hrs/attendance",
-          icon: <Clock className="w-4 h-4" />,
-          submenu: [
-            {
-              title: "출퇴근 기록",
-              href: "/hrs/attendance/records",
-              icon: <Calendar className="w-4 h-4" />,
-            },
-            {
-              title: "지각/조퇴/결근 처리",
-              href: "/hrs/attendance/issues",
-              icon: <Clock className="w-4 h-4" />,
-            },
-          ],
-        },
-        {
-          title: "급여 관리",
-          href: "/hrs/payroll",
-          icon: <CreditCard className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      title: "그리드 테스트",
-      href: "/gridtest",
+      title: "Tabulator 그리드",
+      href: "/tabulatorGrid",
       icon: <LayoutGrid className="w-4 h-4" />,
       submenu: [
-        { 
-          title: "Tabulator", 
-          href: "/gridtest/tabulator", 
-          icon: <Table2 className="w-4 h-4" />,
-          submenu: [
-            { title: "sample1", href: "/gridtest/tabulator/sample1", icon: <SortAsc className="w-4 h-4" /> },
-            { title: "sample2", href: "/gridtest/tabulator/sample2", icon: <FileSearch className="w-4 h-4" /> },
-            { title: "sample3", href: "/gridtest/tabulator/sample3", icon: <Calendar className="w-4 h-4" /> },
-            { title: "sample4", href: "/gridtest/tabulator/sample4", icon: <PieChart className="w-4 h-4" /> },
-            { title: "sample5", href: "/gridtest/tabulator/sample5", icon: <PieChart className="w-4 h-4" /> },
-            { title: "sample6", href: "/gridtest/tabulator/sample6", icon: <ClipboardCopy className="w-4 h-4" /> },
-            { title: "sample7", href: "/gridtest/tabulator/sample7", icon: <Copy className="w-4 h-4" /> },
-            { title: "sample8", href: "/gridtest/tabulator/sample8", icon: <Clock className="w-4 h-4" /> }
-          ]
-        },
-        { 
-          title: "Tabulator2", 
-          href: "/gridtest/tabulator2", 
-          icon: <Table2 className="w-4 h-4" />,
-          submenu: [
-            { title: "기본 테이블 및 정렬", href: "/gridtest/tabulator2/sample1", icon: <SortAsc className="w-4 h-4" /> },
-            { title: "클립보드 기능", href: "/gridtest/tabulator2/sample2", icon: <ClipboardCopy className="w-4 h-4" /> },
-            { title: "스프레드시트 기능", href: "/gridtest/tabulator2/sample3", icon: <Table2 className="w-4 h-4" /> }
-          ]
-        }
-      ],
+        { title: "예제 1", href: "/tabulatorGrid/sample1", icon: <SortAsc className="w-4 h-4" /> },
+        { title: "예제 2", href: "/tabulatorGrid/sample2", icon: <FileSearch className="w-4 h-4" /> },
+        { title: "예제 3", href: "/tabulatorGrid/sample3", icon: <Calendar className="w-4 h-4" /> }
+      ]
     },
     {
       title: "기타 테스트",

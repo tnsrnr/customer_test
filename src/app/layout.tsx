@@ -5,7 +5,7 @@ import { Sidebar } from '@/components/ui/sidebar';
 import { Header } from '@/components/ui/header';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from 'next-themes';
+// import { ThemeProvider } from 'next-themes';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,20 +20,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko">
       <body className={cn(inter.className, 'min-h-screen bg-background')}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex h-screen overflow-hidden">
-            <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 overflow-y-auto p-8">
-                {children}
-              </main>
-            </div>
+        {/* ThemeProvider 임시 제거 */}
+        <div className="flex h-screen overflow-hidden">
+          <Sidebar />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Header />
+            <main className="flex-1 overflow-y-auto p-8">
+              {children}
+            </main>
           </div>
-          <Toaster />
-        </ThemeProvider>
+        </div>
+        <Toaster />
       </body>
     </html>
   );

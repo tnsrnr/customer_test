@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, Table2, Bell, MessageSquare, FileStack, LineChart, FormInput, SunMoon, Upload, Infinity, ArrowDownUp } from 'lucide-react';
+import { Bell, MessageSquare, FileStack, LineChart, FormInput, SunMoon, Upload, Infinity, ArrowDownUp, Table2 } from 'lucide-react';
 
 export default function OtherTestPage() {
   const testOptions = [
@@ -75,24 +75,10 @@ export default function OtherTestPage() {
       isNew: true
     },
     { 
-      title: 'AG Grid',
-      description: 'JavaScript 데이터 그리드 컴포넌트 AG Grid 예제 모음',
-      icon: <LayoutGrid className="h-10 w-10 text-primary" />,
-      link: '/gridtest/aggrid',
-      linkText: 'AG Grid 예제 보기'
-    },
-    { 
-      title: 'Handsontable',
-      description: 'Excel과 유사한 인터페이스를 제공하는 Handsontable 예제 모음',
-      icon: <Table2 className="h-10 w-10 text-primary" />,
-      link: '/gridtest/handsontable',
-      linkText: 'Handsontable 예제 보기'
-    },
-    { 
       title: 'Tabulator',
       description: '인터랙티브 테이블을 쉽게 생성할 수 있는 Tabulator 예제 모음',
       icon: <Table2 className="h-10 w-10 text-primary" />,
-      link: '/gridtest/tabulator',
+      link: '/tabulatorGrid',
       linkText: 'Tabulator 예제 보기'
     }
     // 여기에 향후 다른 테스트 기능들을 추가할 수 있습니다

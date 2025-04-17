@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
-import { useAuthStore } from '@/lib/store/authStore';
-import { LogOut, Menu, Search, User } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import { Input } from "./input";
 
 interface HeaderProps {
@@ -15,7 +14,6 @@ interface HeaderProps {
 
 export function Header({ toggleSidebar }: HeaderProps) {
   const pathname = usePathname();
-  const { user, logout } = useAuthStore();
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background">
@@ -36,48 +34,26 @@ export function Header({ toggleSidebar }: HeaderProps) {
           </Link>
           <div className="hidden md:flex items-center space-x-4">
             <Link
-              href="/admin"
+              href="/tabulatorGrid"
               className={cn(
                 'text-sm font-medium transition-colors hover:text-primary',
-                pathname === '/admin' || pathname.startsWith('/admin/')
+                pathname === '/tabulatorGrid' || pathname.startsWith('/tabulatorGrid/')
                   ? 'text-primary'
                   : 'text-muted-foreground'
               )}
             >
-              관리자 관리
+              Tabulator 그리드
             </Link>
             <Link
-              href="/com"
+              href="/other_test"
               className={cn(
                 'text-sm font-medium transition-colors hover:text-primary',
-                pathname === '/com' || pathname.startsWith('/com/')
+                pathname === '/other_test' || pathname.startsWith('/other_test/')
                   ? 'text-primary'
                   : 'text-muted-foreground'
               )}
             >
-              공통 관리
-            </Link>
-            <Link
-              href="/hrs"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                pathname === '/hrs' || pathname.startsWith('/hrs/')
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
-              )}
-            >
-              인사 관리
-            </Link>
-            <Link
-              href="/gridtest"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                pathname === '/gridtest' || pathname.startsWith('/gridtest/')
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
-              )}
-            >
-              그리드 테스트
+              테스트 기능
             </Link>
           </div>
         </div>
@@ -91,18 +67,6 @@ export function Header({ toggleSidebar }: HeaderProps) {
               className="w-64 rounded-lg bg-background pl-8"
             />
           </div>
-          
-          {user && (
-            <div className="flex items-center space-x-2">
-              <User className="h-4 w-4" />
-              <span className="text-sm font-medium">{user.name}</span>
-            </div>
-          )}
-          
-          <Button variant="ghost" size="sm" onClick={logout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            로그아웃
-          </Button>
         </div>
       </div>
     </header>

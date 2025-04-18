@@ -57,7 +57,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
   const router = useRouter();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { addTab } = useTabsStore();
+  const { addTab, tabs, setActiveTab } = useTabsStore();
 
   const menuItems: MenuItem[] = [
     {
@@ -194,18 +194,36 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
       // 아이콘 이름 결정
       let iconName = getIconNameFromMenuItem(item);
       
-      // 새 탭 추가
-      addTab({
-        id: item.href,
-        title: item.title,
-        path: item.href,
-        iconName: iconName
-      });
+      // 탭 ID 결정 (경로 기반)
+      const tabId = item.href;
       
-      // 페이지 이동
-      router.push(item.href);
+      // 이미 존재하는 탭인지 확인
+      const existingTab = tabs.find(tab => tab.id === tabId);
+      
+      if (existingTab) {
+        // 이미 열려 있는 탭인 경우 해당 탭만 활성화하고 상태 보존
+        setActiveTab(tabId);
+        console.log('활성화된 탭:', tabId);
+        
+        // 경로 업데이트만 수행 (새로 렌더링 하지 않고 상태 유지)
+        if (pathname !== item.href) {
+          router.push(item.href);
+        }
+      } else {
+        // 새 탭 추가 (고유 식별자로 instanceId 자동 생성됨)
+        console.log('새 탭 추가:', tabId);
+        addTab({
+          id: tabId,
+          title: item.title,
+          path: item.href,
+          iconName: iconName
+        });
+        
+        // 새 탭 열기 (새로운 컴포넌트 인스턴스 생성)
+        router.push(item.href);
+      }
     }
-  }, [addTab, router, toggleMenu]);
+  }, [addTab, router, toggleMenu, tabs, setActiveTab, pathname]);
   
   // 메뉴 아이템에서 아이콘 이름 추출
   const getIconNameFromMenuItem = (item: MenuItem): string => {

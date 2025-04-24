@@ -29,6 +29,10 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Building2,
+  Map,
+  LogOut,
+  PanelRightClose,
 } from "lucide-react";
 import { ScrollArea } from "./scroll-area";
 import { Button } from "./button";
@@ -37,6 +41,31 @@ import { Badge } from "./badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTabsStore } from "@/lib/store/tabsStore";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
+import Image from "next/image";
+
+// 사이드바 확장 애니메이션
+const sidebarExpansionAnimation = {
+  initial: { width: 60 },
+  animate: { width: 240 },
+  exit: { width: 60 },
+  transition: { duration: 0.3, ease: "easeInOut" }
+};
+
+// 로고 컴포넌트
+const Logo = ({ isCollapsed }: { isCollapsed?: boolean }) => {
+  return (
+    <div className={cn("flex items-center", isCollapsed ? "justify-center" : "px-3")}>
+      <Image
+        src="/images/grid-logo.svg"
+        width={isCollapsed ? 24 : 32}
+        height={isCollapsed ? 24 : 32}
+        alt="Grid"
+        className={isCollapsed ? "" : "mr-3"}
+      />
+      {!isCollapsed && <span className="text-xl font-semibold tracking-tight">Grid</span>}
+    </div>
+  );
+};
 
 // 메뉴 항목의 타입 정의
 interface MenuItem {
@@ -50,9 +79,10 @@ interface MenuItem {
 interface SidebarProps {
   isCollapsed?: boolean;
   setIsCollapsed?: (value: boolean) => void;
+  children?: React.ReactNode;
 }
 
-export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
+export function Sidebar({ isCollapsed = false, setIsCollapsed, children }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
@@ -154,7 +184,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
 
   // 아이콘 렌더링 함수 추가
   const renderMenuIcon = useCallback((iconName: string, small = false) => {
-    const iconClass = small ? "w-3.5 h-3.5" : "w-4 h-4";
+    const iconClass = small ? "w-4 h-4" : "w-5 h-5";
     
     switch (iconName) {
       case 'Home': return <Home className={iconClass} />;
@@ -176,6 +206,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
       case 'Package': return <Package className={iconClass} />;
       case 'Briefcase': return <Briefcase className={iconClass} />;
       case 'Compass': return <Compass className={iconClass} />;
+      case 'Building2': return <Building2 className={iconClass} />;
       default: return <FileStack className={iconClass} />;
     }
   }, []);
@@ -270,7 +301,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
             <TooltipTrigger asChild>
               <div 
                 className={cn(
-                  "mb-0.5 flex items-center justify-center p-1 rounded-lg mx-auto my-0.5 cursor-default transition-colors duration-200",
+                  "mb-0.5 flex items-center justify-center rounded-lg w-10 h-8 mx-auto my-0.5 cursor-default transition-colors duration-200",
                   isDashboard 
                     ? "bg-primary/20 text-primary shadow-sm" 
                     : active 
@@ -280,10 +311,10 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
                 )}
                 onClick={(e) => !isDashboard && handleMenuClick(item, e)}
               >
-                <div>
+                <div className="flex items-center justify-center w-full h-full">
                   {isDashboard 
                     ? <Home className="w-5 h-5" />
-                    : renderMenuIcon(getIconNameFromMenuItem(item), true)}
+                    : renderMenuIcon(getIconNameFromMenuItem(item), false)}
                 </div>
               </div>
             </TooltipTrigger>
@@ -325,8 +356,12 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
         >
           <div className="flex items-center gap-2 w-full">
             {hasSubmenu && !isDashboard ? (
-              <div className={cn("flex-shrink-0 w-4 h-4 transition-transform", 
-                  isOpen ? "rotate-0" : "transform")}>
+              <div 
+                className={cn(
+                  "flex-shrink-0 w-4 h-4 transition-transform", 
+                  isOpen ? "rotate-0" : "transform"
+                )}
+              >
                 {isOpen ? (
                   <ChevronDown className={cn("h-3.5 w-3.5", active ? "text-primary opacity-100" : "opacity-80")} />
                 ) : (
@@ -338,12 +373,12 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
             )}
             
             <div className={cn(
-              "rounded-md transition-colors flex items-center",
+              "rounded-md transition-colors flex items-center justify-center",
               isDashboard ? "text-primary" : active ? "text-primary" : "text-muted-foreground group-hover:text-primary"
             )}>
               {isDashboard 
                 ? <Home className="w-5 h-5" />
-                : renderMenuIcon(getIconNameFromMenuItem(item))}
+                : renderMenuIcon(getIconNameFromMenuItem(item), level > 0)}
             </div>
             
             <div className="flex-1 flex flex-col">
@@ -433,79 +468,133 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed }: SidebarProps) {
     };
   }, [isMobileSidebarOpen]);
 
-  // 데스크톱 사이드바
-  const DesktopSidebar = (
-    <div 
-      className={cn(
-        "hidden border-r bg-card shadow-sm md:flex md:flex-col h-screen pt-0 transition-all duration-300",
-        isCollapsed ? "md:w-12" : "md:w-64"
-      )}
-    >
-      <div className="flex h-full flex-col">
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <ScrollArea className="flex-1 px-3 pt-1 pb-2">
-            <nav className={cn(
-              "flex flex-col gap-0",
-              isCollapsed ? "items-center" : ""
-            )}>
-              {menuItems.map(item => renderMenuItem(item))}
-            </nav>
-          </ScrollArea>
-        </div>
-      </div>
-    </div>
-  );
+  // 로그아웃 처리 함수
+  const handleLogout = useCallback(() => {
+    console.log("로그아웃");
+    // 로그아웃 로직 구현
+  }, []);
+  
+  // 모바일 메뉴 아이템 렌더링
+  const renderMobileItems = useCallback(() => {
+    return menuItems.map((item, index) => (
+      <button
+        key={index}
+        className="flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-secondary"
+        onClick={() => handleMenuClick(item)}
+      >
+        {item.icon || renderMenuIcon(getIconNameFromMenuItem(item))}
+      </button>
+    ));
+  }, [menuItems, handleMenuClick, renderMenuIcon, getIconNameFromMenuItem]);
 
-  // 모바일 사이드바
-  const MobileSidebar = (
-    <div className="md:hidden">
+  return (
+    <div className="relative min-h-screen flex">
+      {/* 모바일 뷰를 위한 오버레이 */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+          onClick={toggleMobileSidebar}
+        />
+      )}
+
+      {/* 모바일 사이드바 */}
+      <AnimatePresence mode="wait">
+        {isMobileSidebarOpen && (
+          <motion.div
+            className="fixed inset-y-0 left-0 z-50 md:hidden"
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <div className="flex h-full w-80 flex-col bg-card rounded-r-xl shadow-lg border overflow-hidden">
+              <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                <Link href="/" className="flex items-center">
+                  <Image
+                    src="/images/grid-logo.svg"
+                    width={32}
+                    height={32}
+                    alt="Grid"
+                    className="mr-3"
+                  />
+                  <span className="text-xl font-semibold tracking-tight">Grid</span>
+                </Link>
+                <Button variant="ghost" size="icon" onClick={toggleMobileSidebar}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <div className="flex-1 overflow-hidden flex flex-col">
+                <ScrollArea className="flex-1 px-3">
+                  <nav className="flex flex-col gap-0.5 pt-2">
+                    {menuItems.map(item => renderMenuItem(item))}
+                  </nav>
+                </ScrollArea>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 모바일 메뉴 버튼 */}
       <Button
         variant="outline"
         size="icon"
-        className="fixed left-4 top-4 z-40 shadow-md rounded-full bg-background"
+        className="fixed left-4 top-4 z-40 md:hidden shadow-md rounded-full bg-background"
         onClick={toggleMobileSidebar}
       >
         <Menu className="h-5 w-5" />
       </Button>
-      
-      <AnimatePresence>
-        {isMobileSidebarOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-30 bg-black"
-            />
-            
-            <motion.div
-              id="mobile-sidebar"
-              initial={{ x: -320 }}
-              animate={{ x: 0 }}
-              exit={{ x: -320 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed left-0 top-0 z-40 h-screen w-64 bg-card shadow-lg pt-0"
-            >
-              <div className="flex h-full flex-col">
-                <div className="flex-1 overflow-hidden flex flex-col">
-                  <ScrollArea className="flex-1 px-3 pt-1 pb-2">
-                    <nav className="flex flex-col gap-0">
-                      {menuItems.map(item => renderMenuItem(item))}
-                    </nav>
-                  </ScrollArea>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
-  );
 
-  return (
-    <>
-      {DesktopSidebar}
-      {MobileSidebar}
-    </>
+      {/* 데스크탑 사이드바 */}
+      <div className="hidden md:block">
+        <motion.div
+          className={cn(
+            "fixed left-0 top-[4.5rem] z-20 h-[calc(100vh-5.5rem)]",
+            isCollapsed ? "w-[60px]" : "w-[240px]"
+          )}
+          animate={{ width: isCollapsed ? 60 : 240 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex h-full flex-col justify-between bg-card shadow-sm rounded-r-xl p-2 border-r border-t border-b mt-2">
+            {/* 로고 영역 삭제 */}
+            <div className="w-full">
+              {/* 메뉴 아이템 목록 */}
+              <div className={cn(
+                "w-full space-y-1 mt-2",
+                isCollapsed ? "flex flex-col items-center" : ""
+              )}>
+                {menuItems.map(item => renderMenuItem(item))}
+              </div>
+            </div>
+            
+            {/* 하단 컨트롤 추가 */}
+            <div className={cn(
+              "mt-auto w-full",
+              isCollapsed ? "flex flex-col items-center" : ""
+            )}>
+              <button
+                className={cn(
+                  "flex h-10 w-full items-center rounded-md px-3 text-muted-foreground hover:bg-muted",
+                  isCollapsed && "justify-center"
+                )}
+                onClick={handleLogout}
+              >
+                <LogOut className="h-5 w-5" />
+                {!isCollapsed && <span className="ml-2">로그아웃</span>}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* 메인 콘텐츠 영역 */}
+      <div className={cn(
+        "flex-1 transition-all duration-300",
+        isCollapsed ? "md:ml-[60px]" : "md:ml-[240px]"
+      )}>
+        {children}
+      </div>
+    </div>
   );
 } 

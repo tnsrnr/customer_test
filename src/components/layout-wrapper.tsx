@@ -25,18 +25,25 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const hasActiveTabs = tabs.length > 0;
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gray-50">
       <Header toggleSidebar={toggleSidebar} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <AppTabs />
+        <div className="flex-shrink-0">
+          <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+        </div>
+        <div className="flex flex-col flex-1 overflow-hidden px-4 pt-2 pb-4">
+          {/* 탭이 있을 때만 탭 네비게이션 표시 */}
+          {hasActiveTabs && (
+            <div className="rounded-xl border bg-card shadow-md py-1 px-4 mb-3">
+              <AppTabs />
+            </div>
+          )}
           
           {/* 상태 유지형 탭 뷰 */}
           <PersistentTabView className="flex-1">
             <main className="h-full w-full">
-              <div className="h-full mx-auto container max-w-full">
-                <div className="h-full rounded-lg border bg-card shadow-sm p-3 md:p-4">
+              <div className="h-full">
+                <div className="h-full rounded-xl border bg-card shadow-md px-4 py-3 overflow-auto">
                   {children}
                 </div>
               </div>

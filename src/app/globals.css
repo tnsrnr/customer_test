@@ -105,4 +105,32 @@
     --scrollbar-track: theme('colors.gray.800');
     --scrollbar-thumb: theme('colors.gray.600');
   }
+}
+
+/* 마키 애니메이션 */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-marquee {
+  animation: fadeIn 0.5s ease-out, marquee 15s linear infinite;
+  animation-delay: 0s, 0.5s;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 } 

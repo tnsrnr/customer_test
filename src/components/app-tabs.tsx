@@ -16,7 +16,7 @@ import {
   FileStack,
   Bell,
   MessageSquare,
-  FormInput,
+  ClipboardCheck,
   SortAsc,
   FileSearch,
   Calendar,
@@ -116,7 +116,7 @@ export function AppTabs({ className }: AppTabsProps) {
       case 'FileStack': return <FileStack className="h-4 w-4" />;
       case 'Bell': return <Bell className="h-4 w-4" />;
       case 'MessageSquare': return <MessageSquare className="h-4 w-4" />;
-      case 'FormInput': return <FormInput className="h-4 w-4" />;
+      case 'ClipboardCheck': return <ClipboardCheck className="h-4 w-4" />;
       case 'SortAsc': return <SortAsc className="h-4 w-4" />;
       case 'FileSearch': return <FileSearch className="h-4 w-4" />;
       case 'Calendar': return <Calendar className="h-4 w-4" />;

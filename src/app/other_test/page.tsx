@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Bell, MessageSquare, FileStack, LineChart, FormInput, SunMoon, Upload, Infinity, ArrowDownUp, Table2 } from 'lucide-react';
+import { Bell, MessageSquare, FileStack, LineChart, ClipboardCheck, Sun, Upload, Repeat, ArrowDownUp, Table2 } from 'lucide-react';
 
 export default function OtherTestPage() {
   const testOptions = [
@@ -25,7 +25,7 @@ export default function OtherTestPage() {
     {
       title: '폼 밸리데이션 데모',
       description: '사용자 입력 유효성 검사 및 폼 관리 예제',
-      icon: <FormInput className="h-10 w-10 text-primary" />,
+      icon: <ClipboardCheck className="h-10 w-10 text-primary" />,
       link: '/other_test/form-validation',
       linkText: '폼 밸리데이션 데모 보기'
     },
@@ -46,7 +46,7 @@ export default function OtherTestPage() {
     {
       title: '테마 전환 데모',
       description: '라이트/다크 모드 테마 전환 기능 예제',
-      icon: <SunMoon className="h-10 w-10 text-primary" />,
+      icon: <Sun className="h-10 w-10 text-primary" />,
       link: '/other_test/theme-toggle',
       linkText: '테마 전환 데모 보기'
     },
@@ -61,7 +61,7 @@ export default function OtherTestPage() {
     {
       title: '무한 스크롤 데모',
       description: '스크롤에 따라 데이터를 지속적으로 로드하는 예제',
-      icon: <Infinity className="h-10 w-10 text-primary" />,
+      icon: <Repeat className="h-10 w-10 text-primary" />,
       link: '/other_test/infinite-scroll',
       linkText: '무한 스크롤 데모 보기',
       isNew: true
@@ -93,7 +93,7 @@ export default function OtherTestPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {testOptions.map((option, index) => (
-          <Card key={index} className="transition-all duration-300 hover:shadow-md">
+          <Card key={`test-option-${index}`} className="transition-all duration-300 hover:shadow-md">
             <CardHeader className="flex flex-row items-center gap-4">
               {option.icon}
               <div className="flex-1">

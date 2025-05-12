@@ -12,7 +12,7 @@ import {
   MessageSquare,
   FileStack,
   LineChart,
-  FormInput,
+  ClipboardCheck,
   TestTube,
   ChevronDown,
   SortAsc,
@@ -118,7 +118,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed, children }: Sideb
         {
           title: "폼 밸리데이션",
           href: "/other_test/form-validation",
-          icon: <FormInput className="w-4 h-4" />,
+          icon: <ClipboardCheck className="w-4 h-4" />,
         },
         {
           title: "데이터 필터링",
@@ -138,7 +138,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed, children }: Sideb
         {
           title: "멀티스텝 폼",
           href: "/other_test/multi-step-form",
-          icon: <FormInput className="w-4 h-4" />,
+          icon: <ClipboardCheck className="w-4 h-4" />,
         },
         {
           title: "드래그 앤 드롭 업로드",
@@ -192,7 +192,7 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed, children }: Sideb
       case 'TestTube': return <TestTube className={iconClass} />;
       case 'Bell': return <Bell className={iconClass} />;
       case 'MessageSquare': return <MessageSquare className={iconClass} />;
-      case 'FormInput': return <FormInput className={iconClass} />;
+      case 'ClipboardCheck': return <ClipboardCheck className={iconClass} />;
       case 'FileStack': return <FileStack className={iconClass} />;
       case 'LineChart': return <LineChart className={iconClass} />;
       case 'Settings': return <Settings className={iconClass} />;
@@ -256,29 +256,33 @@ export function Sidebar({ isCollapsed = false, setIsCollapsed, children }: Sideb
     }
   }, [addTab, router, toggleMenu, tabs, setActiveTab, pathname]);
   
-  // 메뉴 아이템에서 아이콘 이름 추출
+  // 메뉴 항목에서 아이콘 이름 추출
   const getIconNameFromMenuItem = (item: MenuItem): string => {
-    // 아이콘 타입에 따라 이름 반환
-    if (item.title.includes('대시보드')) return 'Home';
-    if (item.title.includes('테이블') || item.href.includes('tabulatorGrid')) return 'LayoutGrid';
-    if (item.title.includes('보고서') || item.href.includes('analytics')) return 'LineChart';
-    if (item.title.includes('프로젝트')) return 'Briefcase';
-    if (item.title.includes('설정')) return 'Settings';
+    // 아이콘 문자열 추출 시도
+    // 1. 직접 제공된 아이콘이 있는 경우
+    if ((item as any).iconName) {
+      return (item as any).iconName;
+    }
+    
+    // 2. 타이틀 기반 추론
+    if (item.title.includes('홈')) return 'Home';
+    if (item.title.includes('대시보드')) return 'LayoutGrid';
+    if (item.title.includes('Tabulator')) return 'LayoutGrid';
+    if (item.title.includes('테스트')) return 'TestTube';
     if (item.title.includes('알림')) return 'Bell';
     if (item.title.includes('다이얼로그') || item.title.includes('모달')) return 'MessageSquare';
-    if (item.title.includes('폼')) return 'FormInput';
+    if (item.title.includes('폼')) return 'ClipboardCheck';
     if (item.title.includes('데이터')) return 'FileSearch';
     if (item.title.includes('테마')) return 'Settings';
-    if (item.title.includes('업로드')) return 'FileStack';
+    if (item.title.includes('스켈레톤')) return 'LineChart';
+    if (item.title.includes('드래그')) return 'FileStack';
     if (item.title.includes('스크롤')) return 'Smartphone';
     
-    // 경로에 따라 이름 반환
-    if (item.href === '/') return 'Home';
+    // 3. URL 경로 기반 추론
     if (item.href.includes('settings')) return 'Settings';
-    if (item.href.includes('analytics')) return 'BarChart3';
-    if (item.href.includes('projects')) return 'Briefcase';
+    if (item.href.includes('sample')) return 'FileStack';
     
-    // 기본값
+    // 기본값 반환
     return 'FileStack';
   };
 

@@ -31,9 +31,10 @@ import { Badge } from "./badge";
 import { Sheet, SheetContent, SheetTrigger } from "./sheet";
 import { useTabsStore } from "@/lib/store/tabsStore";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { Calendar } from "./calendar";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface HeaderProps {
   toggleSidebar?: () => void;
@@ -161,12 +162,49 @@ export function Header({ toggleSidebar }: HeaderProps) {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="end">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(newDate) => newDate && setDate(newDate)}
-                      initialFocus
-                    />
+                    <div className="custom-datepicker-container">
+                      <DatePicker
+                        selected={date}
+                        onChange={(newDate: Date | null) => newDate && setDate(newDate)}
+                        inline
+                        locale={ko}
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                        dateFormat="yyyy년 MM월 dd일"
+                        dayClassName={() => "react-datepicker__day--custom"}
+                        fixedHeight
+                        renderCustomHeader={({
+                          date,
+                          changeYear,
+                          changeMonth,
+                          decreaseMonth,
+                          increaseMonth,
+                          prevMonthButtonDisabled,
+                          nextMonthButtonDisabled,
+                        }) => (
+                          <div className="custom-datepicker-header">
+                            <button
+                              onClick={decreaseMonth}
+                              disabled={prevMonthButtonDisabled}
+                              className="custom-prev-button"
+                            >
+                              <ChevronLeft size={16} />
+                            </button>
+                            <div className="custom-month-year">
+                              {format(date, "MMMM yyyy", { locale: ko })}
+                            </div>
+                            <button
+                              onClick={increaseMonth}
+                              disabled={nextMonthButtonDisabled}
+                              className="custom-next-button"
+                            >
+                              <ChevronRight size={16} />
+                            </button>
+                          </div>
+                        )}
+                      />
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>
@@ -290,6 +328,80 @@ export function Header({ toggleSidebar }: HeaderProps) {
           </div>
         </div>
       </div>
+      
+      {/* 달력 컴포넌트 스타일 */}
+      <style jsx global>{`
+        .custom-datepicker-container {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .react-datepicker {
+          border: none;
+          font-family: inherit;
+          border-radius: 0.5rem;
+          overflow: hidden;
+        }
+        .react-datepicker__header {
+          background-color: white;
+          border-bottom: none;
+          padding-top: 0.5rem;
+        }
+        .custom-datepicker-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 0.5rem;
+          padding: 0 0.5rem;
+        }
+        .custom-prev-button,
+        .custom-next-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #6b7280;
+        }
+        .custom-prev-button:hover,
+        .custom-next-button:hover {
+          color: #1f2937;
+        }
+        .custom-month-year {
+          font-weight: 500;
+          font-size: 0.95rem;
+        }
+        .react-datepicker__day-name {
+          color: #6b7280;
+          font-weight: 500;
+          font-size: 0.8rem;
+          margin: 0.15rem;
+          width: 2rem;
+          line-height: 2rem;
+        }
+        .react-datepicker__day {
+          margin: 0.15rem;
+          width: 2rem;
+          line-height: 2rem;
+          border-radius: 0.25rem;
+          color: #1f2937;
+          font-size: 0.9rem;
+        }
+        .react-datepicker__day--today {
+          font-weight: bold;
+          color: #2563eb;
+        }
+        .react-datepicker__day--selected {
+          background-color: #111827;
+          color: white;
+          font-weight: bold;
+        }
+        .react-datepicker__day--outside-month {
+          color: #9ca3af;
+        }
+        .react-datepicker__day:hover {
+          background-color: #f3f4f6;
+        }
+        .react-datepicker__triangle {
+          display: none;
+        }
+      `}</style>
     </header>
   );
 } 

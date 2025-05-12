@@ -884,13 +884,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* 인원 현황 카드 */}
               <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow h-full">
-                <CardHeader className="py-2.5 px-3.5 border-b bg-gray-50">
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <Users className="h-4 w-4 mr-2 text-blue-500" />
-                    부서별 인원 분포
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2.5 px-3.5 pb-2.5">
+                <CardContent className="pt-2.5 px-3.5 pb-2.5 flex flex-col justify-between h-full">
                   <div className="h-[200px]">
                     <Doughnut 
                       data={{
@@ -939,18 +933,16 @@ export default function Home() {
                       }}
                     />
                   </div>
+                  <div className="border-t mt-3 pt-3 pb-2.5 flex items-center justify-center bg-gradient-to-r from-blue-100/80 to-blue-50/80 backdrop-blur-sm rounded-b-lg shadow-[0_2px_8px_0_rgba(59,130,246,0.08)]">
+                    <Users className="h-5 w-5 mr-3 text-blue-600 drop-shadow" />
+                    <span className="text-base font-semibold text-blue-900 tracking-wide">부서별 인원 분포</span>
+                  </div>
                 </CardContent>
               </Card>
               
               {/* 근태 현황 카드 */}
               <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow h-full">
-                <CardHeader className="py-2.5 px-3.5 border-b bg-gray-50">
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-blue-500" />
-                    오늘 근태 현황
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2.5 px-3.5 pb-2.5">
+                <CardContent className="pt-2.5 px-3.5 pb-2.5 flex flex-col justify-between h-full">
                   <div className="space-y-2.5">
                     {/* 근태 상태 분포 */}
                     <div className="space-y-1.5">
@@ -999,6 +991,10 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
+                  <div className="border-t mt-3 pt-3 pb-2.5 flex items-center justify-center bg-gradient-to-r from-green-100/80 to-green-50/80 backdrop-blur-sm rounded-b-lg shadow-[0_2px_8px_0_rgba(16,185,129,0.08)]">
+                    <Clock className="h-5 w-5 mr-3 text-green-600 drop-shadow" />
+                    <span className="text-base font-semibold text-green-900 tracking-wide">오늘 근태 현황</span>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -1007,14 +1003,8 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-3">
               {/* 직급별 분포 */}
               <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="py-2 px-3 border-b bg-gray-50">
-                  <CardTitle className="text-xs font-medium flex items-center">
-                    <Briefcase className="h-3.5 w-3.5 mr-1.5 text-indigo-500" />
-                    직급별 분포
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2 px-3 pb-2">
-                  <div className="h-[180px]">
+                <CardContent className="pt-2 px-3 pb-2 flex flex-col justify-between h-full">
+                  <div className="h-[185px]">
                     <Pie 
                       data={{
                         labels: ["사원", "대리", "과장", "차장", "부장", "임원"],
@@ -1055,19 +1045,17 @@ export default function Home() {
                   <div className="text-xs text-center mt-1">
                     <span className="text-gray-500">평균 근속:</span> <span className="font-medium">4.8년</span>
                   </div>
+                  <div className="border-t mt-3 pt-3 pb-2.5 flex items-center justify-center bg-gradient-to-r from-indigo-100/80 to-indigo-50/80 backdrop-blur-sm rounded-b-lg shadow-[0_2px_8px_0_rgba(99,102,241,0.08)]">
+                    <Briefcase className="h-5 w-5 mr-3 text-indigo-600 drop-shadow" />
+                    <span className="text-base font-semibold text-indigo-900 tracking-wide">직급별 분포</span>
+                  </div>
                 </CardContent>
               </Card>
               
               {/* 연령대별 분포 */}
               <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="py-2 px-3 border-b bg-gray-50">
-                  <CardTitle className="text-xs font-medium flex items-center">
-                    <Users className="h-3.5 w-3.5 mr-1.5 text-purple-500" />
-                    연령대별 분포
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2 px-3 pb-2">
-                  <div className="h-[180px]">
+                <CardContent className="pt-2 px-3 pb-2 flex flex-col justify-between h-full">
+                  <div className="h-[165px]">
                     <Pie 
                       data={{
                         labels: ["20대", "30대", "40대", "50대"],
@@ -1106,21 +1094,19 @@ export default function Home() {
                   <div className="text-xs text-center mt-1">
                     <span className="text-gray-500">평균 연령:</span> <span className="font-medium">34.7세</span>
                   </div>
+                  <div className="border-t mt-3 pt-3 pb-2.5 flex items-center justify-center bg-gradient-to-r from-purple-100/80 to-purple-50/80 backdrop-blur-sm rounded-b-lg shadow-[0_2px_8px_0_rgba(168,85,247,0.08)]">
+                    <Users className="h-5 w-5 mr-3 text-purple-600 drop-shadow" />
+                    <span className="text-base font-semibold text-purple-900 tracking-wide">연령대별 분포</span>
+                  </div>
                 </CardContent>
               </Card>
               
               {/* 성별 분포 */}
               <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="py-2 px-3 border-b bg-gray-50">
-                  <CardTitle className="text-xs font-medium flex items-center">
-                    <UserPlus className="h-3.5 w-3.5 mr-1.5 text-pink-500" />
-                    성별 분포
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2 px-3 pb-2">
+                <CardContent className="pt-2 px-3 pb-2 flex flex-col justify-between h-full">
                   <div className="flex flex-col space-y-2">
                     {/* 성별 파이 차트 */}
-                    <div className="h-[180px]">
+                    <div className="h-[165px]">
                       <Pie 
                         data={{
                           labels: ['남성', '여성'],
@@ -1163,6 +1149,10 @@ export default function Home() {
                         <div className="font-medium text-xs">48명 (40%)</div>
                       </div>
                     </div>
+                  </div>
+                  <div className="border-t mt-3 pt-3 pb-2.5 flex items-center justify-center bg-gradient-to-r from-pink-100/80 to-pink-50/80 backdrop-blur-sm rounded-b-lg shadow-[0_2px_8px_0_rgba(236,72,153,0.08)]">
+                    <UserPlus className="h-5 w-5 mr-3 text-pink-600 drop-shadow" />
+                    <span className="text-base font-semibold text-pink-900 tracking-wide">성별 분포</span>
                   </div>
                 </CardContent>
               </Card>
@@ -1445,7 +1435,7 @@ export default function Home() {
                 <CardContent className="p-3">
                   <div className="grid grid-cols-2 gap-3">
                     {/* 좌측: 파이 차트 */}
-                    <div className="h-[180px]">
+                    <div className="h-[175px]">
                       <Pie 
                         data={{
                           labels: ['제품A', '제품B', '제품C', '제품D', '기타'],
@@ -1562,7 +1552,7 @@ export default function Home() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3">
-                  <div className="h-[180px]">
+                  <div className="h-[175px]">
                     <Bar
                       data={{
                         labels: ['서울', '경기', '인천', '부산', '대구', '광주', '기타'],
@@ -1883,7 +1873,7 @@ export default function Home() {
                         {215}개
                       </Badge>
                     </div>
-                    <div className="h-[170px]">
+                    <div className="h-[175px]">
                       <Pie 
                         data={{
                           labels: ["서울", "경기", "부산", "대구", "기타"],
@@ -1944,7 +1934,7 @@ export default function Home() {
                         {215}개
                       </Badge>
                     </div>
-                    <div className="h-[170px]">
+                    <div className="h-[165px]">
                       <Doughnut 
                         data={{
                           labels: ["제조업", "유통업", "서비스", "건설업", "기타"],
@@ -2006,7 +1996,7 @@ export default function Home() {
                         {215}개
                       </Badge>
                     </div>
-                    <div className="h-[170px]">
+                    <div className="h-[165px]">
                       <Doughnut
                         data={{
                           labels: ["10억 이상", "5~10억", "1~5억", "5천~1억", "5천만 미만"],

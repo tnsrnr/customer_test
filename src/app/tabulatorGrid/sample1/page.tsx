@@ -207,6 +207,9 @@ export default function TabulatorSpreadsheetExample() {
     dataLoaderLoading: "데이터 로딩중...",
     dataLoaderError: "데이터 로드 실패",
     width: "100%",
+    pagination: true,
+    paginationSize: 10,
+    paginationInitialPage: 1,
     // 필터 이벤트 핸들러
     dataFiltered: function(filters: any) {
       setHasActiveFilters(filters.length > 0);
@@ -221,7 +224,7 @@ export default function TabulatorSpreadsheetExample() {
             ref={gridRef}
             data={data}
             columns={columns}
-            height="700px"
+            height="450px"
             selectable={true}
             enableCellSelection={true}
             enableClipboard={true}

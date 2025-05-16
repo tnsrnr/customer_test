@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Trash, Search } from 'lucide-react';
 import TabulatorGrid, { TabulatorGridRef, DataType } from '@/components/common/TabulatorGrid';
 import "tabulator-tables/dist/css/tabulator.min.css";
 // luxon 임포트 (날짜 정렬 기능에 필요)
@@ -24,6 +24,7 @@ interface Employee {
 
 export default function TabulatorSpreadsheetExample() {
   const gridRef = useRef<TabulatorGridRef>(null);
+  const [nextId, setNextId] = useState(300); // 새 행의 ID 시작값
   
   // 샘플 데이터
   const data: Employee[] = [
@@ -173,6 +174,75 @@ export default function TabulatorSpreadsheetExample() {
     }
   ] as any; // ColumnDefinitionType[] 타입 충돌 해결을 위한 캐스팅
 
+  // 행 추가 함수
+  const handleAddRow = () => {
+    if (gridRef.current) {
+      const table = gridRef.current.getTable();
+      if (table) {
+        const newRow: Employee = {
+          id: nextId,
+          name: "",
+          position: "",
+          department: "",
+          salary: 0,
+          startDate: new Date().toISOString().slice(0, 10),
+          email: "",
+          phone: "",
+          status: "정규직"
+        };
+        
+        table.addRow(newRow);
+        setNextId(nextId + 1);
+      }
+    }
+  };
+
+  // 행 삭제 함수
+  const handleDeleteRow = () => {
+    if (gridRef.current) {
+      const table = gridRef.current.getTable();
+      if (table) {
+        const selectedRows = table.getSelectedRows();
+        
+        if (selectedRows && selectedRows.length > 0) {
+          selectedRows.forEach(row => row.delete());
+          alert(`${selectedRows.length}개 행이 삭제되었습니다.`);
+        } else {
+          alert("삭제할 행을 선택해주세요.");
+        }
+      }
+    }
+  };
+
+  // 데이터 저장 함수
+  const handleSave = () => {
+    if (gridRef.current) {
+      const table = gridRef.current.getTable();
+      if (table) {
+        const allData = table.getData();
+        console.log("저장된 데이터:", allData);
+        alert("데이터가 저장되었습니다. (콘솔에서 확인 가능)");
+        
+        // 실제 구현에서는 여기서 API 호출하여 서버에 데이터 저장
+      }
+    }
+  };
+
+  // 데이터 조회 함수
+  const handleSearch = () => {
+    if (gridRef.current) {
+      const table = gridRef.current.getTable();
+      if (table) {
+        // 데이터 새로고침 시뮬레이션
+        table.clearFilter(true);
+        table.clearSort();
+        alert("데이터가 새로 조회되었습니다.");
+        
+        // 실제 구현에서는 여기서 API 호출하여 데이터 새로 로드
+      }
+    }
+  };
+
   // Tabulator 추가 옵션
   const additionalOptions = {
     movableColumns: true,
@@ -192,7 +262,16 @@ export default function TabulatorSpreadsheetExample() {
 
   return (
     <div className="container-fluid w-full px-4 py-6">
-      <Card className="mb-6 shadow-sm border-0 rounded-lg overflow-hidden w-full">
+      <div className="flex justify-end items-center mb-2">
+        <div className="flex items-center">
+          <Button variant="outline" size="sm" onClick={handleSearch}>
+            <Search className="h-4 w-4 mr-1" />
+            조회
+          </Button>
+        </div>
+      </div>
+
+      <Card className="mb-3 shadow-sm border-0 rounded-lg overflow-hidden w-full">
         <CardContent className="p-0">
           <TabulatorGrid
             ref={gridRef}
@@ -207,6 +286,23 @@ export default function TabulatorSpreadsheetExample() {
           />
         </CardContent>
       </Card>
+
+      <div className="flex justify-end items-center mt-2">
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" onClick={handleAddRow}>
+            <Plus className="h-4 w-4 mr-1" />
+            행 추가
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleDeleteRow}>
+            <Trash className="h-4 w-4 mr-1" />
+            행 삭제
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleSave}>
+            <Save className="h-4 w-4 mr-1" />
+            저장
+          </Button>
+        </div>
+      </div>
     </div>
   );
 } 

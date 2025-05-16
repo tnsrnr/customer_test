@@ -83,6 +83,8 @@ export interface TabulatorGridRef {
   getTable: () => Tabulator | null;
   clearSelection: () => void;
   copySelection: () => void;
+  clearHeaderFilter: () => void;
+  setHeaderFilterValue: (field: string, value: any) => void;
 }
 
 // 컴포넌트 구현
@@ -134,190 +136,6 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
     total: data.length,
     selected: 0
   });
-  
-  // 커스텀 필터 상태
-  const [showCustomFilter, setShowCustomFilter] = useState<boolean>(false);
-  const [filterValues, setFilterValues] = useState<{[key: string]: string}>({});
-  
-  // 필터 토글 핸들러
-  const handleToggleFilter = () => {
-    const newState = !showCustomFilter;
-    setShowCustomFilter(newState);
-    
-    // 필터가 표시될 때 즉시 그리고 약간의 지연 후에도 컬럼 너비 측정
-    if (newState) {
-      setTimeout(() => syncFilterColumns(), 0);
-      setTimeout(() => syncFilterColumns(), 100);
-    }
-  };
-  
-  // 필터 컬럼을 그리드 컬럼과 동기화하는 함수
-  const syncFilterColumns = () => {
-    if (!tabulatorRef.current) return;
-    
-    // 테이블 헤더 컬럼 요소 가져오기
-    const headerCells = document.querySelectorAll('.tabulator-col:not(.tabulator-col-group)');
-    const filterArea = document.querySelector('.filter-area');
-    
-    if (!filterArea) return;
-    
-    // 필터 영역 기존 요소 제거
-    const filterContainer = filterArea.querySelector('.filter-columns-container');
-    if (filterContainer) {
-      filterContainer.innerHTML = '';
-    } else {
-      // 없으면 새로 생성
-      const newContainer = document.createElement('div');
-      newContainer.className = 'filter-columns-container flex w-full';
-      filterArea.innerHTML = '';
-      filterArea.appendChild(newContainer);
-    }
-    
-    const container = filterArea.querySelector('.filter-columns-container') as HTMLElement;
-    if (!container) return;
-    
-    // 전체 컨테이너 스타일 설정
-    container.style.display = 'flex';
-    container.style.width = '100%';
-    container.style.padding = '0';
-    container.style.margin = '0';
-    
-    // 각 헤더 셀에 대해 처리
-    headerCells.forEach(cell => {
-      const field = cell.getAttribute('tabulator-field');
-      
-      // 체크박스 컬럼('selected')의 경우 빈 공간만 생성
-      if (field === 'selected') {
-        const cellRect = (cell as HTMLElement).getBoundingClientRect();
-        const width = cellRect.width;
-        
-        // 빈 필터 공간 생성
-        const emptyColumn = document.createElement('div');
-        emptyColumn.className = 'filter-field empty-checkbox-column';
-        emptyColumn.style.boxSizing = 'border-box';
-        emptyColumn.style.width = `${width}px`;
-        emptyColumn.style.padding = '0';
-        emptyColumn.style.margin = '0';
-        emptyColumn.style.borderRight = '1px solid #dee2e6';
-        
-        container.appendChild(emptyColumn);
-        return;
-      }
-      
-      // 일반 컬럼에 대한 필터 생성
-      if (!field) return;
-      
-      // 컬럼 너비와 위치 정확히 가져오기
-      const cellRect = (cell as HTMLElement).getBoundingClientRect();
-      const width = cellRect.width;
-      const title = cell.querySelector('.tabulator-col-title')?.textContent || '';
-      
-      // 필터 컬럼 요소 생성
-      const filterColumn = document.createElement('div');
-      filterColumn.className = 'filter-field';
-      filterColumn.style.boxSizing = 'border-box';
-      filterColumn.style.width = `${width}px`;
-      filterColumn.style.padding = '0';
-      filterColumn.style.margin = '0';
-      filterColumn.style.borderRight = '1px solid #dee2e6';
-      
-      // 입력 필드 컨테이너 생성 (패딩을 위한 래퍼)
-      const inputContainer = document.createElement('div');
-      inputContainer.style.padding = '8px';
-      inputContainer.style.boxSizing = 'border-box';
-      inputContainer.style.width = '100%';
-      
-      // 입력 필드 생성
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500';
-      input.placeholder = title || '검색...';
-      input.value = filterValues[field] || '';
-      input.style.boxSizing = 'border-box';
-      input.style.width = '100%';
-      
-      // 입력 이벤트 처리
-      input.addEventListener('input', (e) => {
-        const value = (e.target as HTMLInputElement).value;
-        handleFilterChange(field, value);
-      });
-      
-      // 입력 필드를 컨테이너에 추가
-      inputContainer.appendChild(input);
-      filterColumn.appendChild(inputContainer);
-      container.appendChild(filterColumn);
-    });
-  };
-  
-  // 필터 값 변경 핸들러
-  const handleFilterChange = (field: string, value: string) => {
-    const newFilterValues = {...filterValues, [field]: value};
-    setFilterValues(newFilterValues);
-    
-    // 테이블에 필터 적용
-    applyFilters(newFilterValues);
-  };
-  
-  // 필터 적용 함수
-  const applyFilters = (filters: {[key: string]: string}) => {
-    if (!tabulatorRef.current) return;
-    
-    // 모든 필터 초기화
-    tabulatorRef.current.clearFilter();
-    
-    // 새 필터 적용
-    Object.entries(filters).forEach(([field, value]) => {
-      if (value && value.trim() !== '') {
-        tabulatorRef.current?.setFilter(field, 'like', value);
-      }
-    });
-  };
-  
-  // 모든 필터 초기화
-  const clearAllFilters = () => {
-    // 필터 값 상태 초기화
-    setFilterValues({});
-    
-    // 테이블 필터 초기화
-    if (tabulatorRef.current) {
-      try {
-        // true를 전달하여 모든 필터 강제 초기화
-        tabulatorRef.current.clearFilter(true);
-      } catch (err) {
-        console.warn('필터 초기화 중 오류:', err);
-      }
-    }
-    
-    // 필터 입력 필드 초기화 (DOM 직접 조작)
-    try {
-      const filterInputs = document.querySelectorAll('.filter-area input');
-      filterInputs.forEach(input => {
-        (input as HTMLInputElement).value = '';
-      });
-    } catch (err) {
-      console.warn('필터 필드 초기화 중 오류:', err);
-    }
-    
-    // 약간의 지연 후 필터 UI 강제 갱신 및 동기화
-    setTimeout(() => {
-      try {
-        // DOM에서 모든 필터 입력 요소 다시 찾아서 값 초기화 재시도
-        const allFilterInputs = document.querySelectorAll('.filter-area input');
-        allFilterInputs.forEach(input => {
-          (input as HTMLInputElement).value = '';
-        });
-        
-        // 필터 영역 컨테이너 전체 초기화 및 재생성
-        const filterArea = document.querySelector('.filter-area');
-        if (filterArea) {
-          filterArea.innerHTML = '<div class="filter-columns-container flex w-full"></div>';
-          syncFilterColumns();
-        }
-      } catch (syncErr) {
-        console.warn('필터 동기화 중 오류:', syncErr);
-      }
-    }, 50);
-  };
 
   // 데이터 상태 업데이트 함수
   const updateDataStats = () => {
@@ -354,7 +172,17 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
   useImperativeHandle(ref, () => ({
     getTable: () => tabulatorRef.current,
     clearSelection: handleClearSelection,
-    copySelection: handleCopySelection
+    copySelection: handleCopySelection,
+    clearHeaderFilter: () => {
+      if (tabulatorRef.current) {
+        tabulatorRef.current.clearHeaderFilter();
+      }
+    },
+    setHeaderFilterValue: (field: string, value: any) => {
+      if (tabulatorRef.current) {
+        tabulatorRef.current.setHeaderFilterValue(field, value);
+      }
+    }
   }));
 
   // 셀 선택 추가
@@ -947,15 +775,11 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
         
         // 컬럼 크기 조정 및 이동 이벤트 처리
         columnResized: function() {
-          if (showCustomFilter) {
-            setTimeout(() => syncFilterColumns(), 0);
-          }
+          // 필터 관련 로직 제거
         },
         
         columnMoved: function() {
-          if (showCustomFilter) {
-            setTimeout(() => syncFilterColumns(), 0);
-          }
+          // 필터 관련 로직 제거
         },
         
         // 테두리 설정
@@ -1374,39 +1198,6 @@ const TabulatorGrid = forwardRef<TabulatorGridRef, TabulatorGridProps>((props, r
   return (
     <div className={`tabulator-grid-wrapper ${className}`}>
       <div className="border rounded overflow-hidden" style={{ borderColor: '#e2e8f0' }}>
-        {/* 필터 컨트롤 영역 */}
-        <div className="filter-control-header flex items-center justify-between p-2 bg-gray-50 border-b border-gray-200">
-          <button
-            className={`filter-global-toggle flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded 
-              ${showCustomFilter ? 'bg-blue-100 text-blue-600 border-blue-200' : 'bg-gray-100 text-gray-600 border-gray-200'} 
-              border transition-colors duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500`}
-            onClick={handleToggleFilter}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-            </svg>
-            <span>필터</span>
-          </button>
-          
-          {showCustomFilter && (
-            <button 
-              className="text-xs text-gray-500 hover:text-gray-700"
-              onClick={clearAllFilters}
-            >
-              필터 초기화
-            </button>
-          )}
-        </div>
-        
-        {/* 커스텀 필터 영역 */}
-        {showCustomFilter && (
-          <div className="filter-area bg-white border-b border-gray-200">
-            <div className="filter-columns-container flex w-full">
-              {/* 동적으로 생성되는 필터 필드 */}
-            </div>
-          </div>
-        )}
-        
         <div ref={tableRef} className="w-full"></div>
       </div>
       

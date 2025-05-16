@@ -24,8 +24,6 @@ interface Employee {
 
 export default function TabulatorSpreadsheetExample() {
   const gridRef = useRef<TabulatorGridRef>(null);
-  // 현재 적용된 필터 상태
-  const [hasActiveFilters, setHasActiveFilters] = useState<boolean>(false);
   
   // 샘플 데이터
   const data: Employee[] = [
@@ -104,24 +102,17 @@ export default function TabulatorSpreadsheetExample() {
     { 
       title: "이름", 
       field: "name", 
-      sorter: "string", 
-      headerFilter: true,
-      headerFilterPlaceholder: "이름 검색",
-      headerFilterLiveFilter: true
+      sorter: "string"
     },
     { 
       title: "직책", 
       field: "position", 
-      sorter: "string", 
-      headerFilter: true,
-      headerFilterPlaceholder: "직책 검색"
+      sorter: "string"
     },
     { 
       title: "부서", 
       field: "department", 
-      sorter: "string",
-      headerFilter: true,
-      headerFilterPlaceholder: "부서"
+      sorter: "string"
     },
     { 
       title: "급여", 
@@ -132,10 +123,7 @@ export default function TabulatorSpreadsheetExample() {
         thousand: ",",
         symbol: "₩",
         precision: 0
-      },
-      headerFilter: "number" as any,
-      headerFilterPlaceholder: "최소 금액",
-      headerFilterFunc: ">="
+      }
     },
     { 
       title: "입사일", 
@@ -152,34 +140,22 @@ export default function TabulatorSpreadsheetExample() {
         inputFormat: "yyyy-MM-dd",
         outputFormat: "yyyy년 MM월 dd일",
         invalidPlaceholder: "(유효하지 않은 날짜)"
-      },
-      headerFilter: true,
-      headerFilterPlaceholder: "날짜 검색"
+      }
     },
     { 
       title: "이메일", 
       field: "email", 
-      sorter: "string",
-      headerFilter: true,
-      headerFilterPlaceholder: "이메일 검색" 
+      sorter: "string"
     },
     { 
       title: "전화번호", 
       field: "phone", 
-      sorter: "string",
-      headerFilter: true,
-      headerFilterPlaceholder: "전화번호 검색"
+      sorter: "string"
     },
     { 
       title: "상태", 
       field: "status", 
       sorter: "string",
-      headerFilter: true,
-      headerFilterPlaceholder: "상태",
-      headerFilterParams: {
-        values: { "정규직": "정규직", "계약직": "계약직", "수습": "수습" },
-        clearable: true
-      },
       formatter: function(cell: any) {
         const value = cell.getValue();
         let color = "";
@@ -210,25 +186,24 @@ export default function TabulatorSpreadsheetExample() {
     pagination: true,
     paginationSize: 10,
     paginationInitialPage: 1,
-    // 필터 이벤트 핸들러
-    dataFiltered: function(filters: any) {
-      setHasActiveFilters(filters.length > 0);
-    }
+    resizableColumns: true,
+    responsiveLayout: "hide"
   };
 
   return (
-    <div className="container mx-auto py-6">
-      <Card className="mb-6 shadow-sm border-0 rounded-lg overflow-hidden">
+    <div className="container-fluid w-full px-4 py-6">
+      <Card className="mb-6 shadow-sm border-0 rounded-lg overflow-hidden w-full">
         <CardContent className="p-0">
           <TabulatorGrid
             ref={gridRef}
             data={data}
             columns={columns}
-            height="450px"
+            height="calc(100vh - 200px)"
+            minHeight="450px"
             selectable={true}
             enableCellSelection={true}
             enableClipboard={true}
-            className="bg-white"
+            className="bg-white w-full"
             additionalOptions={additionalOptions}
           />
         </CardContent>

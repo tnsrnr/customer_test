@@ -207,6 +207,8 @@ export default function TabulatorSpreadsheetExample() {
     dataLoaderLoading: "데이터 로딩중...",
     dataLoaderError: "데이터 로드 실패",
     width: "100%",
+    resizableColumns: true,
+    responsiveLayout: "hide",
     // 필터 이벤트 핸들러
     dataFiltered: function(filters: any) {
       setHasActiveFilters(filters.length > 0);
@@ -214,19 +216,20 @@ export default function TabulatorSpreadsheetExample() {
   };
 
   return (
-    <div className="container mx-auto py-6">
-      <Card className="mb-6 shadow-sm border-0 rounded-lg overflow-hidden">
+    <div className="container-fluid w-full px-4 py-6">
+      <Card className="mb-6 shadow-sm border-0 rounded-lg overflow-hidden w-full">
         <CardContent className="p-0">
           <TabulatorGrid
             ref={gridRef}
             data={data}
             columns={columns}
-            height="700px"
+            height="calc(100vh - 200px)"
+            minHeight="450px"
             selectable={true}
             selectableRollingSelection={false}
             enableCellSelection={true}
             enableClipboard={true}
-            className="bg-white"
+            className="bg-white w-full"
             additionalOptions={additionalOptions}
           />
         </CardContent>

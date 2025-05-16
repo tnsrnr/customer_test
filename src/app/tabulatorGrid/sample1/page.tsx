@@ -198,8 +198,7 @@ export default function TabulatorSpreadsheetExample() {
             ref={gridRef}
             data={data}
             columns={columns}
-            height="calc(100vh - 200px)"
-            minHeight="450px"
+            height="450px"
             selectable={true}
             enableCellSelection={true}
             enableClipboard={true}

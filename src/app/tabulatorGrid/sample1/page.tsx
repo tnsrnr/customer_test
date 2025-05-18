@@ -4,11 +4,19 @@ import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Save, Plus, Trash, Search } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Trash, Search, CalendarIcon, Filter, Download, RotateCcw } from 'lucide-react';
 import TabulatorGrid, { TabulatorGridRef, DataType } from '@/components/common/TabulatorGrid';
 import "tabulator-tables/dist/css/tabulator.min.css";
 // luxon 임포트 (날짜 정렬 기능에 필요)
 import { DateTime } from "luxon";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ko } from "date-fns/locale";
 
 interface Employee {
   id: number;
@@ -22,9 +30,61 @@ interface Employee {
   status: string;
 }
 
+interface SearchParams {
+  id: string;
+  name: string;
+  department: string;
+  position: string;
+  salaryRange: string;
+  status: string[];
+  employmentType: string;
+  joinPeriod: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  includeContractor: boolean;
+}
+
 export default function TabulatorSpreadsheetExample() {
   const gridRef = useRef<TabulatorGridRef>(null);
   const [nextId, setNextId] = useState(300); // 새 행의 ID 시작값
+  
+  // 검색 조건 상태 관리
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    id: "",
+    name: "",
+    department: "",
+    position: "",
+    salaryRange: "",
+    status: [],
+    employmentType: "",
+    joinPeriod: "",
+    startDate: null,
+    endDate: null,
+    includeContractor: false
+  });
+  
+  // 검색 조건 변경 핸들러
+  const handleParamChange = (key: keyof SearchParams, value: any) => {
+    setSearchParams(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+  
+  // 체크박스 핸들러
+  const handleCheckboxChange = (checked: boolean, value: string) => {
+    if (checked) {
+      setSearchParams(prev => ({
+        ...prev,
+        status: [...prev.status, value]
+      }));
+    } else {
+      setSearchParams(prev => ({
+        ...prev,
+        status: prev.status.filter(item => item !== value)
+      }));
+    }
+  };
   
   // 샘플 데이터
   const data: Employee[] = [
@@ -228,18 +288,97 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
 
-  // 데이터 조회 함수
+  // 데이터 조회 함수 - 검색 조건 적용
   const handleSearch = () => {
     if (gridRef.current) {
       const table = gridRef.current.getTable();
       if (table) {
-        // 데이터 새로고침 시뮬레이션
         table.clearFilter(true);
-        table.clearSort();
-        alert("데이터가 새로 조회되었습니다.");
         
-        // 실제 구현에서는 여기서 API 호출하여 데이터 새로 로드
+        // 검색 조건에 따라 필터 적용
+        const filters: any[] = [];
+        
+        if (searchParams.id) {
+          filters.push({field: "id", type: "=", value: parseInt(searchParams.id)});
+        }
+        
+        if (searchParams.name) {
+          filters.push({field: "name", type: "like", value: searchParams.name});
+        }
+        
+        if (searchParams.department) {
+          filters.push({field: "department", type: "=", value: searchParams.department});
+        }
+        
+        if (searchParams.position) {
+          filters.push({field: "position", type: "like", value: searchParams.position});
+        }
+        
+        if (searchParams.salaryRange) {
+          const [min, max] = searchParams.salaryRange.split('-').map(n => parseInt(n.trim()));
+          if (min) filters.push({field: "salary", type: ">=", value: min});
+          if (max) filters.push({field: "salary", type: "<=", value: max});
+        }
+        
+        if (searchParams.status.length > 0) {
+          filters.push({field: "status", type: "in", value: searchParams.status});
+        }
+        
+        if (searchParams.employmentType) {
+          filters.push({field: "status", type: "=", value: searchParams.employmentType});
+        }
+        
+        // 날짜 범위 필터
+        if (searchParams.startDate && searchParams.endDate) {
+          const startDateStr = searchParams.startDate.toISOString().split('T')[0];
+          const endDateStr = searchParams.endDate.toISOString().split('T')[0];
+          
+          table.addFilter(function(data: any, _rowIndex: number, _rowData: any) {
+            const rowDate = data.startDate;
+            return rowDate >= startDateStr && rowDate <= endDateStr;
+          });
+        }
+        
+        // 계약직 포함 옵션
+        if (!searchParams.includeContractor) {
+          filters.push({field: "status", type: "!=", value: "계약직"});
+        }
+        
+        if (filters.length > 0) {
+          table.setFilter(filters);
+        }
+        
+        alert("검색 조건이 적용되었습니다.");
       }
+    }
+  };
+  
+  // 필터 초기화
+  const handleResetFilters = () => {
+    setSearchParams({
+      id: "",
+      name: "",
+      department: "",
+      position: "",
+      salaryRange: "",
+      status: [],
+      employmentType: "",
+      joinPeriod: "",
+      startDate: null,
+      endDate: null,
+      includeContractor: false
+    });
+    
+    if (gridRef.current?.getTable()) {
+      gridRef.current.getTable()!.clearFilter(true);
+      alert("검색 조건이 초기화되었습니다.");
+    }
+  };
+
+  // 데이터 엑셀 내보내기
+  const handleExport = () => {
+    if (gridRef.current?.getTable()) {
+      gridRef.current.getTable()!.download("xlsx", "직원목록.xlsx");
     }
   };
 
@@ -260,16 +399,209 @@ export default function TabulatorSpreadsheetExample() {
     responsiveLayout: "hide"
   };
 
+  // 커스텀 데이터피커 스타일
+  const CustomDatePickerInput = React.forwardRef<HTMLDivElement, { value?: string; onClick?: () => void }>(({ value, onClick }, ref) => (
+    <div className="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring cursor-pointer" onClick={onClick} ref={ref}>
+      <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+      {value || "날짜 선택"}
+    </div>
+  ));
+  CustomDatePickerInput.displayName = "CustomDatePickerInput";
+  
+  // 급여 범위 옵션
+  const salaryRanges = [
+    { label: "전체", value: "" },
+    { label: "300만원 이하", value: "0-3000000" },
+    { label: "300만원-400만원", value: "3000000-4000000" },
+    { label: "400만원-500만원", value: "4000000-5000000" },
+    { label: "500만원-600만원", value: "5000000-6000000" },
+    { label: "600만원 이상", value: "6000000-100000000" }
+  ];
+
   return (
     <div className="container-fluid w-full px-4 py-6">
-      <div className="flex justify-end items-center mb-2">
-        <div className="flex items-center">
-          <Button variant="outline" size="sm" onClick={handleSearch}>
-            <Search className="h-4 w-4 mr-1" />
-            조회
-          </Button>
-        </div>
-      </div>
+      <Card className="mb-4 shadow-sm border-0 rounded-lg overflow-hidden">
+        <CardContent className="p-4">
+          {/* 검색 조건 Form - 디자인 일관성 유지하면서 한 줄에 2개씩 총 6개 검색 조건 */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-4">
+            {/* 첫 번째 행 - ID(텍스트 입력) + 부서(콤보박스) */}
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">ID</label>
+              <Input 
+                value={searchParams.id}
+                onChange={(e) => handleParamChange("id", e.target.value)}
+                placeholder="ID 입력"
+                className="flex-1"
+                type="number"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">부서</label>
+              <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="부서 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">전체</SelectItem>
+                  <SelectItem value="개발팀">개발팀</SelectItem>
+                  <SelectItem value="디자인팀">디자인팀</SelectItem>
+                  <SelectItem value="인사팀">인사팀</SelectItem>
+                  <SelectItem value="마케팅팀">마케팅팀</SelectItem>
+                  <SelectItem value="영업팀">영업팀</SelectItem>
+                  <SelectItem value="재무팀">재무팀</SelectItem>
+                  <SelectItem value="품질관리팀">품질관리팀</SelectItem>
+                  <SelectItem value="인프라팀">인프라팀</SelectItem>
+                  <SelectItem value="데이터팀">데이터팀</SelectItem>
+                  <SelectItem value="기획팀">기획팀</SelectItem>
+                  <SelectItem value="고객지원팀">고객지원팀</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* 두 번째 행 - 이름(Like 검색) + 급여 범위(콤보박스) */}
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">이름</label>
+              <Input 
+                value={searchParams.name}
+                onChange={(e) => handleParamChange("name", e.target.value)}
+                placeholder="이름 검색"
+                className="flex-1"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">급여 범위</label>
+              <Select value={searchParams.salaryRange} onValueChange={(value) => handleParamChange("salaryRange", value)}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="급여 범위 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  {salaryRanges.map((range) => (
+                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* 세 번째 행 - 직원 상태(체크박스) + 입사일 기간(날짜 범위) */}
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">직원 상태</label>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 flex-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="status-regular" 
+                    checked={searchParams.status.includes('정규직')}
+                    onCheckedChange={(checked) => 
+                      handleCheckboxChange(checked as boolean, '정규직')
+                    }
+                  />
+                  <Label htmlFor="status-regular" className="text-sm">정규직</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="status-contract" 
+                    checked={searchParams.status.includes('계약직')}
+                    onCheckedChange={(checked) => 
+                      handleCheckboxChange(checked as boolean, '계약직')
+                    }
+                  />
+                  <Label htmlFor="status-contract" className="text-sm">계약직</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="status-intern" 
+                    checked={searchParams.status.includes('수습')}
+                    onCheckedChange={(checked) => 
+                      handleCheckboxChange(checked as boolean, '수습')
+                    }
+                  />
+                  <Label htmlFor="status-intern" className="text-sm">수습</Label>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">입사일</label>
+              <div className="flex-1 flex gap-2 items-center">
+                <DatePicker
+                  selected={searchParams.startDate}
+                  onChange={(date) => handleParamChange("startDate", date)}
+                  selectsStart
+                  startDate={searchParams.startDate}
+                  endDate={searchParams.endDate}
+                  locale={ko}
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="시작일"
+                  customInput={<CustomDatePickerInput />}
+                  className="flex-1"
+                />
+                <span className="text-sm">~</span>
+                <DatePicker
+                  selected={searchParams.endDate}
+                  onChange={(date) => handleParamChange("endDate", date)}
+                  selectsEnd
+                  startDate={searchParams.startDate}
+                  endDate={searchParams.endDate}
+                  minDate={searchParams.startDate}
+                  locale={ko}
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="종료일"
+                  customInput={<CustomDatePickerInput />}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+            
+            {/* 네 번째 행 - 고용 형태(라디오 버튼) + 계약직 포함(단일 체크박스) */}
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">고용 형태</label>
+              <RadioGroup 
+                value={searchParams.employmentType} 
+                onValueChange={(value) => handleParamChange("employmentType", value)}
+                className="flex space-x-4 flex-1"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="" id="employment-all" />
+                  <Label htmlFor="employment-all" className="text-sm">전체</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="정규직" id="employment-regular" />
+                  <Label htmlFor="employment-regular" className="text-sm">정규직</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="계약직" id="employment-contract" />
+                  <Label htmlFor="employment-contract" className="text-sm">계약직</Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">직책</label>
+              <div className="flex-1">
+                <Input 
+                  value={searchParams.position}
+                  onChange={(e) => handleParamChange("position", e.target.value)}
+                  placeholder="직책 검색"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* 검색 버튼 그룹 */}
+          <div className="flex justify-end gap-2 mb-1">
+            <Button variant="outline" size="sm" onClick={handleResetFilters}>
+              <RotateCcw className="h-4 w-4 mr-1" />
+              초기화
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-1" />
+              엑셀 다운로드
+            </Button>
+            <Button variant="default" size="sm" onClick={handleSearch}>
+              <Search className="h-4 w-4 mr-1" />
+              검색
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mb-3 shadow-sm border-0 rounded-lg overflow-hidden w-full">
         <CardContent className="p-0">

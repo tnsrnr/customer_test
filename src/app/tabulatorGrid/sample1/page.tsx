@@ -462,188 +462,183 @@ export default function TabulatorSpreadsheetExample() {
 
   return (
     <div className="container-fluid w-full px-4 py-6">
-      <Card className="mb-4 shadow-sm border-0 rounded-lg overflow-hidden">
-        <CardContent className="p-4">
-          {/* 검색 조건 Form - 입사일을 첫번째로, ID와 직책 제거 */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-4">
-            {/* 첫 번째 행 - 입사일(날짜 범위) + 부서 */}
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">입사일</label>
-              <div className="flex-1 flex gap-2 items-center">
-                <DatePicker
-                  selected={searchParams.startDate}
-                  onChange={(date) => handleParamChange("startDate", date)}
-                  selectsStart
-                  startDate={searchParams.startDate}
-                  endDate={searchParams.endDate}
-                  locale={ko}
-                  dateFormat="yyyy-MM-dd"
-                  placeholderText="시작일"
-                  customInput={<CustomDatePickerInput />}
-                  className="flex-1"
-                />
-                <span className="text-sm">~</span>
-                <DatePicker
-                  selected={searchParams.endDate}
-                  onChange={(date) => handleParamChange("endDate", date)}
-                  selectsEnd
-                  startDate={searchParams.startDate}
-                  endDate={searchParams.endDate}
-                  minDate={searchParams.startDate || undefined}
-                  locale={ko}
-                  dateFormat="yyyy-MM-dd"
-                  placeholderText="종료일"
-                  customInput={<CustomDatePickerInput />}
-                  className="flex-1"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">부서</label>
-              <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="부서 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체</SelectItem>
-                  {Object.keys(departmentMap).map((dept) => (
-                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* 두 번째 행 - 이름(Like 검색) + 급여 범위(콤보박스) */}
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">이름</label>
-              <Input 
-                value={searchParams.name}
-                onChange={(e) => handleParamChange("name", e.target.value)}
-                placeholder="이름 검색"
+      <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 p-4 bg-white">
+          {/* 첫 번째 행 - 입사일(날짜 범위) + 부서 */}
+          <div className="flex items-center gap-2">
+            <label className="w-20 font-medium text-sm text-gray-700">입사일</label>
+            <div className="flex-1 flex gap-2 items-center">
+              <DatePicker
+                selected={searchParams.startDate}
+                onChange={(date) => handleParamChange("startDate", date)}
+                selectsStart
+                startDate={searchParams.startDate}
+                endDate={searchParams.endDate}
+                locale={ko}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="시작일"
+                customInput={<CustomDatePickerInput />}
+                className="flex-1"
+              />
+              <span className="text-sm">~</span>
+              <DatePicker
+                selected={searchParams.endDate}
+                onChange={(date) => handleParamChange("endDate", date)}
+                selectsEnd
+                startDate={searchParams.startDate}
+                endDate={searchParams.endDate}
+                minDate={searchParams.startDate || undefined}
+                locale={ko}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="종료일"
+                customInput={<CustomDatePickerInput />}
                 className="flex-1"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">급여 범위</label>
-              <Select value={searchParams.salaryRange} onValueChange={(value) => handleParamChange("salaryRange", value)}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="급여 범위 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {salaryRanges.map((range) => (
-                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* 세 번째 행 - 직원 상태(체크박스) + 고용 형태(라디오 버튼) */}
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">근무 상태</label>
-              <div className="flex flex-wrap gap-x-4 gap-y-2 flex-1">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="status-regular" 
-                    checked={searchParams.status.includes('근무중')}
-                    onCheckedChange={(checked) => 
-                      handleCheckboxChange(checked as boolean, '근무중')
-                    }
-                  />
-                  <Label htmlFor="status-regular" className="text-sm">근무중</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="status-contract" 
-                    checked={searchParams.status.includes('외근중')}
-                    onCheckedChange={(checked) => 
-                      handleCheckboxChange(checked as boolean, '외근중')
-                    }
-                  />
-                  <Label htmlFor="status-contract" className="text-sm">외근중</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="status-intern" 
-                    checked={searchParams.status.includes('연차중')}
-                    onCheckedChange={(checked) => 
-                      handleCheckboxChange(checked as boolean, '연차중')
-                    }
-                  />
-                  <Label htmlFor="status-intern" className="text-sm">연차중</Label>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">고용 형태</label>
-              <RadioGroup 
-                value={searchParams.employmentType} 
-                onValueChange={(value) => handleParamChange("employmentType", value)}
-                className="flex space-x-4 flex-1"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="all" id="employment-all" />
-                  <Label htmlFor="employment-all" className="text-sm">전체</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="정규직" id="employment-regular" />
-                  <Label htmlFor="employment-regular" className="text-sm">정규직</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="계약직" id="employment-contract" />
-                  <Label htmlFor="employment-contract" className="text-sm">계약직</Label>
-                </div>
-              </RadioGroup>
-            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="w-20 font-medium text-sm text-gray-700">부서</label>
+            <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="부서 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">전체</SelectItem>
+                {Object.keys(departmentMap).map((dept) => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
-          {/* 검색 버튼 그룹 */}
-          <div className="flex justify-end gap-2 mb-1">
-            <Button variant="outline" size="sm" onClick={handleResetFilters}>
-              <RotateCcw className="h-4 w-4 mr-1" />
-              초기화
+          {/* 두 번째 행 - 이름(Like 검색) + 급여 범위(콤보박스) */}
+          <div className="flex items-center gap-2">
+            <label className="w-20 font-medium text-sm text-gray-700">이름</label>
+            <Input 
+              value={searchParams.name}
+              onChange={(e) => handleParamChange("name", e.target.value)}
+              placeholder="이름 검색"
+              className="flex-1"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="w-20 font-medium text-sm text-gray-700">급여 범위</label>
+            <Select value={searchParams.salaryRange} onValueChange={(value) => handleParamChange("salaryRange", value)}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="급여 범위 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {salaryRanges.map((range) => (
+                  <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* 세 번째 행 - 직원 상태(체크박스) + 고용 형태(라디오 버튼) */}
+          <div className="flex items-center gap-2">
+            <label className="w-20 font-medium text-sm text-gray-700">근무 상태</label>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 flex-1">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="status-regular" 
+                  checked={searchParams.status.includes('근무중')}
+                  onCheckedChange={(checked) => 
+                    handleCheckboxChange(checked as boolean, '근무중')
+                  }
+                />
+                <Label htmlFor="status-regular" className="text-sm">근무중</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="status-contract" 
+                  checked={searchParams.status.includes('외근중')}
+                  onCheckedChange={(checked) => 
+                    handleCheckboxChange(checked as boolean, '외근중')
+                  }
+                />
+                <Label htmlFor="status-contract" className="text-sm">외근중</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="status-intern" 
+                  checked={searchParams.status.includes('연차중')}
+                  onCheckedChange={(checked) => 
+                    handleCheckboxChange(checked as boolean, '연차중')
+                  }
+                />
+                <Label htmlFor="status-intern" className="text-sm">연차중</Label>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="w-20 font-medium text-sm text-gray-700">고용 형태</label>
+            <RadioGroup 
+              value={searchParams.employmentType} 
+              onValueChange={(value) => handleParamChange("employmentType", value)}
+              className="flex space-x-4 flex-1"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="all" id="employment-all" />
+                <Label htmlFor="employment-all" className="text-sm">전체</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="정규직" id="employment-regular" />
+                <Label htmlFor="employment-regular" className="text-sm">정규직</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="계약직" id="employment-contract" />
+                <Label htmlFor="employment-contract" className="text-sm">계약직</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </div>
+        
+        {/* 검색 버튼 그룹 */}
+        <div className="flex justify-end gap-2 p-3 bg-gray-50 border-t border-gray-200">
+          <Button variant="outline" size="sm" onClick={handleResetFilters}>
+            <RotateCcw className="h-4 w-4 mr-1" />
+            초기화
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-1" />
+            엑셀 다운로드
+          </Button>
+          <Button variant="default" size="sm" onClick={handleSearch} className="bg-slate-800 hover:bg-slate-700">
+            <Search className="h-4 w-4 mr-1" />
+            검색
+          </Button>
+        </div>
+      </div>
+
+      <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm w-full mb-4">
+        <TabulatorGrid
+          ref={gridRef}
+          data={data}
+          columns={columns}
+          height="450px"
+          selectable={true}
+          enableCellSelection={true}
+          enableClipboard={true}
+          className="bg-white w-full"
+          additionalOptions={additionalOptions}
+        />
+        
+        <div className="flex justify-end items-center p-3 bg-gray-50 border-t border-gray-200">
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" onClick={handleAddRow}>
+              <Plus className="h-4 w-4 mr-1" />
+              행 추가
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-1" />
-              엑셀 다운로드
+            <Button variant="outline" size="sm" onClick={handleDeleteRow}>
+              <Trash className="h-4 w-4 mr-1" />
+              행 삭제
             </Button>
-            <Button variant="default" size="sm" onClick={handleSearch}>
-              <Search className="h-4 w-4 mr-1" />
-              검색
+            <Button variant="default" size="sm" onClick={handleSave} className="bg-slate-800 hover:bg-slate-700">
+              <Save className="h-4 w-4 mr-1" />
+              저장
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="mb-3 shadow-sm border-0 rounded-lg overflow-hidden w-full">
-        <CardContent className="p-0">
-          <TabulatorGrid
-            ref={gridRef}
-            data={data}
-            columns={columns}
-            height="450px"
-            selectable={true}
-            enableCellSelection={true}
-            enableClipboard={true}
-            className="bg-white w-full"
-            additionalOptions={additionalOptions}
-          />
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end items-center mt-2">
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={handleAddRow}>
-            <Plus className="h-4 w-4 mr-1" />
-            행 추가
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleDeleteRow}>
-            <Trash className="h-4 w-4 mr-1" />
-            행 삭제
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleSave}>
-            <Save className="h-4 w-4 mr-1" />
-            저장
-          </Button>
         </div>
       </div>
     </div>

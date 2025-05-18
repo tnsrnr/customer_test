@@ -341,7 +341,7 @@ export default function TabulatorSpreadsheetExample() {
           filters.push({field: "department", type: "=", value: searchParams.department});
         }
         
-        if (searchParams.position && searchParams.position !== '') {
+        if (searchParams.position && searchParams.position !== 'all') {
           filters.push({field: "position", type: "=", value: searchParams.position});
         }
         
@@ -364,8 +364,9 @@ export default function TabulatorSpreadsheetExample() {
           const startDateStr = searchParams.startDate.toISOString().split('T')[0];
           const endDateStr = searchParams.endDate.toISOString().split('T')[0];
           
-          // 날짜 필터를 테이블에 적용 (Tabulator 문서에 맞게 수정)
-          table.addFilter("startDate", "between", [startDateStr, endDateStr]);
+          // startDate 필드를 기준으로 >= 과 <= 필터를 별도로 적용
+          filters.push({field: "startDate", type: ">=", value: startDateStr});
+          filters.push({field: "startDate", type: "<=", value: endDateStr});
         }
         
         // 계약직 포함 옵션
@@ -486,7 +487,7 @@ export default function TabulatorSpreadsheetExample() {
                     <SelectValue placeholder="직책 선택" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">전체</SelectItem>
+                    <SelectItem value="all">전체</SelectItem>
                     {positionOptions.map((position) => (
                       <SelectItem key={position} value={position}>{position}</SelectItem>
                     ))}

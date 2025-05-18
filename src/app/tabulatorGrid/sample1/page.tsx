@@ -306,7 +306,7 @@ export default function TabulatorSpreadsheetExample() {
           filters.push({field: "name", type: "like", value: searchParams.name});
         }
         
-        if (searchParams.department) {
+        if (searchParams.department && searchParams.department !== 'all') {
           filters.push({field: "department", type: "=", value: searchParams.department});
         }
         
@@ -442,7 +442,7 @@ export default function TabulatorSpreadsheetExample() {
                   <SelectValue placeholder="부서 선택" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">전체</SelectItem>
+                  <SelectItem value="all">전체</SelectItem>
                   <SelectItem value="개발팀">개발팀</SelectItem>
                   <SelectItem value="디자인팀">디자인팀</SelectItem>
                   <SelectItem value="인사팀">인사팀</SelectItem>
@@ -540,7 +540,7 @@ export default function TabulatorSpreadsheetExample() {
                   selectsEnd
                   startDate={searchParams.startDate}
                   endDate={searchParams.endDate}
-                  minDate={searchParams.startDate}
+                  minDate={searchParams.startDate || undefined}
                   locale={ko}
                   dateFormat="yyyy-MM-dd"
                   placeholderText="종료일"

@@ -27,7 +27,8 @@ interface Employee {
   startDate: string;
   email: string;
   phone: string;
-  status: string;
+  employmentType: string;  // 고용형태 (정규직, 계약직, 수습)
+  workStatus: string;      // 직원상태 (근무중, 외근중, 연차중)
 }
 
 interface SearchParams {
@@ -117,58 +118,67 @@ export default function TabulatorSpreadsheetExample() {
     }
   };
   
+  // 직원 상태 옵션
+  const workStatusOptions = ["근무중", "외근중", "연차중"];
+
+  // 샘플 데이터에 랜덤하게 직원 상태 추가하는 함수
+  const getRandomWorkStatus = () => {
+    const index = Math.floor(Math.random() * workStatusOptions.length);
+    return workStatusOptions[index];
+  };
+
   // 샘플 데이터
   const data: Employee[] = [
-    { id: 1, name: "김철수", position: "개발자", department: "개발팀", salary: 5000000, startDate: "2020-03-15", email: "kim@example.com", phone: "010-1234-5678", status: "정규직" },
-    { id: 2, name: "이영희", position: "디자이너", department: "디자인팀", salary: 4800000, startDate: "2021-05-20", email: "lee@example.com", phone: "010-2345-6789", status: "정규직" },
-    { id: 3, name: "박준호", position: "매니저", department: "인사팀", salary: 6200000, startDate: "2018-11-10", email: "park@example.com", phone: "010-3456-7890", status: "정규직" },
-    { id: 4, name: "정미영", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2019-07-22", email: "jung@example.com", phone: "010-4567-8901", status: "정규직" },
-    { id: 5, name: "강동원", position: "마케터", department: "마케팅팀", salary: 4200000, startDate: "2022-01-15", email: "kang@example.com", phone: "010-5678-9012", status: "계약직" },
-    { id: 6, name: "송지원", position: "UX 디자이너", department: "디자인팀", salary: 4600000, startDate: "2021-09-05", email: "song@example.com", phone: "010-6789-0123", status: "정규직" },
-    { id: 7, name: "조민준", position: "백엔드 개발자", department: "개발팀", salary: 5100000, startDate: "2020-06-12", email: "cho@example.com", phone: "010-7890-1234", status: "정규직" },
-    { id: 8, name: "윤서연", position: "프론트엔드 개발자", department: "개발팀", salary: 4900000, startDate: "2020-08-20", email: "yoon@example.com", phone: "010-8901-2345", status: "정규직" },
-    { id: 9, name: "임지현", position: "HR 매니저", department: "인사팀", salary: 5800000, startDate: "2019-03-25", email: "lim@example.com", phone: "010-9012-3456", status: "정규직" },
-    { id: 10, name: "한상우", position: "데이터 분석가", department: "데이터팀", salary: 5300000, startDate: "2020-11-08", email: "han@example.com", phone: "010-0123-4567", status: "정규직" },
-    { id: 11, name: "오승현", position: "팀장", department: "개발팀", salary: 6500000, startDate: "2018-05-14", email: "oh@example.com", phone: "010-1122-3344", status: "정규직" },
-    { id: 12, name: "신지은", position: "그래픽 디자이너", department: "디자인팀", salary: 4700000, startDate: "2021-07-30", email: "shin@example.com", phone: "010-2233-4455", status: "정규직" },
-    { id: 13, name: "권도윤", position: "모바일 개발자", department: "개발팀", salary: 5200000, startDate: "2020-02-17", email: "kwon@example.com", phone: "010-3344-5566", status: "정규직" },
-    { id: 14, name: "홍지영", position: "콘텐츠 마케터", department: "마케팅팀", salary: 4400000, startDate: "2022-03-10", email: "hong@example.com", phone: "010-4455-6677", status: "계약직" },
-    { id: 15, name: "유승민", position: "QA 엔지니어", department: "품질관리팀", salary: 4800000, startDate: "2021-01-20", email: "yoo@example.com", phone: "010-5566-7788", status: "정규직" },
-    { id: 16, name: "배은지", position: "UI 디자이너", department: "디자인팀", salary: 4500000, startDate: "2021-11-15", email: "bae@example.com", phone: "010-6677-8899", status: "정규직" },
-    { id: 17, name: "황민석", position: "DevOps 엔지니어", department: "인프라팀", salary: 5600000, startDate: "2019-09-22", email: "hwang@example.com", phone: "010-7788-9900", status: "정규직" },
-    { id: 18, name: "전유진", position: "영업 담당자", department: "영업팀", salary: 4300000, startDate: "2022-02-01", email: "jeon@example.com", phone: "010-8899-0011", status: "정규직" },
-    { id: 19, name: "남궁혜원", position: "회계사", department: "재무팀", salary: 5400000, startDate: "2019-12-05", email: "nam@example.com", phone: "010-9900-1122", status: "정규직" },
-    { id: 20, name: "서동현", position: "비즈니스 애널리스트", department: "기획팀", salary: 5100000, startDate: "2020-07-14", email: "seo@example.com", phone: "010-0011-2233", status: "정규직" },
-    { id: 21, name: "안지훈", position: "풀스택 개발자", department: "개발팀", salary: 5300000, startDate: "2020-04-18", email: "ahn@example.com", phone: "010-1234-5679", status: "정규직" },
-    { id: 22, name: "문세진", position: "제품 디자이너", department: "디자인팀", salary: 4700000, startDate: "2021-06-22", email: "moon@example.com", phone: "010-2345-6780", status: "정규직" },
-    { id: 23, name: "고유나", position: "인사 담당자", department: "인사팀", salary: 4500000, startDate: "2021-10-11", email: "ko@example.com", phone: "010-3456-7891", status: "정규직" },
-    { id: 24, name: "장하준", position: "시니어 마케터", department: "마케팅팀", salary: 5700000, startDate: "2019-05-08", email: "jang@example.com", phone: "010-4567-8902", status: "정규직" },
-    { id: 25, name: "최다인", position: "데이터 사이언티스트", department: "데이터팀", salary: 5800000, startDate: "2019-08-15", email: "choi@example.com", phone: "010-5678-9013", status: "정규직" },
-    { id: 26, name: "백승호", position: "네트워크 엔지니어", department: "인프라팀", salary: 5200000, startDate: "2020-09-07", email: "baek@example.com", phone: "010-6789-0124", status: "정규직" },
-    { id: 27, name: "변미나", position: "전략 기획자", department: "기획팀", salary: 5400000, startDate: "2019-11-20", email: "byun@example.com", phone: "010-7890-1235", status: "정규직" },
-    { id: 28, name: "노태우", position: "앱 개발자", department: "개발팀", salary: 5000000, startDate: "2020-10-15", email: "noh@example.com", phone: "010-8901-2346", status: "정규직" },
-    { id: 29, name: "진서윤", position: "콘텐츠 디자이너", department: "디자인팀", salary: 4600000, startDate: "2021-04-12", email: "jin@example.com", phone: "010-9012-3457", status: "계약직" },
-    { id: 30, name: "옥준서", position: "고객 지원", department: "고객지원팀", salary: 4200000, startDate: "2022-01-10", email: "ok@example.com", phone: "010-0123-4568", status: "정규직" },
-    { id: 31, name: "배주혁", position: "개발자", department: "개발팀", salary: 4900000, startDate: "2020-12-01", email: "bae.j@example.com", phone: "010-1122-3345", status: "정규직" },
-    { id: 32, name: "염지희", position: "UX 리서처", department: "디자인팀", salary: 4800000, startDate: "2021-03-15", email: "youm@example.com", phone: "010-2233-4456", status: "정규직" },
-    { id: 33, name: "채원석", position: "시스템 관리자", department: "인프라팀", salary: 5100000, startDate: "2020-05-25", email: "chae@example.com", phone: "010-3344-5567", status: "정규직" },
-    { id: 34, name: "탁명훈", position: "디지털 마케터", department: "마케팅팀", salary: 4700000, startDate: "2021-02-08", email: "tak@example.com", phone: "010-4455-6678", status: "계약직" },
-    { id: 35, name: "허지윤", position: "웹 디자이너", department: "디자인팀", salary: 4500000, startDate: "2021-08-20", email: "heo@example.com", phone: "010-5566-7789", status: "정규직" },
-    { id: 36, name: "노승준", position: "보안 전문가", department: "인프라팀", salary: 5900000, startDate: "2019-04-10", email: "roh@example.com", phone: "010-6677-8890", status: "정규직" },
-    { id: 37, name: "하지민", position: "영업 관리자", department: "영업팀", salary: 5500000, startDate: "2019-10-15", email: "ha@example.com", phone: "010-7788-9901", status: "정규직" },
-    { id: 38, name: "남궁준", position: "재무 분석가", department: "재무팀", salary: 5300000, startDate: "2020-01-20", email: "namk@example.com", phone: "010-8899-0012", status: "정규직" },
-    { id: 39, name: "금지원", position: "인사 매니저", department: "인사팀", salary: 5600000, startDate: "2019-06-05", email: "keum@example.com", phone: "010-9900-1123", status: "정규직" },
-    { id: 40, name: "방성훈", position: "테스트 엔지니어", department: "품질관리팀", salary: 4800000, startDate: "2021-01-05", email: "bang@example.com", phone: "010-0011-2234", status: "정규직" },
-    { id: 41, name: "공서연", position: "UI 개발자", department: "개발팀", salary: 5100000, startDate: "2020-08-12", email: "kong@example.com", phone: "010-1234-5680", status: "정규직" },
-    { id: 42, name: "석민재", position: "모션 디자이너", department: "디자인팀", salary: 4900000, startDate: "2020-11-22", email: "seok@example.com", phone: "010-2345-6781", status: "정규직" },
-    { id: 43, name: "피현우", position: "IT 지원", department: "인프라팀", salary: 4400000, startDate: "2022-02-15", email: "pi@example.com", phone: "010-3456-7892", status: "계약직" },
-    { id: 44, name: "엄현주", position: "프로젝트 매니저", department: "기획팀", salary: 5800000, startDate: "2019-07-10", email: "uhm@example.com", phone: "010-4567-8903", status: "정규직" },
-    { id: 45, name: "복지훈", position: "데이터 엔지니어", department: "데이터팀", salary: 5500000, startDate: "2019-09-15", email: "bok@example.com", phone: "010-5678-9014", status: "정규직" },
-    { id: 101, name: "김철수(B)", position: "개발자", department: "개발팀", salary: 5100000, startDate: "2021-03-15", email: "kimB@example.com", phone: "010-1234-6678", status: "정규직" },
-    { id: 102, name: "이영희(B)", position: "디자이너", department: "디자인팀", salary: 4900000, startDate: "2022-05-20", email: "leeB@example.com", phone: "010-2345-7789", status: "정규직" },
-    { id: 103, name: "박준호(B)", position: "매니저", department: "영업팀", salary: 6000000, startDate: "2019-02-10", email: "parkB@example.com", phone: "010-3456-8890", status: "정규직" },
-    { id: 201, name: "김철수(C)", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2022-03-15", email: "kimC@example.com", phone: "010-1234-7678", status: "정규직" },
-    { id: 202, name: "이영희(C)", position: "UX 디자이너", department: "디자인팀", salary: 5100000, startDate: "2023-05-20", email: "leeC@example.com", phone: "010-2345-8789", status: "정규직" }
+    { id: 1, name: "김철수", position: "개발자", department: "개발팀", salary: 5000000, startDate: "2020-03-15", email: "kim@example.com", phone: "010-1234-5678", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 2, name: "이영희", position: "디자이너", department: "디자인팀", salary: 4800000, startDate: "2021-05-20", email: "lee@example.com", phone: "010-2345-6789", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 3, name: "박준호", position: "매니저", department: "인사팀", salary: 6200000, startDate: "2018-11-10", email: "park@example.com", phone: "010-3456-7890", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 4, name: "정미영", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2019-07-22", email: "jung@example.com", phone: "010-4567-8901", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 5, name: "강동원", position: "마케터", department: "마케팅팀", salary: 4200000, startDate: "2022-01-15", email: "kang@example.com", phone: "010-5678-9012", employmentType: "계약직", workStatus: getRandomWorkStatus() },
+    { id: 6, name: "송지원", position: "UX 디자이너", department: "디자인팀", salary: 4600000, startDate: "2021-09-05", email: "song@example.com", phone: "010-6789-0123", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 7, name: "조민준", position: "백엔드 개발자", department: "개발팀", salary: 5100000, startDate: "2020-06-12", email: "cho@example.com", phone: "010-7890-1234", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 8, name: "윤서연", position: "프론트엔드 개발자", department: "개발팀", salary: 4900000, startDate: "2020-08-20", email: "yoon@example.com", phone: "010-8901-2345", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 9, name: "임지현", position: "HR 매니저", department: "인사팀", salary: 5800000, startDate: "2019-03-25", email: "lim@example.com", phone: "010-9012-3456", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 10, name: "한상우", position: "데이터 분석가", department: "데이터팀", salary: 5300000, startDate: "2020-11-08", email: "han@example.com", phone: "010-0123-4567", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 11, name: "오승현", position: "팀장", department: "개발팀", salary: 6500000, startDate: "2018-05-14", email: "oh@example.com", phone: "010-1122-3344", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 12, name: "신지은", position: "그래픽 디자이너", department: "디자인팀", salary: 4700000, startDate: "2021-07-30", email: "shin@example.com", phone: "010-2233-4455", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 13, name: "권도윤", position: "모바일 개발자", department: "개발팀", salary: 5200000, startDate: "2020-02-17", email: "kwon@example.com", phone: "010-3344-5566", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 14, name: "홍지영", position: "콘텐츠 마케터", department: "마케팅팀", salary: 4400000, startDate: "2022-03-10", email: "hong@example.com", phone: "010-4455-6677", employmentType: "계약직", workStatus: getRandomWorkStatus() },
+    { id: 15, name: "유승민", position: "QA 엔지니어", department: "품질관리팀", salary: 4800000, startDate: "2021-01-20", email: "yoo@example.com", phone: "010-5566-7788", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 16, name: "배은지", position: "UI 디자이너", department: "디자인팀", salary: 4500000, startDate: "2021-11-15", email: "bae@example.com", phone: "010-6677-8899", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 17, name: "황민석", position: "DevOps 엔지니어", department: "인프라팀", salary: 5600000, startDate: "2019-09-22", email: "hwang@example.com", phone: "010-7788-9900", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 18, name: "전유진", position: "영업 담당자", department: "영업팀", salary: 4300000, startDate: "2022-02-01", email: "jeon@example.com", phone: "010-8899-0011", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 19, name: "남궁혜원", position: "회계사", department: "재무팀", salary: 5400000, startDate: "2019-12-05", email: "nam@example.com", phone: "010-9900-1122", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 20, name: "서동현", position: "비즈니스 애널리스트", department: "기획팀", salary: 5100000, startDate: "2020-07-14", email: "seo@example.com", phone: "010-0011-2233", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 21, name: "안지훈", position: "풀스택 개발자", department: "개발팀", salary: 5300000, startDate: "2020-04-18", email: "ahn@example.com", phone: "010-1234-5679", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 22, name: "문세진", position: "제품 디자이너", department: "디자인팀", salary: 4700000, startDate: "2021-06-22", email: "moon@example.com", phone: "010-2345-6780", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 23, name: "고유나", position: "인사 담당자", department: "인사팀", salary: 4500000, startDate: "2021-10-11", email: "ko@example.com", phone: "010-3456-7891", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 24, name: "장하준", position: "시니어 마케터", department: "마케팅팀", salary: 5700000, startDate: "2019-05-08", email: "jang@example.com", phone: "010-4567-8902", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 25, name: "최다인", position: "데이터 사이언티스트", department: "데이터팀", salary: 5800000, startDate: "2019-08-15", email: "choi@example.com", phone: "010-5678-9013", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 26, name: "백승호", position: "네트워크 엔지니어", department: "인프라팀", salary: 5200000, startDate: "2020-09-07", email: "baek@example.com", phone: "010-6789-0124", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 27, name: "변미나", position: "전략 기획자", department: "기획팀", salary: 5400000, startDate: "2019-11-20", email: "byun@example.com", phone: "010-7890-1235", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 28, name: "노태우", position: "앱 개발자", department: "개발팀", salary: 5000000, startDate: "2020-10-15", email: "noh@example.com", phone: "010-8901-2346", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 29, name: "진서윤", position: "콘텐츠 디자이너", department: "디자인팀", salary: 4600000, startDate: "2021-04-12", email: "jin@example.com", phone: "010-9012-3457", employmentType: "계약직", workStatus: getRandomWorkStatus() },
+    { id: 30, name: "옥준서", position: "고객 지원", department: "고객지원팀", salary: 4200000, startDate: "2022-01-10", email: "ok@example.com", phone: "010-0123-4568", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 31, name: "배주혁", position: "개발자", department: "개발팀", salary: 4900000, startDate: "2020-12-01", email: "bae.j@example.com", phone: "010-1122-3345", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 32, name: "염지희", position: "UX 리서처", department: "디자인팀", salary: 4800000, startDate: "2021-03-15", email: "youm@example.com", phone: "010-2233-4456", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 33, name: "채원석", position: "시스템 관리자", department: "인프라팀", salary: 5100000, startDate: "2020-05-25", email: "chae@example.com", phone: "010-3344-5567", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 34, name: "탁명훈", position: "디지털 마케터", department: "마케팅팀", salary: 4700000, startDate: "2021-02-08", email: "tak@example.com", phone: "010-4455-6678", employmentType: "계약직", workStatus: getRandomWorkStatus() },
+    { id: 35, name: "허지윤", position: "웹 디자이너", department: "디자인팀", salary: 4500000, startDate: "2021-08-20", email: "heo@example.com", phone: "010-5566-7789", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 36, name: "노승준", position: "보안 전문가", department: "인프라팀", salary: 5900000, startDate: "2019-04-10", email: "roh@example.com", phone: "010-6677-8890", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 37, name: "하지민", position: "영업 관리자", department: "영업팀", salary: 5500000, startDate: "2019-10-15", email: "ha@example.com", phone: "010-7788-9901", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 38, name: "남궁준", position: "재무 분석가", department: "재무팀", salary: 5300000, startDate: "2020-01-20", email: "namk@example.com", phone: "010-8899-0012", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 39, name: "금지원", position: "인사 매니저", department: "인사팀", salary: 5600000, startDate: "2019-06-05", email: "keum@example.com", phone: "010-9900-1123", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 40, name: "방성훈", position: "테스트 엔지니어", department: "품질관리팀", salary: 4800000, startDate: "2021-01-05", email: "bang@example.com", phone: "010-0011-2234", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 41, name: "공서연", position: "UI 개발자", department: "개발팀", salary: 5100000, startDate: "2020-08-12", email: "kong@example.com", phone: "010-1234-5680", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 42, name: "석민재", position: "모션 디자이너", department: "디자인팀", salary: 4900000, startDate: "2020-11-22", email: "seok@example.com", phone: "010-2345-6781", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 43, name: "피현우", position: "IT 지원", department: "인프라팀", salary: 4400000, startDate: "2022-02-15", email: "pi@example.com", phone: "010-3456-7892", employmentType: "계약직", workStatus: getRandomWorkStatus() },
+    { id: 44, name: "엄현주", position: "프로젝트 매니저", department: "기획팀", salary: 5800000, startDate: "2019-07-10", email: "uhm@example.com", phone: "010-4567-8903", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 45, name: "복지훈", position: "데이터 엔지니어", department: "데이터팀", salary: 5500000, startDate: "2019-09-15", email: "bok@example.com", phone: "010-5678-9014", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 101, name: "김철수(B)", position: "개발자", department: "개발팀", salary: 5100000, startDate: "2021-03-15", email: "kimB@example.com", phone: "010-1234-6678", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 102, name: "이영희(B)", position: "디자이너", department: "디자인팀", salary: 4900000, startDate: "2022-05-20", email: "leeB@example.com", phone: "010-2345-7789", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 103, name: "박준호(B)", position: "매니저", department: "영업팀", salary: 6000000, startDate: "2019-02-10", email: "parkB@example.com", phone: "010-3456-8890", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 201, name: "김철수(C)", position: "시니어 개발자", department: "개발팀", salary: 5500000, startDate: "2022-03-15", email: "kimC@example.com", phone: "010-1234-7678", employmentType: "정규직", workStatus: getRandomWorkStatus() },
+    { id: 202, name: "이영희(C)", position: "UX 디자이너", department: "디자인팀", salary: 5100000, startDate: "2023-05-20", email: "leeC@example.com", phone: "010-2345-8789", employmentType: "정규직", workStatus: getRandomWorkStatus() }
   ];
 
   // 컬럼 정의 - 모든 필터 속성은 Tabulator에서 지원하는 [key: string]: any; 타입으로 처리됨
@@ -245,8 +255,8 @@ export default function TabulatorSpreadsheetExample() {
       sorter: "string"
     },
     { 
-      title: "상태", 
-      field: "status", 
+      title: "고용형태", 
+      field: "employmentType", 
       sorter: "string",
       formatter: function(cell: any) {
         const value = cell.getValue();
@@ -257,6 +267,25 @@ export default function TabulatorSpreadsheetExample() {
         } else if (value === "계약직") {
           color = "bg-yellow-100 text-yellow-800";
         } else if (value === "수습") {
+          color = "bg-blue-100 text-blue-800";
+        }
+        
+        return `<span class="py-1 px-2 rounded-full text-xs font-medium ${color}">${value}</span>`;
+      }
+    },
+    { 
+      title: "근무상태", 
+      field: "workStatus", 
+      sorter: "string",
+      formatter: function(cell: any) {
+        const value = cell.getValue();
+        let color = "";
+        
+        if (value === "근무중") {
+          color = "bg-green-100 text-green-800";
+        } else if (value === "외근중") {
+          color = "bg-yellow-100 text-yellow-800";
+        } else if (value === "연차중") {
           color = "bg-blue-100 text-blue-800";
         }
         
@@ -279,7 +308,8 @@ export default function TabulatorSpreadsheetExample() {
           startDate: new Date().toISOString().slice(0, 10),
           email: "",
           phone: "",
-          status: "정규직"
+          employmentType: "정규직",
+          workStatus: "근무중"
         };
         
         table.addRow(newRow);
@@ -329,10 +359,6 @@ export default function TabulatorSpreadsheetExample() {
         // 검색 조건에 따라 필터 적용
         const filters: any[] = [];
         
-        if (searchParams.id) {
-          filters.push({field: "id", type: "=", value: parseInt(searchParams.id)});
-        }
-        
         if (searchParams.name) {
           filters.push({field: "name", type: "like", value: searchParams.name});
         }
@@ -341,22 +367,14 @@ export default function TabulatorSpreadsheetExample() {
           filters.push({field: "department", type: "=", value: searchParams.department});
         }
         
-        if (searchParams.position && searchParams.position !== 'all') {
-          filters.push({field: "position", type: "=", value: searchParams.position});
-        }
-        
         if (searchParams.salaryRange && searchParams.salaryRange !== 'all') {
           const [min, max] = searchParams.salaryRange.split('-').map(n => parseInt(n.trim()));
           if (min) filters.push({field: "salary", type: ">=", value: min});
           if (max) filters.push({field: "salary", type: "<=", value: max});
         }
         
-        if (searchParams.status.length > 0) {
-          filters.push({field: "status", type: "in", value: searchParams.status});
-        }
-        
         if (searchParams.employmentType && searchParams.employmentType !== 'all') {
-          filters.push({field: "status", type: "=", value: searchParams.employmentType});
+          filters.push({field: "employmentType", type: "=", value: searchParams.employmentType});
         }
         
         // 날짜 범위 필터
@@ -371,7 +389,7 @@ export default function TabulatorSpreadsheetExample() {
         
         // 계약직 포함 옵션
         if (!searchParams.includeContractor) {
-          filters.push({field: "status", type: "!=", value: "계약직"});
+          filters.push({field: "employmentType", type: "!=", value: "계약직"});
         }
         
         if (filters.length > 0) {
@@ -452,110 +470,9 @@ export default function TabulatorSpreadsheetExample() {
     <div className="container-fluid w-full px-4 py-6">
       <Card className="mb-4 shadow-sm border-0 rounded-lg overflow-hidden">
         <CardContent className="p-4">
-          {/* 검색 조건 Form - 디자인 일관성 유지하면서 한 줄에 2개씩 총 6개 검색 조건 */}
+          {/* 검색 조건 Form - 입사일을 첫번째로, ID와 직책 제거 */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-4">
-            {/* 첫 번째 행 - ID(텍스트 입력) + 부서&직책 그룹 */}
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">ID</label>
-              <Input 
-                value={searchParams.id}
-                onChange={(e) => handleParamChange("id", e.target.value)}
-                placeholder="ID 입력"
-                className="flex-1"
-                type="number"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <label className="w-20 font-medium text-sm text-gray-700">부서</label>
-                <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="부서 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">전체</SelectItem>
-                    {Object.keys(departmentMap).map((dept) => (
-                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="w-20 font-medium text-sm text-gray-700">직책</label>
-                <Select value={searchParams.position} onValueChange={(value) => handleParamChange("position", value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="직책 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">전체</SelectItem>
-                    {positionOptions.map((position) => (
-                      <SelectItem key={position} value={position}>{position}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            {/* 두 번째 행 - 이름(Like 검색) + 급여 범위(콤보박스) */}
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">이름</label>
-              <Input 
-                value={searchParams.name}
-                onChange={(e) => handleParamChange("name", e.target.value)}
-                placeholder="이름 검색"
-                className="flex-1"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">급여 범위</label>
-              <Select value={searchParams.salaryRange} onValueChange={(value) => handleParamChange("salaryRange", value)}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="급여 범위 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {salaryRanges.map((range) => (
-                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* 세 번째 행 - 직원 상태(체크박스) + 입사일 기간(날짜 범위) */}
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">직원 상태</label>
-              <div className="flex flex-wrap gap-x-4 gap-y-2 flex-1">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="status-regular" 
-                    checked={searchParams.status.includes('정규직')}
-                    onCheckedChange={(checked) => 
-                      handleCheckboxChange(checked as boolean, '정규직')
-                    }
-                  />
-                  <Label htmlFor="status-regular" className="text-sm">정규직</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="status-contract" 
-                    checked={searchParams.status.includes('계약직')}
-                    onCheckedChange={(checked) => 
-                      handleCheckboxChange(checked as boolean, '계약직')
-                    }
-                  />
-                  <Label htmlFor="status-contract" className="text-sm">계약직</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="status-intern" 
-                    checked={searchParams.status.includes('수습')}
-                    onCheckedChange={(checked) => 
-                      handleCheckboxChange(checked as boolean, '수습')
-                    }
-                  />
-                  <Label htmlFor="status-intern" className="text-sm">수습</Label>
-                </div>
-              </div>
-            </div>
+            {/* 첫 번째 행 - 입사일(날짜 범위) + 부서 */}
             <div className="flex items-center gap-2">
               <label className="w-20 font-medium text-sm text-gray-700">입사일</label>
               <div className="flex-1 flex gap-2 items-center">
@@ -587,9 +504,82 @@ export default function TabulatorSpreadsheetExample() {
                 />
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">부서</label>
+              <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="부서 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">전체</SelectItem>
+                  {Object.keys(departmentMap).map((dept) => (
+                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             
-            {/* 네 번째 행 - 고용 형태(라디오 버튼) */}
-            <div className="flex items-center gap-2 col-span-2">
+            {/* 두 번째 행 - 이름(Like 검색) + 급여 범위(콤보박스) */}
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">이름</label>
+              <Input 
+                value={searchParams.name}
+                onChange={(e) => handleParamChange("name", e.target.value)}
+                placeholder="이름 검색"
+                className="flex-1"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">급여 범위</label>
+              <Select value={searchParams.salaryRange} onValueChange={(value) => handleParamChange("salaryRange", value)}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="급여 범위 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  {salaryRanges.map((range) => (
+                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* 세 번째 행 - 직원 상태(체크박스) + 고용 형태(라디오 버튼) */}
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-medium text-sm text-gray-700">근무 상태</label>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 flex-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="status-regular" 
+                    checked={searchParams.status.includes('근무중')}
+                    onCheckedChange={(checked) => 
+                      handleCheckboxChange(checked as boolean, '근무중')
+                    }
+                  />
+                  <Label htmlFor="status-regular" className="text-sm">근무중</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="status-contract" 
+                    checked={searchParams.status.includes('외근중')}
+                    onCheckedChange={(checked) => 
+                      handleCheckboxChange(checked as boolean, '외근중')
+                    }
+                  />
+                  <Label htmlFor="status-contract" className="text-sm">외근중</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="status-intern" 
+                    checked={searchParams.status.includes('연차중')}
+                    onCheckedChange={(checked) => 
+                      handleCheckboxChange(checked as boolean, '연차중')
+                    }
+                  />
+                  <Label htmlFor="status-intern" className="text-sm">연차중</Label>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
               <label className="w-20 font-medium text-sm text-gray-700">고용 형태</label>
               <RadioGroup 
                 value={searchParams.employmentType} 

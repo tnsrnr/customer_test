@@ -314,7 +314,7 @@ export default function TabulatorSpreadsheetExample() {
           filters.push({field: "position", type: "like", value: searchParams.position});
         }
         
-        if (searchParams.salaryRange) {
+        if (searchParams.salaryRange && searchParams.salaryRange !== 'all') {
           const [min, max] = searchParams.salaryRange.split('-').map(n => parseInt(n.trim()));
           if (min) filters.push({field: "salary", type: ">=", value: min});
           if (max) filters.push({field: "salary", type: "<=", value: max});
@@ -324,7 +324,7 @@ export default function TabulatorSpreadsheetExample() {
           filters.push({field: "status", type: "in", value: searchParams.status});
         }
         
-        if (searchParams.employmentType) {
+        if (searchParams.employmentType && searchParams.employmentType !== 'all') {
           filters.push({field: "status", type: "=", value: searchParams.employmentType});
         }
         
@@ -333,7 +333,7 @@ export default function TabulatorSpreadsheetExample() {
           const startDateStr = searchParams.startDate.toISOString().split('T')[0];
           const endDateStr = searchParams.endDate.toISOString().split('T')[0];
           
-          table.addFilter(function(data: any, _rowIndex: number, _rowData: any) {
+          table.addFilter(function(data){
             const rowDate = data.startDate;
             return rowDate >= startDateStr && rowDate <= endDateStr;
           });
@@ -410,7 +410,7 @@ export default function TabulatorSpreadsheetExample() {
   
   // 급여 범위 옵션
   const salaryRanges = [
-    { label: "전체", value: "" },
+    { label: "전체", value: "all" },
     { label: "300만원 이하", value: "0-3000000" },
     { label: "300만원-400만원", value: "3000000-4000000" },
     { label: "400만원-500만원", value: "4000000-5000000" },
@@ -559,7 +559,7 @@ export default function TabulatorSpreadsheetExample() {
                 className="flex space-x-4 flex-1"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="" id="employment-all" />
+                  <RadioGroupItem value="all" id="employment-all" />
                   <Label htmlFor="employment-all" className="text-sm">전체</Label>
                 </div>
                 <div className="flex items-center space-x-2">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,21 @@ interface SearchParams {
   includeContractor: boolean;
 }
 
+// 부서와 직책 데이터 추출 및 중복 제거
+const departmentMap = {
+  "개발팀": ["개발자", "시니어 개발자", "백엔드 개발자", "프론트엔드 개발자", "모바일 개발자", "UI 개발자", "풀스택 개발자", "팀장", "앱 개발자"],
+  "디자인팀": ["디자이너", "UX 디자이너", "UI 디자이너", "그래픽 디자이너", "제품 디자이너", "모션 디자이너", "콘텐츠 디자이너", "웹 디자이너"],
+  "인사팀": ["매니저", "HR 매니저", "인사 담당자", "인사 매니저"],
+  "마케팅팀": ["마케터", "시니어 마케터", "콘텐츠 마케터", "디지털 마케터"],
+  "영업팀": ["영업 담당자", "영업 관리자", "매니저"],
+  "재무팀": ["회계사", "재무 분석가"],
+  "품질관리팀": ["QA 엔지니어", "테스트 엔지니어"],
+  "인프라팀": ["DevOps 엔지니어", "네트워크 엔지니어", "시스템 관리자", "보안 전문가", "IT 지원"],
+  "데이터팀": ["데이터 분석가", "데이터 사이언티스트", "데이터 엔지니어"],
+  "기획팀": ["비즈니스 애널리스트", "전략 기획자", "프로젝트 매니저"],
+  "고객지원팀": ["고객 지원"]
+};
+
 export default function TabulatorSpreadsheetExample() {
   const gridRef = useRef<TabulatorGridRef>(null);
   const [nextId, setNextId] = useState(300); // 새 행의 ID 시작값
@@ -62,6 +77,22 @@ export default function TabulatorSpreadsheetExample() {
     endDate: null,
     includeContractor: false
   });
+  
+  // 부서에 따른 직책 옵션
+  const [positionOptions, setPositionOptions] = useState<string[]>([]);
+  
+  // 부서 변경 시 직책 옵션 업데이트
+  useEffect(() => {
+    if (searchParams.department && searchParams.department !== 'all') {
+      setPositionOptions(departmentMap[searchParams.department as keyof typeof departmentMap] || []);
+    } else {
+      // 모든 직책 옵션 통합
+      const allPositions = Object.values(departmentMap).flat();
+      // 중복 제거 후 정렬
+      const uniquePositions = Array.from(new Set(allPositions)).sort();
+      setPositionOptions(uniquePositions);
+    }
+  }, [searchParams.department]);
   
   // 검색 조건 변경 핸들러
   const handleParamChange = (key: keyof SearchParams, value: any) => {
@@ -310,8 +341,8 @@ export default function TabulatorSpreadsheetExample() {
           filters.push({field: "department", type: "=", value: searchParams.department});
         }
         
-        if (searchParams.position) {
-          filters.push({field: "position", type: "like", value: searchParams.position});
+        if (searchParams.position && searchParams.position !== '') {
+          filters.push({field: "position", type: "=", value: searchParams.position});
         }
         
         if (searchParams.salaryRange && searchParams.salaryRange !== 'all') {
@@ -333,10 +364,8 @@ export default function TabulatorSpreadsheetExample() {
           const startDateStr = searchParams.startDate.toISOString().split('T')[0];
           const endDateStr = searchParams.endDate.toISOString().split('T')[0];
           
-          table.addFilter(function(data){
-            const rowDate = data.startDate;
-            return rowDate >= startDateStr && rowDate <= endDateStr;
-          });
+          // 날짜 필터를 테이블에 적용 (Tabulator 문서에 맞게 수정)
+          table.addFilter("startDate", "between", [startDateStr, endDateStr]);
         }
         
         // 계약직 포함 옵션
@@ -424,7 +453,7 @@ export default function TabulatorSpreadsheetExample() {
         <CardContent className="p-4">
           {/* 검색 조건 Form - 디자인 일관성 유지하면서 한 줄에 2개씩 총 6개 검색 조건 */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-4">
-            {/* 첫 번째 행 - ID(텍스트 입력) + 부서(콤보박스) */}
+            {/* 첫 번째 행 - ID(텍스트 입력) + 부서&직책 그룹 */}
             <div className="flex items-center gap-2">
               <label className="w-20 font-medium text-sm text-gray-700">ID</label>
               <Input 
@@ -435,27 +464,35 @@ export default function TabulatorSpreadsheetExample() {
                 type="number"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">부서</label>
-              <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="부서 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체</SelectItem>
-                  <SelectItem value="개발팀">개발팀</SelectItem>
-                  <SelectItem value="디자인팀">디자인팀</SelectItem>
-                  <SelectItem value="인사팀">인사팀</SelectItem>
-                  <SelectItem value="마케팅팀">마케팅팀</SelectItem>
-                  <SelectItem value="영업팀">영업팀</SelectItem>
-                  <SelectItem value="재무팀">재무팀</SelectItem>
-                  <SelectItem value="품질관리팀">품질관리팀</SelectItem>
-                  <SelectItem value="인프라팀">인프라팀</SelectItem>
-                  <SelectItem value="데이터팀">데이터팀</SelectItem>
-                  <SelectItem value="기획팀">기획팀</SelectItem>
-                  <SelectItem value="고객지원팀">고객지원팀</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <label className="w-20 font-medium text-sm text-gray-700">부서</label>
+                <Select value={searchParams.department} onValueChange={(value) => handleParamChange("department", value)}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="부서 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">전체</SelectItem>
+                    {Object.keys(departmentMap).map((dept) => (
+                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="w-20 font-medium text-sm text-gray-700">직책</label>
+                <Select value={searchParams.position} onValueChange={(value) => handleParamChange("position", value)}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="직책 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">전체</SelectItem>
+                    {positionOptions.map((position) => (
+                      <SelectItem key={position} value={position}>{position}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             {/* 두 번째 행 - 이름(Like 검색) + 급여 범위(콤보박스) */}
@@ -550,8 +587,8 @@ export default function TabulatorSpreadsheetExample() {
               </div>
             </div>
             
-            {/* 네 번째 행 - 고용 형태(라디오 버튼) + 계약직 포함(단일 체크박스) */}
-            <div className="flex items-center gap-2">
+            {/* 네 번째 행 - 고용 형태(라디오 버튼) */}
+            <div className="flex items-center gap-2 col-span-2">
               <label className="w-20 font-medium text-sm text-gray-700">고용 형태</label>
               <RadioGroup 
                 value={searchParams.employmentType} 
@@ -571,17 +608,6 @@ export default function TabulatorSpreadsheetExample() {
                   <Label htmlFor="employment-contract" className="text-sm">계약직</Label>
                 </div>
               </RadioGroup>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="w-20 font-medium text-sm text-gray-700">직책</label>
-              <div className="flex-1">
-                <Input 
-                  value={searchParams.position}
-                  onChange={(e) => handleParamChange("position", e.target.value)}
-                  placeholder="직책 검색"
-                  className="flex-1"
-                />
-              </div>
             </div>
           </div>
           

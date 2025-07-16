@@ -1,407 +1,78 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { Button } from './button';
-import { 
-  Search, 
-  Bell, 
-  User, 
-  ChevronDown, 
-  Moon, 
-  Sun, 
-  Settings,
-  LogOut,
-  HelpCircle,
-  MessageSquare,
-  Database,
-  Menu,
-  Megaphone,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Calendar as CalendarIcon,
-} from 'lucide-react';
-import { Input } from "./input";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu";
-import { Badge } from "./badge";
-import { Sheet, SheetContent, SheetTrigger } from "./sheet";
-import { useTabsStore } from "@/lib/store/tabsStore";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Users, Building2, LineChart, BarChart3, PieChart, TrendingUp, Plane, Ship, Warehouse, Building, Globe, HardHat } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
-interface HeaderProps {
-  toggleSidebar?: () => void;
+// Temporary cn function implementation
+function cn(...classes: string[]) {
+  return classes.filter(Boolean).join(' ');
 }
 
-export function Header({ toggleSidebar }: HeaderProps) {
+interface MenuItem {
+  name: string;
+  path: string;
+  icon?: LucideIcon;
+}
+
+export function Header() {
   const pathname = usePathname();
-  const [darkMode, setDarkMode] = useState(false);
-  const { addTab } = useTabsStore();
-  const [date, setDate] = useState<Date>(new Date());
-  
-  // 공지사항 데이터
-  const announcements = [
-    "시스템 점검 안내: 오늘 오후 6시부터 8시까지 점검 예정입니다.",
-    "신규 기능 업데이트: 부지재 관리 기능이 추가되었습니다.",
-    "보안 업데이트: 사용자 비밀번호를 변경해주세요."
+
+  const menuItems: MenuItem[] = [
+    { name: '전사실적', path: '/a01-company-performance', icon: BarChart3 },
+    { name: '인원현황', path: '/a02-personnel', icon: Users },
+    { name: '본사실적', path: '/a03-hq-performance', icon: Building2 },
+    { name: '재무현황', path: '/a04-finance', icon: LineChart },
+    { name: '부문별실적', path: '/a05-division', icon: PieChart },
+    { name: '상위거래처', path: '/a06-top-clients', icon: TrendingUp },
+    { name: '항공실적', path: '/a07-air', icon: Plane },
+    { name: '해상실적', path: '/a08-sea', icon: Ship },
+    { name: '창고실적', path: '/a09-warehouse', icon: Warehouse },
+    { name: '도급실적', path: '/a10-outsourcing', icon: HardHat },
+    { name: '국내자회사', path: '/a11-domestic-subsidiaries', icon: Building },
+    { name: '해외자회사', path: '/a12-overseas-subsidiaries', icon: Globe },
+    { name: '회사', path: '/a15-domestic' },
+    { name: '사업부', path: '/a18-test3' },
+    { name: '해외권역1', path: '/a20-test5' },
+    { name: '해외권역2', path: '/a21-test6' }
   ];
-  
-  const [currentAnnouncementIndex, setCurrentAnnouncementIndex] = useState(0);
-  
-  // 공지사항 자동 변경 효과
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentAnnouncementIndex(prev => (prev + 1) % announcements.length);
-    }, 5000);
-    
-    return () => clearInterval(intervalId);
-  }, [announcements.length]);
-  
-  // 다음 공지사항으로 이동
-  const nextAnnouncement = () => {
-    setCurrentAnnouncementIndex(prev => (prev + 1) % announcements.length);
-  };
-  
-  // 이전 공지사항으로 이동
-  const prevAnnouncement = () => {
-    setCurrentAnnouncementIndex(prev => (prev - 1 + announcements.length) % announcements.length);
-  };
 
   return (
-    <header className="sticky top-0 z-40">
-      <div className="px-4 pt-3 pb-3 flex items-center">
-        <div className="rounded-xl border bg-card shadow-md w-full">
-          <div className="flex h-12 items-center px-4">
-            <div className="flex items-center mr-4">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="md:hidden"
-                  >
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">메뉴 토글</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0">
-                  <div className="flex h-14 items-center border-b px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-primary rounded-md p-1">
-                        <Database className="h-5 w-5 text-primary-foreground" />
-                      </div>
-                      <h2 className="text-lg font-semibold">ERP<span className="text-primary">System</span></h2>
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-              
-              <Link href="#" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (toggleSidebar) toggleSidebar();
-                }} 
-                className="font-bold text-xl tracking-tight hidden md:flex items-center gap-2 cursor-pointer"
+    <header className="bg-white border-b">
+      <div className="flex justify-between items-center px-4 py-2">
+        <div className="flex items-center space-x-8">
+          <Link href="/a13-performance">
+            <div className="flex items-center space-x-2">
+              <Image 
+                src="/images/htns-logo.png" 
+                alt="HTNS Logo" 
+                width={100} 
+                height={30} 
+                className="object-contain"
+              />
+            </div>
+          </Link>
+          <nav className="flex space-x-2 overflow-x-auto pb-2">
+            {menuItems.map((menu) => (
+              <Link
+                key={menu.name}
+                href={menu.path}
+                className={cn(
+                  "flex items-center space-x-1 px-3 py-2 rounded-md transition-colors whitespace-nowrap text-sm",
+                  pathname === menu.path
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                )}
               >
-                <div className="bg-primary rounded-md p-1">
-                  <Database className="h-5 w-5 text-primary-foreground" />
-                </div>
-                ERP<span className="text-primary">System</span>
+                {menu.icon && <menu.icon className="w-4 h-4" />}
+                <span>{menu.name}</span>
               </Link>
-            </div>
-            
-            {/* 공지사항 영역 */}
-            <div className="hidden md:flex items-center flex-1 max-w-xl">
-              <div className="flex items-center bg-slate-50 rounded-md border px-3 py-1 w-full">
-                <Megaphone className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                <div className="relative overflow-hidden flex-1">
-                  <div className="animate-marquee whitespace-nowrap overflow-hidden text-ellipsis text-sm">
-                    {announcements[currentAnnouncementIndex]}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={prevAnnouncement}
-                    className="h-5 w-5 rounded-full text-slate-400 hover:text-primary hover:bg-slate-100"
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                  </Button>
-                  <Badge variant="outline" className="px-1.5 py-0 h-5 text-[10px]">
-                    {currentAnnouncementIndex + 1}/{announcements.length}
-                  </Badge>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={nextAnnouncement}
-                    className="h-5 w-5 rounded-full text-slate-400 hover:text-primary hover:bg-slate-100"
-                  >
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="ml-auto flex items-center space-x-1">
-              <div className="relative hidden md:flex items-center">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="py-1 px-3 h-auto flex items-center gap-1 hover:bg-secondary">
-                      <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground mr-1" />
-                      <span className="text-xs font-medium">
-                        {format(date, "yyyy년 MM월 dd일 (EEEE)", { locale: ko })}
-                      </span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="end">
-                    <div className="custom-datepicker-container">
-                      <DatePicker
-                        selected={date}
-                        onChange={(newDate: Date | null) => newDate && setDate(newDate)}
-                        inline
-                        locale={ko}
-                        showMonthDropdown
-                        showYearDropdown
-                        dropdownMode="select"
-                        dateFormat="yyyy년 MM월 dd일"
-                        dayClassName={() => "react-datepicker__day--custom"}
-                        fixedHeight
-                        renderCustomHeader={({
-                          date,
-                          changeYear,
-                          changeMonth,
-                          decreaseMonth,
-                          increaseMonth,
-                          prevMonthButtonDisabled,
-                          nextMonthButtonDisabled,
-                        }) => (
-                          <div className="custom-datepicker-header">
-                            <button
-                              onClick={decreaseMonth}
-                              disabled={prevMonthButtonDisabled}
-                              className="custom-prev-button"
-                            >
-                              <ChevronLeft size={16} />
-                            </button>
-                            <div className="custom-month-year">
-                              {format(date, "MMMM yyyy", { locale: ko })}
-                            </div>
-                            <button
-                              onClick={increaseMonth}
-                              disabled={nextMonthButtonDisabled}
-                              className="custom-next-button"
-                            >
-                              <ChevronRight size={16} />
-                            </button>
-                          </div>
-                        )}
-                      />
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-              
-              {/* 다크모드 토글 */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setDarkMode(!darkMode)}
-                className="h-7 w-7 rounded-md"
-              >
-                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-              
-              {/* 알림 */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative h-7 w-7 rounded-md">
-                    <Bell className="h-4 w-4" />
-                    <Badge className="absolute -top-1 -right-1 h-3 w-3 p-0 flex items-center justify-center text-[9px]">
-                      3
-                    </Badge>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <DropdownMenuLabel className="text-center">알림</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {/* 알림 항목들 */}
-                  <div className="max-h-[300px] overflow-auto">
-                    {[1, 2, 3].map((i) => (
-                      <DropdownMenuItem key={i} className="cursor-pointer p-3">
-                        <div className="flex items-start gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback>SY</AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm font-medium">새로운 알림 {i}</p>
-                            <p className="text-xs text-muted-foreground">10분 전</p>
-                          </div>
-                        </div>
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-center font-medium text-primary">
-                    모든 알림 보기
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* 메시지 */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative h-7 w-7 rounded-md">
-                    <MessageSquare className="h-4 w-4" />
-                    <Badge className="absolute -top-1 -right-1 h-3 w-3 p-0 flex items-center justify-center text-[9px]">
-                      2
-                    </Badge>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <DropdownMenuLabel className="text-center">메시지</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <div className="max-h-[300px] overflow-auto">
-                    {[1, 2].map((i) => (
-                      <DropdownMenuItem key={i} className="cursor-pointer p-3">
-                        <div className="flex items-start gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback>RP</AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm font-medium">새 메시지 {i}</p>
-                            <p className="text-xs text-muted-foreground">방금 전</p>
-                          </div>
-                        </div>
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-center font-medium text-primary">
-                    모든 메시지 보기
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* 사용자 프로필 */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="pl-1 pr-2 h-7 gap-1 rounded-md">
-                    <Avatar className="h-5 w-5 mr-1">
-                      <AvatarImage src="/placeholder-user.jpg" />
-                      <AvatarFallback>👤</AvatarFallback>
-                    </Avatar>
-                    <span className="text-xs font-medium hidden md:inline-block">내정보</span>
-                    <ChevronDown className="h-3 w-3 opacity-50" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>내 계정</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>프로필</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>설정</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    <span>도움말</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-red-500 focus:text-red-500">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>로그아웃</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+            ))}
+          </nav>
         </div>
       </div>
-      
-      {/* 달력 컴포넌트 스타일 */}
-      <style jsx global>{`
-        .custom-datepicker-container {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        .react-datepicker {
-          border: none;
-          font-family: inherit;
-          border-radius: 0.5rem;
-          overflow: hidden;
-        }
-        .react-datepicker__header {
-          background-color: white;
-          border-bottom: none;
-          padding-top: 0.5rem;
-        }
-        .custom-datepicker-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 0.5rem;
-          padding: 0 0.5rem;
-        }
-        .custom-prev-button,
-        .custom-next-button {
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #6b7280;
-        }
-        .custom-prev-button:hover,
-        .custom-next-button:hover {
-          color: #1f2937;
-        }
-        .custom-month-year {
-          font-weight: 500;
-          font-size: 0.95rem;
-        }
-        .react-datepicker__day-name {
-          color: #6b7280;
-          font-weight: 500;
-          font-size: 0.8rem;
-          margin: 0.15rem;
-          width: 2rem;
-          line-height: 2rem;
-        }
-        .react-datepicker__day {
-          margin: 0.15rem;
-          width: 2rem;
-          line-height: 2rem;
-          border-radius: 0.25rem;
-          color: #1f2937;
-          font-size: 0.9rem;
-        }
-        .react-datepicker__day--today {
-          font-weight: bold;
-          color: #2563eb;
-        }
-        .react-datepicker__day--selected {
-          background-color: #111827;
-          color: white;
-          font-weight: bold;
-        }
-        .react-datepicker__day--outside-month {
-          color: #9ca3af;
-        }
-        .react-datepicker__day:hover {
-          background-color: #f3f4f6;
-        }
-        .react-datepicker__triangle {
-          display: none;
-        }
-      `}</style>
     </header>
   );
 } 

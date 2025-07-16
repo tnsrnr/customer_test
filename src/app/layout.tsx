@@ -1,51 +1,29 @@
-import './globals.css';
-import type { Metadata, Viewport } from 'next';
-import { Inter as FontSans } from 'next/font/google';
-import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from '@/components/theme-provider';
-import { LayoutWrapper } from '@/components/layout-wrapper';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Header } from "@/components/ui/header";
 
-const fontSans = FontSans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ERP System',
-  description: '현대적인 관리 시스템',
-  icons: {
-    icon: '/favicon.ico',
-  },
-};
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
+  title: "HTNS Dashboard",
+  description: "HTNS 통합 대시보드",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="ko" suppressHydrationWarning className="h-full">
-      <body className={cn(
-        'h-full bg-background font-sans antialiased',
-        fontSans.variable
-      )}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <LayoutWrapper>
+    <html lang="ko">
+      <body className={inter.className}>
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <main className="flex-1">
             {children}
-          </LayoutWrapper>
-          <Toaster />
-        </ThemeProvider>
+          </main>
+        </div>
       </body>
     </html>
   );

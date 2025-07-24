@@ -3,7 +3,7 @@
 // 로그인 API 호출 함수
 export const loginAPI = async (username: string, password: string) => {
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('/auth-api/login', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -28,7 +28,7 @@ export const loginAPI = async (username: string, password: string) => {
 // 로그아웃 API 호출 함수
 export const logoutAPI = async () => {
   try {
-    const response = await fetch('/api/auth/logout', {
+    const response = await fetch('/auth-api/logout', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {

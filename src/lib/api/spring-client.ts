@@ -3,7 +3,7 @@ import { setupRequestInterceptor, setupResponseInterceptor } from './interceptor
 
 // Spring 서버 프록시 클라이언트
 export const springProxyClient = axios.create({
-  baseURL: '/api/auth/proxy',
+  baseURL: '/auth-api/proxy',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',

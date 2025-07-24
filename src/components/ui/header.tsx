@@ -22,7 +22,7 @@ export function Header() {
   const pathname = usePathname();
 
   // 로그인 페이지에서는 헤더를 숨김
-  if (pathname === '/login') {
+  if (pathname === '/auth') {
     return null;
   }
 
@@ -33,13 +33,13 @@ export function Header() {
         // localStorage에서 사용자 정보 제거
         localStorage.removeItem('user');
         // 로그인 페이지로 리다이렉트
-        window.location.href = '/login';
+        window.location.href = '/auth';
       }
     } catch (error) {
       console.error('로그아웃 실패:', error);
       // 에러가 발생해도 로컬에서 로그아웃 처리
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      window.location.href = '/auth';
     }
   };
 

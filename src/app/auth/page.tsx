@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Lock, User, CheckCircle } from 'lucide-react';
 import { loginAPI } from '@/lib/api/client';
 
-export default function LoginPage() {
+export default function AuthPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

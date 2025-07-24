@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from "@/components/ui/card";
-import { AuthGuard } from "@/components/auth-guard";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -375,9 +375,23 @@ function FinancePageContent() {
 }
 
 export default function FinancePage() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      router.push('/auth');
+      return;
+    }
+    setIsAuthenticated(true);
+  }, [router]);
+
+  if (!isAuthenticated) {
+    return null; // 인증되지 않은 경우 아무것도 렌더링하지 않음
+  }
+
   return (
-    <AuthGuard>
-      <FinancePageContent />
-    </AuthGuard>
+    <FinancePageContent />
   );
 } 

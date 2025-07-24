@@ -1,20 +1,13 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
 import { 
-  Building2, 
-  Users, 
-  TrendingUp, 
-  DollarSign, 
-  Package, 
-  Ship, 
-  Warehouse,
-  Briefcase,
-  Globe,
-  BarChart3
-} from "lucide-react";
+  BarChart3, Users, Building2, LineChart, PieChart, TrendingUp, 
+  Plane, Ship, Warehouse, HardHat, Building, Globe 
+} from 'lucide-react';
 
 interface User {
   id: string;
@@ -24,167 +17,145 @@ interface User {
 
 export default function HomePage() {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // localStorage에서 사용자 정보 확인
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
+    // 로컬 스토리지에서 사용자 정보 가져오기
+    const userData = localStorage.getItem('user');
+    if (userData) {
       try {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
-      } catch (e) {
-        console.error('사용자 정보 파싱 오류:', e);
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('사용자 데이터 파싱 오류:', error);
+        localStorage.removeItem('user');
+        router.push('/auth');
       }
+    } else {
+      // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+      router.push('/auth');
     }
-    setIsLoading(false);
-  }, []);
+  }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-    router.push('/login');
-  };
+  const menuItems = [
+    { name: '전사실적', path: '/a01-company-performance', icon: BarChart3, color: 'bg-blue-500' },
+    { name: '인원현황', path: '/a02-personnel', icon: Users, color: 'bg-green-500' },
+    { name: '본사실적', path: '/a03-hq-performance', icon: Building2, color: 'bg-purple-500' },
+    { name: '재무현황', path: '/a04-finance', icon: LineChart, color: 'bg-orange-500' },
+    { name: '부문별실적', path: '/a05-division', icon: PieChart, color: 'bg-pink-500' },
+    { name: '상위거래처', path: '/a06-top-clients', icon: TrendingUp, color: 'bg-indigo-500' },
+    { name: '항공실적', path: '/a07-air', icon: Plane, color: 'bg-cyan-500' },
+    { name: '해상실적', path: '/a08-sea', icon: Ship, color: 'bg-teal-500' },
+    { name: '창고실적', path: '/a09-warehouse', icon: Warehouse, color: 'bg-amber-500' },
+    { name: '도급실적', path: '/a10-outsourcing', icon: HardHat, color: 'bg-red-500' },
+    { name: '국내자회사', path: '/a11-domestic-subsidiaries', icon: Building, color: 'bg-emerald-500' },
+    { name: '해외자회사', path: '/a12-overseas-subsidiaries', icon: Globe, color: 'bg-violet-500' },
+  ];
 
-  if (isLoading) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">로딩 중...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">로딩 중...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
-
-  const menuItems = [
-    {
-      title: "회사 성과",
-      description: "회사 전반적인 성과 지표",
-      icon: Building2,
-      href: "/a01-company-performance",
-      color: "bg-blue-500"
-    },
-    {
-      title: "인사 관리",
-      description: "직원 정보 및 인사 현황",
-      icon: Users,
-      href: "/a02-personnel",
-      color: "bg-green-500"
-    },
-    {
-      title: "본사 성과",
-      description: "본사별 성과 분석",
-      icon: TrendingUp,
-      href: "/a03-hq-performance",
-      color: "bg-purple-500"
-    },
-    {
-      title: "재무 현황",
-      description: "재무 데이터 및 분석",
-      icon: DollarSign,
-      href: "/a04-finance",
-      color: "bg-yellow-500"
-    },
-    {
-      title: "사업부별 현황",
-      description: "각 사업부별 성과",
-      icon: BarChart3,
-      href: "/a05-division",
-      color: "bg-red-500"
-    },
-    {
-      title: "주요 고객사",
-      description: "주요 고객사 현황",
-      icon: Building2,
-      href: "/a06-top-clients",
-      color: "bg-indigo-500"
-    },
-    {
-      title: "항공 운송",
-      description: "항공 운송 현황",
-      icon: Ship,
-      href: "/a07-air",
-      color: "bg-pink-500"
-    },
-    {
-      title: "해상 운송",
-      description: "해상 운송 현황",
-      icon: Ship,
-      href: "/a08-sea",
-      color: "bg-cyan-500"
-    },
-    {
-      title: "창고 관리",
-      description: "창고 및 재고 관리",
-      icon: Warehouse,
-      href: "/a09-warehouse",
-      color: "bg-orange-500"
-    },
-    {
-      title: "외주 관리",
-      description: "외주 업체 관리",
-      icon: Briefcase,
-      href: "/a10-outsourcing",
-      color: "bg-teal-500"
-    },
-    {
-      title: "국내 자회사",
-      description: "국내 자회사 현황",
-      icon: Building2,
-      href: "/a11-domestic-subsidiaries",
-      color: "bg-emerald-500"
-    },
-    {
-      title: "해외 자회사",
-      description: "해외 자회사 현황",
-      icon: Globe,
-      href: "/a12-overseas-subsidiaries",
-      color: "bg-violet-500"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* 메인 콘텐츠 */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 사용자 정보 */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            비즈니스 인사이트
-          </h2>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            HTNS 대시보드에 오신 것을 환영합니다!
+          </h1>
           <p className="text-gray-600">
-            HTNS의 모든 비즈니스 데이터를 한눈에 확인하세요
+            안녕하세요, <span className="font-semibold text-blue-600">{user.name}</span>님! 
+            아래 메뉴에서 원하는 기능을 선택하세요.
           </p>
         </div>
 
         {/* 메뉴 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {menuItems.map((item, index) => (
-            <Card 
-              key={index} 
-              className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => router.push(item.href)}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${item.color}`}>
-                    <item.icon className="h-6 w-6 text-white" />
+          {menuItems.map((item) => (
+            <Link key={item.path} href={item.path}>
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center space-x-4">
+                  <div className={`p-3 rounded-lg ${item.color} text-white group-hover:scale-110 transition-transform`}>
+                    <item.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">{item.title}</CardTitle>
-                    <CardDescription className="text-sm">
-                      {item.description}
-                    </CardDescription>
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {item.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {item.name} 데이터를 확인하세요
+                    </p>
                   </div>
                 </div>
-              </CardHeader>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
-      </main>
+
+        {/* 추가 메뉴 */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Link href="/a15-domestic">
+            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-lg bg-slate-500 text-white group-hover:scale-110 transition-transform">
+                  <Building className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    회사
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    회사 정보를 확인하세요
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/a18-test3">
+            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-lg bg-lime-500 text-white group-hover:scale-110 transition-transform">
+                  <BarChart3 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    사업부
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    사업부 정보를 확인하세요
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/a20-test5">
+            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-lg bg-rose-500 text-white group-hover:scale-110 transition-transform">
+                  <Globe className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    해외권역1
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    해외권역1 정보를 확인하세요
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/card';
 import { 
   BarChart3, Users, Building2, LineChart, PieChart, TrendingUp, 
   Plane, Ship, Warehouse, HardHat, Building, Globe 

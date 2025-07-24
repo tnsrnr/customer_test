@@ -20,8 +20,8 @@ import { Chart } from 'react-chartjs-2';
 import { Truck, Ship, Plane, Package, Users, Building2, SquareStack, BoxSelect, PieChart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import { Separator } from '@/components/ui/separator';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Separator } from '@/components/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
 
 ChartJS.register(
   CategoryScale,

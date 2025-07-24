@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/card';
 import { Lock, User, CheckCircle } from 'lucide-react';
 import { loginAPI } from './auth-client';
 

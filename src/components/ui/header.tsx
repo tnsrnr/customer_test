@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logoutAPI } from '@/lib/api/client';
+import { logoutAPI } from '@/app/auth/auth-client';
 import { menuItems } from '@/app/menu/menu-config';
 
 // Temporary cn function implementation

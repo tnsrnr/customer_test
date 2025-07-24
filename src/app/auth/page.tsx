@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Lock, User, CheckCircle } from 'lucide-react';
-import { loginAPI } from '@/lib/api/client';
+import { loginAPI } from './auth-client';
 
 export default function AuthPage() {
   const [username, setUsername] = useState('');

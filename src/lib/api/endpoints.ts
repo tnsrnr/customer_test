@@ -1,15 +1,13 @@
-// API 엔드포인트 상수
+// API 엔드포인트 상수 (실제 사용되는 것만 정의)
 export const API_ENDPOINTS = {
-  // 재무 관련
+  // 재무 관련 (실제 사용 중)
   FINANCE: {
-    STATUS: '/finance/status',
-    SUMMARY: '/finance/summary',
+    STATUS: '/api/PORM060101SVC/getFinanceStatus',
+    SUMMARY: '/api/PORM060101SVC/getFinanceSummary',
   },
-  // 향후 확장을 위한 다른 도메인들
-  WAREHOUSE: {
-    STATUS: '/warehouse/status',
-  },
-  PERFORMANCE: {
-    OVERVIEW: '/performance/overview',
-  },
-} as const; 
+} as const;
+
+// 엔드포인트 유틸리티 함수
+export const getFinanceEndpoint = (type: 'status' | 'summary') => {
+  return API_ENDPOINTS.FINANCE[type.toUpperCase() as keyof typeof API_ENDPOINTS.FINANCE];
+}; 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AGGridProvider } from "@/components/ag-grid-provider";
+import { AGGridProvider } from "@/components/ui/ag-grid-provider";
 import { Header } from "@/components/ui/header";
 
 const inter = Inter({ subsets: ["latin"] });

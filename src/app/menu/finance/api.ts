@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ApiResponse } from '@/types/common';
 import { FinanceData } from './types';
-import { callSpringAPI } from '@/lib/api/client';
+import { callSpringAPI } from '@/lib/api/spring-client';
 
 // 재무 현황 데이터 조회 (Spring 서버 프록시 사용)
 export const getFinanceStatus = async (): Promise<FinanceData> => {

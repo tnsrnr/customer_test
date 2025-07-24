@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/data-table";
 import { ColDef, ColGroupDef } from "ag-grid-community";
 
 interface PerformanceData {

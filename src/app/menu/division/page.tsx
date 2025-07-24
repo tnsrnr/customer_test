@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/card";
 import { Plane, Ship, Truck, Warehouse, Building, Package } from "lucide-react";
 
 export default function DivisionPage() {

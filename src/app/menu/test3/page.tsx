@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/card";
 import { SplitText } from "./components/SplitText";
 import { MetricCard } from "./components/MetricCard";
 import { BusinessCard } from "./components/BusinessCard";

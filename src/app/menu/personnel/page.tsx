@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/card";
 import { Users, TrendingUp, Building2, Factory, Globe2 } from "lucide-react";
 
 export default function PersonnelPage() {

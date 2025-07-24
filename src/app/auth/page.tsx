@@ -163,6 +163,7 @@ export default function AuthPage() {
           </button>
         </form>
         <div className="mt-8 text-center text-xs text-slate-500 select-none">
+          <p>인증서버: <span className="font-semibold text-blue-600">qa-lv1.htns.com</span></p>
           <p>테스트 계정: <span className="font-semibold text-blue-600">tnsrnr</span></p>
           <p>비밀번호: <span className="font-semibold text-blue-600">tnsrnr1234</span></p>
         </div>

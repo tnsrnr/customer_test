@@ -53,16 +53,16 @@ export function Header() {
               />
             </div>
           </Link>
-          <nav className="flex space-x-2 overflow-x-auto pb-2">
+          <nav className="flex space-x-1 overflow-x-auto pb-2">
             {menuItems.map((menu) => (
               <Link
                 key={menu.name}
                 href={menu.path}
                 className={cn(
-                  "flex items-center space-x-1 px-3 py-2 rounded-md transition-colors whitespace-nowrap text-sm",
+                  "flex items-center space-x-1 px-2 py-2 rounded-md transition-all duration-200 ease-in-out whitespace-nowrap text-sm",
                   pathname === menu.path
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-500 text-white shadow-md"
+                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm border border-transparent hover:border-blue-200"
                 )}
               >
                 {menu.icon && <menu.icon className="w-4 h-4" />}

@@ -3,7 +3,7 @@
 // 로그인 API 호출 함수
 export const loginAPI = async (username: string, password: string) => {
   try {
-    const response = await fetch('/auth-api/login', {
+    const response = await fetch('/auth/api/login', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -14,11 +14,12 @@ export const loginAPI = async (username: string, password: string) => {
 
     const data = await response.json();
 
-    if (!response.ok) {
+    // 서버에서 성공 응답을 보냈으면 성공으로 처리
+    if (data.success) {
+      return data;
+    } else {
       throw new Error(data.message || '로그인에 실패했습니다.');
     }
-
-    return data;
   } catch (error) {
     console.error('로그인 API 호출 오류:', error);
     throw error;
@@ -28,7 +29,7 @@ export const loginAPI = async (username: string, password: string) => {
 // 로그아웃 API 호출 함수
 export const logoutAPI = async () => {
   try {
-    const response = await fetch('/auth-api/logout', {
+    const response = await fetch('/auth/api/logout', {
       method: 'POST',
       credentials: 'include', // 쿠키 포함
       headers: {
@@ -38,11 +39,12 @@ export const logoutAPI = async () => {
 
     const data = await response.json();
 
-    if (!response.ok) {
+    // 서버에서 성공 응답을 보냈으면 성공으로 처리
+    if (data.success) {
+      return data;
+    } else {
       throw new Error(data.message || '로그아웃에 실패했습니다.');
     }
-
-    return data;
   } catch (error) {
     console.error('로그아웃 API 호출 오류:', error);
     throw error;

@@ -32,7 +32,7 @@ async function handleProxyRequest(req: NextRequest, method: string) {
     }
 
     // Spring 서버 URL 구성
-    const springUrl = `https://lv1.htns.com${targetPath}`;
+    const springUrl = `https://qa-lv1.htns.com${targetPath}`;
     
     console.log(`🚀 Spring 서버 프록시 요청: ${method} ${springUrl}`);
 

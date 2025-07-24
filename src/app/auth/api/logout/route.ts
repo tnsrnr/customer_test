@@ -22,14 +22,14 @@ export async function POST(req: NextRequest) {
     // Spring 서버 로그아웃 요청
     console.log('🔐 로그아웃 요청 중...');
     
-    const logoutRes = await fetch("https://lv1.htns.com/logout", {
+    const logoutRes = await fetch("https://qa-lv1.htns.com/logout", {
       method: "POST",
       redirect: 'manual',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Cookie': cookie,
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-        'Referer': 'https://lv1.htns.com/'
+        'Referer': 'https://qa-lv1.htns.com/'
       }
     });
 

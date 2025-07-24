@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
     // 1. CSRF 토큰 가져오기 (성공한 소스와 동일한 방식)
     console.log('📡 CSRF 토큰 요청 중...');
-    const csrfRes = await fetch("https://lv1.htns.com/login.jsp", {
+    const csrfRes = await fetch("https://qa-lv1.htns.com/login.jsp", {
       method: "GET",
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     console.log('📤 전송할 데이터:', qs.stringify(loginData));
 
-    const loginRes = await fetch("https://lv1.htns.com/htns_sec", {
+    const loginRes = await fetch("https://qa-lv1.htns.com/htns_sec", {
       method: "POST",
       redirect: 'manual', // 성공한 소스와 동일
       headers: {

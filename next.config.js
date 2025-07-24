@@ -10,7 +10,7 @@ const nextConfig = {
     return [
       {
         source: '/api/htns/:path*',
-        destination: 'https://lv1.htns.com/:path*', // /htns/ 제거됨
+        destination: 'https://qa-lv1.htns.com/:path*', // /htns/ 제거됨
       },
     ];
   },

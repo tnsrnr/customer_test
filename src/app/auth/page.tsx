@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/card';
-import { Lock, User, CheckCircle } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
 import { loginAPI } from './auth-client';
 
 export default function AuthPage() {
@@ -11,7 +11,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [authStatus, setAuthStatus] = useState<string>('');
+
   const router = useRouter();
 
   useEffect(() => {
@@ -25,15 +25,12 @@ export default function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setAuthStatus('');
     setIsLoading(true);
 
     try {
       const result = await loginAPI(username, password);
       
       if (result.success) {
-        setAuthStatus('✅ 로그인 성공!');
-        
         // 로그인 성공 시 사용자 정보 저장
         if (result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));
@@ -54,12 +51,7 @@ export default function AuthPage() {
     }
   };
 
-  const handleCheckAuth = () => {
-    setAuthStatus('🔍 통합된 auth 디렉토리 방식 사용 중');
-  };
-
   const handleClearSession = () => {
-    setAuthStatus('🧹 세션 초기화 완료');
     setUsername('');
     setPassword('');
     localStorage.removeItem('user');
@@ -90,7 +82,7 @@ export default function AuthPage() {
             y="320"
             textAnchor="middle"
             fontSize="110"
-            fontWeight="bold"
+            fontWeight="900"
             fill="#3b82f6"
             opacity="0.5"
             style={{ letterSpacing: 32 }}
@@ -154,19 +146,7 @@ export default function AuthPage() {
               {error}
             </div>
           )}
-          {authStatus && (
-            <div className={`text-sm p-3 rounded-md ${
-              authStatus.includes('✅') 
-                ? 'text-green-600 bg-green-50' 
-                : authStatus.includes('⚠️') 
-                ? 'text-yellow-600 bg-yellow-50'
-                : authStatus.includes('🧹')
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-red-600 bg-red-50'
-            }`}>
-              {authStatus}
-            </div>
-          )}
+
           <button
             type="submit"
             disabled={isLoading}
@@ -174,14 +154,7 @@ export default function AuthPage() {
           >
             {isLoading ? "로그인 중..." : "로그인"}
           </button>
-          <button
-            type="button"
-            onClick={handleCheckAuth}
-            className="w-full mt-2 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200"
-          >
-            <CheckCircle className="w-4 h-4 inline mr-2" />
-            인증 방식 확인
-          </button>
+
           <button
             type="button"
             onClick={handleClearSession}

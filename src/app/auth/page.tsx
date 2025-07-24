@@ -96,8 +96,7 @@ export default function AuthPage() {
           <div className="bg-blue-600 rounded-full p-4 shadow-lg mb-4 animate-bounce">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">HTNS Dashboard</h1>
-          <p className="text-slate-500 text-base">통합된 auth 디렉토리 로그인</p>
+          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">HTNS 경영정보시스템</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -164,8 +163,8 @@ export default function AuthPage() {
           </button>
         </form>
         <div className="mt-8 text-center text-xs text-slate-500 select-none">
-          <p>테스트 계정: <span className="font-semibold text-blue-600">admin@htns.com</span></p>
-          <p>비밀번호: <span className="font-semibold text-blue-600">password123</span></p>
+          <p>테스트 계정: <span className="font-semibold text-blue-600">tnsrnr</span></p>
+          <p>비밀번호: <span className="font-semibold text-blue-600">tnsrnr1234</span></p>
         </div>
       </Card>
     </div>

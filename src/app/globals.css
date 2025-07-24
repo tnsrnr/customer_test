@@ -1,41 +1,63 @@
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-alpine.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
- 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
- 
     --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
- 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
- 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
- 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
- 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
- 
     --radius: 0.5rem;
   }
-}
  
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -43,4 +65,64 @@
   body {
     @apply bg-background text-foreground;
   }
+} 
+
+/* AG Grid 헤더 텍스트 중앙 정렬 */
+.ag-header-cell-label, .ag-header-group-cell-label {
+  justify-content: center !important;
+  text-align: center !important;
+} 
+
+/* AG Grid 그룹 헤더(상단)도 중앙 정렬 */
+.ag-header-group-cell {
+  justify-content: center !important;
+  text-align: center !important;
+}
+.ag-header-group-text {
+  width: 100%;
+  text-align: center !important;
+  display: block;
+} 
+
+/* AG Grid 그룹 헤더 셀 내에서 무조건 중앙 정렬 */
+.ag-header-group-cell-label {
+  width: 100% !important;
+  justify-content: center !important;
+  display: flex !important;
+}
+.ag-header-group-text {
+  width: 100% !important;
+  text-align: center !important;
+  display: block !important;
+} 
+
+/* AG Grid 시각적 구분 및 헤더 가독성 향상 */
+.ag-header-group-cell {
+  background: #e0e7ff !important; /* 연보라 */
+  border-bottom: 2px solid #6366f1 !important;
+}
+.ag-header-cell {
+  background: #f1f5f9 !important; /* 연회색 */
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  border-bottom: 1.5px solid #6366f1 !important;
+}
+.ag-header-cell-label, .ag-header-group-cell-label {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+}
+.ag-row:hover .ag-cell {
+  background: #f3f4f6 !important;
+}
+.ag-row .ag-cell {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+} 
+
+/* AG Grid 열(컬럼)마다 세로 구분선 추가 */
+.ag-cell, .ag-header-cell, .ag-header-group-cell {
+  border-right: 1px solid #e5e7eb !important; /* Tailwind gray-200 */
+}
+.ag-cell:last-child, .ag-header-cell:last-child, .ag-header-group-cell:last-child {
+  border-right: none !important;
 } 

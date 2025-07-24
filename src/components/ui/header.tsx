@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Users, Building2, LineChart, BarChart3, PieChart, TrendingUp, Plane, Ship, Warehouse, Building, Globe, HardHat } from "lucide-react";
 import type { LucideIcon } from 'lucide-react';
+import { logoutAPI } from '@/lib/api/client';
 
 // Temporary cn function implementation
 function cn(...classes: string[]) {
@@ -19,6 +20,28 @@ interface MenuItem {
 
 export function Header() {
   const pathname = usePathname();
+
+  // 로그인 페이지에서는 헤더를 숨김
+  if (pathname === '/login') {
+    return null;
+  }
+
+  const handleLogout = async () => {
+    try {
+      const result = await logoutAPI();
+      if (result.success) {
+        // localStorage에서 사용자 정보 제거
+        localStorage.removeItem('user');
+        // 로그인 페이지로 리다이렉트
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+      // 에러가 발생해도 로컬에서 로그아웃 처리
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+  };
 
   const menuItems: MenuItem[] = [
     { name: '전사실적', path: '/a01-company-performance', icon: BarChart3 },
@@ -71,6 +94,14 @@ export function Header() {
               </Link>
             ))}
           </nav>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleLogout}
+            className="text-sm text-gray-600 hover:text-red-600 hover:underline"
+          >
+            로그아웃
+          </button>
         </div>
       </div>
     </header>

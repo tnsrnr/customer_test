@@ -12,6 +12,9 @@ import {
   ArcElement
 } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
+import { PerformanceTable } from './components/performance-table';
+import { useEffect } from 'react';
+import { DollarSign, TrendingUp, Percent, BarChart3 } from "lucide-react";
 
 ChartJS.register(
   CategoryScale,
@@ -24,6 +27,10 @@ ChartJS.register(
 );
 
 export default function CompanyPerformancePage() {
+  useEffect(() => {
+    console.log('CompanyPerformancePage mounted');
+  }, []);
+
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-6 space-y-4">
       {/* 상단 섹션 */}
@@ -33,18 +40,27 @@ export default function CompanyPerformancePage() {
           <div className="p-4">
             <h2 className="text-base font-bold text-slate-800 mb-1">HTNS그룹 전사 경영실적 (1~5월)</h2>
             <p className="text-xs text-slate-500 mb-3">HTNS Business performance 2025.May</p>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-slate-600 rounded-lg p-3 text-white ring-1 ring-slate-400/20">
-                <div className="text-xs text-slate-100 mb-1">매출액</div>
-                <div className="text-xl font-bold tracking-tight">2,619<span className="text-sm ml-1">억원</span></div>
+            <div className="flex gap-4">
+              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[180px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="w-5 h-5 text-blue-700" />
+                  <span className="text-sm font-medium text-slate-800">매출액</span>
+                </div>
+                <div className="text-3xl font-extrabold text-blue-700">2,619 <span className="text-lg font-bold">억원</span></div>
               </div>
-              <div className="bg-slate-600 rounded-lg p-3 text-white ring-1 ring-slate-400/20">
-                <div className="text-xs text-slate-100 mb-1">영업이익</div>
-                <div className="text-xl font-bold tracking-tight">26<span className="text-sm ml-1">억원</span></div>
+              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[180px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-5 h-5 text-blue-700" />
+                  <span className="text-sm font-medium text-slate-800">영업이익</span>
+                </div>
+                <div className="text-3xl font-extrabold text-blue-700">26 <span className="text-lg font-bold">억원</span></div>
               </div>
-              <div className="bg-slate-700 rounded-lg p-3 text-white ring-1 ring-slate-400/20">
-                <div className="text-xs text-slate-100 mb-1">영업이익율</div>
-                <div className="text-xl font-bold tracking-tight">1.0<span className="text-sm ml-1">%</span></div>
+              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[180px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <Percent className="w-5 h-5 text-blue-700" />
+                  <span className="text-sm font-medium text-slate-800">영업이익율</span>
+                </div>
+                <div className="text-3xl font-extrabold text-blue-700">1.0 <span className="text-lg font-bold">%</span></div>
               </div>
             </div>
           </div>
@@ -55,18 +71,27 @@ export default function CompanyPerformancePage() {
           <div className="p-4">
             <h2 className="text-base font-bold text-slate-800 mb-1">실적 달성율 (계획 比) 1~5월</h2>
             <p className="text-xs text-slate-500 mb-3">Attainment rate 2025.May</p>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-slate-600 rounded-lg p-3 text-white ring-1 ring-slate-400/20">
-                <div className="text-xs text-slate-100 mb-1">본사</div>
-                <div className="text-xl font-bold tracking-tight">85%</div>
+            <div className="flex gap-4">
+              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[140px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 className="w-5 h-5 text-blue-700" />
+                  <span className="text-sm font-medium text-slate-800">본사</span>
+                </div>
+                <div className="text-2xl font-extrabold text-blue-700">85%</div>
               </div>
-              <div className="bg-slate-600 rounded-lg p-3 text-white ring-1 ring-slate-400/20">
-                <div className="text-xs text-slate-100 mb-1">국내자회사</div>
-                <div className="text-xl font-bold tracking-tight">82%</div>
+              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[140px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 className="w-5 h-5 text-blue-700" />
+                  <span className="text-sm font-medium text-slate-800">국내자회사</span>
+                </div>
+                <div className="text-2xl font-extrabold text-blue-700">82%</div>
               </div>
-              <div className="bg-slate-600 rounded-lg p-3 text-white ring-1 ring-slate-400/20">
-                <div className="text-xs text-slate-100 mb-1">해외자회사</div>
-                <div className="text-xl font-bold tracking-tight">65%</div>
+              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[140px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 className="w-5 h-5 text-blue-700" />
+                  <span className="text-sm font-medium text-slate-800">해외자회사</span>
+                </div>
+                <div className="text-2xl font-extrabold text-blue-700">65%</div>
               </div>
             </div>
           </div>
@@ -74,85 +99,22 @@ export default function CompanyPerformancePage() {
       </div>
 
       {/* 테이블 섹션 */}
-      <Card className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-        <div className="p-4">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b-2 border-gray-200">
-                <th className="py-2.5 px-3 text-left font-semibold text-gray-600" rowSpan={2}>구분</th>
-                <th colSpan={3} className="py-2.5 px-3 text-center font-semibold text-gray-800 bg-blue-100/50 border-l-2 border-r-2 border-gray-200">계획 ('25년 5월 누적)</th>
-                <th colSpan={3} className="py-2.5 px-3 text-center font-semibold text-gray-800 bg-emerald-100/50 border-r-2 border-gray-200">실적 ('25년 5월 누적)</th>
-                <th colSpan={2} className="py-2.5 px-3 text-center font-semibold text-gray-800 bg-violet-100/50">달성율 (계획 比)</th>
-              </tr>
-              <tr className="border-b-2 border-gray-200">
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-blue-100/50 border-l-2 border-gray-200">매출액</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-blue-100/50">영업이익</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-blue-100/50 border-r-2 border-gray-200">영업이익율</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-emerald-100/50">매출액</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-emerald-100/50">영업이익</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-emerald-100/50 border-r-2 border-gray-200">영업이익율</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-violet-100/50">매출액</th>
-                <th className="py-2.5 px-3 text-center font-medium text-gray-600 bg-violet-100/50">영업이익</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              <tr className="border-b border-gray-200 hover:bg-gray-50/50">
-                <td className="py-2.5 px-3 font-semibold text-gray-700">본사</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/30 border-l-2 border-gray-200">1,095</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/30">37</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/30 border-r-2 border-gray-200">3.4%</td>
-                <td className="py-2.5 px-3 text-right bg-emerald-50/30">934</td>
-                <td className="py-2.5 px-3 text-right bg-emerald-50/30 text-red-600 font-medium">-9</td>
-                <td className="py-2.5 px-3 text-right bg-emerald-50/30 text-red-600 border-r-2 border-gray-200">-0.9%</td>
-                <td className="py-2.5 px-3 text-right bg-violet-50/30 text-blue-700 font-semibold">85%</td>
-                <td className="py-2.5 px-3 text-right bg-violet-50/20 font-medium">적자</td>
-              </tr>
-              <tr className="border-b border-gray-200 hover:bg-gray-50/50">
-                <td className="py-2.5 px-3 font-semibold text-gray-700">국내자회사</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/20 border-l-2 border-gray-200">360</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/20">11</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/20 border-r-2 border-gray-200">3.1%</td>
-                <td className="py-2.5 px-3 text-right bg-green-50/20">294</td>
-                <td className="py-2.5 px-3 text-right bg-green-50/20">3</td>
-                <td className="py-2.5 px-3 text-right bg-green-50/20 border-r-2 border-gray-200">0.9%</td>
-                <td className="py-2.5 px-3 text-right bg-purple-50/20 text-blue-700 font-semibold">82%</td>
-                <td className="py-2.5 px-3 text-right bg-purple-50/20 font-medium">24%</td>
-              </tr>
-              <tr className="border-b border-gray-200 hover:bg-gray-50/50">
-                <td className="py-2.5 px-3 font-semibold text-gray-700">해외자회사</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/20 border-l-2 border-gray-200">2,131</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/20">46</td>
-                <td className="py-2.5 px-3 text-right bg-blue-50/20 border-r-2 border-gray-200">2.1%</td>
-                <td className="py-2.5 px-3 text-right bg-green-50/20">1,392</td>
-                <td className="py-2.5 px-3 text-right bg-green-50/20">32</td>
-                <td className="py-2.5 px-3 text-right bg-green-50/20 border-r-2 border-gray-200">2.3%</td>
-                <td className="py-2.5 px-3 text-right bg-purple-50/20 text-blue-700 font-semibold">65%</td>
-                <td className="py-2.5 px-3 text-right bg-purple-50/20 font-medium">70%</td>
-              </tr>
-              <tr className="border-b-2 border-gray-200 bg-gray-50/50">
-                <td className="py-2.5 px-3 font-bold text-gray-800">합계</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-blue-50/30 border-l-2 border-gray-200">3,586</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-blue-50/30">94</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-blue-50/30 border-r-2 border-gray-200">2.6%</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-green-50/30">2,619</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-green-50/30">26</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-green-50/30 border-r-2 border-gray-200">1.0%</td>
-                <td className="py-2.5 px-3 text-right font-bold text-blue-700 bg-purple-50/30">73%</td>
-                <td className="py-2.5 px-3 text-right font-bold text-gray-800 bg-purple-50/30">28%</td>
-              </tr>
-            </tbody>
-          </table>
+      <Card style={{ height: 400, width: '100%', padding: 0, boxSizing: 'border-box' }}>
+        <div style={{ height: '100%' }}>
+          <PerformanceTable />
         </div>
       </Card>
 
       {/* 하단 차트 섹션 */}
       <div className="grid grid-cols-3 gap-4">
         {/* 달성율% 카드 */}
-        <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-slate-600 py-2 px-3">
-            <h3 className="text-base text-white text-center font-normal">달성율%</h3>
-          </div>
+        <Card className="bg-blue-50 border border-blue-100 shadow-sm rounded-xl overflow-hidden">
+          <div className="h-1 w-full bg-blue-200 mb-2" />
           <div className="p-4">
+            <div className="flex items-center gap-2 text-base font-bold text-blue-800 mb-2">
+              <Percent className="w-5 h-5" />
+              달성율
+            </div>
             <div className="grid grid-cols-2 gap-6 relative">
               {/* 매출액 도넛 차트 */}
               <div>
@@ -265,11 +227,13 @@ export default function CompanyPerformancePage() {
         </Card>
 
         {/* 매출액 차트 */}
-        <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-slate-600 py-2 px-3">
-            <h3 className="text-base text-white text-center font-normal">매출액</h3>
-          </div>
+        <Card className="bg-slate-100 border border-slate-200 shadow-sm rounded-xl overflow-hidden">
+          <div className="h-1 w-full bg-slate-300 mb-2" />
           <div className="p-4">
+            <div className="flex items-center gap-2 text-base font-bold text-blue-800 mb-2">
+              <DollarSign className="w-5 h-5" />
+              매출액
+            </div>
             <div className="text-xs text-gray-500 text-right mb-2">단위: 억원</div>
             <div style={{ height: '140px' }}>
               <Bar
@@ -345,11 +309,13 @@ export default function CompanyPerformancePage() {
         </Card>
 
         {/* 영업이익 차트 */}
-        <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-slate-600 py-2 px-3">
-            <h3 className="text-base text-white text-center font-normal">영업이익</h3>
-          </div>
+        <Card className="bg-indigo-50 border border-indigo-100 shadow-sm rounded-xl overflow-hidden">
+          <div className="h-1 w-full bg-indigo-200 mb-2" />
           <div className="p-4">
+            <div className="flex items-center gap-2 text-base font-bold text-blue-800 mb-2">
+              <TrendingUp className="w-5 h-5" />
+              영업이익
+            </div>
             <div className="text-xs text-gray-500 text-right mb-2">단위: 억원</div>
             <div style={{ height: '140px' }}>
               <Bar

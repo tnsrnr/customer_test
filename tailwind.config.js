@@ -104,10 +104,26 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "spin-slow": {
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "0.07" },
+          "50%": { opacity: "0.50" },
+        },
+        "shake": {
+          "10%, 90%": { transform: "translateX(-2px)" },
+          "20%, 80%": { transform: "translateX(4px)" },
+          "30%, 50%, 70%": { transform: "translateX(-8px)" },
+          "40%, 60%": { transform: "translateX(8px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spin-slow": "spin-slow 16s linear infinite",
+        "pulse-slow": "pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "shake": "shake 0.3s linear",
       },
     },
   },

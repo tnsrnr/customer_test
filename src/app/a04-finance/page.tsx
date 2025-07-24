@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Card } from "@/components/ui/card";
+import { AuthGuard } from "@/components/auth-guard";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +15,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar, Line, Chart } from 'react-chartjs-2';
+import { useFinanceStore } from './store';
 
 ChartJS.register(
   CategoryScale,
@@ -25,26 +28,74 @@ ChartJS.register(
   Legend
 );
 
-export default function FinancePage() {
+function FinancePageContent() {
+  const { data, loading, error, fetchFinanceData } = useFinanceStore();
+
+  // 컴포넌트 마운트 시 데이터 조회 (인증된 상태에서만)
+  useEffect(() => {
+    fetchFinanceData();
+  }, [fetchFinanceData]);
+
+  // 로딩 상태
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">재무 데이터를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 에러 상태
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg mb-2">오류가 발생했습니다</div>
+          <p className="text-slate-600 mb-4">{error}</p>
+          <button 
+            onClick={fetchFinanceData}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 데이터가 없을 때
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-600">데이터가 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
   // 상단 차트 데이터 (자본, 부채, 자산)
   const topChartData = {
-    labels: ['15년', '16년', '17년', '18년', '19년', '20년', '21년', '22년', '23년', '24년', '25년5월'],
+    labels: data.topChart.labels,
     datasets: [
       {
         label: '자본',
-        data: [320, 340, 380, 160, 180, 400, 500, 450, 400, 850, 800],
+        data: data.topChart.capital,
         backgroundColor: 'rgb(59, 130, 246)',
         borderRadius: 4,
       },
       {
         label: '부채',
-        data: [1250, 1219, 1249, 1200, 1150, 1300, 1400, 1350, 1250, 1219, 1249],
+        data: data.topChart.debt,
         backgroundColor: 'rgb(239, 68, 68)',
         borderRadius: 4,
       },
       {
         label: '자산',
-        data: [2800, 2768, 2813, 2700, 2600, 2900, 3000, 2850, 2700, 2768, 2813],
+        data: data.topChart.assets,
         backgroundColor: 'rgb(34, 197, 94)',
         borderRadius: 4,
       }
@@ -53,17 +104,17 @@ export default function FinancePage() {
 
   // 우측 상단 차트 데이터 (단기차입금, 장기차입금)
   const rightTopChartData = {
-    labels: ['24년', '25년5월'],
+    labels: data.rightTopChart.labels,
     datasets: [
       {
         label: '단기차입금',
-        data: [844, 800],
+        data: data.rightTopChart.shortTermLoan,
         backgroundColor: 'rgb(59, 130, 246)',
         borderRadius: 4,
       },
       {
         label: '장기차입금',
-        data: [17, 17],
+        data: data.rightTopChart.longTermLoan,
         backgroundColor: 'rgb(99, 102, 241)',
         borderRadius: 4,
       }
@@ -72,18 +123,18 @@ export default function FinancePage() {
 
   // 하단 차트 데이터 (총 차입금과 부채비율)
   const bottomChartData = {
-    labels: ['15년', '16년', '17년', '18년', '19년', '20년', '21년', '22년', '23년', '24년', '25년5월'],
+    labels: data.bottomChart.labels,
     datasets: [
       {
         label: '총 차입금',
-        data: [320, 340, 380, 160, 180, 400, 500, 450, 400, 850, 800],
+        data: data.bottomChart.totalLoan,
         backgroundColor: 'rgb(59, 130, 246)',
         borderRadius: 4,
         yAxisID: 'y',
       },
       {
         label: '부채비율',
-        data: [211, 194, 195, 86, 88, 154, 169, 111, 66, 80, 79],
+        data: data.bottomChart.debtRatio,
         borderColor: 'rgb(245, 158, 11)',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
         borderWidth: 2,
@@ -320,5 +371,13 @@ export default function FinancePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function FinancePage() {
+  return (
+    <AuthGuard>
+      <FinancePageContent />
+    </AuthGuard>
   );
 } 

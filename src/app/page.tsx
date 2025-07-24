@@ -37,18 +37,18 @@ export default function HomePage() {
   }, [router]);
 
   const menuItems = [
-    { name: '전사실적', path: '/a01-company-performance', icon: BarChart3, color: 'bg-blue-500' },
-    { name: '인원현황', path: '/a02-personnel', icon: Users, color: 'bg-green-500' },
-    { name: '본사실적', path: '/a03-hq-performance', icon: Building2, color: 'bg-purple-500' },
-    { name: '재무현황', path: '/a04-finance', icon: LineChart, color: 'bg-orange-500' },
-    { name: '부문별실적', path: '/a05-division', icon: PieChart, color: 'bg-pink-500' },
-    { name: '상위거래처', path: '/a06-top-clients', icon: TrendingUp, color: 'bg-indigo-500' },
-    { name: '항공실적', path: '/a07-air', icon: Plane, color: 'bg-cyan-500' },
-    { name: '해상실적', path: '/a08-sea', icon: Ship, color: 'bg-teal-500' },
-    { name: '창고실적', path: '/a09-warehouse', icon: Warehouse, color: 'bg-amber-500' },
-    { name: '도급실적', path: '/a10-outsourcing', icon: HardHat, color: 'bg-red-500' },
-    { name: '국내자회사', path: '/a11-domestic-subsidiaries', icon: Building, color: 'bg-emerald-500' },
-    { name: '해외자회사', path: '/a12-overseas-subsidiaries', icon: Globe, color: 'bg-violet-500' },
+    { name: '전사실적', path: '/menu/company-performance', icon: BarChart3, color: 'bg-blue-500' },
+    { name: '인원현황', path: '/menu/personnel', icon: Users, color: 'bg-green-500' },
+    { name: '본사실적', path: '/menu/hq-performance', icon: Building2, color: 'bg-purple-500' },
+    { name: '재무현황', path: '/menu/finance', icon: LineChart, color: 'bg-orange-500' },
+    { name: '부문별실적', path: '/menu/division', icon: PieChart, color: 'bg-pink-500' },
+    { name: '상위거래처', path: '/menu/top-clients', icon: TrendingUp, color: 'bg-indigo-500' },
+    { name: '항공실적', path: '/menu/air', icon: Plane, color: 'bg-cyan-500' },
+    { name: '해상실적', path: '/menu/sea', icon: Ship, color: 'bg-teal-500' },
+    { name: '창고실적', path: '/menu/warehouse', icon: Warehouse, color: 'bg-amber-500' },
+    { name: '도급실적', path: '/menu/outsourcing', icon: HardHat, color: 'bg-red-500' },
+    { name: '국내자회사', path: '/menu/domestic-subsidiaries', icon: Building, color: 'bg-emerald-500' },
+    { name: '해외자회사', path: '/menu/overseas-subsidiaries', icon: Globe, color: 'bg-violet-500' },
   ];
 
   if (!user) {

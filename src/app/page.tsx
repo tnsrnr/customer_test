@@ -9,32 +9,45 @@ import {
   Plane, Ship, Warehouse, HardHat, Building, Globe 
 } from 'lucide-react';
 
-interface User {
-  id: string;
-  name: string;
-  jsessionId?: string;
+interface SessionData {
+  jsessionId: string;
+  csrfToken: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 }
 
 export default function HomePage() {
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<SessionData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // 로컬 스토리지에서 사용자 정보 가져오기
-    const userData = localStorage.getItem('user');
-    if (userData) {
+    const sessionData = localStorage.getItem('htns-session');
+    if (sessionData) {
       try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error('사용자 데이터 파싱 오류:', error);
-        localStorage.removeItem('user');
+        const parsedSession = JSON.parse(sessionData);
+        if (parsedSession.jsessionId && parsedSession.csrfToken) {
+          setSession(parsedSession);
+        } else {
+          router.push('/auth');
+        }
+      } catch (e) {
+        localStorage.removeItem('htns-session');
         router.push('/auth');
       }
     } else {
-      // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
       router.push('/auth');
     }
+    setIsLoading(false);
   }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('htns-session');
+    router.push('/auth');
+  };
 
   const menuItems = [
     { name: '전사실적', path: '/menu/company-performance', icon: BarChart3, color: 'bg-blue-500' },
@@ -51,7 +64,7 @@ export default function HomePage() {
     { name: '해외자회사', path: '/menu/overseas-subsidiaries', icon: Globe, color: 'bg-violet-500' },
   ];
 
-  if (!user) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -62,18 +75,54 @@ export default function HomePage() {
     );
   }
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 사용자 정보 */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            HTNS 대시보드에 오신 것을 환영합니다!
-          </h1>
-          <p className="text-gray-600">
-            안녕하세요, <span className="font-semibold text-blue-600">{user.name}</span>님! 
-            아래 메뉴에서 원하는 기능을 선택하세요.
-          </p>
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                HTNS 대시보드에 오신 것을 환영합니다!
+              </h1>
+              <p className="text-gray-600">
+                안녕하세요, <span className="font-semibold text-blue-600">{session.user.name || session.user.id}</span>님! 
+                아래 메뉴에서 원하는 기능을 선택하세요.
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            >
+              로그아웃
+            </button>
+          </div>
+          
+          {/* 세션 정보 표시 */}
+          <div className="bg-white shadow rounded-lg p-4 mb-6">
+            <h3 className="text-lg font-semibold mb-2">세션 정보</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <span className="font-medium">ID:</span> {session.user.id}
+              </div>
+              <div>
+                <span className="font-medium">이름:</span> {session.user.name}
+              </div>
+              <div>
+                <span className="font-medium">이메일:</span> {session.user.email}
+              </div>
+              <div>
+                <span className="font-medium">JSESSIONID:</span> {session.jsessionId.substring(0, 20)}...
+              </div>
+              <div>
+                <span className="font-medium">CSRF 토큰:</span> {session.csrfToken.substring(0, 20)}...
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* 메뉴 그리드 */}

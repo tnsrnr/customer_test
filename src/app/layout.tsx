@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { AGGridProvider } from "@/components/ag-grid-provider";
-import { Header } from "@/components/header";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "HTNS Dashboard",
-  description: "HTNS Business Intelligence Dashboard",
+  title: 'HTNS 경영정보시스템',
+  description: 'HTNS 경영정보시스템',
 };
 
 export default function RootLayout({
@@ -19,10 +17,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <AGGridProvider>
-          <Header />
-          {children}
-        </AGGridProvider>
+        {children}
       </body>
     </html>
   );

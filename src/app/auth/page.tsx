@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/card';
 import { Lock, User } from 'lucide-react';
-import { loginAPI } from './auth-client';
 
 export default function AuthPage() {
   const [username, setUsername] = useState('');
@@ -14,11 +13,18 @@ export default function AuthPage() {
 
   const router = useRouter();
 
+  // 세션 체크
   useEffect(() => {
-    // 이미 로그인된 사용자 체크
-    const user = localStorage.getItem('user');
-    if (user) {
-      router.push('/');
+    const session = localStorage.getItem('htns-session');
+    if (session) {
+      try {
+        const sessionData = JSON.parse(session);
+        if (sessionData.jsessionId && sessionData.csrfToken) {
+          router.push('/');
+        }
+      } catch (e) {
+        localStorage.removeItem('htns-session');
+      }
     }
   }, [router]);
 
@@ -28,24 +34,37 @@ export default function AuthPage() {
     setIsLoading(true);
 
     try {
-      const result = await loginAPI(username, password);
+      console.log('🔍 Spring 서버 로그인 시도:', { username });
       
-      if (result.success) {
-        // 로그인 성공 시 사용자 정보 저장
-        if (result.user) {
-          localStorage.setItem('user', JSON.stringify(result.user));
-        }
+      const response = await fetch('/auth/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+      console.log('🔍 로그인 응답:', data);
+
+      if (data.success) {
+        // 세션 정보 저장
+        localStorage.setItem('htns-session', JSON.stringify({
+          jsessionId: data.user.jsessionId,
+          csrfToken: data.user.csrfToken,
+          user: data.user
+        }));
         
-        // 메인 페이지로 이동
+        // 로그인 성공 시 메인 페이지로 이동
         setTimeout(() => {
           router.push('/');
         }, 1000);
       } else {
-        setError(result.message || '로그인에 실패했습니다.');
+        setError(data.message || '로그인에 실패했습니다.');
       }
     } catch (error) {
       console.error('로그인 오류:', error);
-      setError(error instanceof Error ? error.message : '로그인에 실패했습니다.');
+      setError('로그인 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +73,7 @@ export default function AuthPage() {
   const handleClearSession = () => {
     setUsername('');
     setPassword('');
-    localStorage.removeItem('user');
+    localStorage.removeItem('htns-session');
   };
 
   return (

@@ -3,10 +3,11 @@
 import { useEffect, useRef } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
-import { cn } from '@/lib/utils';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+import { cn } from "@/utils";
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface DataTableProps {

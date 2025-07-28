@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Card } from "@/components/card";
+import { AuthGuard } from "@/components/auth-guard";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,7 +31,7 @@ ChartJS.register(
 function FinancePageContent() {
   const { data, loading, error, fetchFinanceData } = useFinanceStore();
 
-  // 컴포넌트 마운트 시 데이터 조회 (인증된 상태에서만)
+  // 컴포넌트 마운트 시 데이터 조회
   useEffect(() => {
     fetchFinanceData();
   }, [fetchFinanceData]);
@@ -221,7 +221,7 @@ function FinancePageContent() {
             </div>
           </Card>
         </div>
-
+        
         {/* 상단 우측 - 단기/장기 차입금 차트 */}
         <div className="col-span-5">
           <Card className="p-3">
@@ -375,23 +375,9 @@ function FinancePageContent() {
 }
 
 export default function FinancePage() {
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      router.push('/auth');
-      return;
-    }
-    setIsAuthenticated(true);
-  }, [router]);
-
-  if (!isAuthenticated) {
-    return null; // 인증되지 않은 경우 아무것도 렌더링하지 않음
-  }
-
   return (
-    <FinancePageContent />
+    <AuthGuard>
+      <FinancePageContent />
+    </AuthGuard>
   );
 } 

@@ -16,6 +16,9 @@ interface SessionData {
     id: string;
     name: string;
     email: string;
+    empID?: string;
+    hMenu?: string;
+    roles?: string[];
   };
 }
 
@@ -64,7 +67,7 @@ export default function HomePage() {
     { name: '해외자회사', path: '/menu/overseas-subsidiaries', icon: Globe, color: 'bg-violet-500' },
   ];
 
-  if (isLoading) {
+  if (isLoading || !session) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -75,10 +78,6 @@ export default function HomePage() {
     );
   }
 
-  if (!session) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,11 +86,11 @@ export default function HomePage() {
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                HTNS 대시보드에 오신 것을 환영합니다!
+                전체 물동량 현황
               </h1>
               <p className="text-gray-600">
                 안녕하세요, <span className="font-semibold text-blue-600">{session.user.name || session.user.id}</span>님! 
-                아래 메뉴에서 원하는 기능을 선택하세요.
+                HTNS 물동량 현황을 확인하세요.
               </p>
             </div>
             <button
@@ -102,9 +101,9 @@ export default function HomePage() {
             </button>
           </div>
           
-          {/* 세션 정보 표시 */}
-          <div className="bg-white shadow rounded-lg p-4 mb-6">
-            <h3 className="text-lg font-semibold mb-2">세션 정보</h3>
+          {/* 세션 정보 */}
+          <div className="mb-8 p-4 bg-blue-50 rounded-md border border-blue-200">
+            <h2 className="text-lg font-semibold text-blue-700 mb-2">세션 정보</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="font-medium">ID:</span> {session.user.id}
@@ -121,88 +120,38 @@ export default function HomePage() {
               <div>
                 <span className="font-medium">CSRF 토큰:</span> {session.csrfToken.substring(0, 20)}...
               </div>
+              {session.user.empID && (
+                <div>
+                  <span className="font-medium">사원번호:</span> {session.user.empID}
+                </div>
+              )}
+              {session.user.hMenu && (
+                <div>
+                  <span className="font-medium">메뉴:</span> {session.user.hMenu}
+                </div>
+              )}
+              {session.user.roles && session.user.roles.length > 0 && (
+                <div>
+                  <span className="font-medium">권한:</span> {session.user.roles.join(', ')}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* 메뉴 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {menuItems.map((item) => (
-            <Link key={item.path} href={item.path}>
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
-                <div className="flex items-center space-x-4">
-                  <div className={`p-3 rounded-lg ${item.color} text-white group-hover:scale-110 transition-transform`}>
-                    <item.icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {item.name} 데이터를 확인하세요
-                    </p>
-                  </div>
+          {menuItems.map((item, index) => (
+            <Link key={index} href={item.path} passHref>
+              <Card className="flex flex-col items-center justify-center p-6 text-center hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+                <div className={`w-12 h-12 rounded-full ${item.color} flex items-center justify-center mb-4`}>
+                  <item.icon className="w-6 h-6 text-white" />
                 </div>
+                <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
+                <p className="text-gray-600 mt-2">상세 정보 보기</p>
               </Card>
             </Link>
           ))}
-        </div>
-
-        {/* 추가 메뉴 */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Link href="/a15-domestic">
-            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-lg bg-slate-500 text-white group-hover:scale-110 transition-transform">
-                  <Building className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    회사
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    회사 정보를 확인하세요
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-
-          <Link href="/a18-test3">
-            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-lg bg-lime-500 text-white group-hover:scale-110 transition-transform">
-                  <BarChart3 className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    사업부
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    사업부 정보를 확인하세요
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-
-          <Link href="/a20-test5">
-            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-lg bg-rose-500 text-white group-hover:scale-110 transition-transform">
-                  <Globe className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    해외권역1
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    해외권역1 정보를 확인하세요
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </Link>
         </div>
       </div>
     </div>

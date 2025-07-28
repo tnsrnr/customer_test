@@ -1,6 +1,16 @@
 import { create } from 'zustand';
 import { CompanyPerformanceData } from './types';
-import { getCompanyPerformance } from './api';
+
+// 임시 목 데이터
+const getMockCompanyPerformanceData = (): CompanyPerformanceData => {
+  return {
+    metrics: {
+      revenue: 1350,
+      profit: 280,
+      growth: 15.2
+    }
+  };
+};
 
 interface CompanyPerformanceStore {
   data: CompanyPerformanceData | null;
@@ -22,8 +32,9 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set) 
   fetchData: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await getCompanyPerformance();
-      set({ data: response.data, loading: false });
+      // 임시로 목 데이터 사용
+      const data = getMockCompanyPerformanceData();
+      set({ data, loading: false });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '데이터 조회에 실패했습니다.';
       set({ error: errorMessage, loading: false });

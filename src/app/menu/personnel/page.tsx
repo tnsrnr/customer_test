@@ -1,9 +1,10 @@
 'use client';
 
 import { Card } from "@/components/card";
+import { AuthGuard } from "@/components/auth-guard";
 import { Users, TrendingUp, Building2, Factory, Globe2 } from "lucide-react";
 
-export default function PersonnelPage() {
+function PersonnelPageContent() {
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-5 space-y-3">
       {/* 통합된 상단 카드 섹션 */}
@@ -299,5 +300,13 @@ export default function PersonnelPage() {
         </div>
       </Card>
     </div>
+  );
+}
+
+export default function PersonnelPage() {
+  return (
+    <AuthGuard>
+      <PersonnelPageContent />
+    </AuthGuard>
   );
 } 

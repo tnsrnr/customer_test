@@ -2,64 +2,51 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { logoutAPI } from '@/app/auth/auth-client';
+import { usePathname, useRouter } from "next/navigation";
 import { menuItems } from '@/app/menu/menu-config';
-
-// Temporary cn function implementation
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
+import { cn } from "@/utils";
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
 
   // 로그인 페이지에서는 헤더를 숨김
   if (pathname === '/auth') {
     return null;
   }
 
-  const handleLogout = async () => {
-    try {
-      const result = await logoutAPI();
-      if (result.success) {
-        // localStorage에서 사용자 정보 제거
-        localStorage.removeItem('user');
-        // 로그인 페이지로 리다이렉트
-        window.location.href = '/auth';
-      }
-    } catch (error) {
-      console.error('로그아웃 실패:', error);
-      // 에러가 발생해도 로컬에서 로그아웃 처리
-      localStorage.removeItem('user');
-      window.location.href = '/auth';
-    }
+  const handleLogout = () => {
+    // localStorage에서 세션 정보 제거
+    localStorage.removeItem('htns-session');
+    // 로그인 페이지로 리다이렉트
+    router.push('/auth');
   };
 
-  // menuItems는 이미 import된 menu-config에서 가져옴
-
   return (
-    <header className="bg-white border-b">
-      <div className="flex justify-between items-center px-4 py-2">
-        <div className="flex items-center space-x-8">
+    <header className="bg-white border-b shadow-sm">
+      <div className="flex justify-between items-center px-4 py-3">
+        <div className="flex items-center space-x-6">
+          {/* HTNS 로고 */}
           <Link href="/menu/performance">
             <div className="flex items-center space-x-2">
               <Image 
                 src="/images/htns-logo.png" 
                 alt="HTNS Logo" 
-                width={100} 
-                height={30} 
+                width={120} 
+                height={40} 
                 className="object-contain"
               />
             </div>
           </Link>
-          <nav className="flex space-x-1 overflow-x-auto pb-2">
-            {menuItems.map((menu) => (
+          
+          {/* 메뉴 네비게이션 */}
+          <nav className="flex space-x-0 overflow-x-auto pb-2">
+            {menuItems.slice(1).map((menu) => ( // 첫 번째(홈) 제외하고 표시
               <Link
                 key={menu.name}
                 href={menu.path}
                 className={cn(
-                  "flex items-center space-x-1 px-2 py-2 rounded-md transition-all duration-200 ease-in-out whitespace-nowrap text-sm",
+                  "flex items-center space-x-1 px-2 py-2 rounded-md transition-all duration-200 ease-in-out whitespace-nowrap text-sm font-medium",
                   pathname === menu.path
                     ? "bg-blue-500 text-white shadow-md"
                     : "text-gray-600 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm border border-transparent hover:border-blue-200"
@@ -71,10 +58,12 @@ export function Header() {
             ))}
           </nav>
         </div>
+        
+        {/* 로그아웃 버튼 */}
         <div className="flex items-center space-x-4">
           <button
             onClick={handleLogout}
-            className="text-sm text-gray-600 hover:text-red-600 hover:underline"
+            className="text-sm text-gray-600 hover:text-red-600 hover:underline px-3 py-2 rounded-md hover:bg-red-50 transition-colors"
           >
             로그아웃
           </button>

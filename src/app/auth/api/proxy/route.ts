@@ -56,11 +56,13 @@ async function handleProxyRequest(req: NextRequest, method: string) {
     
     // AJAX 헤더 추가 (Spring 서버가 요구하는 경우)
     headers.set('ajax', 'true');
+    headers.set('X-Requested-With', 'XMLHttpRequest');
 
     // 요청 본문 처리
     let body: string | undefined;
     if (method !== 'GET') {
       body = await req.text();
+      console.log('🔍 요청 본문:', body);
     }
 
     // Spring 서버로 요청
@@ -71,8 +73,12 @@ async function handleProxyRequest(req: NextRequest, method: string) {
       redirect: 'manual'
     });
 
+    console.log('🔍 Spring 서버 응답 상태:', response.status, response.statusText);
+
     // 응답 처리
     const responseText = await response.text();
+    console.log('🔍 Spring 서버 응답:', responseText);
+    
     let responseData;
 
     try {

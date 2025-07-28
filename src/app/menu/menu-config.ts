@@ -115,19 +115,19 @@ export const menuItems: MenuItem[] = [
     description: '사업부 정보'
   },
   { 
-    name: '테스트4', 
+    name: '테4', 
     path: '/menu/test4',
-    description: '테스트 4'
+    description: '테 4'
   },
   { 
-    name: '테스트5', 
+    name: '테5', 
     path: '/menu/test5',
-    description: '테스트 5'
+    description: '테 5'
   },
   { 
-    name: '테스트6', 
+    name: '테6', 
     path: '/menu/test6',
-    description: '테스트 6'
+    description: '테 6'
   }
 ];
 

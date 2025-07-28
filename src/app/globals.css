@@ -98,31 +98,39 @@
 
 /* AG Grid 시각적 구분 및 헤더 가독성 향상 */
 .ag-header-group-cell {
-  background: #e0e7ff !important; /* 연보라 */
-  border-bottom: 2px solid #6366f1 !important;
+  background-color: #f8fafc !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
 }
-.ag-header-cell {
-  background: #f1f5f9 !important; /* 연회색 */
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-  border-bottom: 1.5px solid #6366f1 !important;
-}
-.ag-header-cell-label, .ag-header-group-cell-label {
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-}
-.ag-row:hover .ag-cell {
-  background: #f3f4f6 !important;
-}
-.ag-row .ag-cell {
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-} 
 
-/* AG Grid 열(컬럼)마다 세로 구분선 추가 */
-.ag-cell, .ag-header-cell, .ag-header-group-cell {
-  border-right: 1px solid #e5e7eb !important; /* Tailwind gray-200 */
+.ag-header-cell {
+  background-color: #f1f5f9 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
 }
+
+.ag-header-cell-label, .ag-header-group-cell-label {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* AG Grid 행 호버 효과 */
+.ag-row:hover .ag-cell {
+  background-color: #f8fafc !important;
+}
+
+.ag-row .ag-cell {
+  border-bottom: 1px solid #f1f5f9 !important;
+  padding: 8px 12px !important;
+}
+
+/* AG Grid 셀 테두리 제거 */
+.ag-cell, .ag-header-cell, .ag-header-group-cell {
+  border-right: none !important;
+}
+
 .ag-cell:last-child, .ag-header-cell:last-child, .ag-header-group-cell:last-child {
   border-right: none !important;
 } 

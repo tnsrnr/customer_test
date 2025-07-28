@@ -5,10 +5,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { menuItems } from '@/app/menu/menu-config';
 import { cn } from "@/utils";
+import { RefreshCw } from 'lucide-react';
+import { useGlobalStore } from '@/store/global';
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { isRefreshing, triggerGlobalRefresh } = useGlobalStore();
 
   // 로그인 페이지에서는 헤더를 숨김
   if (pathname === '/auth') {
@@ -20,6 +23,10 @@ export function Header() {
     localStorage.removeItem('htns-session');
     // 로그인 페이지로 리다이렉트
     router.push('/auth');
+  };
+
+  const handleGlobalRefresh = () => {
+    triggerGlobalRefresh();
   };
 
   return (
@@ -59,8 +66,20 @@ export function Header() {
           </nav>
         </div>
         
-        {/* 로그아웃 버튼 */}
-        <div className="flex items-center space-x-4">
+        {/* 우측 버튼들 */}
+        <div className="flex items-center space-x-3">
+          {/* 전역 조회 버튼 */}
+          <button
+            onClick={handleGlobalRefresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-1 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="현재 페이지 데이터 새로고침"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">조회</span>
+          </button>
+          
+          {/* 로그아웃 버튼 */}
           <button
             onClick={handleLogout}
             className="text-sm text-gray-600 hover:text-red-600 hover:underline px-3 py-2 rounded-md hover:bg-red-50 transition-colors"

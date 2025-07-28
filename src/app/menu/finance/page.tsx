@@ -16,6 +16,8 @@ import {
 } from 'chart.js';
 import { Bar, Line, Chart } from 'react-chartjs-2';
 import { useFinanceStore } from './store';
+import { useGlobalStore } from '@/store/global';
+import { TrendingUp, DollarSign, BarChart3, Activity, RefreshCw } from 'lucide-react';
 
 ChartJS.register(
   CategoryScale,
@@ -30,19 +32,27 @@ ChartJS.register(
 
 function FinancePageContent() {
   const { data, loading, error, fetchFinanceData } = useFinanceStore();
+  const { isRefreshing } = useGlobalStore();
 
   // 컴포넌트 마운트 시 데이터 조회
   useEffect(() => {
     fetchFinanceData();
   }, [fetchFinanceData]);
 
+  // 전역 조회 이벤트 감지
+  useEffect(() => {
+    if (isRefreshing) {
+      fetchFinanceData();
+    }
+  }, [isRefreshing, fetchFinanceData]);
+
   // 로딩 상태
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">재무 데이터를 불러오는 중...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-400 mx-auto mb-6"></div>
+          <p className="text-blue-100 text-lg font-medium">재무 데이터를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -51,17 +61,20 @@ function FinancePageContent() {
   // 에러 상태
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-lg mb-2">오류가 발생했습니다</div>
-          <p className="text-slate-600 mb-4">{error}</p>
-          <button 
-            onClick={fetchFinanceData}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            다시 시도
-          </button>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 flex items-center justify-center">
+        <Card className="w-full max-w-md p-8 shadow-2xl rounded-2xl bg-white/90 border-0">
+          <div className="text-center">
+            <div className="text-red-500 text-4xl mb-4">⚠️</div>
+            <div className="text-red-600 text-xl font-bold mb-2">오류가 발생했습니다</div>
+            <p className="text-slate-600 mb-6">{error}</p>
+            <button 
+              onClick={fetchFinanceData}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-sky-600 transition-all duration-200"
+            >
+              다시 시도
+            </button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -69,10 +82,13 @@ function FinancePageContent() {
   // 데이터가 없을 때
   if (!data) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-slate-600">데이터가 없습니다.</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 flex items-center justify-center">
+        <Card className="w-full max-w-md p-8 shadow-2xl rounded-2xl bg-white/90 border-0">
+          <div className="text-center">
+            <div className="text-slate-400 text-4xl mb-4">📊</div>
+            <p className="text-slate-600 text-lg">데이터가 없습니다.</p>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -84,20 +100,29 @@ function FinancePageContent() {
       {
         label: '자본',
         data: data.topChart.capital,
-        backgroundColor: 'rgb(59, 130, 246)',
-        borderRadius: 4,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       },
       {
         label: '부채',
         data: data.topChart.debt,
-        backgroundColor: 'rgb(239, 68, 68)',
-        borderRadius: 4,
+        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+        borderColor: 'rgb(239, 68, 68)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       },
       {
         label: '자산',
         data: data.topChart.assets,
-        backgroundColor: 'rgb(34, 197, 94)',
-        borderRadius: 4,
+        backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgb(34, 197, 94)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       }
     ]
   };
@@ -109,14 +134,20 @@ function FinancePageContent() {
       {
         label: '단기차입금',
         data: data.rightTopChart.shortTermLoan,
-        backgroundColor: 'rgb(59, 130, 246)',
-        borderRadius: 4,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       },
       {
         label: '장기차입금',
         data: data.rightTopChart.longTermLoan,
-        backgroundColor: 'rgb(99, 102, 241)',
-        borderRadius: 4,
+        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+        borderColor: 'rgb(99, 102, 241)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       }
     ]
   };
@@ -128,8 +159,11 @@ function FinancePageContent() {
       {
         label: '총 차입금',
         data: data.bottomChart.totalLoan,
-        backgroundColor: 'rgb(59, 130, 246)',
-        borderRadius: 4,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
         yAxisID: 'y',
       },
       {
@@ -137,10 +171,12 @@ function FinancePageContent() {
         data: data.bottomChart.debtRatio,
         borderColor: 'rgb(245, 158, 11)',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
-        borderWidth: 2,
-        tension: 0.1,
-        pointRadius: 4,
+        borderWidth: 3,
+        tension: 0.4,
+        pointRadius: 6,
         pointBackgroundColor: 'rgb(245, 158, 11)',
+        pointBorderColor: 'white',
+        pointBorderWidth: 2,
         yAxisID: 'y1',
         type: 'line' as const,
       }
@@ -148,226 +184,288 @@ function FinancePageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4">
-      {/* 페이지 헤더 */}
-      <div className="mb-4">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-1 h-5 bg-slate-600 rounded"></div>
-          <h1 className="text-xl font-bold text-slate-800">HTNS 본사 재무현황 (5월)</h1>
-        </div>
-        <p className="text-sm text-slate-500">HTNS Financial Status 2025. May</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
+      {/* 배경 효과 */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-10" viewBox="0 0 400 400" fill="none">
+          <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
+        </svg>
+        <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-20" viewBox="0 0 512 512" fill="none">
+          <text
+            x="256"
+            y="320"
+            textAnchor="middle"
+            fontSize="110"
+            fontWeight="900"
+            fill="#3b82f6"
+            opacity="0.5"
+            style={{ letterSpacing: 32 }}
+          >
+            HTNS
+          </text>
+        </svg>
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        {/* 상단 좌측 - 자본/부채/자산 차트 */}
-        <div className="col-span-7">
-          <Card className="p-3">
-            <div className="bg-slate-600 text-white text-center py-2 -mx-3 -mt-3 mb-3">
-              <div className="text-sm font-medium">자본/부채/자산</div>
-            </div>
-            <div className="text-right text-xs text-slate-500 mb-2">단위: 억원</div>
-            <div className="h-48">
-              <Bar
-                data={topChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: 'top',
-                      labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        color: '#6b7280'
-                      }
-                    },
-                    tooltip: {
-                      backgroundColor: 'white',
-                      titleColor: '#1f2937',
-                      bodyColor: '#1f2937',
-                      borderColor: '#e5e7eb',
-                      borderWidth: 1,
-                      callbacks: {
-                        label: function(context) {
-                          return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}억원`;
+      <div className="relative z-10 p-6">
+        <div className="grid grid-cols-12 gap-6">
+          {/* 상단 좌측 - 자본/부채/자산 차트 */}
+          <div className="col-span-7">
+            <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-lg p-2">
+                  <BarChart3 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">자본/부채/자산</h3>
+                  <p className="text-sm text-slate-500">단위: 억원</p>
+                </div>
+              </div>
+              <div className="h-64">
+                <Bar
+                  data={topChartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                          usePointStyle: true,
+                          padding: 20,
+                          color: '#475569',
+                          font: {
+                            weight: '600'
+                          }
                         }
-                      }
-                    }
-                  },
-                  scales: {
-                    x: {
-                      grid: {
-                        display: false
                       },
-                      ticks: {
-                        color: '#6b7280'
-                      }
-                    },
-                    y: {
-                      grid: {
-                        color: '#f3f4f6'
-                      },
-                      ticks: {
-                        color: '#6b7280',
-                        callback: function(value) {
-                          return (value as number).toLocaleString();
-                        }
-                      }
-                    }
-                  }
-                }}
-              />
-            </div>
-          </Card>
-        </div>
-        
-        {/* 상단 우측 - 단기/장기 차입금 차트 */}
-        <div className="col-span-5">
-          <Card className="p-3">
-            <div className="bg-slate-600 text-white text-center py-2 -mx-3 -mt-3 mb-3">
-              <div className="text-sm font-medium">단기차입금</div>
-            </div>
-            <div className="text-right text-xs text-slate-500 mb-2">단위: 억원</div>
-            <div className="h-48">
-              <Bar
-                data={rightTopChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: 'top',
-                      labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        color: '#6b7280'
-                      }
-                    },
-                    tooltip: {
-                      backgroundColor: 'white',
-                      titleColor: '#1f2937',
-                      bodyColor: '#1f2937',
-                      borderColor: '#e5e7eb',
-                      borderWidth: 1,
-                      callbacks: {
-                        label: function(context) {
-                          return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}억원`;
-                        }
-                      }
-                    }
-                  },
-                  scales: {
-                    x: {
-                      grid: {
-                        display: false
-                      },
-                      ticks: {
-                        color: '#6b7280'
-                      }
-                    },
-                    y: {
-                      grid: {
-                        color: '#f3f4f6'
-                      },
-                      ticks: {
-                        color: '#6b7280',
-                        callback: function(value) {
-                          return (value as number).toLocaleString();
-                        }
-                      }
-                    }
-                  }
-                }}
-              />
-            </div>
-          </Card>
-        </div>
-
-        {/* 하단 - 총 차입금과 부채비율 차트 */}
-        <div className="col-span-12">
-          <Card className="p-3">
-            <div className="bg-slate-600 text-white text-center py-2 -mx-3 -mt-3 mb-3">
-              <div className="text-sm font-medium">총 차입금 / 부채비율</div>
-            </div>
-            <div className="text-right text-xs text-slate-500 mb-2">단위: 억원 / %</div>
-            <div className="h-60">
-              <Chart
-                type="bar"
-                data={bottomChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: 'top',
-                      labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        color: '#6b7280'
-                      }
-                    },
-                    tooltip: {
-                      backgroundColor: 'white',
-                      titleColor: '#1f2937',
-                      bodyColor: '#1f2937',
-                      borderColor: '#e5e7eb',
-                      borderWidth: 1,
-                      callbacks: {
-                        label: function(context) {
-                          if (context.dataset.label === '총 차입금') {
+                      tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#1e293b',
+                        borderColor: '#e2e8f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                          label: function(context) {
                             return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}억원`;
-                          } else {
-                            return `${context.dataset.label}: ${context.parsed.y}%`;
+                          }
+                        }
+                      }
+                    },
+                    scales: {
+                      x: {
+                        grid: {
+                          display: false
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          }
+                        }
+                      },
+                      y: {
+                        grid: {
+                          color: '#f1f5f9'
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          },
+                          callback: function(value) {
+                            return (value as number).toLocaleString();
                           }
                         }
                       }
                     }
-                  },
-                  scales: {
-                    x: {
-                      grid: {
-                        display: false
+                  }}
+                />
+              </div>
+            </Card>
+          </div>
+          
+          {/* 상단 우측 - 단기/장기 차입금 차트 */}
+          <div className="col-span-5">
+            <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-500 rounded-lg p-2">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">차입금 현황</h3>
+                  <p className="text-sm text-slate-500">단위: 억원</p>
+                </div>
+              </div>
+              <div className="h-64">
+                <Bar
+                  data={rightTopChartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                          usePointStyle: true,
+                          padding: 20,
+                          color: '#475569',
+                          font: {
+                            weight: '600'
+                          }
+                        }
                       },
-                      ticks: {
-                        color: '#6b7280'
-                      }
-                    },
-                    y: {
-                      type: 'linear',
-                      display: true,
-                      position: 'left',
-                      grid: {
-                        color: '#f3f4f6'
-                      },
-                      ticks: {
-                        color: '#6b7280',
-                        callback: function(value) {
-                          return (value as number).toLocaleString();
+                      tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#1e293b',
+                        borderColor: '#e2e8f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                          label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}억원`;
+                          }
                         }
                       }
                     },
-                    y1: {
-                      type: 'linear',
-                      display: true,
-                      position: 'right',
-                      grid: {
-                        drawOnChartArea: false,
+                    scales: {
+                      x: {
+                        grid: {
+                          display: false
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          }
+                        }
                       },
-                      ticks: {
-                        color: '#6b7280',
-                        callback: function(value) {
-                          return `${value}%`;
+                      y: {
+                        grid: {
+                          color: '#f1f5f9'
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          },
+                          callback: function(value) {
+                            return (value as number).toLocaleString();
+                          }
                         }
                       }
                     }
-                  }
-                }}
-              />
-            </div>
-          </Card>
+                  }}
+                />
+              </div>
+            </Card>
+          </div>
+
+          {/* 하단 - 총 차입금과 부채비율 차트 */}
+          <div className="col-span-12">
+            <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-gradient-to-r from-amber-600 to-orange-500 rounded-lg p-2">
+                  <Activity className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">총 차입금 / 부채비율</h3>
+                  <p className="text-sm text-slate-500">단위: 억원 / %</p>
+                </div>
+              </div>
+              <div className="h-80">
+                <Chart
+                  type="bar"
+                  data={bottomChartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                          usePointStyle: true,
+                          padding: 20,
+                          color: '#475569',
+                          font: {
+                            weight: '600'
+                          }
+                        }
+                      },
+                      tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#1e293b',
+                        borderColor: '#e2e8f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                          label: function(context) {
+                            if (context.dataset.label === '총 차입금') {
+                              return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}억원`;
+                            } else {
+                              return `${context.dataset.label}: ${context.parsed.y}%`;
+                            }
+                          }
+                        }
+                      }
+                    },
+                    scales: {
+                      x: {
+                        grid: {
+                          display: false
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          }
+                        }
+                      },
+                      y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: {
+                          color: '#f1f5f9'
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          },
+                          callback: function(value) {
+                            return (value as number).toLocaleString();
+                          }
+                        }
+                      },
+                      y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                          drawOnChartArea: false,
+                        },
+                        ticks: {
+                          color: '#64748b',
+                          font: {
+                            weight: '500'
+                          },
+                          callback: function(value) {
+                            return `${value}%`;
+                          }
+                        }
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { Card } from "@/components/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Building2, TrendingUp, Package, DollarSign, BarChart2, ArrowUpRight, Plane, Ship, Truck, Train, ArrowDownRight, Minus, Trophy, LineChart } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AuthGuard } from "@/components/auth-guard";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -51,10 +52,10 @@ function TabButton({ active, onClick, icon, label }: TabButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+      className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${
         active 
-          ? 'bg-blue-100 text-blue-700 font-medium' 
-          : 'text-slate-600 hover:bg-slate-100'
+          ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20' 
+          : 'text-blue-200 hover:bg-white/10 hover:text-white hover:shadow-md backdrop-blur-sm'
       }`}
     >
       {icon}
@@ -228,607 +229,365 @@ export default function TopClientsPage() {
     },
     '철도': {
       title: '철도 상위거래처',
-      icon: <Train className="w-12 h-12 text-rose-600" />,
-      color: 'rose',
+      icon: <Train className="w-12 h-12 text-red-600" />,
+      color: 'red',
       data: [
-        { name: "코레일", sales: 420, profit: 63, volume: 1800, profitRatio: 15.0, trend: "증가", mainItems: "컨테이너", comparison: { prevMonth: { sales: 415, profit: 62, volume: 1790, profitRatio: 14.9 }, prevYear: { sales: 410, profit: 61, volume: 1780, profitRatio: 14.8 } }, monthlyData: { sales: [415, 62, 1790, 14.9], profit: [62, 14.9], profitRatio: [14.9] } },
-        { name: "현대글로비스", sales: 380, profit: 57, volume: 1600, profitRatio: 15.0, trend: "유지", mainItems: "자동차", comparison: { prevMonth: { sales: 375, profit: 56, volume: 1590, profitRatio: 14.9 }, prevYear: { sales: 370, profit: 55, volume: 1580, profitRatio: 14.8 } }, monthlyData: { sales: [375, 56, 1590, 14.9], profit: [56, 14.9], profitRatio: [14.9] } },
-        { name: "CJ대한통운", sales: 350, profit: 52, volume: 1500, profitRatio: 14.9, trend: "증가", mainItems: "복합운송", comparison: { prevMonth: { sales: 345, profit: 51, volume: 1490, profitRatio: 14.8 }, prevYear: { sales: 340, profit: 50, volume: 1480, profitRatio: 14.7 } }, monthlyData: { sales: [345, 51, 1490, 14.8], profit: [51, 14.8], profitRatio: [14.8] } },
-        { name: "한진", sales: 320, profit: 48, volume: 1400, profitRatio: 15.0, trend: "유지", mainItems: "컨테이너", comparison: { prevMonth: { sales: 315, profit: 47, volume: 1390, profitRatio: 14.9 }, prevYear: { sales: 310, profit: 46, volume: 1380, profitRatio: 14.8 } }, monthlyData: { sales: [315, 47, 1390, 14.9], profit: [47, 14.9], profitRatio: [14.9] } },
-        { name: "롯데로지스틱스", sales: 300, profit: 45, volume: 1300, profitRatio: 15.0, trend: "감소", mainItems: "복합운송", comparison: { prevMonth: { sales: 295, profit: 44, volume: 1290, profitRatio: 14.8 }, prevYear: { sales: 290, profit: 43, volume: 1280, profitRatio: 14.7 } }, monthlyData: { sales: [295, 44, 1290, 14.8], profit: [44, 14.8], profitRatio: [14.8] } }
+        { name: "한국철도공사", sales: 320, profit: 48, volume: 1200, profitRatio: 15.0, trend: "증가", mainItems: "철도운송", comparison: { prevMonth: { sales: 315, profit: 47, volume: 1190, profitRatio: 14.9 }, prevYear: { sales: 310, profit: 46, volume: 1180, profitRatio: 14.8 } }, monthlyData: { sales: [315, 47, 1190, 14.9], profit: [47, 14.9], profitRatio: [14.9] } },
+        { name: "포스코", sales: 280, profit: 42, volume: 1000, profitRatio: 15.0, trend: "유지", mainItems: "철강운송", comparison: { prevMonth: { sales: 275, profit: 41, volume: 990, profitRatio: 14.9 }, prevYear: { sales: 270, profit: 40, volume: 980, profitRatio: 14.8 } }, monthlyData: { sales: [275, 41, 990, 14.9], profit: [41, 14.9], profitRatio: [14.9] } },
+        { name: "현대제철", sales: 250, profit: 37, volume: 900, profitRatio: 14.8, trend: "증가", mainItems: "철강운송", comparison: { prevMonth: { sales: 245, profit: 36, volume: 890, profitRatio: 14.7 }, prevYear: { sales: 240, profit: 35, volume: 880, profitRatio: 14.6 } }, monthlyData: { sales: [245, 36, 890, 14.7], profit: [36, 14.7], profitRatio: [14.7] } },
+        { name: "동부제철", sales: 220, profit: 33, volume: 800, profitRatio: 15.0, trend: "유지", mainItems: "철강운송", comparison: { prevMonth: { sales: 215, profit: 32, volume: 790, profitRatio: 14.9 }, prevYear: { sales: 210, profit: 31, volume: 780, profitRatio: 14.8 } }, monthlyData: { sales: [215, 32, 790, 14.9], profit: [32, 14.9], profitRatio: [14.9] } },
+        { name: "세아제철", sales: 200, profit: 30, volume: 750, profitRatio: 15.0, trend: "감소", mainItems: "철강운송", comparison: { prevMonth: { sales: 195, profit: 29, volume: 740, profitRatio: 14.9 }, prevYear: { sales: 190, profit: 28, volume: 730, profitRatio: 14.8 } }, monthlyData: { sales: [195, 29, 740, 14.9], profit: [29, 14.9], profitRatio: [14.9] } }
       ]
     }
   };
 
-  // 증감률 계산 함수 추가
   function calculateGrowth(current: number, previous: number): number {
     return ((current - previous) / previous) * 100;
   }
 
-  // 증감률 표시 컴포넌트 추가
   function GrowthIndicator({ value }: { value: number }) {
-    const color = value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600';
-    const icon = value > 0 ? <ArrowUpRight className="w-4 h-4" /> : value < 0 ? <ArrowDownRight className="w-4 h-4" /> : <Minus className="w-4 h-4" />;
-    
-    return (
-      <div className={`flex items-center ${color}`}>
-        {icon}
-        <span className="ml-1">{Math.abs(value).toFixed(1)}%</span>
-      </div>
-    );
+    if (value > 0) {
+      return (
+        <div className="flex items-center text-green-600">
+          <ArrowUpRight className="w-4 h-4 mr-1" />
+          <span className="text-sm font-medium">+{value.toFixed(1)}%</span>
+        </div>
+      );
+    } else if (value < 0) {
+      return (
+        <div className="flex items-center text-red-600">
+          <ArrowDownRight className="w-4 h-4 mr-1" />
+          <span className="text-sm font-medium">{value.toFixed(1)}%</span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center text-gray-500">
+          <Minus className="w-4 h-4 mr-1" />
+          <span className="text-sm font-medium">0.0%</span>
+        </div>
+      );
+    }
   }
 
-  // 차트 옵션
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        align: 'end' as const,
-        labels: {
-          boxWidth: 12,
-          boxHeight: 12,
-          padding: 15,
-          font: {
-            size: 13,
-            weight: 500
-          },
-          usePointStyle: true,
-          pointStyle: 'circle'
-        }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        titleColor: '#1e293b',
-        titleFont: {
-          size: 14,
-          weight: 600
-        },
-        bodyColor: '#475569',
-        bodyFont: {
-          size: 13
-        },
-        borderColor: 'rgba(148, 163, 184, 0.2)',
-        borderWidth: 1,
-        padding: 12,
-        boxPadding: 6,
-        usePointStyle: true,
-        callbacks: {
-          label: function(context: any) {
-            let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += context.dataset.label === '이익률' 
-                ? context.parsed.y.toFixed(1) + '%'
-                : context.parsed.y.toLocaleString() + '억원';
-            }
-            return label;
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          font: {
-            size: 13,
-            weight: 500
-          },
-          padding: 8
-        },
-        border: {
-          display: false
-        }
-      },
-      y: {
-        position: 'left' as const,
-        grid: {
-          color: 'rgba(226, 232, 240, 0.6)',
-          drawBorder: false,
-          lineWidth: 1
-        },
-        ticks: {
-          font: {
-            size: 13
-          },
-          padding: 8,
-          callback: function(value: any) {
-            return value.toLocaleString() + '억원';
-          }
-        },
-        border: {
-          display: false
-        }
-      },
-      y1: {
-        position: 'right' as const,
-        grid: {
-          drawOnChartArea: false
-        },
-        ticks: {
-          font: {
-            size: 13
-          },
-          padding: 8,
-          callback: function(value: any) {
-            return value.toFixed(1) + '%';
-          }
-        },
-        border: {
-          display: false
-        }
-      }
-    }
-  } as const;
-
-  // 선택된 탭의 데이터로 차트 데이터 생성
-  const selectedData = transportData[selectedTab];
-  const monthlyData = {
-    labels: ['1월', '2월', '3월', '4월', '5월'],
-    datasets: [
-      {
-        type: 'bar' as const,
-        label: '매출액',
-        data: [4200, 4500, 4800, 4300, 4480],
-        backgroundColor: function(context: any) {
-          const chart = context.chart;
-          const {ctx, chartArea} = chart;
-          if (!chartArea) {
-            return null;
-          }
-          const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-          if (selectedTab === '항공수출' || selectedTab === '항공수입') {
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.7)');
-          } else if (selectedTab === '해상수출' || selectedTab === '해상수입') {
-            gradient.addColorStop(0, 'rgba(5, 150, 105, 0.2)');
-            gradient.addColorStop(1, 'rgba(5, 150, 105, 0.7)');
-          } else if (selectedTab === '운송') {
-            gradient.addColorStop(0, 'rgba(245, 158, 11, 0.2)');
-            gradient.addColorStop(1, 'rgba(245, 158, 11, 0.7)');
-          } else {
-            gradient.addColorStop(0, 'rgba(225, 29, 72, 0.2)');
-            gradient.addColorStop(1, 'rgba(225, 29, 72, 0.7)');
-          }
-          return gradient;
-        },
-        borderRadius: 4,
-        borderSkipped: false,
-        barThickness: 24,
-        yAxisID: 'y'
-      },
-      {
-        type: 'line' as const,
-        label: '이익률',
-        data: [13.5, 14.2, 14.8, 13.9, 14.1],
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        borderWidth: 2.5,
-        pointStyle: 'circle',
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        pointBackgroundColor: 'white',
-        pointBorderColor: 'rgb(239, 68, 68)',
-        pointBorderWidth: 2,
-        tension: 0.3,
-        fill: true,
-        yAxisID: 'y1'
-      }
-    ]
-  };
-
-  // 차트 데이터 생성 함수 수정
   const getChartData = (selectedClient: string | null) => {
-    const monthLabels = ['1월', '2월', '3월', '4월', '5월'];
-    
     if (!selectedClient) {
-      // 전체 데이터 (기존 로직)
       return {
-        labels: monthLabels,
-        datasets: [
-          {
-            type: 'bar' as const,
-            label: '매출액',
-            data: [4200, 4500, 4800, 4300, 4480],
-            backgroundColor: function(context: any) {
-              const chart = context.chart;
-              const {ctx, chartArea} = chart;
-              if (!chartArea) {
-                return null;
-              }
-              const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-              if (selectedTab === '항공수출' || selectedTab === '항공수입') {
-                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.7)');
-              } else if (selectedTab === '해상수출' || selectedTab === '해상수입') {
-                gradient.addColorStop(0, 'rgba(5, 150, 105, 0.2)');
-                gradient.addColorStop(1, 'rgba(5, 150, 105, 0.7)');
-              } else if (selectedTab === '운송') {
-                gradient.addColorStop(0, 'rgba(245, 158, 11, 0.2)');
-                gradient.addColorStop(1, 'rgba(245, 158, 11, 0.7)');
-              } else {
-                gradient.addColorStop(0, 'rgba(225, 29, 72, 0.2)');
-                gradient.addColorStop(1, 'rgba(225, 29, 72, 0.7)');
-              }
-              return gradient;
-            },
-            borderRadius: 4,
-            borderSkipped: false,
-            barThickness: 24,
-            yAxisID: 'y'
-          },
-          {
-            type: 'line' as const,
-            label: '이익률',
-            data: [13.5, 14.2, 14.8, 13.9, 14.1],
-            borderColor: 'rgb(239, 68, 68)',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            borderWidth: 2.5,
-            pointStyle: 'circle',
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: 'white',
-            pointBorderColor: 'rgb(239, 68, 68)',
-            pointBorderWidth: 2,
-            tension: 0.3,
-            fill: true,
-            yAxisID: 'y1'
-          }
-        ]
+        labels: ['1월', '2월', '3월', '4월', '5월'],
+        datasets: []
       };
     }
 
-    // 선택된 거래처의 데이터
-    const clientData = transportData[selectedTab].data.find(c => c.name === selectedClient);
-    if (!clientData) {
+    const client = currentData.data.find(c => c.name === selectedClient);
+    if (!client) {
       return {
-        labels: monthLabels,
+        labels: ['1월', '2월', '3월', '4월', '5월'],
         datasets: []
       };
     }
 
     return {
-      labels: monthLabels,
+      labels: ['1월', '2월', '3월', '4월', '5월'],
       datasets: [
         {
-          type: 'bar' as const,
-          label: '매출액',
-          data: clientData.monthlyData.sales,
-          backgroundColor: function(context: any) {
-            const chart = context.chart;
-            const {ctx, chartArea} = chart;
-            if (!chartArea) {
-              return null;
-            }
-            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.7)');
-            return gradient;
-          },
-          borderRadius: 4,
-          borderSkipped: false,
-          barThickness: 24,
-          yAxisID: 'y'
+          label: '매출',
+          data: client.monthlyData.sales,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4,
+          fill: true
         },
         {
-          type: 'bar' as const,
-          label: '영업이익',
-          data: clientData.monthlyData.profit,
-          backgroundColor: function(context: any) {
-            const chart = context.chart;
-            const {ctx, chartArea} = chart;
-            if (!chartArea) {
-              return null;
-            }
-            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, 'rgba(5, 150, 105, 0.2)');
-            gradient.addColorStop(1, 'rgba(5, 150, 105, 0.7)');
-            return gradient;
-          },
-          borderRadius: 4,
-          borderSkipped: false,
-          barThickness: 24,
-          yAxisID: 'y'
-        },
-        {
-          type: 'line' as const,
-          label: '이익률',
-          data: clientData.monthlyData.profitRatio,
-          borderColor: 'rgb(239, 68, 68)',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          borderWidth: 2.5,
-          pointStyle: 'circle',
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: 'white',
-          pointBorderColor: 'rgb(239, 68, 68)',
-          pointBorderWidth: 2,
-          tension: 0.3,
-          fill: true,
-          yAxisID: 'y1'
+          label: '수익',
+          data: client.monthlyData.profit,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.4,
+          fill: true
         }
       ]
     };
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4">
-      {/* 전체 레이아웃 컨테이너 */}
-      <div className="flex flex-col gap-6">
-        {/* 탭 메뉴 */}
-        <div className="flex flex-wrap gap-2">
-          <TabButton
-            active={selectedTab === '항공수출'}
-            onClick={() => setSelectedTab('항공수출')}
-            icon={<Plane className="w-5 h-5" />}
-            label="항공수출"
-          />
-          <TabButton
-            active={selectedTab === '항공수입'}
-            onClick={() => setSelectedTab('항공수입')}
-            icon={<Plane className="w-5 h-5 rotate-180" />}
-            label="항공수입"
-          />
-          <TabButton
-            active={selectedTab === '해상수출'}
-            onClick={() => setSelectedTab('해상수출')}
-            icon={<Ship className="w-5 h-5" />}
-            label="해상수출"
-          />
-          <TabButton
-            active={selectedTab === '해상수입'}
-            onClick={() => setSelectedTab('해상수입')}
-            icon={<Ship className="w-5 h-5 rotate-180" />}
-            label="해상수입"
-          />
-          <TabButton
-            active={selectedTab === '운송'}
-            onClick={() => setSelectedTab('운송')}
-            icon={<Truck className="w-5 h-5" />}
-            label="운송"
-          />
-          <TabButton
-            active={selectedTab === '철도'}
-            onClick={() => setSelectedTab('철도')}
-            icon={<Train className="w-5 h-5" />}
-            label="철도"
-          />
+  const currentData = transportData[selectedTab];
+
+  function TopClientsPageContent() {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
+        {/* 배경 효과 */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-10" viewBox="0 0 400 400" fill="none">
+            <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
+          </svg>
+          <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-20" viewBox="0 0 512 512" fill="none">
+            <text
+              x="256"
+              y="320"
+              textAnchor="middle"
+              fontSize="110"
+              fontWeight="900"
+              fill="#3b82f6"
+              opacity="0.5"
+              style={{ letterSpacing: 32 }}
+            >
+              HTNS
+            </text>
+          </svg>
         </div>
 
-        {/* 상단 컴포넌트들 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* 거래처 목록 */}
-          <div className="lg:col-span-5">
-            <motion.div 
-              initial={{ scale: 0.98, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-            >
-              <Card className="p-4 h-[514px] flex flex-col bg-gradient-to-br from-slate-50 to-white overflow-hidden">
-                <h3 className="text-base font-bold text-slate-800 mb-2 flex items-center shrink-0">
-                  <Trophy className="w-4 h-4 text-amber-500 mr-2" />
-                  {selectedTab} TOP 5 거래처
-                </h3>
-                <div className="flex-1 min-h-0 flex flex-col justify-between overflow-y-auto">
-                  {transportData[selectedTab].data.map((client, index) => (
-                    <div 
-                      key={index}
-                      className={`p-2.5 rounded-xl transition-all cursor-pointer border shrink-0 ${
-                        selectedClient === client.name 
-                          ? 'bg-blue-50/80 border-blue-200 shadow-sm' 
-                          : 'bg-white/50 border-slate-100 hover:bg-blue-50/30 hover:border-blue-100'
-                      }`}
-                      onClick={() => setSelectedClient(client.name)}
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0
-                            ${index === 0 ? 'bg-amber-100 text-amber-700' :
-                              index === 1 ? 'bg-slate-100 text-slate-700' :
-                              index === 2 ? 'bg-orange-100/70 text-orange-700' :
-                              'bg-slate-50 text-slate-600'}`}
-                          >
-                            {index + 1}
-                          </div>
-                          <span className="text-sm font-semibold text-slate-700 truncate">{client.name}</span>
-                        </div>
-                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 ml-2">{client.mainItems}</span>
-                      </div>
-                      <div className="relative w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1.5 shrink-0">
-                        <div 
-                          className={`absolute top-0 left-0 h-full rounded-full transition-all
-                            ${selectedClient === client.name ? 'bg-blue-500' : 'bg-blue-400'}`}
-                          style={{ 
-                            width: `${(client.sales / transportData[selectedTab].data[0].sales) * 100}%`
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-baseline gap-1 shrink-0">
-                          <span className="text-sm font-bold text-slate-800">
-                            {client.sales.toLocaleString()}
-                          </span>
-                          <span className="text-xs text-slate-500">억원</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <div className="flex items-center bg-slate-50 rounded-full px-1.5 py-0.5">
-                            <span className="text-xs font-medium text-slate-600 mr-0.5">MoM</span>
-                            <GrowthIndicator 
-                              value={calculateGrowth(client.sales, client.comparison.prevMonth.sales)} 
-                            />
-                          </div>
-                          <div className="flex items-center bg-slate-50 rounded-full px-1.5 py-0.5">
-                            <span className="text-xs font-medium text-slate-600 mr-0.5">YoY</span>
-                            <GrowthIndicator 
-                              value={calculateGrowth(client.sales, client.comparison.prevYear.sales)} 
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </motion.div>
+        <div className="relative z-10 p-6">
+
+
+          {/* 탭 네비게이션 */}
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2 bg-white/10 backdrop-blur-sm rounded-2xl p-2">
+              {Object.entries(transportData).map(([key, value]) => (
+                <TabButton
+                  key={key}
+                  active={selectedTab === key}
+                  onClick={() => setSelectedTab(key as TransportType)}
+                  icon={value.icon}
+                  label={key}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* 실적 추이 차트 */}
-          <div className="lg:col-span-7">
-            <motion.div 
-              initial={{ scale: 0.98, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.5 }}
-            >
-              <Card className="p-4 h-[514px] flex flex-col bg-gradient-to-br from-slate-50 to-white overflow-hidden">
-                <div className="flex items-center justify-between mb-3 shrink-0">
-                  <h3 className="text-base font-bold text-slate-800 flex items-center">
-                    <LineChart className="w-4 h-4 text-blue-500 mr-2 shrink-0" />
-                    <span className="truncate">{selectedClient ? `${selectedClient} 월별 실적 추이` : `${selectedTab} 전체 실적 추이`}</span>
-                  </h3>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">단위: 억원</span>
-                    {selectedClient && (
-                      <button
-                        onClick={() => setSelectedClient('')}
-                        className="text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-full transition-colors whitespace-nowrap"
-                      >
-                        전체보기
-                      </button>
-                    )}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* 메인 테이블 */}
+            <div className="lg:col-span-2">
+              <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-lg p-2">
+                    <BarChart2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-800">{currentData.title}</h3>
+                    <p className="text-sm text-slate-500">매출 및 수익 현황</p>
                   </div>
                 </div>
-                <div className="flex-1 min-h-0">
-                  {showCharts && (
-                    <Chart type="bar" data={getChartData(selectedClient)} options={chartOptions} />
-                  )}
+                
+                <div className="overflow-x-auto flex-1">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-slate-50">
+                        <TableHead className="text-slate-700 font-semibold text-lg">거래처</TableHead>
+                        <TableHead className="text-slate-700 font-semibold text-right text-lg">매출 (억원)</TableHead>
+                        <TableHead className="text-slate-700 font-semibold text-right text-lg">수익 (억원)</TableHead>
+                        <TableHead className="text-slate-700 font-semibold text-right text-lg">물량 (톤)</TableHead>
+                        <TableHead className="text-slate-700 font-semibold text-right text-lg">수익률 (%)</TableHead>
+                        <TableHead className="text-slate-700 font-semibold text-center text-lg">트렌드</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentData.data.map((client, index) => (
+                        <TableRow 
+                          key={client.name}
+                          className={`hover:bg-slate-50 cursor-pointer transition-colors ${
+                            selectedClient === client.name ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                          }`}
+                          onClick={() => setSelectedClient(client.name)}
+                        >
+                          <TableCell className="font-medium text-slate-800 py-4">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xl font-bold text-slate-400">#{index + 1}</span>
+                              <span className="text-lg">{client.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right py-4">
+                            <CountUpAnimation 
+                              end={client.sales} 
+                              suffix="억원"
+                              className="font-bold text-slate-800 text-lg"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right py-4">
+                            <CountUpAnimation 
+                              end={client.profit} 
+                              suffix="억원"
+                              className="font-bold text-green-600 text-lg"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right py-4">
+                            <CountUpAnimation 
+                              end={client.volume} 
+                              suffix="톤"
+                              className="font-medium text-slate-600 text-lg"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right py-4">
+                            <span className="font-bold text-blue-600 text-lg">{client.profitRatio}%</span>
+                          </TableCell>
+                          <TableCell className="text-center py-4">
+                            <GrowthIndicator 
+                              value={calculateGrowth(
+                                client.sales, 
+                                client.comparison.prevMonth.sales
+                              )} 
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </Card>
-            </motion.div>
+            </div>
+
+            {/* 상세 정보 */}
+            <div className="lg:col-span-1">
+              <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-gradient-to-r from-emerald-600 to-teal-500 rounded-lg p-2">
+                    <LineChart className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-800">상세 정보</h3>
+                    <p className="text-sm text-slate-500">선택된 거래처 정보</p>
+                  </div>
+                </div>
+
+                {selectedClient ? (
+                  <div className="space-y-4">
+                    {(() => {
+                      const client = currentData.data.find(c => c.name === selectedClient);
+                      if (!client) return null;
+
+                      return (
+                        <>
+                          <div className="text-center">
+                            <h4 className="text-2xl font-bold text-slate-800 mb-2">{client.name}</h4>
+                            <p className="text-slate-600 mb-4">{client.mainItems}</p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                              <div className="text-sm text-blue-600 font-medium">매출</div>
+                              <div className="text-2xl font-bold text-blue-800">{client.sales}억원</div>
+                              <GrowthIndicator 
+                                value={calculateGrowth(
+                                  client.sales, 
+                                  client.comparison.prevMonth.sales
+                                )} 
+                              />
+                            </div>
+                            <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                              <div className="text-sm text-green-600 font-medium">수익</div>
+                              <div className="text-2xl font-bold text-green-800">{client.profit}억원</div>
+                              <GrowthIndicator 
+                                value={calculateGrowth(
+                                  client.profit, 
+                                  client.comparison.prevMonth.profit
+                                )} 
+                              />
+                            </div>
+                            <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                              <div className="text-sm text-purple-600 font-medium">물량</div>
+                              <div className="text-2xl font-bold text-purple-800">{client.volume.toLocaleString()}톤</div>
+                              <GrowthIndicator 
+                                value={calculateGrowth(
+                                  client.volume, 
+                                  client.comparison.prevMonth.volume
+                                )} 
+                              />
+                            </div>
+                            <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg">
+                              <div className="text-sm text-orange-600 font-medium">수익률</div>
+                              <div className="text-2xl font-bold text-orange-800">{client.profitRatio}%</div>
+                              <GrowthIndicator 
+                                value={calculateGrowth(
+                                  client.profitRatio, 
+                                  client.comparison.prevMonth.profitRatio
+                                )} 
+                              />
+                            </div>
+                          </div>
+
+                          {/* 월별 차트 */}
+                          {showCharts && (
+                            <div className="mt-6">
+                              <h5 className="text-lg font-semibold text-slate-800 mb-3">월별 추이</h5>
+                              <div className="h-48">
+                                <Chart
+                                  type="line"
+                                  data={getChartData(selectedClient)}
+                                  options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                      legend: {
+                                        display: true,
+                                        position: 'top',
+                                        labels: {
+                                          usePointStyle: true,
+                                          padding: 20,
+                                          color: '#475569',
+                                          font: {
+                                            weight: 600
+                                          }
+                                        }
+                                      },
+                                      tooltip: {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                        titleColor: '#1e293b',
+                                        bodyColor: '#1e293b',
+                                        borderColor: '#e2e8f0',
+                                        borderWidth: 1,
+                                        cornerRadius: 8
+                                      }
+                                    },
+                                    scales: {
+                                      x: {
+                                        grid: {
+                                          display: false
+                                        },
+                                        ticks: {
+                                          color: '#64748b',
+                                          font: {
+                                            weight: 500
+                                          }
+                                        }
+                                      },
+                                      y: {
+                                        grid: {
+                                          color: '#f1f5f9'
+                                        },
+                                        ticks: {
+                                          color: '#64748b',
+                                          font: {
+                                            weight: 500
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-slate-400 text-4xl mb-4">📊</div>
+                    <p className="text-slate-600">거래처를 선택하세요</p>
+                  </div>
+                )}
+              </Card>
+            </div>
           </div>
         </div>
 
-        {/* 선택된 거래처 상세 정보 */}
-        <motion.div 
-          initial={{ scale: 0.98, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.6 }}
-        >
-          <Card className="p-4 h-[200px] bg-gradient-to-br from-slate-50 to-white overflow-hidden">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-bold text-slate-800 flex items-center">
-                <Building2 className="w-4 h-4 text-purple-500 mr-2" />
-                {selectedClient ? `${selectedClient} 상세 정보` : `${selectedTab} TOP 5 합계`}
-              </h3>
-            </div>
-            <div className="grid grid-cols-4 gap-3 h-[140px]">
-              <div className="bg-white/70 rounded-xl p-3 flex flex-col justify-between border border-slate-100">
-                <span className="text-xs font-medium text-slate-600">매출이익</span>
-                <div>
-                  <div className="text-base font-bold text-slate-800 mb-1">
-                    {selectedClient 
-                      ? transportData[selectedTab].data.find(c => c.name === selectedClient)?.profit.toLocaleString()
-                      : transportData[selectedTab].data.reduce((sum, client) => sum + client.profit, 0).toLocaleString()}
-                    <span className="text-xs font-medium text-slate-600 ml-1">억원</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-[10px] font-medium text-slate-500 mr-1">전년 대비</span>
-                    <GrowthIndicator 
-                      value={calculateGrowth(
-                        selectedClient
-                          ? (transportData[selectedTab].data.find(c => c.name === selectedClient)?.profit || 0)
-                          : transportData[selectedTab].data.reduce((sum, client) => sum + client.profit, 0),
-                        selectedClient
-                          ? (transportData[selectedTab].data.find(c => c.name === selectedClient)?.comparison.prevYear.profit || 0)
-                          : transportData[selectedTab].data.reduce((sum, client) => sum + client.comparison.prevYear.profit, 0)
-                      )} 
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white/70 rounded-xl p-3 flex flex-col justify-between border border-slate-100">
-                <span className="text-xs font-medium text-slate-600">물동량</span>
-                <div>
-                  <div className="text-base font-bold text-slate-800 mb-1">
-                    {selectedClient
-                      ? transportData[selectedTab].data.find(c => c.name === selectedClient)?.volume.toLocaleString()
-                      : transportData[selectedTab].data.reduce((sum, client) => sum + client.volume, 0).toLocaleString()}
-                    <span className="text-xs font-medium text-slate-600 ml-1">TEU</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-[10px] font-medium text-slate-500 mr-1">전년 대비</span>
-                    <GrowthIndicator 
-                      value={calculateGrowth(
-                        selectedClient
-                          ? (transportData[selectedTab].data.find(c => c.name === selectedClient)?.volume || 0)
-                          : transportData[selectedTab].data.reduce((sum, client) => sum + client.volume, 0),
-                        selectedClient
-                          ? (transportData[selectedTab].data.find(c => c.name === selectedClient)?.comparison.prevYear.volume || 0)
-                          : transportData[selectedTab].data.reduce((sum, client) => sum + client.comparison.prevYear.volume, 0)
-                      )} 
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white/70 rounded-xl p-3 flex flex-col justify-between border border-slate-100">
-                <span className="text-xs font-medium text-slate-600">이익률</span>
-                <div>
-                  <div className="text-base font-bold text-slate-800 mb-1">
-                    {selectedClient
-                      ? transportData[selectedTab].data.find(c => c.name === selectedClient)?.profitRatio.toFixed(1)
-                      : (transportData[selectedTab].data.reduce((sum, client) => sum + (client.profit), 0) / 
-                         transportData[selectedTab].data.reduce((sum, client) => sum + (client.sales), 0) * 100).toFixed(1)}
-                    <span className="text-xs font-medium text-slate-600 ml-1">%</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-[10px] font-medium text-slate-500 mr-1">전년 대비</span>
-                    <GrowthIndicator 
-                      value={calculateGrowth(
-                        selectedClient
-                          ? (transportData[selectedTab].data.find(c => c.name === selectedClient)?.profitRatio || 0)
-                          : (transportData[selectedTab].data.reduce((sum, client) => sum + (client.profit), 0) / 
-                             transportData[selectedTab].data.reduce((sum, client) => sum + (client.sales), 0) * 100),
-                        selectedClient
-                          ? (transportData[selectedTab].data.find(c => c.name === selectedClient)?.comparison.prevYear.profitRatio || 0)
-                          : (transportData[selectedTab].data.reduce((sum, client) => sum + client.comparison.prevYear.profit, 0) / 
-                             transportData[selectedTab].data.reduce((sum, client) => sum + client.comparison.prevYear.sales, 0) * 100)
-                      )} 
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white/70 rounded-xl p-3 flex flex-col justify-between border border-slate-100">
-                <span className="text-xs font-medium text-slate-600">주요 품목</span>
-                <div className="flex flex-wrap gap-1 overflow-y-auto">
-                  {selectedClient
-                    ? transportData[selectedTab].data.find(c => c.name === selectedClient)?.mainItems.split(',').map((item, index) => (
-                        <span key={index} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                          {item.trim()}
-                        </span>
-                      ))
-                    : Array.from(new Set(transportData[selectedTab].data.flatMap(client => 
-                        client.mainItems.split(',').map(item => item.trim())
-                      ))).map((item, index) => (
-                        <span key={index} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                          {item}
-                        </span>
-                      ))
-                  }
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
+
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <AuthGuard>
+      <TopClientsPageContent />
+    </AuthGuard>
   );
 } 

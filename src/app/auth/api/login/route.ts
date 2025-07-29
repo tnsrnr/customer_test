@@ -8,7 +8,9 @@ export async function POST(request: NextRequest) {
     
     // 1단계: CSRF 토큰과 JSESSIONID 가져오기
     console.log('📡 CSRF 토큰 요청 중...');
-    const csrfResponse = await fetch(`${process.env.SPRING_SERVER_URL}/login.jsp`, {
+    const springServerUrl = process.env.SPRING_SERVER_URL || 'https://qa-lv1.htns.com';
+    console.log('🔗 Spring 서버 URL:', springServerUrl);
+    const csrfResponse = await fetch(`${springServerUrl}/login.jsp`, {
       method: 'GET',
       redirect: 'manual'
     });
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
     
     console.log('📤 전송할 데이터:', loginData.toString());
     
-    const loginResponse = await fetch(`${process.env.SPRING_SERVER_URL}/htns_sec`, {
+    const loginResponse = await fetch(`${springServerUrl}/htns_sec`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -81,7 +83,7 @@ export async function POST(request: NextRequest) {
       
       // 3단계: 새로운 CSRF 토큰 요청 (새로운 JSESSIONID로)
       console.log('🔄 새로운 CSRF 토큰 요청 중...');
-      const newCsrfResponse = await fetch(`${process.env.SPRING_SERVER_URL}/login.jsp`, {
+      const newCsrfResponse = await fetch(`${springServerUrl}/login.jsp`, {
         method: 'GET',
         headers: {
           'Cookie': `JSESSIONID=${jsessionId}`
@@ -124,11 +126,11 @@ export async function POST(request: NextRequest) {
       console.log('👤 사용자 세션 정보 요청 중...');
       
       // 첫 번째 시도: /getInit
-      console.log('🔗 API URL (시도 1):', `${process.env.SPRING_SERVER_URL}/api/G1E000000SVC/getInit`);
+      console.log('🔗 API URL (시도 1):', `${springServerUrl}/api/G1E000000SVC/getInit`);
       console.log('🍪 전송할 쿠키:', `JSESSIONID=${jsessionId}`);
       console.log('🔑 전송할 CSRF:', newCsrfToken);
       
-      let         sessionResponse = await fetch(`${process.env.SPRING_SERVER_URL}/api/G1E000000SVC/getInit`, {
+      let         sessionResponse = await fetch(`${springServerUrl}/api/G1E000000SVC/getInit`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -145,9 +147,9 @@ export async function POST(request: NextRequest) {
       // 첫 번째 시도가 실패하면 두 번째 시도
       if (!sessionResponse.ok || sessionResponse.headers.get('content-type')?.includes('text/html')) {
         console.log('🔄 첫 번째 API 실패, 두 번째 시도...');
-        console.log('🔗 API URL (시도 2):', `${process.env.SPRING_SERVER_URL}/api/G1E000000SVC/getInitNewPortal`);
+        console.log('🔗 API URL (시도 2):', `${springServerUrl}/api/G1E000000SVC/getInitNewPortal`);
         
-        sessionResponse = await fetch(`${process.env.SPRING_SERVER_URL}/api/G1E000000SVC/getInitNewPortal`, {
+        sessionResponse = await fetch(`${springServerUrl}/api/G1E000000SVC/getInitNewPortal`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -165,9 +167,9 @@ export async function POST(request: NextRequest) {
       // 두 번째 시도도 실패하면 세 번째 시도
       if (!sessionResponse.ok || sessionResponse.headers.get('content-type')?.includes('text/html')) {
         console.log('🔄 두 번째 API 실패, 세 번째 시도...');
-        console.log('🔗 API URL (시도 3):', `${process.env.SPRING_SERVER_URL}/api/user/session`);
+        console.log('🔗 API URL (시도 3):', `${springServerUrl}/api/user/session`);
         
-        sessionResponse = await fetch(`${process.env.SPRING_SERVER_URL}/api/user/session`, {
+        sessionResponse = await fetch(`${springServerUrl}/api/user/session`, {
           method: 'GET',
           headers: {
             'Cookie': `JSESSIONID=${jsessionId}; X-CSRF-TOKEN=${newCsrfToken}`,

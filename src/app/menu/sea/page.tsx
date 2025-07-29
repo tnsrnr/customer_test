@@ -3,35 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartData,
-  ChartOptions,
-  Filler
-} from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { Ship, Package, TrendingUp, DollarSign, Users, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+// 전역 Chart.js 설정 사용
+import '@/lib/chart-config';
 
 // 해상수출 데이터
 const exportData = {

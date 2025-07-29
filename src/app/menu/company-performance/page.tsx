@@ -1,16 +1,6 @@
 'use client';
 
 import { Card } from "@/components/card";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-} from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { PerformanceTable } from './components/performance-table';
 import { useEffect } from 'react';
@@ -18,15 +8,8 @@ import { DollarSign, TrendingUp, Percent, BarChart3, Building2, Users, Target, C
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+// 전역 Chart.js 설정 사용
+import '@/lib/chart-config';
 
 export default function CompanyPerformancePage() {
   const [periodType, setPeriodType] = useState<'monthly' | 'cumulative'>('cumulative');

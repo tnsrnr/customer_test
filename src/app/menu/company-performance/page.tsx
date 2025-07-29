@@ -14,7 +14,9 @@ import {
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { PerformanceTable } from './components/performance-table';
 import { useEffect } from 'react';
-import { DollarSign, TrendingUp, Percent, BarChart3 } from "lucide-react";
+import { DollarSign, TrendingUp, Percent, BarChart3, Building2, Users, Target, Calendar } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 ChartJS.register(
   CategoryScale,
@@ -27,86 +29,146 @@ ChartJS.register(
 );
 
 export default function CompanyPerformancePage() {
+  const [periodType, setPeriodType] = useState<'monthly' | 'cumulative'>('cumulative');
+  
   useEffect(() => {
     console.log('CompanyPerformancePage mounted');
   }, []);
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-6 space-y-4">
-      {/* 상단 섹션 */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* 왼쪽 카드 */}
-        <Card className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-          <div className="p-4">
-            <h2 className="text-base font-bold text-slate-800 mb-1">HTNS그룹 전사 경영실적 (1~5월)</h2>
-            <p className="text-xs text-slate-500 mb-3">HTNS Business performance 2025.May</p>
-            <div className="flex gap-4">
-              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[180px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-5 h-5 text-blue-700" />
-                  <span className="text-sm font-medium text-slate-800">매출액</span>
-                </div>
-                <div className="text-3xl font-extrabold text-blue-700">2,619 <span className="text-lg font-bold">억원</span></div>
-              </div>
-              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[180px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5 text-blue-700" />
-                  <span className="text-sm font-medium text-slate-800">영업이익</span>
-                </div>
-                <div className="text-3xl font-extrabold text-blue-700">26 <span className="text-lg font-bold">억원</span></div>
-              </div>
-              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[180px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <Percent className="w-5 h-5 text-blue-700" />
-                  <span className="text-sm font-medium text-slate-800">영업이익율</span>
-                </div>
-                <div className="text-3xl font-extrabold text-blue-700">1.0 <span className="text-lg font-bold">%</span></div>
-              </div>
-            </div>
-          </div>
-        </Card>
+      {/* 상단 헤더 */}
+      <div className="flex justify-end items-center mb-2">
+        <div className="flex items-center gap-2 bg-white rounded-lg shadow-sm border border-slate-200 p-1">
+          <button
+            onClick={() => setPeriodType('monthly')}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+              periodType === 'monthly'
+                ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Calendar className="w-3 h-3" />
+            월별조회
+          </button>
+          <button
+            onClick={() => setPeriodType('cumulative')}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+              periodType === 'cumulative'
+                ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Calendar className="w-3 h-3" />
+            누적조회
+          </button>
+        </div>
+      </div>
 
-        {/* 오른쪽 카드 */}
-        <Card className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-          <div className="p-4">
-            <h2 className="text-base font-bold text-slate-800 mb-1">실적 달성율 (계획 比) 1~5월</h2>
-            <p className="text-xs text-slate-500 mb-3">Attainment rate 2025.May</p>
-            <div className="flex gap-4">
-              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[140px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <BarChart3 className="w-5 h-5 text-blue-700" />
-                  <span className="text-sm font-medium text-slate-800">본사</span>
-                </div>
-                <div className="text-2xl font-extrabold text-blue-700">85%</div>
+      {/* KPI 요약 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3 w-full mx-auto">
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-200/50 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[140px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <BarChart3 className="w-5 h-5 text-blue-700" />
-                  <span className="text-sm font-medium text-slate-800">국내자회사</span>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 매출액</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-blue-700 leading-none">2,619</span>
+                  <span className="ml-1 text-base font-semibold text-blue-700">억원</span>
                 </div>
-                <div className="text-2xl font-extrabold text-blue-700">82%</div>
-              </div>
-              <div className="flex-1 bg-slate-100 rounded-xl shadow-md p-5 flex flex-col items-start min-w-[140px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <BarChart3 className="w-5 h-5 text-blue-700" />
-                  <span className="text-sm font-medium text-slate-800">해외자회사</span>
-                </div>
-                <div className="text-2xl font-extrabold text-blue-700">65%</div>
               </div>
             </div>
+            <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">▼ 967억원</span>
           </div>
-        </Card>
+        </motion.div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-emerald-200/50 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-md">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">영업이익</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-emerald-700 leading-none">26</span>
+                  <span className="ml-1 text-base font-semibold text-emerald-700">억원</span>
+                </div>
+              </div>
+            </div>
+            <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">▼ 68억원</span>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-purple-200/50 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                <Percent className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">영업이익율</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-purple-700 leading-none">1.0</span>
+                  <span className="ml-1 text-base font-semibold text-purple-700">%</span>
+                </div>
+              </div>
+            </div>
+            <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">▼ 1.6%</span>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-sky-200/50 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-sky-500 to-sky-600 rounded-lg shadow-md">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">달성율</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-sky-700 leading-none">73</span>
+                  <span className="ml-1 text-base font-semibold text-sky-700">%</span>
+                </div>
+              </div>
+            </div>
+            <span className="text-sm font-semibold text-slate-600 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">평균</span>
+          </div>
+        </motion.div>
       </div>
 
       {/* 테이블 섹션 */}
-      <Card style={{ height: 400, width: '100%', padding: 0, boxSizing: 'border-box' }}>
-        <div style={{ height: '100%' }}>
+              <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+        <div className="overflow-x-auto flex-1">
           <PerformanceTable />
         </div>
       </Card>
 
       {/* 하단 차트 섹션 */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2">
         {/* 달성율% 카드 */}
         <Card className="bg-blue-50 border border-blue-100 shadow-sm rounded-xl overflow-hidden">
           <div className="h-1 w-full bg-blue-200 mb-2" />

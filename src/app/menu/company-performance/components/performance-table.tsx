@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { DataTable } from "@/components/data-table";
-import { ColDef, ColGroupDef } from "ag-grid-community";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 
 interface PerformanceData {
   구분: string;
@@ -15,129 +14,6 @@ interface PerformanceData {
   달성율_매출액: string;
   달성율_영업이익: string;
 }
-
-const columnDefs: (ColDef | ColGroupDef)[] = [
-  { 
-    field: '구분',
-    headerName: '구분',
-    width: 240, // 기존 120의 2배
-    headerClass: 'text-center',
-    cellStyle: { 
-      fontWeight: 'bold',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center', // 가로 중앙 정렬
-      textAlign: 'center'
-    },
-    pinned: 'left'
-  },
-  {
-    headerName: '계획 (\'25년 5월 누적)',
-    headerClass: 'bg-blue-50 text-center',
-    children: [
-      { 
-        field: '계획_매출액',
-        headerName: '매출액',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        valueFormatter: params => params.value?.toLocaleString(),
-        cellStyle: { 
-          backgroundColor: '#EFF6FF',
-          textAlign: 'right' // 숫자 오른쪽 정렬
-        }
-      },
-      { 
-        field: '계획_영업이익',
-        headerName: '영업이익',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        valueFormatter: params => params.value?.toLocaleString(),
-        cellStyle: { 
-          backgroundColor: '#EFF6FF',
-          textAlign: 'right' // 숫자 오른쪽 정렬
-        }
-      },
-      { 
-        field: '계획_영업이익율',
-        headerName: '영업이익율',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        cellStyle: { 
-          backgroundColor: '#EFF6FF',
-          textAlign: 'right' // 퍼센트 오른쪽 정렬
-        }
-      }
-    ]
-  },
-  {
-    headerName: '실적 (\'25년 5월 누적)',
-    headerClass: 'bg-green-50 text-center',
-    children: [
-      { 
-        field: '실적_매출액',
-        headerName: '매출액',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        valueFormatter: params => params.value?.toLocaleString(),
-        cellStyle: { 
-          backgroundColor: '#F0FDF4',
-          textAlign: 'right' // 숫자 오른쪽 정렬
-        }
-      },
-      { 
-        field: '실적_영업이익',
-        headerName: '영업이익',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        valueFormatter: params => params.value?.toLocaleString(),
-        cellStyle: params => ({
-          backgroundColor: '#F0FDF4',
-          color: params.value < 0 ? '#DC2626' : 'inherit',
-          textAlign: 'right' // 숫자 오른쪽 정렬
-        })
-      },
-      { 
-        field: '실적_영업이익율',
-        headerName: '영업이익율',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        cellStyle: params => ({
-          backgroundColor: '#F0FDF4',
-          color: params.value.startsWith('-') ? '#DC2626' : 'inherit',
-          textAlign: 'right' // 퍼센트 오른쪽 정렬
-        })
-      }
-    ]
-  },
-  {
-    headerName: '달성율 (계획 比)',
-    headerClass: 'bg-purple-50 text-center',
-    children: [
-      { 
-        field: '달성율_매출액',
-        headerName: '매출액',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        cellStyle: { 
-          backgroundColor: '#F5F3FF',
-          color: '#2563EB',
-          fontWeight: 'bold',
-          textAlign: 'right' // 숫자 오른쪽 정렬
-        }
-      },
-      { 
-        field: '달성율_영업이익',
-        headerName: '영업이익',
-        width: 200, // 기존 100의 2배
-        headerClass: 'text-center',
-        cellStyle: { 
-          backgroundColor: '#F5F3FF',
-          textAlign: 'right' // 숫자 오른쪽 정렬
-        }
-      }
-    ]
-  }
-];
 
 const data: PerformanceData[] = [
   {
@@ -186,35 +62,84 @@ const data: PerformanceData[] = [
   }
 ];
 
-const minRowCount = 10; // 최소 10줄 보이게
-const filledData = [
-  ...data,
-  ...Array(Math.max(0, minRowCount - data.length)).fill({
-    구분: '',
-    계획_매출액: '',
-    계획_영업이익: '',
-    계획_영업이익율: '',
-    실적_매출액: '',
-    실적_영업이익: '',
-    실적_영업이익율: '',
-    달성율_매출액: '',
-    달성율_영업이익: ''
-  })
-];
-
 export function PerformanceTable() {
   useEffect(() => {
     console.log('PerformanceTable mounted');
   }, []);
 
   return (
-    <div style={{ height: '100%' }}>
-      <DataTable 
-        data={filledData}
-        columnDefs={columnDefs}
-        rowHeight={45}
-        headerHeight={40}
-      />
+    <div className="overflow-x-auto flex-1">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-slate-50">
+            <TableHead className="text-slate-700 font-semibold text-lg">구분</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-blue-50">계획 매출액</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-blue-50">계획 영업이익</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-blue-50">계획 영업이익율</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-green-50">실적 매출액</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-green-50">실적 영업이익</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-green-50">실적 영업이익율</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-purple-50">달성율 매출액</TableHead>
+            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-purple-50">달성율 영업이익</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((row, index) => {
+            const colors = [
+              'bg-blue-50/80 border-blue-200 text-blue-900 border-l-blue-500',
+              'bg-slate-50/80 border-slate-200 text-slate-700 border-l-slate-500',
+              'bg-amber-50/80 border-amber-200 text-amber-800 border-l-amber-500',
+              'bg-green-50/80 border-green-200 text-green-800 border-l-green-500',
+            ];
+            const color = colors[index % colors.length];
+            return (
+              <TableRow 
+                key={row.구분}
+                className={`overflow-hidden backdrop-blur-sm border-l-4 ${color} transition-all duration-200`}
+              >
+                <TableCell className="py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-slate-400">#{index + 1}</span>
+                    <span className={`text-base font-semibold ${color.split(' ')[2]}`}>{row.구분}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className={`text-2xl font-bold ${color.split(' ')[2]}`}>{row.계획_매출액.toLocaleString()}</span>
+                  <span className="text-xs text-slate-500 ml-1">억원</span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className={`text-lg font-semibold text-blue-700`}>{row.계획_영업이익.toLocaleString()}</span>
+                  <span className="text-xs text-slate-500 ml-1">억원</span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className="text-base font-bold text-blue-600">{row.계획_영업이익율}</span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className={`text-2xl font-bold ${color.split(' ')[2]}`}>{row.실적_매출액.toLocaleString()}</span>
+                  <span className="text-xs text-slate-500 ml-1">억원</span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className={`text-lg font-semibold ${row.실적_영업이익 < 0 ? 'text-red-700' : 'text-green-700'}`}>
+                    {row.실적_영업이익.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-slate-500 ml-1">억원</span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className={`text-base font-bold ${row.실적_영업이익율.startsWith('-') ? 'text-red-600' : 'text-green-600'}`}>
+                    {row.실적_영업이익율}
+                  </span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className="text-base font-bold text-blue-700">{row.달성율_매출액}</span>
+                </TableCell>
+                <TableCell className="text-center py-4">
+                  <span className="text-base font-bold text-purple-700">{row.달성율_영업이익}</span>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 } 

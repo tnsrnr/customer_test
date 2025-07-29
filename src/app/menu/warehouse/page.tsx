@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +17,7 @@ import {
   ChartOptions
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
-import { Truck, Ship, Plane, Package, Users, Building2, SquareStack, BoxSelect, PieChart } from 'lucide-react';
+import { Truck, Ship, Plane, Package, Users, Building2, SquareStack, BoxSelect, PieChart, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
@@ -352,21 +353,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-blue-100 rounded-xl">
-                <Building2 className="w-12 h-12 text-blue-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                <Building2 className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">센터개수</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">센터개수</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-blue-700 leading-none">2</span>
+                  <span className="ml-1 text-base font-semibold text-blue-700">센터</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="text-6xl font-bold text-blue-600 leading-none">2</span>
-              <span className="ml-2 text-2xl font-medium text-blue-600 self-end mb-1">센터</span>
-            </div>
+            <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">안정 운영</span>
           </div>
         </motion.div>
 
@@ -375,21 +377,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-emerald-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-emerald-100 rounded-xl">
-                <SquareStack className="w-12 h-12 text-emerald-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-md">
+                <SquareStack className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">총 면적</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 면적</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-emerald-700 leading-none">28,580</span>
+                  <span className="ml-1 text-base font-semibold text-emerald-700">평</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="text-6xl font-bold text-emerald-600 leading-none">28,580</span>
-              <span className="ml-2 text-2xl font-medium text-emerald-600 self-end mb-1">평</span>
-            </div>
+            <span className="text-sm font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">확장 완료</span>
           </div>
         </motion.div>
 
@@ -398,24 +401,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-purple-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-purple-100 rounded-xl">
-                <BoxSelect className="w-12 h-12 text-purple-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                <BoxSelect className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">사용 면적</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">사용 면적</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-purple-700 leading-none">15,927</span>
+                  <span className="ml-1 text-base font-semibold text-purple-700">평</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-purple-600 leading-none">15,927</span>
-                <span className="ml-2 text-2xl font-medium text-purple-600 self-end mb-1">평</span>
-              </div>
-              <span className="text-base font-medium text-purple-400 mt-1">56% 가동률</span>
-            </div>
+            <span className="text-sm font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">56% 가동률</span>
           </div>
         </motion.div>
 
@@ -424,24 +425,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-sky-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-sky-100 rounded-xl">
-                <PieChart className="w-12 h-12 text-sky-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-sky-500 to-sky-600 rounded-lg shadow-md">
+                <PieChart className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">가동률/공실률</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">가동률</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-sky-700 leading-none">56</span>
+                  <span className="ml-1 text-base font-semibold text-sky-700">%</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-sky-600 leading-none">56</span>
-                <span className="ml-2 text-2xl font-medium text-sky-600 self-end mb-1">%</span>
-              </div>
-              <span className="text-base font-medium text-sky-400 mt-1">공실률 44%</span>
-            </div>
+            <span className="text-sm font-semibold text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">공실률 44%</span>
           </div>
         </motion.div>
       </div>
@@ -457,8 +456,17 @@ export default function Test7Page() {
               transition={{ duration: 0.4, delay: 0.4 }}
               className="relative"
             >
-              <Card className="p-5 shadow-lg shadow-blue-900/5 border border-slate-200">
-                <div className="flex flex-col gap-4">
+              <Card className="p-5 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-lg p-2">
+                    <Building2 className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800">창고 운영 현황</h3>
+                    <p className="text-sm text-slate-500">센터별 창고 손익 및 가동율</p>
+                  </div>
+                </div>
+                <div className="overflow-x-auto flex-1">
                   <div className="h-[220px] w-full">
                     {showCharts && <Chart type='bar' data={namyangChartData} options={{
                       ...chartOptions,
@@ -494,8 +502,17 @@ export default function Test7Page() {
               transition={{ duration: 0.4, delay: 0.5 }}
               className="relative"
             >
-              <Card className="p-5 shadow-lg shadow-emerald-900/5 border border-slate-200">
-                <div className="flex flex-col gap-4">
+              <Card className="p-5 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-lg p-2">
+                    <Building2 className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800">창고 운영 현황</h3>
+                    <p className="text-sm text-slate-500">센터별 창고 손익 및 가동율</p>
+                  </div>
+                </div>
+                <div className="overflow-x-auto flex-1">
                   <div className="h-[220px] w-full">
                     {showCharts && <Chart type='bar' data={aarmChartData} options={{
                       ...chartOptions,
@@ -532,166 +549,175 @@ export default function Test7Page() {
             transition={{ duration: 0.4, delay: 0.7 }}
             className="relative h-full"
           >
-            <Card className="p-5 shadow-lg shadow-slate-900/5 border border-slate-200 h-full">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th rowSpan={2} className="py-2 px-3 text-center font-bold text-slate-700 bg-slate-100/80">센터명</th>
-                      <th rowSpan={2} className="py-2 px-3 text-center font-bold text-slate-700 bg-slate-100/80">계정과목명</th>
-                      <th colSpan={4} className="py-2 px-3 text-center font-bold text-slate-700 bg-slate-100/80">창고손익</th>
-                      <th colSpan={2} className="py-2 px-3 text-center font-bold text-slate-700 bg-slate-100/80">창고 가동율 현황</th>
-                      <th rowSpan={2} className="py-2 px-3 text-center font-bold text-slate-700 bg-slate-100/80">비고</th>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <th className="py-1.5 px-2 text-center font-bold text-blue-700 bg-blue-50/50">3월</th>
-                      <th className="py-1.5 px-2 text-center font-bold text-blue-700">4월</th>
-                      <th className="py-1.5 px-2 text-center font-bold text-blue-700 bg-blue-50/80 border-x border-blue-200">5월</th>
-                      <th className="py-1.5 px-2 text-center font-bold text-slate-700 bg-slate-100/80">합계</th>
-                      <th className="py-1.5 px-2 text-center font-bold text-slate-700 bg-slate-100/80">연직지표</th>
-                      <th className="py-1.5 px-2 text-center font-bold text-slate-700 bg-slate-100/80">연직(%)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
+            <Card className="p-5 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-gradient-to-r from-purple-600 to-violet-500 rounded-lg p-2">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800">창고 손익 현황</h3>
+                  <p className="text-sm text-slate-500">센터별 상세 손익 및 가동율</p>
+                </div>
+              </div>
+              <div className="overflow-x-auto flex-1">
+                <Table className="w-full text-sm">
+                  <TableHeader className="bg-slate-100/80">
+                    <TableRow>
+                      <TableHead className="py-2 px-3 text-center font-bold text-slate-700">센터명</TableHead>
+                      <TableHead className="py-2 px-3 text-center font-bold text-slate-700">계정과목명</TableHead>
+                      <TableHead colSpan={4} className="py-2 px-3 text-center font-bold text-slate-700">창고손익</TableHead>
+                      <TableHead colSpan={2} className="py-2 px-3 text-center font-bold text-slate-700">창고 가동율 현황</TableHead>
+                      <TableHead className="py-2 px-3 text-center font-bold text-slate-700">비고</TableHead>
+                    </TableRow>
+                    <TableRow>
+                      <TableHead className="py-1.5 px-2 text-center font-bold text-blue-700">3월</TableHead>
+                      <TableHead className="py-1.5 px-2 text-center font-bold text-blue-700">4월</TableHead>
+                      <TableHead className="py-1.5 px-2 text-center font-bold text-blue-700 bg-blue-50/80 border-x border-blue-200">5월</TableHead>
+                      <TableHead className="py-1.5 px-2 text-center font-bold text-slate-700 bg-slate-100/80">합계</TableHead>
+                      <TableHead className="py-1.5 px-2 text-center font-bold text-slate-700 bg-slate-100/80">연직지표</TableHead>
+                      <TableHead className="py-1.5 px-2 text-center font-bold text-slate-700">연직(%)</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="text-sm">
                     {/* 남양주센터 데이터 */}
-                    <tr className="border-b border-slate-200">
-                      <td rowSpan={4} className="py-1.5 px-2 text-center font-medium text-slate-700 bg-slate-50">남양주센터<br/>(B동)</td>
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">매출액</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center">총보관면적</td>
-                      <td className="py-1.5 px-2 text-center">1,440</td>
-                      <td rowSpan={4} className="py-1.5 px-2 text-left text-xs">25.4월 핫시즈너(계약하나로S)<br/>보관위탁계약<br/>(저온창고 409평 사용예정)</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">원가</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">2</td>
-                      <td className="py-1.5 px-2 text-center">2</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">2</td>
-                      <td className="py-1.5 px-2 text-center">9</td>
-                      <td className="py-1.5 px-2 text-center">사용면적</td>
-                      <td className="py-1.5 px-2 text-center">200</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">직접경비</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center">공실면적</td>
-                      <td className="py-1.5 px-2 text-center">1,240</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">매출총이익</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-1.7</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-1.6</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/50 border-x border-blue-200">-1.6</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-8</td>
-                      <td className="py-1.5 px-2 text-center">공실률</td>
-                      <td className="py-1.5 px-2 text-center">86%</td>
-                    </tr>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell rowSpan={4} className="py-1.5 px-2 text-center font-medium text-slate-700 bg-slate-50">남양주센터<br/>(B동)</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">매출액</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">총보관면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">1,440</TableCell>
+                      <TableCell rowSpan={4} className="py-1.5 px-2 text-left text-xs">25.4월 핫시즈너(계약하나로S)<br/>보관위탁계약<br/>(저온창고 409평 사용예정)</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">원가</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">2</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">2</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">2</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">9</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">사용면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">200</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">직접경비</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공실면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">1,240</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">매출총이익</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-1.7</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-1.6</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/50 border-x border-blue-200">-1.6</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-8</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공실률</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">86%</TableCell>
+                    </TableRow>
 
                     {/* 아암센터 데이터 */}
-                    <tr className="border-b border-slate-200">
-                      <td rowSpan={4} className="py-1.5 px-2 text-center font-medium text-slate-700 bg-slate-50">아암센터</td>
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">매출액</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">9</td>
-                      <td className="py-1.5 px-2 text-center">9</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">11</td>
-                      <td className="py-1.5 px-2 text-center">47</td>
-                      <td className="py-1.5 px-2 text-center">총보관면적</td>
-                      <td className="py-1.5 px-2 text-center">27,140</td>
-                      <td rowSpan={4} className="py-1.5 px-2 text-left text-sm">25.2월,3월,4월 로봇 보관위탁계약체결<br/>로봇 JYP360<br/>손해배상 청구<br/>3월 4승 로직스템리에프엑스 신규계약<br/>신세계 인터내셔널<br/>5월 신세계인터내셔널(홍보물)<br/>점유구 1.95㎡<br/>신세계 시장외인물 4천만원/월<br/>매출 원의예정</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">원가</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">10</td>
-                      <td className="py-1.5 px-2 text-center">10</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">10</td>
-                      <td className="py-1.5 px-2 text-center">50</td>
-                      <td className="py-1.5 px-2 text-center">사용면적</td>
-                      <td className="py-1.5 px-2 text-center">15,728</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">직접경비</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center">공실면적</td>
-                      <td className="py-1.5 px-2 text-center">11,413</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">매출총이익</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-1.2</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-1.0</td>
-                      <td className="py-1.5 px-2 text-center text-blue-600 bg-blue-50/50 border-x border-blue-200">0.9</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-4</td>
-                      <td className="py-1.5 px-2 text-center">공실률</td>
-                      <td className="py-1.5 px-2 text-center">42%</td>
-                    </tr>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell rowSpan={4} className="py-1.5 px-2 text-center font-medium text-slate-700 bg-slate-50">아암센터</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">매출액</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">9</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">9</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">11</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">47</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">총보관면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">27,140</TableCell>
+                      <TableCell rowSpan={4} className="py-1.5 px-2 text-left text-sm">25.2월,3월,4월 로봇 보관위탁계약체결<br/>로봇 JYP360<br/>손해배상 청구<br/>3월 4승 로직스템리에프엑스 신규계약<br/>신세계 인터내셔널<br/>5월 신세계인터내셔널(홍보물)<br/>점유구 1.95㎡<br/>신세계 시장외인물 4천만원/월<br/>매출 원의예정</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">원가</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">10</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">10</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">10</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">50</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">사용면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">15,728</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">직접경비</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공실면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">11,413</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">매출총이익</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-1.2</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-1.0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-blue-600 bg-blue-50/50 border-x border-blue-200">0.9</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-4</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공실률</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">42%</TableCell>
+                    </TableRow>
 
                     {/* 합계 데이터 */}
-                    <tr className="border-b border-slate-200">
-                      <td rowSpan={6} className="py-1.5 px-2 text-center font-medium text-slate-700 bg-slate-50">합계</td>
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">매출액</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">9</td>
-                      <td className="py-1.5 px-2 text-center">9</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">11</td>
-                      <td className="py-1.5 px-2 text-center">47</td>
-                      <td className="py-1.5 px-2 text-center">총보관면적</td>
-                      <td className="py-1.5 px-2 text-center">28,580</td>
-                      <td rowSpan={6} className="py-1.5 px-2 text-center">-</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">원가</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">12</td>
-                      <td className="py-1.5 px-2 text-center">12</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">12</td>
-                      <td className="py-1.5 px-2 text-center">59</td>
-                      <td className="py-1.5 px-2 text-center">사용면적</td>
-                      <td className="py-1.5 px-2 text-center">15,928</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">직접경비</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</td>
-                      <td className="py-1.5 px-2 text-center">0</td>
-                      <td className="py-1.5 px-2 text-center">공실면적</td>
-                      <td className="py-1.5 px-2 text-center">12,653</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">매출총이익</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-3.0</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-2.6</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/50 border-x border-blue-200">-0.7</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-12.1</td>
-                      <td className="py-1.5 px-2 text-center">공실률</td>
-                      <td className="py-1.5 px-2 text-center">44%</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">간접경비</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/30">0</td>
-                      <td className="py-1.5 px-2 text-center">1</td>
-                      <td className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">2</td>
-                      <td className="py-1.5 px-2 text-center">5</td>
-                      <td className="py-1.5 px-2 text-center">누적평당매출액</td>
-                      <td className="py-1.5 px-2 text-center">56%</td>
-                    </tr>
-                    <tr className="border-b-2 border-slate-200">
-                      <td className="py-1.5 px-2 text-center font-medium text-slate-700">영업이익</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-3</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-4</td>
-                      <td className="py-1.5 px-2 text-center text-red-500 bg-blue-50/50 border-x border-blue-200">-3</td>
-                      <td className="py-1.5 px-2 text-center text-red-500">-17</td>
-                      <td className="py-1.5 px-2 text-center">공간가동효율</td>
-                      <td className="py-1.5 px-2 text-center">56%</td>
-                    </tr>
-                  </tbody>
-                </table>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell rowSpan={6} className="py-1.5 px-2 text-center font-medium text-slate-700 bg-slate-50">합계</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">매출액</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">9</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">9</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">11</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">47</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">총보관면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">28,580</TableCell>
+                      <TableCell rowSpan={6} className="py-1.5 px-2 text-center">-</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">원가</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">12</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">12</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">12</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">59</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">사용면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">15,928</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">직접경비</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공실면적</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">12,653</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">매출총이익</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-3.0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-2.6</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/50 border-x border-blue-200">-0.7</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-12.1</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공실률</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">44%</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">간접경비</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/30">0</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">1</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center bg-blue-50/50 border-x border-blue-200">2</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">5</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">누적평당매출액</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">56%</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b-2 border-slate-200">
+                      <TableCell className="py-1.5 px-2 text-center font-medium text-slate-700">영업이익</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/30">-3</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-4</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500 bg-blue-50/50 border-x border-blue-200">-3</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center text-red-500">-17</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">공간가동효율</TableCell>
+                      <TableCell className="py-1.5 px-2 text-center">56%</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
             </Card>
           </motion.div>

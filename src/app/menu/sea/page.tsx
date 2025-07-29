@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -130,11 +131,11 @@ export default function SeaPage() {
         position: 'top' as const,
         align: 'end' as const,
         labels: {
-          boxWidth: 15,
+          boxWidth: 20,
           padding: 15,
           font: {
             size: 12,
-            weight: 'bold',
+            weight: 'bold' as const,
             family: "'Pretendard', sans-serif"
           }
         }
@@ -179,24 +180,22 @@ export default function SeaPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-blue-100 rounded-xl">
-                <Package className="w-12 h-12 text-blue-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                <Package className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">총 매출액</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 매출액</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-blue-700 leading-none">77</span>
+                  <span className="ml-1 text-base font-semibold text-blue-700">억원</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-blue-600 leading-none">87</span>
-                <span className="ml-2 text-2xl font-medium text-blue-600 self-end mb-1">억원</span>
-              </div>
-              <span className="text-base font-medium text-red-500 mt-1">▼ 28억원 vs 전월</span>
-            </div>
+            <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">▼ 5억원</span>
           </div>
         </motion.div>
 
@@ -204,24 +203,22 @@ export default function SeaPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-emerald-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-emerald-100 rounded-xl">
-                <Ship className="w-12 h-12 text-emerald-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-md">
+                <Ship className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">총 물동량</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 물동량</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-emerald-700 leading-none">3,770</span>
+                  <span className="ml-1 text-base font-semibold text-emerald-700">ton</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-emerald-600 leading-none">3,770</span>
-                <span className="ml-2 text-2xl font-medium text-emerald-600 self-end mb-1">ton</span>
-              </div>
-              <span className="text-base font-medium text-red-500 mt-1">▼ 420ton vs 전월</span>
-            </div>
+            <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">▼ 420ton</span>
           </div>
         </motion.div>
 
@@ -229,24 +226,22 @@ export default function SeaPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-purple-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-purple-100 rounded-xl">
-                <Users className="w-12 h-12 text-purple-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                <Users className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">총 인원</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 인원</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-purple-700 leading-none">42</span>
+                  <span className="ml-1 text-base font-semibold text-purple-700">명</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-purple-600 leading-none">42</span>
-                <span className="ml-2 text-2xl font-medium text-purple-600 self-end mb-1">명</span>
-              </div>
-              <span className="text-base font-medium text-slate-500 mt-1">전월 동일</span>
-            </div>
+            <span className="text-sm font-semibold text-slate-600 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">전월 동일</span>
           </div>
         </motion.div>
 
@@ -254,24 +249,22 @@ export default function SeaPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-sky-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-sky-100 rounded-xl">
-                <Truck className="w-12 h-12 text-sky-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-sky-500 to-sky-600 rounded-lg shadow-md">
+                <Truck className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">총 처리건수</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 처리건수</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-sky-700 leading-none">6,700</span>
+                  <span className="ml-1 text-base font-semibold text-sky-700">HBL</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-sky-600 leading-none">6,700</span>
-                <span className="ml-2 text-2xl font-medium text-sky-600 self-end mb-1">HBL</span>
-              </div>
-              <span className="text-base font-medium text-red-500 mt-1">▼ 500건 vs 전월</span>
-            </div>
+            <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">▼ 500건</span>
           </div>
         </motion.div>
       </div>
@@ -287,7 +280,16 @@ export default function SeaPage() {
               transition={{ duration: 0.4, delay: 0.4 }}
               className="relative"
             >
-              <Card className="p-5 shadow-lg shadow-blue-900/5 border border-slate-200">
+              <Card className="p-5 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-lg p-2">
+                    <Ship className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800">해상수출</h3>
+                    <p className="text-sm text-slate-500">매출 및 영업이익 현황</p>
+                  </div>
+                </div>
                 <div className="flex flex-col gap-4">
                   <div className="h-[220px] w-full">
                     {showCharts && <Chart type='bar' data={exportChartData} options={chartOptions} />}
@@ -306,7 +308,16 @@ export default function SeaPage() {
               transition={{ duration: 0.4, delay: 0.5 }}
               className="relative"
             >
-              <Card className="p-5 shadow-lg shadow-emerald-900/5 border border-slate-200">
+              <Card className="p-5 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-gradient-to-r from-emerald-600 to-green-500 rounded-lg p-2">
+                    <Ship className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800">해상수입</h3>
+                    <p className="text-sm text-slate-500">매출 및 영업이익 현황</p>
+                  </div>
+                </div>
                 <div className="flex flex-col gap-4">
                   <div className="h-[220px] w-full">
                     {showCharts && <Chart type='bar' data={importChartData} options={chartOptions} />}
@@ -326,154 +337,163 @@ export default function SeaPage() {
             transition={{ duration: 0.4, delay: 0.7 }}
             className="relative h-full"
           >
-            <Card className="p-5 shadow-lg shadow-slate-900/5 border border-slate-200 h-full">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th colSpan={2} className="py-2.5 px-3 text-center font-bold text-slate-700 bg-slate-100/80">구분</th>
-                      <th className="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/50">1월</th>
-                      <th className="py-2.5 px-3 text-center font-bold text-blue-700">2월</th>
-                      <th className="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/50">3월</th>
-                      <th className="py-2.5 px-3 text-center font-bold text-blue-700">4월</th>
-                      <th className="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/80 border-x border-blue-200">5월</th>
-                      <th className="py-2.5 px-3 text-center font-bold text-slate-700 bg-slate-100/80">전월대비</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
+            <Card className="p-5 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-gradient-to-r from-purple-600 to-violet-500 rounded-lg p-2">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800">월별 실적</h3>
+                  <p className="text-sm text-slate-500">해상수출/수입 상세 데이터</p>
+                </div>
+              </div>
+              <div className="overflow-x-auto flex-1">
+                <Table className="w-full text-sm">
+                  <TableHeader className="border-b border-slate-200">
+                    <TableRow className="border-b border-slate-200">
+                      <TableHead colSpan={2} className="py-2.5 px-3 text-center font-bold text-slate-700 bg-slate-100/80">구분</TableHead>
+                      <TableHead className="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/50">1월</TableHead>
+                      <TableHead className="py-2.5 px-3 text-center font-bold text-blue-700">2월</TableHead>
+                      <TableHead className="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/50">3월</TableHead>
+                      <TableHead className="py-2.5 px-3 text-center font-bold text-blue-700">4월</TableHead>
+                      <TableHead className="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/80 border-x border-blue-200">5월</TableHead>
+                      <TableHead className="py-2.5 px-3 text-center font-bold text-slate-700 bg-slate-100/80">전월대비</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="text-sm">
                     {/* 해상수출 데이터 */}
-                    <tr className="border-b border-slate-200">
-                      <td rowSpan={7} className="py-2 px-3 text-center font-medium text-slate-700 bg-slate-50">해상수출</td>
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">매출</td>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell rowSpan={7} className="py-2 px-3 text-center font-medium text-slate-700 bg-slate-50">해상수출</TableCell>
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">매출</TableCell>
                       {exportData.매출.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼29</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">매출이익</td>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼29</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">매출이익</TableCell>
                       {exportData.매출이익.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼1</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">영업이익</td>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼1</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">영업이익</TableCell>
                       {exportData.영업이익.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center">0</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">물동량(ton)</td>
+                      <TableCell className="py-2 px-3 text-center">0</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">물동량(ton)</TableCell>
                       {exportData.물동량.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value.toLocaleString()}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼400</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">인원(명)</td>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼400</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">인원(명)</TableCell>
                       {exportData.인원.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center">0</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">건수(HBL)</td>
+                      <TableCell className="py-2 px-3 text-center">0</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">건수(HBL)</TableCell>
                       {exportData.건수.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value.toLocaleString()}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼300</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">인당일평처리건수</td>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼300</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">인당일평처리건수</TableCell>
                       {exportData.인당일평처리건수.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center">0</td>
-                    </tr>
+                      <TableCell className="py-2 px-3 text-center">0</TableCell>
+                    </TableRow>
 
                     {/* 해상수입 데이터 */}
-                    <tr className="border-b border-slate-200">
-                      <td rowSpan={7} className="py-2 px-3 text-center font-medium text-slate-700 bg-slate-50">해상수입</td>
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">매출</td>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell rowSpan={7} className="py-2 px-3 text-center font-medium text-slate-700 bg-slate-50">해상수입</TableCell>
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">매출</TableCell>
                       {importData.매출.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-blue-600">▲1</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">매출이익</td>
+                      <TableCell className="py-2 px-3 text-center text-blue-600">▲1</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">매출이익</TableCell>
                       {importData.매출이익.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-blue-600">▲1</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">영업이익</td>
+                      <TableCell className="py-2 px-3 text-center text-blue-600">▲1</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">영업이익</TableCell>
                       {importData.영업이익.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center">0</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">물동량(ton)</td>
+                      <TableCell className="py-2 px-3 text-center">0</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">물동량(ton)</TableCell>
                       {importData.물동량.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value.toLocaleString()}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼20</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">인원(명)</td>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼20</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">인원(명)</TableCell>
                       {importData.인원.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center">0</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">건수(HBL)</td>
+                      <TableCell className="py-2 px-3 text-center">0</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">건수(HBL)</TableCell>
                       {importData.건수.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value.toLocaleString()}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼200</td>
-                    </tr>
-                    <tr className="border-b-2 border-slate-200">
-                      <td className="py-2 px-3 text-center font-medium text-slate-700">인당일평처리건수</td>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼200</TableCell>
+                    </TableRow>
+                    <TableRow className="border-b-2 border-slate-200">
+                      <TableCell className="py-2 px-3 text-center font-medium text-slate-700">인당일평처리건수</TableCell>
                       {importData.인당일평처리건수.map((value, index) => (
-                        <td key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
+                        <TableCell key={index} className={`py-2 px-3 text-center ${index === 4 ? 'font-medium bg-blue-50/50 border-x border-blue-200' : index % 2 === 0 ? 'bg-blue-50/30' : ''}`}>
                           {value}
-                        </td>
+                        </TableCell>
                       ))}
-                      <td className="py-2 px-3 text-center text-red-500">▼1</td>
-                    </tr>
-                  </tbody>
-                </table>
+                      <TableCell className="py-2 px-3 text-center text-red-500">▼1</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
             </Card>
           </motion.div>

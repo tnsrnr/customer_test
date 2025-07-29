@@ -394,66 +394,66 @@ export default function TopClientsPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {currentData.data.map((client, index) => (
-                        <TableRow 
-                          key={client.name}
-                          className={`hover:bg-slate-50 cursor-pointer transition-colors ${
-                            selectedClient === client.name ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                          }`}
-                          onClick={() => setSelectedClient(client.name)}
-                        >
-                          <TableCell className="font-medium text-slate-800 py-4">
-                            <div className="flex items-center gap-3">
-                              <span className="text-xl font-bold text-slate-400">#{index + 1}</span>
-                              <span className="text-lg">{client.name}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right py-4">
-                            {isInitialLoad ? (
-                              <CountUpAnimation 
-                                end={client.sales} 
-                                suffix="억원"
-                                className="font-bold text-slate-800 text-lg"
-                              />
-                            ) : (
-                              <span className="font-bold text-slate-800 text-lg">{client.sales.toLocaleString()}억원</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right py-4">
-                            {isInitialLoad ? (
-                              <CountUpAnimation 
-                                end={client.profit} 
-                                suffix="억원"
-                                className="font-bold text-green-600 text-lg"
-                              />
-                            ) : (
-                              <span className="font-bold text-green-600 text-lg">{client.profit.toLocaleString()}억원</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right py-4">
-                            {isInitialLoad ? (
-                              <CountUpAnimation 
-                                end={client.volume} 
-                                suffix="톤"
-                                className="font-medium text-slate-600 text-lg"
-                              />
-                            ) : (
-                              <span className="font-medium text-slate-600 text-lg">{client.volume.toLocaleString()}톤</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right py-4">
-                            <span className="font-bold text-blue-600 text-lg">{client.profitRatio}%</span>
-                          </TableCell>
-                          <TableCell className="text-center py-4">
-                            <GrowthIndicator 
-                              value={calculateGrowth(
-                                client.sales, 
-                                client.comparison.prevMonth.sales
-                              )} 
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {currentData.data.map((client, index) => {
+                        // division 카드 스타일 적용용 색상(예시)
+                        const colors = [
+                          'bg-blue-50/80 border-blue-200 text-blue-900 border-l-blue-500',
+                          'bg-slate-50/80 border-slate-200 text-slate-700 border-l-slate-500',
+                          'bg-amber-50/80 border-amber-200 text-amber-800 border-l-amber-500',
+                          'bg-green-50/80 border-green-200 text-green-800 border-l-green-500',
+                          'bg-purple-50/80 border-purple-200 text-purple-800 border-l-purple-500',
+                          'bg-orange-50/80 border-orange-200 text-orange-800 border-l-orange-500',
+                        ];
+                        const color = colors[index % colors.length];
+                        return (
+                          <TableRow
+                            key={client.name}
+                            className={`overflow-hidden backdrop-blur-sm border-l-4 ${color} transition-all duration-200 ${selectedClient === client.name ? 'ring-2 ring-blue-400 scale-[1.01]' : ''}`}
+                            onClick={() => setSelectedClient(client.name)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {/* 거래처명 + 순위 */}
+                            <TableCell className="py-4">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg font-bold text-slate-400">#{index + 1}</span>
+                                <span className={`text-base font-semibold ${color.split(' ')[2]}`}>{client.name}</span>
+                              </div>
+                            </TableCell>
+                            {/* 매출 */}
+                            <TableCell className="text-center py-4">
+                              <span className={`text-2xl font-bold ${color.split(' ')[2]}`}>{client.sales.toLocaleString()}</span>
+                              <span className="text-xs text-slate-500 ml-1">억원</span>
+                            </TableCell>
+                            {/* 수익 */}
+                            <TableCell className="text-center py-4">
+                              <span className={`text-lg font-semibold text-green-700`}>{client.profit.toLocaleString()}</span>
+                              <span className="text-xs text-slate-500 ml-1">억원</span>
+                            </TableCell>
+                            {/* 물량 */}
+                            <TableCell className="text-center py-4">
+                              <span className={`text-lg font-semibold text-purple-700`}>{client.volume.toLocaleString()}</span>
+                              <span className="text-xs text-slate-500 ml-1">톤</span>
+                            </TableCell>
+                            {/* 수익률 */}
+                            <TableCell className="text-center py-4">
+                              <span className="text-base font-bold text-orange-600">{client.profitRatio}%</span>
+                            </TableCell>
+                            {/* 트렌드 */}
+                            <TableCell className="text-center py-4">
+                              <GrowthIndicator value={calculateGrowth(client.sales, client.comparison.prevMonth.sales)} />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                      {/* 합계(총계) Row */}
+                      <TableRow className="bg-slate-600 text-white border-l-4 border-l-blue-700">
+                        <TableCell className="py-4 font-semibold">합 계</TableCell>
+                        <TableCell className="text-center py-4 text-2xl font-bold">{currentData.data.reduce((sum, c) => sum + c.sales, 0).toLocaleString()}<span className="text-xs ml-1">억원</span></TableCell>
+                        <TableCell className="text-center py-4 text-lg font-semibold">{currentData.data.reduce((sum, c) => sum + c.profit, 0).toLocaleString()}<span className="text-xs ml-1">억원</span></TableCell>
+                        <TableCell className="text-center py-4 text-lg font-semibold">{currentData.data.reduce((sum, c) => sum + c.volume, 0).toLocaleString()}<span className="text-xs ml-1">톤</span></TableCell>
+                        <TableCell className="text-center py-4 text-base font-bold text-orange-200">{(currentData.data.reduce((sum, c) => sum + c.profitRatio, 0) / currentData.data.length).toFixed(1)}%</TableCell>
+                        <TableCell className="text-center py-4 text-blue-200">-</TableCell>
+                      </TableRow>
                     </TableBody>
                   </Table>
                 </div>

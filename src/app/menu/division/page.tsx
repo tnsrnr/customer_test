@@ -1,6 +1,7 @@
 'use client';
 
 import { Card } from "@/components/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Plane, Ship, Truck, Warehouse, Building, Package } from "lucide-react";
 import { AuthGuard } from "@/components/auth-guard";
 
@@ -251,176 +252,178 @@ export default function DivisionPage() {
             <div className="col-span-9">
               <Card className="p-7 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
                 <div className="overflow-x-auto h-full">
-                  <table className="w-full h-full border-collapse">
-                    <thead>
-                      <tr className="text-lg border-b-2 border-slate-200">
-                        <th className="py-4 px-3 text-center font-bold text-slate-700 bg-slate-100 border-r-2 border-slate-200">구분</th>
-                        <th colSpan={7} className="py-2 px-2 text-center text-4xl font-bold tracking-[1em] text-blue-700 bg-blue-50/30 border-r-2 border-slate-200">매 출</th>
-                        <th colSpan={7} className="py-2 px-2 text-center text-4xl font-bold tracking-[1em] text-green-700 bg-green-50/30">영 업 이 익</th>
-                      </tr>
-                      <tr className="text-base border-b-2 border-slate-200">
-                        <th className="py-4 px-3 text-center font-bold text-slate-600 bg-slate-100 border-r-2 border-slate-200">부문</th>
+                  <Table>
+                    <TableHeader>
+                      {/* 첫 번째 헤더 행 - 매출/영업이익 구분 */}
+                      <TableRow className="text-lg border-b-2 border-slate-200">
+                        <TableHead className="py-4 px-3 text-center font-bold text-slate-700 bg-slate-100 border-r-2 border-slate-200">구분</TableHead>
+                        <TableHead colSpan={7} className="py-2 px-2 text-center text-4xl font-bold tracking-[1em] text-blue-700 bg-blue-50/30 border-r-2 border-slate-200">매 출</TableHead>
+                        <TableHead colSpan={7} className="py-2 px-2 text-center text-4xl font-bold tracking-[1em] text-green-700 bg-green-50/30">영 업 이 익</TableHead>
+                      </TableRow>
+                      {/* 두 번째 헤더 행 - 월별 헤더 */}
+                      <TableRow className="text-base border-b-2 border-slate-200">
+                        <TableHead className="py-4 px-3 text-center font-bold text-slate-600 bg-slate-100 border-r-2 border-slate-200">부문</TableHead>
                         {/* 매출 헤더 */}
-                        <th className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30">1월</th>
-                        <th className="py-4 px-3 text-center font-bold text-blue-600">2월</th>
-                        <th className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30">3월</th>
-                        <th className="py-4 px-3 text-center font-bold text-blue-600">4월</th>
-                        <th className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30 border-x-2 border-t-2 border-red-400">5월</th>
-                        <th className="py-4 px-3 text-center font-bold text-blue-600">누계</th>
-                        <th className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30 border-r-2 border-slate-200">전월비</th>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30">1월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600">2월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30">3월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600">4월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30 border-x-2 border-t-2 border-red-400">5월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600">누계</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-blue-600 bg-blue-50/30 border-r-2 border-slate-200">전월비</TableHead>
                         {/* 영업이익 헤더 */}
-                        <th className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30">1월</th>
-                        <th className="py-4 px-3 text-center font-bold text-green-600">2월</th>
-                        <th className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30">3월</th>
-                        <th className="py-4 px-3 text-center font-bold text-green-600">4월</th>
-                        <th className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30 border-x-2 border-t-2 border-red-400">5월</th>
-                        <th className="py-4 px-3 text-center font-bold text-green-600">누계</th>
-                        <th className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30">전월비</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-base">
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30">1월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600">2월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30">3월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600">4월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30 border-x-2 border-t-2 border-red-400">5월</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600">누계</TableHead>
+                        <TableHead className="py-4 px-3 text-center font-bold text-green-600 bg-green-50/30">전월비</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="text-base">
                       {/* 수출 */}
-                      <tr className="hover:bg-slate-50/50 border-b border-slate-200">
-                        <td className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">수출</td>
+                      <TableRow className="hover:bg-slate-50/50 border-b border-slate-200">
+                        <TableCell className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">수출</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center bg-blue-50/30">123</td>
-                        <td className="py-4 px-3 text-center">123</td>
-                        <td className="py-4 px-3 text-center bg-blue-50/30">123</td>
-                        <td className="py-4 px-3 text-center">123</td>
-                        <td className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">123</td>
-                        <td className="py-4 px-3 text-center font-medium">615</td>
-                        <td className="py-4 px-3 text-center border-r-2 border-slate-200">0%</td>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">123</TableCell>
+                        <TableCell className="py-4 px-3 text-center">123</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">123</TableCell>
+                        <TableCell className="py-4 px-3 text-center">123</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">123</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">615</TableCell>
+                        <TableCell className="py-4 px-3 text-center border-r-2 border-slate-200">0%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center bg-green-50/30">12</td>
-                        <td className="py-4 px-3 text-center">12</td>
-                        <td className="py-4 px-3 text-center bg-green-50/30">12</td>
-                        <td className="py-4 px-3 text-center">12</td>
-                        <td className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">12</td>
-                        <td className="py-4 px-3 text-center font-medium">60</td>
-                        <td className="py-4 px-3 text-center bg-green-50/30">0%</td>
-                      </tr>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">12</TableCell>
+                        <TableCell className="py-4 px-3 text-center">12</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">12</TableCell>
+                        <TableCell className="py-4 px-3 text-center">12</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">12</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">60</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">0%</TableCell>
+                      </TableRow>
                       {/* 해상 */}
-                      <tr className="hover:bg-slate-50/50 border-b border-slate-200">
-                        <td className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">해상</td>
+                      <TableRow className="hover:bg-slate-50/50 border-b border-slate-200">
+                        <TableCell className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">해상</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center bg-blue-50/30">41</td>
-                        <td className="py-4 px-3 text-center">40</td>
-                        <td className="py-4 px-3 text-center bg-blue-50/30">56</td>
-                        <td className="py-4 px-3 text-center">33</td>
-                        <td className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">33</td>
-                        <td className="py-4 px-3 text-center font-medium">203</td>
-                        <td className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲1%</td>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">41</TableCell>
+                        <TableCell className="py-4 px-3 text-center">40</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">56</TableCell>
+                        <TableCell className="py-4 px-3 text-center">33</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">33</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">203</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲1%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center text-red-600 bg-green-50/30">-0.7</td>
-                        <td className="py-4 px-3 text-center text-red-600">-1.0</td>
-                        <td className="py-4 px-3 text-center bg-green-50/30">0.9</td>
-                        <td className="py-4 px-3 text-center">0.2</td>
-                        <td className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">0.1</td>
-                        <td className="py-4 px-3 text-center text-red-600">-0.4</td>
-                        <td className="py-4 px-3 text-center text-blue-600 bg-green-50/30">▼40%</td>
-                      </tr>
+                        <TableCell className="py-4 px-3 text-center text-red-600 bg-green-50/30">-0.7</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600">-1.0</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">0.9</TableCell>
+                        <TableCell className="py-4 px-3 text-center">0.2</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">0.1</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600">-0.4</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-blue-600 bg-green-50/30">▼40%</TableCell>
+                      </TableRow>
                       {/* 운송 */}
-                      <tr className="hover:bg-slate-50/50 border-b border-slate-200">
-                        <td className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">운송</td>
+                      <TableRow className="hover:bg-slate-50/50 border-b border-slate-200">
+                        <TableCell className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">운송</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center bg-blue-50/30">26</td>
-                        <td className="py-4 px-3 text-center">27</td>
-                        <td className="py-4 px-3 text-center bg-blue-50/30">27</td>
-                        <td className="py-4 px-3 text-center">28</td>
-                        <td className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">26</td>
-                        <td className="py-4 px-3 text-center font-medium">134</td>
-                        <td className="py-4 px-3 text-center text-blue-600 border-r-2 border-slate-200">▼4%</td>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">26</TableCell>
+                        <TableCell className="py-4 px-3 text-center">27</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">27</TableCell>
+                        <TableCell className="py-4 px-3 text-center">28</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">26</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">134</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-blue-600 border-r-2 border-slate-200">▼4%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center bg-green-50/30">0.9</td>
-                        <td className="py-4 px-3 text-center">0.5</td>
-                        <td className="py-4 px-3 text-center bg-green-50/30">0.9</td>
-                        <td className="py-4 px-3 text-center">0.7</td>
-                        <td className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">0.5</td>
-                        <td className="py-4 px-3 text-center">3.4</td>
-                        <td className="py-4 px-3 text-center text-blue-600 bg-green-50/30">▼37%</td>
-                      </tr>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">0.9</TableCell>
+                        <TableCell className="py-4 px-3 text-center">0.5</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">0.9</TableCell>
+                        <TableCell className="py-4 px-3 text-center">0.7</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">0.5</TableCell>
+                        <TableCell className="py-4 px-3 text-center">3.4</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-blue-600 bg-green-50/30">▼37%</TableCell>
+                      </TableRow>
                       {/* 창고 */}
-                      <tr className="hover:bg-slate-50/50 border-b border-slate-200">
-                        <td className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">창고</td>
+                      <TableRow className="hover:bg-slate-50/50 border-b border-slate-200">
+                        <TableCell className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">창고</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center bg-blue-50/30">16</td>
-                        <td className="py-4 px-3 text-center">16</td>
-                        <td className="py-4 px-3 text-center bg-blue-50/30">16</td>
-                        <td className="py-4 px-3 text-center">16</td>
-                        <td className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">16</td>
-                        <td className="py-4 px-3 text-center font-medium">81</td>
-                        <td className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲3%</td>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">16</TableCell>
+                        <TableCell className="py-4 px-3 text-center">16</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">16</TableCell>
+                        <TableCell className="py-4 px-3 text-center">16</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">16</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">81</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲3%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center text-red-600 bg-green-50/30">-3.4</td>
-                        <td className="py-4 px-3 text-center text-red-600">-3.3</td>
-                        <td className="py-4 px-3 text-center text-red-600 bg-green-50/30">-3.4</td>
-                        <td className="py-4 px-3 text-center text-red-600">-4.2</td>
-                        <td className="py-4 px-3 text-center font-medium text-red-600 bg-green-50/30 border-x-2 border-red-400">-1.7</td>
-                        <td className="py-4 px-3 text-center text-red-600">-16.1</td>
-                        <td className="py-4 px-3 text-center text-red-600 bg-green-50/30">▲59%</td>
-                      </tr>
+                        <TableCell className="py-4 px-3 text-center text-red-600 bg-green-50/30">-3.4</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600">-3.3</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 bg-green-50/30">-3.4</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600">-4.2</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium text-red-600 bg-green-50/30 border-x-2 border-red-400">-1.7</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600">-16.1</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 bg-green-50/30">▲59%</TableCell>
+                      </TableRow>
                       {/* 도급 */}
-                      <tr className="hover:bg-slate-50/50 border-b border-slate-200">
-                        <td className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">도급</td>
+                      <TableRow className="hover:bg-slate-50/50 border-b border-slate-200">
+                        <TableCell className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">도급</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center bg-blue-50/30">18</td>
-                        <td className="py-4 px-3 text-center">17</td>
-                        <td className="py-4 px-3 text-center bg-blue-50/30">19</td>
-                        <td className="py-4 px-3 text-center">19</td>
-                        <td className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">20</td>
-                        <td className="py-4 px-3 text-center font-medium">93</td>
-                        <td className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲5%</td>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">18</TableCell>
+                        <TableCell className="py-4 px-3 text-center">17</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">19</TableCell>
+                        <TableCell className="py-4 px-3 text-center">19</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">20</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">93</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲5%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center bg-green-50/30">0.3</td>
-                        <td className="py-4 px-3 text-center">0.6</td>
-                        <td className="py-4 px-3 text-center bg-green-50/30">0.6</td>
-                        <td className="py-4 px-3 text-center">0.7</td>
-                        <td className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">0.6</td>
-                        <td className="py-4 px-3 text-center">2.8</td>
-                        <td className="py-4 px-3 text-center text-blue-600 bg-green-50/30">▼17%</td>
-                      </tr>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">0.3</TableCell>
+                        <TableCell className="py-4 px-3 text-center">0.6</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">0.6</TableCell>
+                        <TableCell className="py-4 px-3 text-center">0.7</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">0.6</TableCell>
+                        <TableCell className="py-4 px-3 text-center">2.8</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-blue-600 bg-green-50/30">▼17%</TableCell>
+                      </TableRow>
                       {/* 기타 */}
-                      <tr className="hover:bg-slate-50/50 border-b-2 border-slate-200">
-                        <td className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">기타</td>
+                      <TableRow className="hover:bg-slate-50/50 border-b-2 border-slate-200">
+                        <TableCell className="py-4 px-3 text-center font-medium text-slate-700 border-r-2 border-slate-200">기타</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center bg-blue-50/30">9</td>
-                        <td className="py-4 px-3 text-center">10</td>
-                        <td className="py-4 px-3 text-center bg-blue-50/30">9</td>
-                        <td className="py-4 px-3 text-center">11</td>
-                        <td className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">17</td>
-                        <td className="py-4 px-3 text-center font-medium">56</td>
-                        <td className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲59%</td>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">9</TableCell>
+                        <TableCell className="py-4 px-3 text-center">10</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-blue-50/30">9</TableCell>
+                        <TableCell className="py-4 px-3 text-center">11</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-blue-50/30 border-x-2 border-red-400">17</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">56</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 border-r-2 border-slate-200">▲59%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center bg-green-50/30">3.2</td>
-                        <td className="py-4 px-3 text-center">3.2</td>
-                        <td className="py-4 px-3 text-center bg-green-50/30">2.9</td>
-                        <td className="py-4 px-3 text-center">2.9</td>
-                        <td className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">3.0</td>
-                        <td className="py-4 px-3 text-center">15.3</td>
-                        <td className="py-4 px-3 text-center text-red-600 bg-green-50/30">▲3%</td>
-                      </tr>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">3.2</TableCell>
+                        <TableCell className="py-4 px-3 text-center">3.2</TableCell>
+                        <TableCell className="py-4 px-3 text-center bg-green-50/30">2.9</TableCell>
+                        <TableCell className="py-4 px-3 text-center">2.9</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-green-50/30 border-x-2 border-red-400">3.0</TableCell>
+                        <TableCell className="py-4 px-3 text-center">15.3</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-600 bg-green-50/30">▲3%</TableCell>
+                      </TableRow>
                       {/* 소계 */}
-                      <tr className="bg-slate-800 text-white">
-                        <td className="py-4 px-3 text-center font-medium border-r-2 border-slate-700">소계</td>
+                      <TableRow className="bg-slate-800 text-white">
+                        <TableCell className="py-4 px-3 text-center font-medium border-r-2 border-slate-700">소계</TableCell>
                         {/* 매출 데이터 */}
-                        <td className="py-4 px-3 text-center">175</td>
-                        <td className="py-4 px-3 text-center">165</td>
-                        <td className="py-4 px-3 text-center">195</td>
-                        <td className="py-4 px-3 text-center">211</td>
-                        <td className="py-4 px-3 text-center font-medium bg-red-600">188</td>
-                        <td className="py-4 px-3 text-center font-medium">934</td>
-                        <td className="py-4 px-3 text-center border-r-2 border-slate-700">▼11%</td>
+                        <TableCell className="py-4 px-3 text-center">175</TableCell>
+                        <TableCell className="py-4 px-3 text-center">165</TableCell>
+                        <TableCell className="py-4 px-3 text-center">195</TableCell>
+                        <TableCell className="py-4 px-3 text-center">211</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-red-600">188</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium">934</TableCell>
+                        <TableCell className="py-4 px-3 text-center border-r-2 border-slate-700">▼11%</TableCell>
                         {/* 영업이익 데이터 */}
-                        <td className="py-4 px-3 text-center text-red-300">-3.0</td>
-                        <td className="py-4 px-3 text-center text-red-300">-3.2</td>
-                        <td className="py-4 px-3 text-center">0.1</td>
-                        <td className="py-4 px-3 text-center text-red-300">-2.6</td>
-                        <td className="py-4 px-3 text-center font-medium bg-red-600">0.0</td>
-                        <td className="py-4 px-3 text-center text-red-300">-8.6</td>
-                        <td className="py-4 px-3 text-center">-</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                        <TableCell className="py-4 px-3 text-center text-red-300">-3.0</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-300">-3.2</TableCell>
+                        <TableCell className="py-4 px-3 text-center">0.1</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-300">-2.6</TableCell>
+                        <TableCell className="py-4 px-3 text-center font-medium bg-red-600">0.0</TableCell>
+                        <TableCell className="py-4 px-3 text-center text-red-300">-8.6</TableCell>
+                        <TableCell className="py-4 px-3 text-center">-</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
               </Card>
             </div>

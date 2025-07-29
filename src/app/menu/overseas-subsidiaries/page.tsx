@@ -517,27 +517,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-blue-100 rounded-xl">
-                <Building2 className="w-12 h-12 text-blue-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                <Building2 className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">진출현황</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <span className="text-5xl font-bold text-blue-600 leading-none">5</span>
-                <span className="text-xl font-medium text-blue-600 self-end mb-1">개국</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-5xl font-bold text-blue-600 leading-none">12</span>
-                <span className="text-xl font-medium text-blue-600 self-end mb-1">개 지법인</span>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">진출현황</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-blue-700 leading-none">5</span>
+                  <span className="ml-1 text-base font-semibold text-blue-700">개국</span>
+                </div>
               </div>
             </div>
+            <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">12개 지법인</span>
           </div>
         </motion.div>
 
@@ -546,21 +541,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-emerald-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-emerald-100 rounded-xl">
-                <SquareStack className="w-12 h-12 text-emerald-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-md">
+                <SquareStack className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">총 매출액</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">총 매출액</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-emerald-700 leading-none">245</span>
+                  <span className="ml-1 text-base font-semibold text-emerald-700">억원</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="text-6xl font-bold text-emerald-600 leading-none">245</span>
-              <span className="ml-2 text-2xl font-medium text-emerald-600 self-end mb-1">억원</span>
-            </div>
+            <span className="text-sm font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">글로벌 확장</span>
           </div>
         </motion.div>
 
@@ -569,24 +565,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-purple-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-purple-100 rounded-xl">
-                <BoxSelect className="w-12 h-12 text-purple-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                <BoxSelect className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">영업이익</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">영업이익</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-purple-700 leading-none">7</span>
+                  <span className="ml-1 text-base font-semibold text-purple-700">억원</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-purple-600 leading-none">7</span>
-                <span className="ml-2 text-2xl font-medium text-purple-600 self-end mb-1">억원</span>
-              </div>
-              <span className="text-base font-medium text-purple-400 mt-1">전월대비 ▲406%</span>
-            </div>
+            <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">▲ 406%</span>
           </div>
         </motion.div>
 
@@ -595,24 +589,22 @@ export default function Test7Page() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-sky-200/50 backdrop-blur-sm"
         >
-          <div className="flex items-center h-full">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="p-4 bg-sky-100 rounded-xl">
-                <PieChart className="w-12 h-12 text-sky-600" />
+          <div className="flex items-center justify-between h-full">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-sky-500 to-sky-600 rounded-lg shadow-md">
+                <PieChart className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-medium text-slate-600">영업이익률</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-base font-semibold text-slate-800">영업이익률</p>
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-sky-700 leading-none">2.9</span>
+                  <span className="ml-1 text-base font-semibold text-sky-700">%</span>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="flex items-center">
-                <span className="text-6xl font-bold text-sky-600 leading-none">2.9</span>
-                <span className="ml-2 text-2xl font-medium text-sky-600 self-end mb-1">%</span>
-              </div>
-              <span className="text-base font-medium text-sky-400 mt-1">전월대비 ▲2.5%p</span>
-            </div>
+            <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">▲ 2.4%p</span>
           </div>
         </motion.div>
       </div>

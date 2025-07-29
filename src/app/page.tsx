@@ -7,6 +7,9 @@ import {
   LogOut, User, TrendingUp, Target, Activity, Award, Calendar
 } from 'lucide-react';
 
+// 전역 Chart.js 설정 import
+import '@/lib/chart-config';
+
 interface SessionData {
   jsessionId: string;
   csrfToken: string;

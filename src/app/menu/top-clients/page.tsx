@@ -126,14 +126,15 @@ interface ClientData {
 }
 
 export default function TopClientsPage() {
-  const [showCharts, setShowCharts] = useState(false);
+  const [showCharts, setShowCharts] = useState(true);
   const [selectedTab, setSelectedTab] = useState<TransportType>('항공수출');
   const [selectedClient, setSelectedClient] = useState<string>('');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowCharts(true);
-    }, 500);
+      setIsInitialLoad(false);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -272,9 +273,40 @@ export default function TopClientsPage() {
 
   const getChartData = (selectedClient: string | null) => {
     if (!selectedClient) {
+      // 상위 5개 거래처의 합계 월별 데이터 계산
+      const top5Data = currentData.data.slice(0, 5);
+      const monthlySales = [0, 0, 0, 0, 0];
+      const monthlyProfit = [0, 0, 0, 0, 0];
+      
+      top5Data.forEach(client => {
+        client.monthlyData.sales.forEach((sale, index) => {
+          monthlySales[index] += sale;
+        });
+        client.monthlyData.profit.forEach((profit, index) => {
+          monthlyProfit[index] += profit;
+        });
+      });
+
       return {
         labels: ['1월', '2월', '3월', '4월', '5월'],
-        datasets: []
+        datasets: [
+          {
+            label: '총 매출 (상위 5개)',
+            data: monthlySales,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: '총 수익 (상위 5개)',
+            data: monthlyProfit,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+          }
+        ]
       };
     }
 
@@ -314,27 +346,6 @@ export default function TopClientsPage() {
   function TopClientsPageContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
-        {/* 배경 효과 */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-10" viewBox="0 0 400 400" fill="none">
-            <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
-          </svg>
-          <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-20" viewBox="0 0 512 512" fill="none">
-            <text
-              x="256"
-              y="320"
-              textAnchor="middle"
-              fontSize="110"
-              fontWeight="900"
-              fill="#3b82f6"
-              opacity="0.5"
-              style={{ letterSpacing: 32 }}
-            >
-              HTNS
-            </text>
-          </svg>
-        </div>
-
         <div className="relative z-10 p-6">
 
 
@@ -345,7 +356,10 @@ export default function TopClientsPage() {
                 <TabButton
                   key={key}
                   active={selectedTab === key}
-                  onClick={() => setSelectedTab(key as TransportType)}
+                  onClick={() => {
+                    setSelectedTab(key as TransportType);
+                    setSelectedClient(''); // 탭 변경 시 선택된 거래처 초기화
+                  }}
                   icon={value.icon}
                   label={key}
                 />
@@ -395,25 +409,37 @@ export default function TopClientsPage() {
                             </div>
                           </TableCell>
                           <TableCell className="text-right py-4">
-                            <CountUpAnimation 
-                              end={client.sales} 
-                              suffix="억원"
-                              className="font-bold text-slate-800 text-lg"
-                            />
+                            {isInitialLoad ? (
+                              <CountUpAnimation 
+                                end={client.sales} 
+                                suffix="억원"
+                                className="font-bold text-slate-800 text-lg"
+                              />
+                            ) : (
+                              <span className="font-bold text-slate-800 text-lg">{client.sales.toLocaleString()}억원</span>
+                            )}
                           </TableCell>
                           <TableCell className="text-right py-4">
-                            <CountUpAnimation 
-                              end={client.profit} 
-                              suffix="억원"
-                              className="font-bold text-green-600 text-lg"
-                            />
+                            {isInitialLoad ? (
+                              <CountUpAnimation 
+                                end={client.profit} 
+                                suffix="억원"
+                                className="font-bold text-green-600 text-lg"
+                              />
+                            ) : (
+                              <span className="font-bold text-green-600 text-lg">{client.profit.toLocaleString()}억원</span>
+                            )}
                           </TableCell>
                           <TableCell className="text-right py-4">
-                            <CountUpAnimation 
-                              end={client.volume} 
-                              suffix="톤"
-                              className="font-medium text-slate-600 text-lg"
-                            />
+                            {isInitialLoad ? (
+                              <CountUpAnimation 
+                                end={client.volume} 
+                                suffix="톤"
+                                className="font-medium text-slate-600 text-lg"
+                              />
+                            ) : (
+                              <span className="font-medium text-slate-600 text-lg">{client.volume.toLocaleString()}톤</span>
+                            )}
                           </TableCell>
                           <TableCell className="text-right py-4">
                             <span className="font-bold text-blue-600 text-lg">{client.profitRatio}%</span>
@@ -463,7 +489,7 @@ export default function TopClientsPage() {
                           <div className="grid grid-cols-2 gap-4">
                             <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
                               <div className="text-sm text-blue-600 font-medium">매출</div>
-                              <div className="text-2xl font-bold text-blue-800">{client.sales}억원</div>
+                              <div className="text-2xl font-bold text-blue-800">{client.sales.toLocaleString()}억원</div>
                               <GrowthIndicator 
                                 value={calculateGrowth(
                                   client.sales, 
@@ -473,7 +499,7 @@ export default function TopClientsPage() {
                             </div>
                             <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
                               <div className="text-sm text-green-600 font-medium">수익</div>
-                              <div className="text-2xl font-bold text-green-800">{client.profit}억원</div>
+                              <div className="text-2xl font-bold text-green-800">{client.profit.toLocaleString()}억원</div>
                               <GrowthIndicator 
                                 value={calculateGrowth(
                                   client.profit, 
@@ -506,7 +532,9 @@ export default function TopClientsPage() {
                           {/* 월별 차트 */}
                           {showCharts && (
                             <div className="mt-6">
-                              <h5 className="text-lg font-semibold text-slate-800 mb-3">월별 추이</h5>
+                              <h5 className="text-lg font-semibold text-slate-800 mb-3">
+                                {selectedClient ? '월별 추이' : '상위 5개 거래처 월별 추이'}
+                              </h5>
                               <div className="h-48">
                                 <Chart
                                   type="line"
@@ -570,9 +598,142 @@ export default function TopClientsPage() {
                     })()}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="text-slate-400 text-4xl mb-4">📊</div>
-                    <p className="text-slate-600">거래처를 선택하세요</p>
+                  <div className="space-y-4">
+                    {(() => {
+                      // 탑5개 거래처의 합계 계산
+                      const top5Data = currentData.data.slice(0, 5);
+                      const totalSales = top5Data.reduce((sum, client) => sum + client.sales, 0);
+                      const totalProfit = top5Data.reduce((sum, client) => sum + client.profit, 0);
+                      const totalVolume = top5Data.reduce((sum, client) => sum + client.volume, 0);
+                      const avgProfitRatio = top5Data.reduce((sum, client) => sum + client.profitRatio, 0) / top5Data.length;
+
+                      return (
+                        <>
+                          <div className="text-center">
+                            <h4 className="text-2xl font-bold text-slate-800 mb-2">탑 5 거래처 합계</h4>
+                            <p className="text-slate-600 mb-4">상위 5개 거래처 통합 정보</p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                              <div className="text-sm text-blue-600 font-medium">총 매출</div>
+                              {isInitialLoad ? (
+                                <CountUpAnimation 
+                                  end={totalSales} 
+                                  suffix="억원"
+                                  className="text-2xl font-bold text-blue-800"
+                                />
+                              ) : (
+                                <div className="text-2xl font-bold text-blue-800">{totalSales.toLocaleString()}억원</div>
+                              )}
+                              <div className="text-xs text-blue-600 mt-1">상위 5개 합계</div>
+                            </div>
+                            <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                              <div className="text-sm text-green-600 font-medium">총 수익</div>
+                              {isInitialLoad ? (
+                                <CountUpAnimation 
+                                  end={totalProfit} 
+                                  suffix="억원"
+                                  className="text-2xl font-bold text-green-800"
+                                />
+                              ) : (
+                                <div className="text-2xl font-bold text-green-800">{totalProfit.toLocaleString()}억원</div>
+                              )}
+                              <div className="text-xs text-green-600 mt-1">상위 5개 합계</div>
+                            </div>
+                            <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                              <div className="text-sm text-purple-600 font-medium">총 물량</div>
+                              {isInitialLoad ? (
+                                <CountUpAnimation 
+                                  end={totalVolume} 
+                                  suffix="톤"
+                                  className="text-2xl font-bold text-purple-800"
+                                />
+                              ) : (
+                                <div className="text-2xl font-bold text-purple-800">{totalVolume.toLocaleString()}톤</div>
+                              )}
+                              <div className="text-xs text-purple-600 mt-1">상위 5개 합계</div>
+                            </div>
+                            <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg">
+                              <div className="text-sm text-orange-600 font-medium">평균 수익률</div>
+                              {isInitialLoad ? (
+                                <CountUpAnimation 
+                                  end={avgProfitRatio} 
+                                  suffix="%"
+                                  className="text-2xl font-bold text-orange-800"
+                                />
+                              ) : (
+                                <div className="text-2xl font-bold text-orange-800">{avgProfitRatio.toFixed(1)}%</div>
+                              )}
+                              <div className="text-xs text-orange-600 mt-1">상위 5개 평균</div>
+                            </div>
+                          </div>
+
+                          {/* 월별 차트 */}
+                          {showCharts && (
+                            <div className="mt-6">
+                              <h5 className="text-lg font-semibold text-slate-800 mb-3">상위 5개 거래처 월별 추이</h5>
+                              <div className="h-48">
+                                <Chart
+                                  type="line"
+                                  data={getChartData(null)}
+                                  options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                      legend: {
+                                        display: true,
+                                        position: 'top',
+                                        labels: {
+                                          usePointStyle: true,
+                                          padding: 20,
+                                          color: '#475569',
+                                          font: {
+                                            weight: 600
+                                          }
+                                        }
+                                      },
+                                      tooltip: {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                        titleColor: '#1e293b',
+                                        bodyColor: '#1e293b',
+                                        borderColor: '#e2e8f0',
+                                        borderWidth: 1,
+                                        cornerRadius: 8
+                                      }
+                                    },
+                                    scales: {
+                                      x: {
+                                        grid: {
+                                          display: false
+                                        },
+                                        ticks: {
+                                          color: '#64748b',
+                                          font: {
+                                            weight: 500
+                                          }
+                                        }
+                                      },
+                                      y: {
+                                        grid: {
+                                          color: '#f1f5f9'
+                                        },
+                                        ticks: {
+                                          color: '#64748b',
+                                          font: {
+                                            weight: 500
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
               </Card>

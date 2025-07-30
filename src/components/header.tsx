@@ -108,7 +108,7 @@ export function Header() {
           {/* 로그아웃 버튼 */}
           <button
             onClick={handleLogout}
-            className="text-base text-blue-100 hover:text-red-300 hover:underline px-3 py-2 rounded-lg hover:bg-white/10 transition-colors border border-transparent hover:border-red-200"
+            className="text-base text-red-300 hover:text-red-200 hover:underline px-3 py-2 rounded-lg hover:bg-red-500/10 transition-colors border border-red-300/30 hover:border-red-200"
           >
             로그아웃
           </button>

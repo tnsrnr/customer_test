@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from "@/components/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Building2, TrendingUp, Package, DollarSign, BarChart2, ArrowUpRight, Plane, Ship, Truck, Train, ArrowDownRight, Minus, Trophy, LineChart } from 'lucide-react';
@@ -27,19 +27,23 @@ interface TabButtonProps {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
+  isAnimating?: boolean;
 }
 
-function TabButton({ active, onClick, icon, label }: TabButtonProps) {
+function TabButton({ active, onClick, icon, label, isAnimating = false }: TabButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${
+      className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 font-medium relative ${
         active 
           ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20' 
           : 'text-blue-200 hover:bg-white/10 hover:text-white hover:shadow-md backdrop-blur-sm'
       }`}
     >
-      {icon}
+      {/* 아이콘 애니메이션 컨테이너 */}
+      <div className="relative">
+        {icon}
+      </div>
       <span>{label}</span>
     </button>
   );
@@ -111,6 +115,8 @@ export default function TopClientsPage() {
   const [selectedTab, setSelectedTab] = useState<TransportType>('항공수출');
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [animatingTab, setAnimatingTab] = useState<string | null>(null);
+  const [pendingTabChange, setPendingTabChange] = useState<TransportType | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -252,7 +258,9 @@ export default function TopClientsPage() {
     }
   }
 
-  const getChartData = (selectedClient: string | null) => {
+  const currentData = transportData[selectedTab];
+
+  const chartData = useMemo(() => {
     if (!selectedClient) {
       // 상위 5개 거래처의 합계 월별 데이터 계산
       const top5Data = currentData.data.slice(0, 5);
@@ -320,9 +328,7 @@ export default function TopClientsPage() {
         }
       ]
     };
-  };
-
-  const currentData = transportData[selectedTab];
+  }, [selectedClient, currentData.data]);
 
   function TopClientsPageContent() {
     return (
@@ -331,21 +337,67 @@ export default function TopClientsPage() {
 
 
           {/* 탭 네비게이션 */}
-          <div className="mb-8">
+          <div className="mb-8 relative">
             <div className="flex flex-wrap gap-2 bg-white/10 backdrop-blur-sm rounded-2xl p-2">
               {Object.entries(transportData).map(([key, value]) => (
                 <TabButton
                   key={key}
                   active={selectedTab === key}
                   onClick={() => {
+                    // 즉시 화면 전환
                     setSelectedTab(key as TransportType);
                     setSelectedClient(''); // 탭 변경 시 선택된 거래처 초기화
+                    
+                    // 애니메이션 시작 (화면 전환과 독립적)
+                    setAnimatingTab(key);
+                    
+                    // 3초 후 애니메이션만 종료
+                    setTimeout(() => {
+                      setAnimatingTab(null);
+                    }, 3000);
                   }}
                   icon={value.icon}
                   label={key}
+                  isAnimating={animatingTab === key}
                 />
               ))}
             </div>
+            
+            {/* 오른쪽 노란색 선 영역 */}
+            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-r from-transparent via-yellow-400/30 to-yellow-400/50 rounded-r-2xl pointer-events-none">
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-yellow-400 rounded-full"></div>
+              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-yellow-400 rounded-full"></div>
+            </div>
+            
+            {/* 애니메이션 아이콘 - 전체 영역에서 움직임 */}
+            {animatingTab && (
+              <motion.div
+                className="absolute z-50 pointer-events-none"
+                initial={{ 
+                  x: 850, // 철도 아이콘 옆에서 시작 (50px 더 오른쪽)
+                  y: 0, 
+                  opacity: 1, 
+                  scale: 1.2 
+                }}
+                animate={{ 
+                  x: [850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450], 
+                  y: [0, -5, 5, -3, 0, 3, -3, 0, 2, -2, 0, 0, 0],
+                  opacity: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                  scale: [1.2, 1.3, 1.2, 1.25, 1.2, 1.3, 1.2, 1.25, 1.2, 1.3, 1.2, 1.25, 1]
+                }}
+                transition={{ 
+                  duration: 3,
+                  ease: "easeInOut"
+                }}
+                style={{
+                  left: '20px', // 탭 버튼 시작 위치
+                  top: '40%', // 더 위로 이동
+                  transform: 'translateY(-50%)'
+                }}
+              >
+                {transportData[animatingTab as TransportType]?.icon}
+              </motion.div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -519,7 +571,7 @@ export default function TopClientsPage() {
                               <div className="h-48">
                                 <Chart
                                   type="line"
-                                  data={getChartData(selectedClient)}
+                                  data={chartData}
                                   options={{
                                     responsive: true,
                                     maintainAspectRatio: false,
@@ -657,7 +709,7 @@ export default function TopClientsPage() {
                               <div className="h-48">
                                 <Chart
                                   type="line"
-                                  data={getChartData(null)}
+                                  data={chartData}
                                   options={{
                                     responsive: true,
                                     maintainAspectRatio: false,

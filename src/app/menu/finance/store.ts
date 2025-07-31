@@ -1,37 +1,55 @@
 import { create } from 'zustand';
 import { FinanceData } from './types';
 
+// 세션 정보 가져오기
+const getSessionInfo = () => {
+  try {
+    const sessionData = localStorage.getItem('htns-session');
+    if (sessionData) {
+      return JSON.parse(sessionData);
+    }
+  } catch (error) {
+    console.error('❌ 세션 정보 읽기 실패:', error);
+  }
+  return null;
+};
+
 // API 호출 함수
 const fetchFinanceAPI = async () => {
-  const sessionData = localStorage.getItem('htns-session');
-  if (!sessionData) {
-    throw new Error('세션이 없습니다.');
-  }
-
-  const session = JSON.parse(sessionData);
-  
   console.log('🔍 재무 API 호출 시작');
-  console.log('🔍 세션 정보:', { jsessionId: session.jsessionId, csrfToken: session.csrfToken });
+  
+  // 세션 정보 가져오기
+  const session = getSessionInfo();
+  if (!session) {
+    throw new Error('세션이 없습니다. 다시 로그인해주세요.');
+  }
+  
+  console.log('🔑 사용할 세션:', { jsessionId: session.jsessionId, csrfToken: session.csrfToken });
   
   // 프록시 API에 맞는 요청 데이터
   const requestData = {
-    // API 요청 파라미터
-    param1: 'value1',
-    param2: 'value2',
-    // 세션 정보
-    jsessionId: session.jsessionId,
-    csrfToken: session.csrfToken
+    MIS030231F1: {
+      BASE_YEAR: "2025",
+      crudState: "I"
+    },
+    page: 1,
+    start: 0,
+    limit: 25,
+    pageId: "MIS030231V"
   };
   
   console.log('🔍 요청 데이터:', requestData);
   
-  // 프록시 API 호출 (path 쿼리 파라미터 사용)
-  const response = await fetch('/auth/api/proxy?path=/MIS030231SVC/getTest1', {
+  // 프록시 API 호출 (세션 정보를 헤더로 전송)
+  const timestamp = Date.now();
+  const response = await fetch(`/auth/api/proxy?path=/api/MIS030231SVC/getTest1?_dc=${timestamp}`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json;charset=UTF-8',
       'X-Requested-With': 'XMLHttpRequest',
-      'ajax': 'true'
+      'ajax': 'true',
+      'X-Session-JSESSIONID': session.jsessionId,
+      'X-Session-CSRF-TOKEN': session.csrfToken
     },
     body: JSON.stringify(requestData)
   });
@@ -46,6 +64,17 @@ const fetchFinanceAPI = async () => {
 
   const result = await response.json();
   console.log('✅ API 호출 성공:', result);
+  console.log('🔍 응답 데이터 타입:', typeof result);
+  console.log('🔍 응답 데이터 키:', Object.keys(result));
+  console.log('🔍 응답 데이터 길이:', JSON.stringify(result).length);
+  
+  // 세션 만료 처리
+  if (result.status === 401 && result.redirect) {
+    console.log('⚠️ 세션 만료, 로그인 페이지로 리다이렉트');
+    window.location.href = '/auth';
+    return null;
+  }
+  
   return result;
 };
 
@@ -126,13 +155,11 @@ interface FinanceStore {
   reset: () => void;
 }
 
-export const useFinanceStore = create<FinanceStore>((set, get) => ({
-  // 초기 상태
+export const useFinanceStore = create<FinanceStore>((set) => ({
   data: null,
   loading: false,
   error: null,
   
-  // 재무 데이터 조회
   fetchFinanceData: async () => {
     try {
       set({ loading: true, error: null });
@@ -158,15 +185,8 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
     }
   },
   
-  // 데이터 설정
   setData: (data) => set({ data }),
-  
-  // 로딩 상태 설정
   setLoading: (loading) => set({ loading }),
-  
-  // 에러 설정
   setError: (error) => set({ error }),
-  
-  // 상태 초기화
-  reset: () => set({ data: null, loading: false, error: null }),
+  reset: () => set({ data: null, loading: false, error: null })
 })); 

@@ -16,11 +16,13 @@ interface CompanyPerformanceStore {
   data: CompanyPerformanceData | null;
   loading: boolean;
   error: string | null;
+  periodType: 'monthly' | 'cumulative';
   
   fetchData: () => Promise<void>;
   setData: (data: CompanyPerformanceData) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setPeriodType: (type: 'monthly' | 'cumulative') => void;
   reset: () => void;
 }
 
@@ -28,6 +30,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set) 
   data: null,
   loading: false,
   error: null,
+  periodType: 'cumulative',
   
   fetchData: async () => {
     try {
@@ -44,5 +47,6 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set) 
   setData: (data) => set({ data }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
-  reset: () => set({ data: null, loading: false, error: null }),
+  setPeriodType: (periodType) => set({ periodType }),
+  reset: () => set({ data: null, loading: false, error: null, periodType: 'cumulative' }),
 })); 

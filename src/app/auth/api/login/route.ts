@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { setSession } from '../../session';
 
 export async function POST(request: NextRequest) {
   try {
@@ -226,6 +227,7 @@ export async function POST(request: NextRequest) {
       
       return NextResponse.json({
         success: true,
+        message: '로그인 성공',
         user: user
       });
     } else {

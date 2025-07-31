@@ -6,8 +6,8 @@ import { Card } from '@/components/card';
 import { Lock, User } from 'lucide-react';
 
 export default function AuthPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('tnsrnr');
+  const [password, setPassword] = useState('tnsrnr');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,8 +52,24 @@ export default function AuthPage() {
         localStorage.setItem('htns-session', JSON.stringify({
           jsessionId: data.user.jsessionId,
           csrfToken: data.user.csrfToken,
-          user: data.user
+          username: data.user.name,
+          loginTime: Date.now()
         }));
+        
+        // 브라우저 쿠키 동기화
+        // 기존 CSRF 토큰 쿠키들 모두 삭제
+        document.cookie = 'X-CSRF-TOKEN=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'X_CSRF_TOKEN=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'x-csrf-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        
+        // 새로운 세션 쿠키 설정
+        document.cookie = `JSESSIONID=${data.user.jsessionId}; path=/; SameSite=Strict`;
+        document.cookie = `X-CSRF-TOKEN=${data.user.csrfToken}; path=/; SameSite=Strict`;
+        
+        console.log('✅ 세션 저장 완료:', {
+          jsessionId: data.user.jsessionId,
+          csrfToken: data.user.csrfToken
+        });
         
         // 로그인 성공 시 메인 페이지로 이동
         setTimeout(() => {
@@ -184,7 +200,7 @@ export default function AuthPage() {
         <div className="mt-8 text-center text-xs text-slate-500 select-none">
           <p>인증서버: <span className="font-semibold text-blue-600">qa-lv1.htns.com</span></p>
           <p>테스트 계정: <span className="font-semibold text-blue-600">tnsrnr</span></p>
-          <p>비밀번호: <span className="font-semibold text-blue-600">tnsrnr1234</span></p>
+          <p>비밀번호: <span className="font-semibold text-blue-600">tnsrnr</span></p>
         </div>
       </Card>
     </div>

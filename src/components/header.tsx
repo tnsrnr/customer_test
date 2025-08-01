@@ -31,7 +31,30 @@ export function Header() {
   };
 
   const handleGlobalRefresh = () => {
-    triggerGlobalRefresh();
+    const currentPage = pathname || '';
+    console.log('🔍 조회 버튼 클릭 - 현재 페이지:', currentPage);
+    
+    // 현재 페이지에 따라 다른 조회 로직 실행
+    if (currentPage.includes('/menu/company-performance')) {
+      console.log('📊 company-performance 페이지 조회 실행');
+      // company-performance 페이지의 경우 kpiMetrics API 호출
+      triggerGlobalRefresh();
+    } else if (currentPage.includes('/menu/personnel')) {
+      console.log('👥 personnel 페이지 조회 실행');
+      triggerGlobalRefresh();
+    } else if (currentPage.includes('/menu/hq-performance')) {
+      console.log('🏢 hq-performance 페이지 조회 실행');
+      triggerGlobalRefresh();
+    } else if (currentPage.includes('/menu/finance')) {
+      console.log('💰 finance 페이지 조회 실행');
+      triggerGlobalRefresh();
+    } else if (currentPage.includes('/menu/division')) {
+      console.log('📈 division 페이지 조회 실행');
+      triggerGlobalRefresh();
+    } else {
+      console.log('🔄 일반 페이지 조회 실행');
+      triggerGlobalRefresh();
+    }
   };
 
   const toggleMenus = () => {

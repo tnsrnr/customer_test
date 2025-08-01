@@ -149,7 +149,7 @@ export default function HomePage() {
         <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-50 animate-pulse-slow" viewBox="0 0 512 512" fill="none">
           <text
             x="256"
-            y="420"
+            y="480"
             textAnchor="middle"
             fontSize="110"
             fontWeight="900"
@@ -174,8 +174,9 @@ export default function HomePage() {
             <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30">
               <Globe className="w-8 h-8 text-white" />
             </div>
-            <div>
-              <p className="text-blue-200 text-3xl font-bold">(HTNS그룹사) 경영실적 대시보드</p>
+            <div className="text-center">
+              <p className="text-blue-200 text-3xl font-bold mb-1">HTNS 그룹사</p>
+              <p className="text-blue-200 text-2xl font-semibold">경영실적 대시보드</p>
             </div>
           </motion.div>
           

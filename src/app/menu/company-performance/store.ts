@@ -60,14 +60,59 @@ const fetchKpiMetrics = async (): Promise<CompanyPerformanceData['kpiMetrics']> 
 
 const fetchGridData = async (): Promise<CompanyPerformanceData['gridData']> => {
   try {
-    // 실제 API 호출 시에는 여기에 실제 엔드포인트를 사용
-    // const response = await fetch('/api/company-performance/grid-data');
-    // if (!response.ok) {
-    //   throw new Error('그리드 데이터 조회에 실패했습니다.');
-    // }
-    // return response.json();
+    // 실제 서버 API 호출 (Spring 서버 사용, POST 메서드)
+    const response = await fetch('/auth/api/proxy?path=/api/MIS030231SVC/getTest3&server=spring', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        MIS030231F1: {
+          BASE_YEAR: "2025",
+          crudState: "I"
+        },
+        page: 1,
+        start: 0,
+        limit: 25,
+        pageId: "MIS030231V"
+      })
+    });
     
-    // 원래 이미지 데이터로 복원
+    const responseData = await response.json();
+    
+    // HTML 응답이 오는 경우 (세션 만료)
+    if (responseData.data && responseData.data.includes('<!DOCTYPE html')) {
+      console.error('세션이 만료되었습니다. 다시 로그인해주세요.');
+      throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    
+    if (!response.ok) {
+      throw new Error('그리드 데이터 조회에 실패했습니다.');
+    }
+    
+    // 실제 서버 응답 구조에서 데이터 추출
+    if (responseData.MIS030231T3 && responseData.MIS030231T3.length > 0) {
+      const gridData = responseData.MIS030231T3.map((item: any) => ({
+        name: item.DIVISION,
+        plannedSales: Math.round(item.PLANNED_SALES / 100000000), // 억원 단위로 변환
+        plannedOpProfit: Math.round(item.PLANNED_OP_PROFIT / 100000000), // 억원 단위로 변환
+        plannedOpMargin: item.PLANNED_OP_MARGIN,
+        actualSales: Math.round(item.ACTUAL_SALES / 100000000), // 억원 단위로 변환
+        actualOpProfit: Math.round(item.ACTUAL_OP_PROFIT / 100000000), // 억원 단위로 변환
+        actualOpMargin: item.ACTUAL_OP_MARGIN,
+        salesAchievement: item.SALES_ACHIEVEMENT,
+        opProfitAchievement: item.OP_PROFIT_ACHIEVEMENT
+      }));
+      
+      return {
+        divisions: gridData
+      };
+    }
+    
+    throw new Error('데이터 형식이 올바르지 않습니다.');
+  } catch (error) {
+    console.warn('서버 API 호출 실패, 목 데이터 사용:', error);
+    // API 호출 실패 시 목 데이터 반환
     return {
       divisions: [
         { name: '본사', revenue: 934, profit: -9, margin: -0.9, growth: 0, change: 0 },
@@ -76,8 +121,6 @@ const fetchGridData = async (): Promise<CompanyPerformanceData['gridData']> => {
         { name: '합계', revenue: 2619, profit: 26, margin: 1.0, growth: 0, change: 0 }
       ]
     };
-  } catch (error) {
-    throw new Error('그리드 데이터 조회에 실패했습니다.');
   }
 };
 

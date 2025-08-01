@@ -4,12 +4,15 @@ import { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 
 interface DivisionData {
-  name: string;
-  revenue: number;
-  profit: number;
-  margin: number;
-  growth: number;
-  change: number;
+  name: string;                    // DIVISION
+  plannedSales: number;            // PLANNED_SALES (억원)
+  plannedOpProfit: number;         // PLANNED_OP_PROFIT (억원)
+  plannedOpMargin: number;         // PLANNED_OP_MARGIN (%)
+  actualSales: number;             // ACTUAL_SALES (억원)
+  actualOpProfit: number;          // ACTUAL_OP_PROFIT (억원)
+  actualOpMargin: number;          // ACTUAL_OP_MARGIN (%)
+  salesAchievement: number;        // SALES_ACHIEVEMENT (%)
+  opProfitAchievement: number;     // OP_PROFIT_ACHIEVEMENT (%)
 }
 
 interface PerformanceTableProps {
@@ -115,36 +118,40 @@ export function PerformanceTable({ data, loading }: PerformanceTableProps) {
               <TableCell className="text-white font-semibold text-xl text-center border-r border-white/20 py-4">
                 {division.name}
               </TableCell>
-              {/* 계획 데이터 (임시로 0으로 설정) */}
+              {/* 계획 데이터 */}
               <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
-                0
+                {division.plannedSales.toLocaleString()}
               </TableCell>
-              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
-                0
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
+                division.plannedOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'
+              }`}>
+                {division.plannedOpProfit >= 0 ? '+' : ''}{division.plannedOpProfit}
               </TableCell>
-              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
-                0%
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
+                division.plannedOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'
+              }`}>
+                {division.plannedOpMargin >= 0 ? '+' : ''}{division.plannedOpMargin}%
               </TableCell>
               {/* 실적 데이터 */}
               <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
-                {division.revenue.toLocaleString()}
+                {division.actualSales.toLocaleString()}
               </TableCell>
               <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
-                division.profit >= 0 ? 'text-emerald-400' : 'text-red-400'
+                division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
-                {division.profit >= 0 ? '+' : ''}{division.profit}
+                {division.actualOpProfit >= 0 ? '+' : ''}{division.actualOpProfit}
               </TableCell>
               <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
-                division.margin >= 0 ? 'text-emerald-400' : 'text-red-400'
+                division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
-                {division.margin >= 0 ? '+' : ''}{division.margin}%
+                {division.actualOpMargin >= 0 ? '+' : ''}{division.actualOpMargin}%
               </TableCell>
-              {/* 달성율 데이터 (임시로 0으로 설정) */}
+              {/* 달성율 데이터 */}
               <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
-                0%
+                {division.salesAchievement}%
               </TableCell>
               <TableCell className="text-white text-xl text-center py-4">
-                0%
+                {division.opProfitAchievement}%
               </TableCell>
             </TableRow>
           ))}

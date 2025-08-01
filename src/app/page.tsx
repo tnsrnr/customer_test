@@ -101,6 +101,8 @@ export default function HomePage() {
         const parsedSession = JSON.parse(sessionData);
         if (parsedSession.jsessionId && parsedSession.csrfToken) {
           setSession(parsedSession);
+          // 로그인 시 랜덤 탭 선택
+          setSelectedTab(Math.floor(Math.random() * 5));
         } else {
           router.push('/auth');
         }

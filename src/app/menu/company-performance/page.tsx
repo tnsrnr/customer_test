@@ -214,101 +214,111 @@ export default function CompanyPerformancePage() {
                     <Percent className="w-5 h-5" />
                     달성율
                   </div>
-                  <div className="grid grid-cols-2 gap-4 relative">
-                    {/* 매출액 도넛 차트 */}
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="text-sm font-medium text-blue-100">매출액</div>
-                        <div className="text-xs text-blue-200">단위: 억원</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-20 h-20">
-                          <Doughnut
-                            data={{
-                              labels: ['달성', '미달성'],
-                              datasets: [{
-                                data: [73, 27],
-                                backgroundColor: ['#3b82f6', '#64748b'],
-                                borderWidth: 0
-                              }]
-                            }}
-                            options={{
-                              responsive: true,
-                              maintainAspectRatio: false,
-                              cutout: '70%',
-                              plugins: {
-                                legend: {
-                                  display: false
+                  {data?.chartData1 && data.chartData1.labels.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-4 relative">
+                      {/* 매출액 도넛 차트 */}
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <div className="text-sm font-medium text-blue-100">매출액</div>
+                          <div className="text-xs text-blue-200">단위: 억원</div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-20 h-20">
+                            <Doughnut
+                              data={{
+                                labels: ['달성', '미달성'],
+                                datasets: [{
+                                  data: [data.chartData1.datasets[0].data[1], data.chartData1.datasets[0].data[0] - data.chartData1.datasets[0].data[1]],
+                                  backgroundColor: ['#3b82f6', '#64748b'],
+                                  borderWidth: 0
+                                }]
+                              }}
+                              options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '70%',
+                                plugins: {
+                                  legend: {
+                                    display: false
+                                  }
                                 }
-                              }
-                            }}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-blue-100">73%</div>
+                              }}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-lg font-bold text-blue-100">
+                                  {Math.round((data.chartData1.datasets[0].data[1] / data.chartData1.datasets[0].data[0]) * 100)}%
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-center text-xs text-blue-100">
+                            <div className="flex items-center whitespace-nowrap mb-1">
+                              <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
+                              계획: {data.chartData1.datasets[0].data[0].toLocaleString()}
+                            </div>
+                            <div className="flex items-center whitespace-nowrap">
+                              <span className="inline-block w-2 h-2 bg-blue-500 mr-1.5"></span>
+                              실적: {data.chartData1.datasets[0].data[1].toLocaleString()}
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-center text-xs text-blue-100">
-                          <div className="flex items-center whitespace-nowrap mb-1">
-                            <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
-                            계획: 3,586
-                          </div>
-                          <div className="flex items-center whitespace-nowrap">
-                            <span className="inline-block w-2 h-2 bg-blue-500 mr-1.5"></span>
-                            실적: 2,619
-                          </div>
-                        </div>
                       </div>
-                    </div>
 
-                    {/* 영업이익 도넛 차트 */}
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="text-sm font-medium text-blue-100">영업이익</div>
-                        <div className="text-xs text-blue-200">단위: 억원</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-20 h-20">
-                          <Doughnut
-                            data={{
-                              labels: ['달성', '미달성'],
-                              datasets: [{
-                                data: [28, 72],
-                                backgroundColor: ['#10b981', '#64748b'],
-                                borderWidth: 0
-                              }]
-                            }}
-                            options={{
-                              responsive: true,
-                              maintainAspectRatio: false,
-                              cutout: '70%',
-                              plugins: {
-                                legend: {
-                                  display: false
+                      {/* 영업이익 도넛 차트 */}
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <div className="text-sm font-medium text-blue-100">영업이익</div>
+                          <div className="text-xs text-blue-200">단위: 억원</div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-20 h-20">
+                            <Doughnut
+                              data={{
+                                labels: ['달성', '미달성'],
+                                datasets: [{
+                                  data: [data.chartData1.datasets[1].data[1], data.chartData1.datasets[1].data[0] - data.chartData1.datasets[1].data[1]],
+                                  backgroundColor: ['#10b981', '#64748b'],
+                                  borderWidth: 0
+                                }]
+                              }}
+                              options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '70%',
+                                plugins: {
+                                  legend: {
+                                    display: false
+                                  }
                                 }
-                              }
-                            }}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-emerald-100">28%</div>
+                              }}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-lg font-bold text-emerald-100">
+                                  {Math.round((data.chartData1.datasets[1].data[1] / data.chartData1.datasets[1].data[0]) * 100)}%
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col justify-center text-xs text-blue-100">
-                          <div className="flex items-center whitespace-nowrap mb-1">
-                            <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
-                            계획: 94
-                          </div>
-                          <div className="flex items-center whitespace-nowrap">
-                            <span className="inline-block w-2 h-2 bg-emerald-500 mr-1.5"></span>
-                            실적: 26
+                          <div className="flex flex-col justify-center text-xs text-blue-100">
+                            <div className="flex items-center whitespace-nowrap mb-1">
+                              <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
+                              계획: {data.chartData1.datasets[1].data[0].toLocaleString()}
+                            </div>
+                            <div className="flex items-center whitespace-nowrap">
+                              <span className="inline-block w-2 h-2 bg-emerald-500 mr-1.5"></span>
+                              실적: {data.chartData1.datasets[1].data[1].toLocaleString()}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-32 text-white/50">
+                      데이터를 불러오는 중...
+                    </div>
+                  )}
                 </div>
               </Card>
 
@@ -322,77 +332,65 @@ export default function CompanyPerformancePage() {
                   </div>
                   <div className="text-xs text-slate-200 text-right mb-2">단위: 억원</div>
                   <div style={{ height: '140px' }}>
-                    <Bar 
-                      data={{
-                        labels: ['본사', '국내자회사', '해외자회사'],
-                        datasets: [
-                          {
-                            label: '계획',
-                            data: [1195, 376, 2015],
-                            backgroundColor: '#94a3b8',
-                            borderRadius: 0,
-                            barThickness: 20,
-                          },
-                          {
-                            label: '실적',
-                            data: [934, 294, 1392],
-                            backgroundColor: '#475569',
-                            borderRadius: 0,
-                            barThickness: 20,
-                          }
-                        ]
-                      }}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            display: true,
-                            position: 'top',
-                            align: 'end',
-                            labels: {
-                              boxWidth: 12,
-                              padding: 12,
-                              color: '#f1f5f9',
-                              font: {
-                                size: 11,
-                                weight: 'normal'
-                              }
-                            }
-                          }
-                        },
-                        scales: {
-                          y: {
-                            beginAtZero: true,
-                            border: {
-                              display: false
-                            },
-                            grid: {
-                              color: '#475569'
-                            },
-                            ticks: {
-                              color: '#f1f5f9',
-                              font: {
-                                size: 11,
-                                weight: 'normal'
+                    {data?.chartData2 && data.chartData2.labels.length > 0 ? (
+                      <Bar 
+                        data={data.chartData2}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: {
+                              display: true,
+                              position: 'top',
+                              align: 'end',
+                              labels: {
+                                boxWidth: 12,
+                                padding: 12,
+                                color: '#f1f5f9',
+                                font: {
+                                  size: 11,
+                                  weight: 'normal'
+                                }
                               }
                             }
                           },
-                          x: {
-                            grid: {
-                              display: false
+                          scales: {
+                            y: {
+                              beginAtZero: true,
+                              border: {
+                                display: false
+                              },
+                              grid: {
+                                color: '#475569'
+                              },
+                              ticks: {
+                                color: '#f1f5f9',
+                                font: {
+                                  size: 11,
+                                  weight: 'normal'
+                                }
+                              }
                             },
-                            ticks: {
-                              color: '#f1f5f9',
-                              font: {
-                                size: 11,
-                                weight: 'normal'
+                            x: {
+                              grid: {
+                                display: false
+                              },
+                              ticks: {
+                                color: '#f1f5f9',
+                                font: {
+                                  size: 11,
+                                  weight: 'normal'
+                                }
                               }
                             }
                           }
-                        }
-                      }}
-                    />
+                        }}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-white/50">
+                        데이터를 불러오는 중...
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -407,77 +405,65 @@ export default function CompanyPerformancePage() {
                   </div>
                   <div className="text-xs text-slate-200 text-right mb-2">단위: 억원</div>
                   <div style={{ height: '140px' }}>
-                    <Bar
-                      data={{
-                        labels: ['본사', '국내자회사', '해외자회사'],
-                        datasets: [
-                          {
-                            label: '계획',
-                            data: [37, 11, 46],
-                            backgroundColor: '#94a3b8',
-                            borderRadius: 0,
-                            barThickness: 20,
-                          },
-                          {
-                            label: '실적',
-                            data: [-9, 3, 32],
-                            backgroundColor: '#475569',
-                            borderRadius: 0,
-                            barThickness: 20,
-                          }
-                        ]
-                      }}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            display: true,
-                            position: 'top',
-                            align: 'end',
-                            labels: {
-                              boxWidth: 12,
-                              padding: 12,
-                              color: '#f1f5f9',
-                              font: {
-                                size: 11,
-                                weight: 'normal'
-                              }
-                            }
-                          }
-                        },
-                        scales: {
-                          y: {
-                            beginAtZero: true,
-                            border: {
-                              display: false
-                            },
-                            grid: {
-                              color: '#475569'
-                            },
-                            ticks: {
-                              color: '#f1f5f9',
-                              font: {
-                                size: 11,
-                                weight: 'normal'
+                    {data?.chartData3 && data.chartData3.labels.length > 0 ? (
+                      <Bar
+                        data={data.chartData3}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: {
+                              display: true,
+                              position: 'top',
+                              align: 'end',
+                              labels: {
+                                boxWidth: 12,
+                                padding: 12,
+                                color: '#f1f5f9',
+                                font: {
+                                  size: 11,
+                                  weight: 'normal'
+                                }
                               }
                             }
                           },
-                          x: {
-                            grid: {
-                              display: false
+                          scales: {
+                            y: {
+                              beginAtZero: true,
+                              border: {
+                                display: false
+                              },
+                              grid: {
+                                color: '#475569'
+                              },
+                              ticks: {
+                                color: '#f1f5f9',
+                                font: {
+                                  size: 11,
+                                  weight: 'normal'
+                                }
+                              }
                             },
-                            ticks: {
-                              color: '#f1f5f9',
-                              font: {
-                                size: 11,
-                                weight: 'normal'
+                            x: {
+                              grid: {
+                                display: false
+                              },
+                              ticks: {
+                                color: '#f1f5f9',
+                                font: {
+                                  size: 11,
+                                  weight: 'normal'
+                                }
                               }
                             }
                           }
-                        }
-                      }}
-                    />
+                        }}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-white/50">
+                        데이터를 불러오는 중...
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>

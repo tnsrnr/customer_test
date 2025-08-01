@@ -52,32 +52,55 @@ export function PerformanceTable({ data, loading }: PerformanceTableProps) {
                 backdropFilter: 'blur(12px)'
               }}
             >
-              부문
+              구분
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
+              colSpan={3}
             >
-              매출 (억원)
+              계획 ('25년 5월 누적)
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
+              colSpan={3}
             >
-              영업이익 (억원)
-            </TableHead>
-            <TableHead 
-              className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
-            >
-              이익률 (%)
-            </TableHead>
-            <TableHead 
-              className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
-            >
-              성장률 (%)
+              실적 ('25년 5월 누적)
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md py-4"
+              colSpan={2}
             >
-              변화율 (%)
+              달성율 (계획 比)
+            </TableHead>
+          </TableRow>
+          {/* 하위 헤더 행 */}
+          <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              구분
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              매출액
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              영업이익
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              영업이익율
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              매출액
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              영업이익
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              영업이익율
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+              매출액
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center py-4">
+              영업이익
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -85,11 +108,24 @@ export function PerformanceTable({ data, loading }: PerformanceTableProps) {
           {data.map((division, index) => (
             <TableRow 
               key={division.name}
-              className="hover:bg-white/5 transition-colors duration-200 border-b border-white/20"
+              className={`hover:bg-white/5 transition-colors duration-200 border-b border-white/20 ${
+                division.name === '합계' ? 'bg-white/10 font-bold' : ''
+              }`}
             >
               <TableCell className="text-white font-semibold text-xl text-center border-r border-white/20 py-4">
                 {division.name}
               </TableCell>
+              {/* 계획 데이터 (임시로 0으로 설정) */}
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+                0
+              </TableCell>
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+                0
+              </TableCell>
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+                0%
+              </TableCell>
+              {/* 실적 데이터 */}
               <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
                 {division.revenue.toLocaleString()}
               </TableCell>
@@ -103,15 +139,12 @@ export function PerformanceTable({ data, loading }: PerformanceTableProps) {
               }`}>
                 {division.margin >= 0 ? '+' : ''}{division.margin}%
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
-                division.growth >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                {division.growth >= 0 ? '+' : ''}{division.growth}%
+              {/* 달성율 데이터 (임시로 0으로 설정) */}
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+                0%
               </TableCell>
-              <TableCell className={`text-xl text-center py-4 ${
-                division.change >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                {division.change >= 0 ? '+' : ''}{division.change}%
+              <TableCell className="text-white text-xl text-center py-4">
+                0%
               </TableCell>
             </TableRow>
           ))}

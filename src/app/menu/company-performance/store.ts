@@ -67,15 +67,13 @@ const fetchGridData = async (): Promise<CompanyPerformanceData['gridData']> => {
     // }
     // return response.json();
     
-    // 임시로 목 데이터 반환
+    // 원래 이미지 데이터로 복원
     return {
       divisions: [
-        { name: '수출', revenue: 123, profit: 12, margin: 9.8, growth: 15.2, change: 5.3 },
-        { name: '해상', revenue: 41, profit: 0.1, margin: 0.2, growth: 1.0, change: -0.5 },
-        { name: '운송', revenue: 26, profit: 0.5, margin: 1.9, growth: -4.0, change: -2.1 },
-        { name: '창고', revenue: 16, profit: -1.7, margin: -10.6, growth: 3.0, change: 59.0 },
-        { name: '도급', revenue: 20, profit: 0.6, margin: 3.0, growth: 5.0, change: -17.0 },
-        { name: '기타', revenue: 17, profit: 3.0, margin: 17.6, growth: 59.0, change: 3.0 }
+        { name: '본사', revenue: 934, profit: -9, margin: -0.9, growth: 0, change: 0 },
+        { name: '국내자회사 合', revenue: 294, profit: 3, margin: 0.9, growth: 0, change: 0 },
+        { name: '해외자회사 合', revenue: 1392, profit: 32, margin: 2.3, growth: 0, change: 0 },
+        { name: '합계', revenue: 2619, profit: 26, margin: 1.0, growth: 0, change: 0 }
       ]
     };
   } catch (error) {

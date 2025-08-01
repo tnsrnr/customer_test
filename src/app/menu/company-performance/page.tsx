@@ -55,22 +55,22 @@ export default function CompanyPerformancePage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="p-4 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+            className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
           >
-            <div className="flex items-center justify-between h-full">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-white/10 rounded-lg">
-                  <DollarSign className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-100 mb-1">총 매출액</p>
+            <div className="flex items-center h-full">
+              <div className="p-2.5 bg-white/10 rounded-lg">
+                <DollarSign className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center space-x-4">
+                  <span className="text-lg font-medium text-blue-100">총 매출액</span>
                   <div className="flex items-center">
-                    <span className="text-2xl font-bold text-white leading-none">2,619</span>
-                    <span className="ml-1 text-sm font-medium text-white">억원</span>
+                    <span className="text-3xl font-bold text-white">2,619</span>
+                    <span className="text-lg font-medium text-white ml-1">억원</span>
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-medium text-red-300 bg-red-800/20 px-2 py-1 rounded-full border border-red-600/20">▼ 967억원</span>
+              <span className="text-sm font-medium text-red-300 bg-red-800/20 px-3 py-1.5 rounded-full border border-red-600/20">▼ 967억원</span>
             </div>
           </motion.div>
 
@@ -78,22 +78,22 @@ export default function CompanyPerformancePage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="p-4 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+            className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
           >
-            <div className="flex items-center justify-between h-full">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-white/10 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-100 mb-1">영업이익</p>
+            <div className="flex items-center h-full">
+              <div className="p-2.5 bg-white/10 rounded-lg">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center space-x-4">
+                  <span className="text-lg font-medium text-blue-100">영업이익</span>
                   <div className="flex items-center">
-                    <span className="text-2xl font-bold text-white leading-none">26</span>
-                    <span className="ml-1 text-sm font-medium text-white">억원</span>
+                    <span className="text-3xl font-bold text-white">26</span>
+                    <span className="text-lg font-medium text-white ml-1">억원</span>
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-medium text-red-300 bg-red-800/20 px-2 py-1 rounded-full border border-red-600/20">▼ 68억원</span>
+              <span className="text-sm font-medium text-red-300 bg-red-800/20 px-3 py-1.5 rounded-full border border-red-600/20">▼ 68억원</span>
             </div>
           </motion.div>
 
@@ -101,22 +101,22 @@ export default function CompanyPerformancePage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="p-4 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+            className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
           >
-            <div className="flex items-center justify-between h-full">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-white/10 rounded-lg">
-                  <Percent className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-100 mb-1">영업이익율</p>
+            <div className="flex items-center h-full">
+              <div className="p-2.5 bg-white/10 rounded-lg">
+                <Percent className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center space-x-4">
+                  <span className="text-lg font-medium text-blue-100">영업이익율</span>
                   <div className="flex items-center">
-                    <span className="text-2xl font-bold text-white leading-none">1.0</span>
-                    <span className="ml-1 text-sm font-medium text-white">%</span>
+                    <span className="text-3xl font-bold text-white">1.0</span>
+                    <span className="text-lg font-medium text-white ml-1">%</span>
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-medium text-red-300 bg-red-800/20 px-2 py-1 rounded-full border border-red-600/20">▼ 1.6%</span>
+              <span className="text-sm font-medium text-red-300 bg-red-800/20 px-3 py-1.5 rounded-full border border-red-600/20">▼ 1.6%</span>
             </div>
           </motion.div>
 
@@ -124,22 +124,22 @@ export default function CompanyPerformancePage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="p-4 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+            className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
           >
-            <div className="flex items-center justify-between h-full">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-white/10 rounded-lg">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-100 mb-1">달성율</p>
+            <div className="flex items-center h-full">
+              <div className="p-2.5 bg-white/10 rounded-lg">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center space-x-4">
+                  <span className="text-lg font-medium text-blue-100">달성율</span>
                   <div className="flex items-center">
-                    <span className="text-2xl font-bold text-white leading-none">73</span>
-                    <span className="ml-1 text-sm font-medium text-white">%</span>
+                    <span className="text-3xl font-bold text-white">73</span>
+                    <span className="text-lg font-medium text-white ml-1">%</span>
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-medium text-slate-300 bg-slate-700/20 px-2 py-1 rounded-full border border-slate-500/20">평균</span>
+              <span className="text-sm font-medium text-slate-300 bg-slate-700/20 px-3 py-1.5 rounded-full border border-slate-500/20">평균</span>
             </div>
           </motion.div>
         </div>

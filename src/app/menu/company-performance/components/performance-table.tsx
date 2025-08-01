@@ -71,16 +71,72 @@ export function PerformanceTable() {
     <div className="overflow-x-auto flex-1">
       <Table>
         <TableHeader>
-          <TableRow className="bg-slate-50">
-            <TableHead className="text-slate-700 font-semibold text-lg">구분</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-blue-50">계획 매출액</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-blue-50">계획 영업이익</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-blue-50">계획 영업이익율</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-green-50">실적 매출액</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-green-50">실적 영업이익</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-green-50">실적 영업이익율</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-purple-50">달성율 매출액</TableHead>
-            <TableHead className="text-slate-700 font-semibold text-center text-lg bg-purple-50">달성율 영업이익</TableHead>
+          {/* 상위 헤더 행 */}
+          <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
+            <TableHead 
+              className="text-white font-bold text-xl text-center align-middle border-r border-white/20"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(12px)'
+              }}
+            >
+              구분
+            </TableHead>
+            <TableHead 
+              colSpan={3} 
+              className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20"
+            >
+              계획
+            </TableHead>
+            <TableHead 
+              colSpan={3} 
+              className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20"
+            >
+              실적
+            </TableHead>
+            <TableHead 
+              colSpan={2} 
+              className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md"
+            >
+              달성율
+            </TableHead>
+          </TableRow>
+          
+          {/* 하위 헤더 행 */}
+          <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/25">
+            <TableHead 
+              className="text-white font-bold text-xl text-center border-r border-white/20"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(12px)'
+              }}
+            >
+              구분
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              매출액
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              영업이익
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              영업이익율
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              매출액
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              영업이익
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              영업이익율
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md border-r border-white/20">
+              매출액
+            </TableHead>
+            <TableHead className="text-white font-bold text-xl text-center bg-white/5 backdrop-blur-md">
+              영업이익
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -97,39 +153,39 @@ export function PerformanceTable() {
                 key={row.구분}
                 className={`overflow-hidden backdrop-blur-sm border-l-4 ${color} transition-all duration-200`}
               >
-                <TableCell className="py-4">
+                <TableCell className="py-4 border-r border-slate-200">
                   <div className="flex items-center gap-2">
                     <span className="text-lg font-bold text-slate-400">#{index + 1}</span>
                     <span className={`text-base font-semibold ${color.split(' ')[2]}`}>{row.구분}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-200">
                   <span className={`text-2xl font-bold ${color.split(' ')[2]}`}>{row.계획_매출액.toLocaleString()}</span>
                   <span className="text-xs text-slate-500 ml-1">억원</span>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-200">
                   <span className={`text-lg font-semibold text-blue-700`}>{row.계획_영업이익.toLocaleString()}</span>
                   <span className="text-xs text-slate-500 ml-1">억원</span>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-300">
                   <span className="text-base font-bold text-blue-600">{row.계획_영업이익율}</span>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-200">
                   <span className={`text-2xl font-bold ${color.split(' ')[2]}`}>{row.실적_매출액.toLocaleString()}</span>
                   <span className="text-xs text-slate-500 ml-1">억원</span>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-200">
                   <span className={`text-lg font-semibold ${row.실적_영업이익 < 0 ? 'text-red-700' : 'text-green-700'}`}>
                     {row.실적_영업이익.toLocaleString()}
                   </span>
                   <span className="text-xs text-slate-500 ml-1">억원</span>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-300">
                   <span className={`text-base font-bold ${row.실적_영업이익율.startsWith('-') ? 'text-red-600' : 'text-green-600'}`}>
                     {row.실적_영업이익율}
                   </span>
                 </TableCell>
-                <TableCell className="text-center py-4">
+                <TableCell className="text-center py-4 border-r border-slate-200">
                   <span className="text-base font-bold text-blue-700">{row.달성율_매출액}</span>
                 </TableCell>
                 <TableCell className="text-center py-4">

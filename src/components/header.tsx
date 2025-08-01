@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { menuItems } from '@/app/menu/menu-config';
 import { cn } from "@/utils";
-import { RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { RefreshCw, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useGlobalStore } from '@/store/global';
 import { useState } from 'react';
 
@@ -14,7 +14,9 @@ export function Header() {
   const router = useRouter();
   const { isRefreshing, triggerGlobalRefresh } = useGlobalStore();
   const [showAllMenus, setShowAllMenus] = useState(false);
-  const initialMenuCount = 10; // 처음에 표시할 메뉴 개수
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const initialMenuCount = 6; // 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처 (6개 표시)
 
   // 로그인 페이지에서는 헤더를 숨김
   if (pathname === '/auth') {
@@ -37,10 +39,16 @@ export function Header() {
   };
 
   const visibleMenus = showAllMenus 
-    ? menuItems.slice(1).slice(initialMenuCount) // 처음 10개 제외하고 나머지만
-    : menuItems.slice(1, initialMenuCount + 1); // 처음 10개만
+    ? menuItems.slice(1).slice(initialMenuCount) // 처음 6개 제외하고 나머지만
+    : menuItems.slice(1, initialMenuCount + 1); // 처음 6개만
 
   const canToggle = menuItems.slice(1).length > initialMenuCount;
+
+  // 년도 옵션 (현재 년도 기준 ±2년)
+  const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i);
+  
+  // 월 옵션
+  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
     <header className="bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800/95 backdrop-blur-md shadow-xl border-none">
@@ -87,12 +95,40 @@ export function Header() {
             <button
               onClick={toggleMenus}
               className="flex items-center gap-1 px-3 py-2 text-base text-blue-100 hover:text-white hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/20"
-              title={showAllMenus ? "처음 10개 메뉴로" : "나머지 메뉴 보기"}
+              title={showAllMenus ? "page1로" : "page2로"}
             >
               {showAllMenus ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-              <span className="hidden sm:inline">{showAllMenus ? "처음" : "더보기"}</span>
+              <span className="hidden sm:inline">{showAllMenus ? "page1" : "page2"}</span>
             </button>
           )}
+          
+          {/* 년도/월 선택기 */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg border border-white/20">
+            <Calendar className="w-4 h-4 text-blue-100" />
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="bg-transparent text-blue-100 text-sm border-none outline-none cursor-pointer"
+            >
+              {yearOptions.map(year => (
+                <option key={year} value={year} className="bg-slate-800 text-white">
+                  {year}년
+                </option>
+              ))}
+            </select>
+            <span className="text-blue-100 text-sm">/</span>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className="bg-transparent text-blue-100 text-sm border-none outline-none cursor-pointer"
+            >
+              {monthOptions.map(month => (
+                <option key={month} value={month} className="bg-slate-800 text-white">
+                  {month}월
+                </option>
+              ))}
+            </select>
+          </div>
           
           {/* 전역 조회 버튼 */}
           <button

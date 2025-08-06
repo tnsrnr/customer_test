@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from "@/components/card";
-import { AuthGuard } from "@/components/auth-guard";
+import { AuthGuard } from "@/components/auth_guard";
 import { Users, TrendingUp, Building2, Factory, Globe2 } from "lucide-react";
 import { motion } from "framer-motion";
 

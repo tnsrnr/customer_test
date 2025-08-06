@@ -8,7 +8,7 @@ import { Ship, Package, TrendingUp, DollarSign, Users, Truck } from 'lucide-reac
 import { motion } from 'framer-motion';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart-config';
+import '@/lib/chart_config';
 
 // 해상수출 데이터
 const exportData = {

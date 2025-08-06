@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Card } from "@/components/card";
-import { AuthGuard } from "@/components/auth-guard";
+import { AuthGuard } from "@/components/auth_guard";
 import {
   Chart as ChartJS,
   CategoryScale,

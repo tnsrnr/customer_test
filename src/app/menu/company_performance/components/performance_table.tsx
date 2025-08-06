@@ -25,6 +25,15 @@ export function PerformanceTable({ data, loading }: PerformanceTableProps) {
     console.log('PerformanceTable mounted');
   }, []);
 
+  useEffect(() => {
+    console.log('🔍 PerformanceTable 데이터:', data);
+    console.log('🔍 PerformanceTable 로딩 상태:', loading);
+    if (data) {
+      console.log('🔍 PerformanceTable 데이터 개수:', data.length);
+      console.log('🔍 PerformanceTable 첫 번째 항목:', data[0]);
+    }
+  }, [data, loading]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-32">

@@ -11,7 +11,7 @@ import { Separator } from '@/components/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart-config';
+import '@/lib/chart_config';
 
 type ChartType = 'bar';
 

@@ -5,9 +5,15 @@ interface GlobalStore {
   isRefreshing: boolean;
   currentPage: string;
   
+  // 년/월 정보
+  selectedYear: number;
+  selectedMonth: number;
+  
   // 액션
   setRefreshing: (refreshing: boolean) => void;
   setCurrentPage: (page: string) => void;
+  setSelectedYear: (year: number) => void;
+  setSelectedMonth: (month: number) => void;
   triggerGlobalRefresh: () => void;
 }
 
@@ -15,10 +21,14 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   // 초기 상태
   isRefreshing: false,
   currentPage: '',
+  selectedYear: new Date().getFullYear(),
+  selectedMonth: new Date().getMonth() + 1,
   
   // 상태 설정
   setRefreshing: (refreshing) => set({ isRefreshing: refreshing }),
   setCurrentPage: (page) => set({ currentPage: page }),
+  setSelectedYear: (year) => set({ selectedYear: year }),
+  setSelectedMonth: (month) => set({ selectedMonth: month }),
   
   // 전역 조회 트리거
   triggerGlobalRefresh: () => {

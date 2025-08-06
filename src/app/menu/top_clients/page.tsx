@@ -5,11 +5,11 @@ import { Card } from "@/components/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Building2, TrendingUp, Package, DollarSign, BarChart2, ArrowUpRight, Plane, Ship, Truck, Train, ArrowDownRight, Minus, Trophy, LineChart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { AuthGuard } from "@/components/auth-guard";
+import { AuthGuard } from "@/components/auth_guard";
 import { Chart } from 'react-chartjs-2';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart-config';
+import '@/lib/chart_config';
 
 interface CountUpAnimationProps {
   end: number;

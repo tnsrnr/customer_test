@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart-config';
+import '@/lib/chart_config';
 
 type ChartType = 'bar';
 

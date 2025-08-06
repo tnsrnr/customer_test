@@ -34,7 +34,7 @@ export const menuItems: MenuItem[] = [
   // 기존 메뉴들 순서대로
   { 
     name: '전사실적', 
-    path: '/menu/company-performance', 
+    path: '/menu/company_performance', 
     icon: BarChart3,
     description: '전사 실적 현황'
   },
@@ -46,7 +46,7 @@ export const menuItems: MenuItem[] = [
   },
   { 
     name: '본사실적', 
-    path: '/menu/hq-performance', 
+    path: '/menu/hq_performance', 
     icon: Building2,
     description: '본사 실적 현황'
   },
@@ -64,7 +64,7 @@ export const menuItems: MenuItem[] = [
   },
   { 
     name: '상위거래처', 
-    path: '/menu/top-clients', 
+    path: '/menu/top_clients', 
     icon: TrendingUp,
     description: '상위 거래처 현황'
   },
@@ -94,13 +94,13 @@ export const menuItems: MenuItem[] = [
   },
   { 
     name: '국내자회사', 
-    path: '/menu/domestic-subsidiaries', 
+    path: '/menu/domestic_subsidiaries', 
     icon: Building,
     description: '국내 자회사 현황'
   },
   { 
     name: '해외자회사', 
-    path: '/menu/overseas-subsidiaries', 
+    path: '/menu/overseas_subsidiaries', 
     icon: Globe,
     description: '해외 자회사 현황'
   },

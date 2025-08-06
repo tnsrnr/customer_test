@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from '@/components/card';
-import { PerformanceTable } from './components/performance-table';
+import { PerformanceTable } from './components/performance_table';
 import { useEffect } from 'react';
 import { DollarSign, TrendingUp, Percent, BarChart3, Building2, Users, Target, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
@@ -11,7 +11,7 @@ import { useCompanyPerformanceStore } from './store';
 import { useGlobalStore } from '@/store/global';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart-config';
+import '@/lib/chart_config';
 
 export default function CompanyPerformancePage() {
   const { 
@@ -30,6 +30,8 @@ export default function CompanyPerformancePage() {
 
   const { setCurrentPage, isRefreshing } = useGlobalStore();
 
+
+
   // 컴포넌트 마운트 시 데이터 로드 및 현재 페이지 설정
   useEffect(() => {
     setCurrentPage('company-performance');
@@ -39,7 +41,6 @@ export default function CompanyPerformancePage() {
   // 전역 조회 이벤트 감지
   useEffect(() => {
     if (isRefreshing) {
-      console.log('🔄 company-performance 페이지 조회 실행');
       // 부드러운 데이터 갱신을 위해 로딩 상태만 변경
       fetchAllData();
     }
@@ -105,97 +106,139 @@ export default function CompanyPerformancePage() {
         {data && (
           <>
             {/* 1번째 API: 상위 4개 KPI 컴포넌트 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 w-full mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 w-full mx-auto">
+              {/* 총 매출액 카드 */}
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-emerald-500/20 via-emerald-600/15 to-emerald-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-emerald-400/30 hover:border-emerald-300/50 transition-all duration-300 overflow-hidden group"
               >
-                <div className="flex items-center h-full">
-                  <div className="p-2.5 bg-white/10 rounded-lg">
-                    <DollarSign className="w-8 h-8 text-white" />
+                {/* 배경 그라데이션 효과 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl shadow-lg group-hover:shadow-emerald-400/25 transition-all duration-300">
+                    <DollarSign className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-lg font-medium text-blue-100">총 매출액</span>
-                      <div className="flex items-center">
-                        <span className="text-3xl font-bold text-white">{data.kpiMetrics.ACTUAL_SALES}</span>
-                        <span className="text-lg font-medium text-white ml-1">억원</span>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-emerald-200 mb-1 block">총 매출액</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          {data.kpiMetrics.ACTUAL_SALES !== undefined && data.kpiMetrics.ACTUAL_SALES !== null ? data.kpiMetrics.ACTUAL_SALES.toLocaleString() : '0'}
+                        </span>
+                        <span className="text-lg font-medium text-emerald-200 ml-1">억원</span>
                       </div>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-slate-300 bg-slate-700/20 px-3 py-1.5 rounded-full border border-slate-500/20">실시간</span>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${data.kpiMetrics.ACTUAL_SALES_CHANGE >= 0 ? 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30' : 'text-red-300 bg-red-600/30 border-red-400/30'}`}>
+                    {data.kpiMetrics.ACTUAL_SALES_CHANGE >= 0 ? '+' : ''}{data.kpiMetrics.ACTUAL_SALES_CHANGE.toLocaleString()}억원
+                  </span>
                 </div>
+                
+                {/* 하단 장식선 */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 opacity-60"></div>
               </motion.div>
 
+              {/* 영업이익 카드 */}
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-blue-500/20 via-blue-600/15 to-blue-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-blue-400/30 hover:border-blue-300/50 transition-all duration-300 overflow-hidden group"
               >
-                <div className="flex items-center h-full">
-                  <div className="p-2.5 bg-white/10 rounded-lg">
-                    <TrendingUp className="w-8 h-8 text-white" />
+                {/* 배경 그라데이션 효과 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg group-hover:shadow-blue-400/25 transition-all duration-300">
+                    <TrendingUp className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-lg font-medium text-blue-100">영업이익</span>
-                      <div className="flex items-center">
-                        <span className="text-3xl font-bold text-white">{data.kpiMetrics.ACTUAL_OP_PROFIT}</span>
-                        <span className="text-lg font-medium text-white ml-1">억원</span>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-blue-200 mb-1 block">영업이익</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">{data.kpiMetrics.ACTUAL_OP_PROFIT}</span>
+                        <span className="text-lg font-medium text-blue-200 ml-1">억원</span>
                       </div>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-slate-300 bg-slate-700/20 px-3 py-1.5 rounded-full border border-slate-500/20">실시간</span>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${data.kpiMetrics.ACTUAL_OP_PROFIT_CHANGE >= 0 ? 'text-blue-300 bg-blue-600/30 border-blue-400/30' : 'text-red-300 bg-red-600/30 border-red-400/30'}`}>
+                    {data.kpiMetrics.ACTUAL_OP_PROFIT_CHANGE >= 0 ? '+' : ''}{data.kpiMetrics.ACTUAL_OP_PROFIT_CHANGE.toLocaleString()}억원
+                  </span>
                 </div>
+                
+                {/* 하단 장식선 */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-blue-600 opacity-60"></div>
               </motion.div>
 
+              {/* 영업이익률 카드 */}
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-purple-500/20 via-purple-600/15 to-purple-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-purple-400/30 hover:border-purple-300/50 transition-all duration-300 overflow-hidden group"
               >
-                <div className="flex items-center h-full">
-                  <div className="p-2.5 bg-white/10 rounded-lg">
-                    <Percent className="w-8 h-8 text-white" />
+                {/* 배경 그라데이션 효과 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl shadow-lg group-hover:shadow-purple-400/25 transition-all duration-300">
+                    <Percent className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-lg font-medium text-blue-100">영업이익률</span>
-                      <div className="flex items-center">
-                        <span className="text-3xl font-bold text-white">{data.kpiMetrics.ACTUAL_OP_MARGIN}</span>
-                        <span className="text-lg font-medium text-white ml-1">%</span>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-purple-200 mb-1 block">영업이익률</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">{data.kpiMetrics.ACTUAL_OP_MARGIN}</span>
+                        <span className="text-lg font-medium text-purple-200 ml-1">%</span>
                       </div>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-slate-300 bg-slate-700/20 px-3 py-1.5 rounded-full border border-slate-500/20">실시간</span>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${data.kpiMetrics.ACTUAL_OP_MARGIN_CHANGE >= 0 ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' : 'text-red-300 bg-red-600/30 border-red-400/30'}`}>
+                    {data.kpiMetrics.ACTUAL_OP_MARGIN_CHANGE >= 0 ? '+' : ''}{data.kpiMetrics.ACTUAL_OP_MARGIN_CHANGE.toFixed(2)}%
+                  </span>
                 </div>
+                
+                {/* 하단 장식선 */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-600 opacity-60"></div>
               </motion.div>
 
+              {/* 매출 달성률 카드 */}
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-orange-500/20 via-orange-600/15 to-orange-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-orange-400/30 hover:border-orange-300/50 transition-all duration-300 overflow-hidden group"
               >
-                <div className="flex items-center h-full">
-                  <div className="p-2.5 bg-white/10 rounded-lg">
-                    <BarChart3 className="w-8 h-8 text-white" />
+                {/* 배경 그라데이션 효과 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl shadow-lg group-hover:shadow-orange-400/25 transition-all duration-300">
+                    <BarChart3 className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-lg font-medium text-blue-100">매출 달성률</span>
-                      <div className="flex items-center">
-                        <span className="text-3xl font-bold text-white">{data.kpiMetrics.SALES_ACHIEVEMENT}</span>
-                        <span className="text-lg font-medium text-white ml-1">%</span>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-orange-200 mb-1 block">매출 달성률</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">{data.kpiMetrics.SALES_ACHIEVEMENT}</span>
+                        <span className="text-lg font-medium text-orange-200 ml-1">%</span>
                       </div>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-slate-300 bg-slate-700/20 px-3 py-1.5 rounded-full border border-slate-500/20">실시간</span>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${data.kpiMetrics.SALES_ACHIEVEMENT_CHANGE >= 0 ? 'text-orange-300 bg-orange-600/30 border-orange-400/30' : 'text-red-300 bg-red-600/30 border-red-400/30'}`}>
+                    {data.kpiMetrics.SALES_ACHIEVEMENT_CHANGE >= 0 ? '+' : ''}{data.kpiMetrics.SALES_ACHIEVEMENT_CHANGE.toFixed(2)}%
+                  </span>
                 </div>
+                
+                {/* 하단 장식선 */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600 opacity-60"></div>
               </motion.div>
             </div>
 
@@ -221,14 +264,17 @@ export default function CompanyPerformancePage() {
                         <div className="flex justify-between items-center mb-2">
                           <div className="text-sm font-medium text-blue-100">매출액</div>
                           <div className="text-xs text-blue-200">단위: 억원</div>
-                        </div>
+                        </div> 
                         <div className="flex items-center gap-3">
                           <div className="relative w-20 h-20">
                             <Doughnut
                               data={{
                                 labels: ['달성', '미달성'],
                                 datasets: [{
-                                  data: [data.chartData1.datasets[0].data[1], data.chartData1.datasets[0].data[0] - data.chartData1.datasets[0].data[1]],
+                                  data: [
+                                    data.chartData1.ACTUAL_SALES, 
+                                    data.chartData1.PLANNED_SALES - data.chartData1.ACTUAL_SALES
+                                  ],
                                   backgroundColor: ['#3b82f6', '#64748b'],
                                   borderWidth: 0
                                 }]
@@ -247,7 +293,9 @@ export default function CompanyPerformancePage() {
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="text-center">
                                 <div className="text-lg font-bold text-blue-100">
-                                  {Math.round((data.chartData1.datasets[0].data[1] / data.chartData1.datasets[0].data[0]) * 100)}%
+                                  {data.chartData1.PLANNED_SALES && data.chartData1.ACTUAL_SALES 
+                                    ? Math.round((data.chartData1.ACTUAL_SALES / data.chartData1.PLANNED_SALES) * 100)
+                                    : 0}%
                                 </div>
                               </div>
                             </div>
@@ -255,11 +303,11 @@ export default function CompanyPerformancePage() {
                           <div className="flex flex-col justify-center text-xs text-blue-100">
                             <div className="flex items-center whitespace-nowrap mb-1">
                               <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
-                              계획: {data.chartData1.datasets[0].data[0].toLocaleString()}
+                              계획: {data.chartData1.PLANNED_SALES.toLocaleString()}
                             </div>
                             <div className="flex items-center whitespace-nowrap">
                               <span className="inline-block w-2 h-2 bg-blue-500 mr-1.5"></span>
-                              실적: {data.chartData1.datasets[0].data[1].toLocaleString()}
+                              실적: {data.chartData1.ACTUAL_SALES.toLocaleString()}
                             </div>
                           </div>
                         </div>
@@ -277,7 +325,10 @@ export default function CompanyPerformancePage() {
                               data={{
                                 labels: ['달성', '미달성'],
                                 datasets: [{
-                                  data: [data.chartData1.datasets[1].data[1], data.chartData1.datasets[1].data[0] - data.chartData1.datasets[1].data[1]],
+                                  data: [
+                                    data.chartData1.ACTUAL_OP_PROFIT, 
+                                    data.chartData1.PLANNED_OP_PROFIT - data.chartData1.ACTUAL_OP_PROFIT
+                                  ],
                                   backgroundColor: ['#10b981', '#64748b'],
                                   borderWidth: 0
                                 }]
@@ -296,7 +347,9 @@ export default function CompanyPerformancePage() {
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="text-center">
                                 <div className="text-lg font-bold text-emerald-100">
-                                  {Math.round((data.chartData1.datasets[1].data[1] / data.chartData1.datasets[1].data[0]) * 100)}%
+                                  {data.chartData1.PLANNED_OP_PROFIT && data.chartData1.ACTUAL_OP_PROFIT 
+                                    ? Math.round((data.chartData1.ACTUAL_OP_PROFIT / data.chartData1.PLANNED_OP_PROFIT) * 100)
+                                    : 0}%
                                 </div>
                               </div>
                             </div>
@@ -304,11 +357,11 @@ export default function CompanyPerformancePage() {
                           <div className="flex flex-col justify-center text-xs text-blue-100">
                             <div className="flex items-center whitespace-nowrap mb-1">
                               <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
-                              계획: {data.chartData1.datasets[1].data[0].toLocaleString()}
+                              계획: {data.chartData1.PLANNED_OP_PROFIT.toLocaleString()}
                             </div>
                             <div className="flex items-center whitespace-nowrap">
                               <span className="inline-block w-2 h-2 bg-emerald-500 mr-1.5"></span>
-                              실적: {data.chartData1.datasets[1].data[1].toLocaleString()}
+                              실적: {data.chartData1.ACTUAL_OP_PROFIT.toLocaleString()}
                             </div>
                           </div>
                         </div>
@@ -331,7 +384,7 @@ export default function CompanyPerformancePage() {
                     매출액
                   </div>
                   <div className="text-xs text-slate-200 text-right mb-2">단위: 억원</div>
-                  <div style={{ height: '140px' }}>
+                  <div style={{ height: '160px' }}>
                     {data?.chartData2 && data.chartData2.labels.length > 0 ? (
                       <Bar 
                         data={data.chartData2}
@@ -383,12 +436,28 @@ export default function CompanyPerformancePage() {
                                 }
                               }
                             }
+                          },
+                          // 차트 렌더링 개선을 위한 설정
+                          layout: {
+                            padding: {
+                              top: 10,
+                              bottom: 10,
+                              left: 5,
+                              right: 5
+                            }
+                          },
+                          elements: {
+                            bar: {
+                              borderWidth: 2,
+                              borderColor: 'rgba(255, 255, 255, 0.2)',
+                              borderRadius: 4
+                            }
                           }
                         }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-white/50">
-                        데이터를 불러오는 중...
+                        {chart2Loading ? '데이터를 불러오는 중...' : '데이터가 없습니다'}
                       </div>
                     )}
                   </div>
@@ -404,7 +473,7 @@ export default function CompanyPerformancePage() {
                     영업이익
                   </div>
                   <div className="text-xs text-slate-200 text-right mb-2">단위: 억원</div>
-                  <div style={{ height: '140px' }}>
+                  <div style={{ height: '160px' }}>
                     {data?.chartData3 && data.chartData3.labels.length > 0 ? (
                       <Bar
                         data={data.chartData3}
@@ -456,14 +525,29 @@ export default function CompanyPerformancePage() {
                                 }
                               }
                             }
+                          },
+                          layout: {
+                            padding: {
+                              top: 10,
+                              bottom: 10,
+                              left: 5,
+                              right: 5
+                            }
+                          },
+                          elements: {
+                            bar: {
+                              borderWidth: 2,
+                              borderColor: 'rgba(255, 255, 255, 0.2)',
+                              borderRadius: 4
+                            }
                           }
                         }}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-white/50">
-                        데이터를 불러오는 중...
-                      </div>
-                    )}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-white/50">
+                          {chart3Loading ? '데이터를 불러오는 중...' : '데이터가 없습니다'}
+                        </div>
+                      )}
                   </div>
                 </div>
               </Card>

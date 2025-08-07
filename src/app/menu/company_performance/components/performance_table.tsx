@@ -18,9 +18,10 @@ interface DivisionData {
 interface PerformanceTableProps {
   data?: DivisionData[];
   loading?: boolean;
+  periodType?: 'monthly' | 'cumulative';
 }
 
-export function PerformanceTable({ data, loading }: PerformanceTableProps) {
+export function PerformanceTable({ data, loading, periodType }: PerformanceTableProps) {
   useEffect(() => {
     console.log('PerformanceTable mounted');
   }, []);
@@ -70,13 +71,13 @@ export function PerformanceTable({ data, loading }: PerformanceTableProps) {
               className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
               colSpan={3}
             >
-              계획 ('25년 5월 누적)
+              계획 ('25년 5월{periodType === 'cumulative' ? ' 누적' : ''})
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
               colSpan={3}
             >
-              실적 ('25년 5월 누적)
+              실적 ('25년 5월{periodType === 'cumulative' ? ' 누적' : ''})
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md py-4"

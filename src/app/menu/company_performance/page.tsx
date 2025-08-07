@@ -244,7 +244,7 @@ export default function CompanyPerformancePage() {
 
             {/* 2번째 API: 중간 그리드 테이블 */}
             <div className="mb-4">
-              <PerformanceTable data={data.gridData.divisions} loading={gridLoading} />
+              <PerformanceTable data={data.gridData.divisions} loading={gridLoading} periodType={periodType} />
             </div>
 
             {/* 3~5번째 API: 하단 3개 카드 컴포넌트 */}

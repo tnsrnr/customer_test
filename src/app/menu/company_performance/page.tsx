@@ -252,21 +252,16 @@ export default function CompanyPerformancePage() {
               {/* 달성율% 카드 */}
               <Card className="bg-white/5 backdrop-blur-md border border-white/10 shadow-lg rounded-xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300">
                 <div className="h-1 w-full bg-white/20 mb-3" />
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-base font-medium text-white mb-3">
-                    <Percent className="w-5 h-5" />
-                    달성율
+                <div className="p-3">
+                  <div className="flex items-center justify-end mb-2">
+                    <div className="text-xs text-slate-200">단위: 억원</div>
                   </div>
                   {data?.chartData1 && data.chartData1.labels.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-4 relative">
+                    <div className="grid grid-cols-2 gap-3 relative">
                       {/* 매출액 도넛 차트 */}
                       <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <div className="text-sm font-medium text-blue-100">매출액</div>
-                          <div className="text-xs text-blue-200">단위: 억원</div>
-                        </div> 
-                        <div className="flex items-center gap-3">
-                          <div className="relative w-20 h-20">
+                        <div className="flex flex-col items-center">
+                          <div className="relative w-32 h-32">
                             <Doughnut
                               data={{
                                 labels: ['달성', '미달성'],
@@ -292,7 +287,7 @@ export default function CompanyPerformancePage() {
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="text-center">
-                                <div className="text-lg font-bold text-blue-100">
+                                <div className="text-xl font-bold text-blue-100">
                                   {data.chartData1.PLANNED_SALES && data.chartData1.ACTUAL_SALES 
                                     ? Math.round((data.chartData1.ACTUAL_SALES / data.chartData1.PLANNED_SALES) * 100)
                                     : 0}%
@@ -300,27 +295,26 @@ export default function CompanyPerformancePage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex flex-col justify-center text-xs text-blue-100">
-                            <div className="flex items-center whitespace-nowrap mb-1">
-                              <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
+                          <div className="flex justify-center text-sm text-blue-100 mt-2 gap-4">
+                            <div className="flex items-center whitespace-nowrap">
+                              <span className="inline-block w-2 h-2 bg-slate-400 mr-1"></span>
                               계획: {data.chartData1.PLANNED_SALES.toLocaleString()}
                             </div>
                             <div className="flex items-center whitespace-nowrap">
-                              <span className="inline-block w-2 h-2 bg-blue-500 mr-1.5"></span>
+                              <span className="inline-block w-2 h-2 bg-blue-500 mr-1"></span>
                               실적: {data.chartData1.ACTUAL_SALES.toLocaleString()}
                             </div>
                           </div>
+                        </div>
+                        <div className="text-center mt-2">
+                          <div className="text-sm font-medium text-blue-100">매출액</div>
                         </div>
                       </div>
 
                       {/* 영업이익 도넛 차트 */}
                       <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <div className="text-sm font-medium text-blue-100">영업이익</div>
-                          <div className="text-xs text-blue-200">단위: 억원</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="relative w-20 h-20">
+                        <div className="flex flex-col items-center">
+                          <div className="relative w-32 h-32">
                             <Doughnut
                               data={{
                                 labels: ['달성', '미달성'],
@@ -346,7 +340,7 @@ export default function CompanyPerformancePage() {
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="text-center">
-                                <div className="text-lg font-bold text-emerald-100">
+                                <div className="text-xl font-bold text-emerald-100">
                                   {data.chartData1.PLANNED_OP_PROFIT && data.chartData1.ACTUAL_OP_PROFIT 
                                     ? Math.round((data.chartData1.ACTUAL_OP_PROFIT / data.chartData1.PLANNED_OP_PROFIT) * 100)
                                     : 0}%
@@ -354,16 +348,19 @@ export default function CompanyPerformancePage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex flex-col justify-center text-xs text-blue-100">
-                            <div className="flex items-center whitespace-nowrap mb-1">
-                              <span className="inline-block w-2 h-2 bg-slate-400 mr-1.5"></span>
+                          <div className="flex justify-center text-sm text-emerald-100 mt-2 gap-4">
+                            <div className="flex items-center whitespace-nowrap">
+                              <span className="inline-block w-2 h-2 bg-slate-400 mr-1"></span>
                               계획: {data.chartData1.PLANNED_OP_PROFIT.toLocaleString()}
                             </div>
                             <div className="flex items-center whitespace-nowrap">
-                              <span className="inline-block w-2 h-2 bg-emerald-500 mr-1.5"></span>
+                              <span className="inline-block w-2 h-2 bg-emerald-500 mr-1"></span>
                               실적: {data.chartData1.ACTUAL_OP_PROFIT.toLocaleString()}
                             </div>
                           </div>
+                        </div>
+                        <div className="text-center mt-2">
+                          <div className="text-sm font-medium text-emerald-100">영업이익</div>
                         </div>
                       </div>
                     </div>
@@ -379,11 +376,13 @@ export default function CompanyPerformancePage() {
               <Card className="bg-white/5 backdrop-blur-md border border-white/10 shadow-lg rounded-xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300">
                 <div className="h-1 w-full bg-white/20 mb-3" />
                 <div className="p-4">
-                  <div className="flex items-center gap-2 text-base font-medium text-white mb-3">
-                    <DollarSign className="w-5 h-5" />
-                    매출액
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 text-base font-medium text-white">
+                      <DollarSign className="w-5 h-5" />
+                      매출액
+                    </div>
+                    <div className="text-xs text-slate-200">단위: 억원</div>
                   </div>
-                  <div className="text-xs text-slate-200 text-right mb-2">단위: 억원</div>
                   <div style={{ height: '160px' }}>
                     {data?.chartData2 && data.chartData2.labels.length > 0 ? (
                       <Bar 
@@ -468,11 +467,13 @@ export default function CompanyPerformancePage() {
               <Card className="bg-white/5 backdrop-blur-md border border-white/10 shadow-lg rounded-xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300">
                 <div className="h-1 w-full bg-white/20 mb-3" />
                 <div className="p-4">
-                  <div className="flex items-center gap-2 text-base font-medium text-white mb-3">
-                    <TrendingUp className="w-5 h-5" />
-                    영업이익
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 text-base font-medium text-white">
+                      <TrendingUp className="w-5 h-5" />
+                      영업이익
+                    </div>
+                    <div className="text-xs text-slate-200">단위: 억원</div>
                   </div>
-                  <div className="text-xs text-slate-200 text-right mb-2">단위: 억원</div>
                   <div style={{ height: '160px' }}>
                     {data?.chartData3 && data.chartData3.labels.length > 0 ? (
                       <Bar

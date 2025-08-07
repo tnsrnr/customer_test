@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { useCompanyPerformanceStore } from './store';
 import { useGlobalStore } from '@/store/global';
+import CountUp from 'react-countup';
 
 // 전역 Chart.js 설정 사용
 import '@/lib/chart_config';
@@ -25,7 +26,9 @@ export default function CompanyPerformancePage() {
     gridLoading,
     chart1Loading,
     chart2Loading,
-    chart3Loading
+    chart3Loading,
+    currentYear,
+    currentMonth
   } = useCompanyPerformanceStore();
 
   const { setCurrentPage, isRefreshing } = useGlobalStore();
@@ -127,7 +130,12 @@ export default function CompanyPerformancePage() {
                       <span className="text-sm font-medium text-emerald-200 mb-1 block">총 매출액</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
-                          {data.kpiMetrics.ACTUAL_SALES !== undefined && data.kpiMetrics.ACTUAL_SALES !== null ? data.kpiMetrics.ACTUAL_SALES.toLocaleString() : '0'}
+                          <CountUp 
+                            end={data.kpiMetrics.ACTUAL_SALES || 0} 
+                            duration={2}
+                            separator=","
+                            className="text-white"
+                          />
                         </span>
                         <span className="text-lg font-medium text-emerald-200 ml-1">억원</span>
                       </div>
@@ -161,7 +169,14 @@ export default function CompanyPerformancePage() {
                     <div className="text-center">
                       <span className="text-sm font-medium text-blue-200 mb-1 block">영업이익</span>
                       <div className="flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white drop-shadow-sm">{data.kpiMetrics.ACTUAL_OP_PROFIT}</span>
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.ACTUAL_OP_PROFIT || 0} 
+                            duration={2}
+                            separator=","
+                            className="text-white"
+                          />
+                        </span>
                         <span className="text-lg font-medium text-blue-200 ml-1">억원</span>
                       </div>
                     </div>
@@ -194,7 +209,16 @@ export default function CompanyPerformancePage() {
                     <div className="text-center">
                       <span className="text-sm font-medium text-purple-200 mb-1 block">영업이익률</span>
                       <div className="flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white drop-shadow-sm">{data.kpiMetrics.ACTUAL_OP_MARGIN}</span>
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.ACTUAL_OP_MARGIN || 0} 
+                            duration={2}
+                            separator=","
+                            decimal="."
+                            suffix="%"
+                            className="text-white"
+                          />
+                        </span>
                         <span className="text-lg font-medium text-purple-200 ml-1">%</span>
                       </div>
                     </div>
@@ -227,7 +251,16 @@ export default function CompanyPerformancePage() {
                     <div className="text-center">
                       <span className="text-sm font-medium text-orange-200 mb-1 block">매출 달성률</span>
                       <div className="flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white drop-shadow-sm">{data.kpiMetrics.SALES_ACHIEVEMENT}</span>
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.SALES_ACHIEVEMENT || 0} 
+                            duration={2}
+                            separator=","
+                            decimal="."
+                            suffix="%"
+                            className="text-white"
+                          />
+                        </span>
                         <span className="text-lg font-medium text-orange-200 ml-1">%</span>
                       </div>
                     </div>
@@ -244,7 +277,13 @@ export default function CompanyPerformancePage() {
 
             {/* 2번째 API: 중간 그리드 테이블 */}
             <div className="mb-4">
-              <PerformanceTable data={data.gridData.divisions} loading={gridLoading} periodType={periodType} />
+              <PerformanceTable 
+                data={data.gridData.divisions} 
+                loading={gridLoading} 
+                periodType={periodType}
+                currentYear={currentYear}
+                currentMonth={currentMonth}
+              />
             </div>
 
             {/* 3~5번째 API: 하단 3개 카드 컴포넌트 */}

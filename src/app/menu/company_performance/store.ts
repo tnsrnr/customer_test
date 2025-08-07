@@ -372,6 +372,8 @@ interface CompanyPerformanceStore {
   loading: boolean;
   error: string | null;
   periodType: 'monthly' | 'cumulative';
+  currentYear: number;
+  currentMonth: number;
   
   // 개별 API 로딩 상태
   kpiLoading: boolean;
@@ -390,6 +392,7 @@ interface CompanyPerformanceStore {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setPeriodType: (type: 'monthly' | 'cumulative') => void;
+  setCurrentDate: (year: number, month: number) => void;
   reset: () => void;
 }
 
@@ -409,6 +412,8 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
     loading: false,
     error: null,
     periodType: 'monthly',
+    currentYear: new Date().getFullYear(),
+    currentMonth: new Date().getMonth() + 1,
     
     // 개별 API 로딩 상태
     kpiLoading: false,
@@ -422,7 +427,8 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
       const { year, month } = getCurrentDate();
       const { periodType } = get();
       
-  
+      // 현재 날짜를 store에 업데이트
+      set({ currentYear: year, currentMonth: month });
       
       set({ loading: true, error: null });
       
@@ -720,6 +726,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
     setLoading: (loading) => set({ loading }),
     setError: (error) => set({ error }),
     setPeriodType: (periodType) => set({ periodType }),
+    setCurrentDate: (year: number, month: number) => set({ currentYear: year, currentMonth: month }),
     reset: () => set({ 
       data: null, 
       loading: false, 

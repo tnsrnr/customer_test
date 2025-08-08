@@ -16,32 +16,36 @@ export default function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 디자인 변형 상태
-  const [variant, setVariant] = useState<Variant>(() => {
-    try {
-      const fromQuery = typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('variant') as Variant | null) : null;
-      if (fromQuery === 'basic' || fromQuery === 'compact' || fromQuery === 'classic') return fromQuery;
-      const saved = typeof window !== 'undefined' ? (localStorage.getItem('auth-variant') as Variant | null) : null;
-      if (saved === 'basic' || saved === 'compact' || saved === 'classic') return saved;
-      return 'basic';
-    } catch {
-      return 'basic';
-    }
-  });
+  // 디자인 변형 상태 (SSR/CSR 초기 일치 보장)
+  const [variant, setVariant] = useState<Variant>('basic');
 
-  // 배경 변형 상태
+  // 배경 변형 상태 (SSR/CSR 초기 일치 보장)
   type BgVariant = 'default' | 'galaxy';
-  const [bgVariant, setBgVariant] = useState<BgVariant>(() => {
+  const [bgVariant, setBgVariant] = useState<BgVariant>('default');
+
+  // 마운트 후 URL/localStorage에서 초기 상태 로드
+  useEffect(() => {
     try {
-      const fromQuery = typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('bg') as BgVariant | null) : null;
-      if (fromQuery === 'default' || fromQuery === 'galaxy') return fromQuery;
-      const saved = typeof window !== 'undefined' ? (localStorage.getItem('auth-bg') as BgVariant | null) : null;
-      if (saved === 'default' || saved === 'galaxy') return saved;
-      return 'default';
-    } catch {
-      return 'default';
-    }
-  });
+      const vFromQuery = searchParams?.get('variant') as Variant | null;
+      const vSaved = (typeof window !== 'undefined' ? (localStorage.getItem('auth-variant') as Variant | null) : null);
+      const resolvedV: Variant = (vFromQuery === 'basic' || vFromQuery === 'compact' || vFromQuery === 'classic')
+        ? vFromQuery
+        : (vSaved === 'basic' || vSaved === 'compact' || vSaved === 'classic')
+          ? vSaved
+          : 'basic';
+      if (resolvedV !== variant) setVariant(resolvedV);
+
+      const bFromQuery = searchParams?.get('bg') as BgVariant | null;
+      const bSaved = (typeof window !== 'undefined' ? (localStorage.getItem('auth-bg') as BgVariant | null) : null);
+      const resolvedB: BgVariant = (bFromQuery === 'default' || bFromQuery === 'galaxy')
+        ? bFromQuery
+        : (bSaved === 'default' || bSaved === 'galaxy')
+          ? bSaved
+          : 'default';
+      if (resolvedB !== bgVariant) setBgVariant(resolvedB);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // variant에 따라 카드/폼 크기 클래스 설정
   const sizing = useMemo(() => {
@@ -76,23 +80,24 @@ export default function AuthPage() {
     }
   }, [variant]);
 
-  // variant 동기화: localStorage & URL 쿼리
+  // variant 동기화: localStorage & URL 쿼리 (마운트 이후에만 실행)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.setItem('auth-variant', variant);
     } catch {}
 
-    // URL 쿼리 업데이트 (불필요한 replace 방지)
     const currentInQuery = searchParams?.get('variant');
     if (currentInQuery !== variant) {
       const params = new URLSearchParams(searchParams?.toString() || '');
       params.set('variant', variant);
       router.replace(`/auth?${params.toString()}`);
     }
-  }, [variant, router, searchParams]);
+  }, [variant]);
 
-  // bgVariant 동기화: localStorage & URL 쿼리
+  // bgVariant 동기화: localStorage & URL 쿼리 (마운트 이후에만 실행)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.setItem('auth-bg', bgVariant);
     } catch {}
@@ -102,7 +107,7 @@ export default function AuthPage() {
       params.set('bg', bgVariant);
       router.replace(`/auth?${params.toString()}`);
     }
-  }, [bgVariant, router, searchParams]);
+  }, [bgVariant]);
 
   // 세션 체크
   useEffect(() => {
@@ -192,17 +197,7 @@ export default function AuthPage() {
       {/* 배경 효과 */}
       {bgVariant === 'galaxy' ? (
         <div className="absolute inset-0 z-0 pointer-events-none rb-galaxy" />
-      ) : (
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-25 animate-spin-slow" viewBox="0 0 400 400" fill="none">
-            <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
-            <text x="200" y="235" textAnchor="middle" fontSize="72" fontWeight="bold" fill="white" opacity="0.25" style={{ letterSpacing: 18 }}>HTNS</text>
-          </svg>
-          <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-50 animate-pulse-slow" viewBox="0 0 512 512" fill="none">
-            <text x="256" y="320" textAnchor="middle" fontSize="110" fontWeight="900" fill="#3b82f6" opacity="0.5" style={{ letterSpacing: 32 }}>HTNS</text>
-          </svg>
-        </div>
-      )}
+      ) : null}
       {/* 디자인 전환 버튼 */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
         {(['basic','compact','classic'] as Variant[]).map((v) => (

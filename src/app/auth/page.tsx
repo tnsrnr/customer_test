@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/card';
 import { Lock, User } from 'lucide-react';
+
+type Variant = 'basic' | 'compact' | 'classic';
 
 export default function AuthPage() {
   const [username, setUsername] = useState('tnsrnr');
@@ -12,6 +14,68 @@ export default function AuthPage() {
   const [error, setError] = useState('');
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 디자인 변형 상태
+  const [variant, setVariant] = useState<Variant>(() => {
+    try {
+      const fromQuery = typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('variant') as Variant | null) : null;
+      if (fromQuery === 'basic' || fromQuery === 'compact' || fromQuery === 'classic') return fromQuery;
+      const saved = typeof window !== 'undefined' ? (localStorage.getItem('auth-variant') as Variant | null) : null;
+      if (saved === 'basic' || saved === 'compact' || saved === 'classic') return saved;
+      return 'basic';
+    } catch {
+      return 'basic';
+    }
+  });
+
+  // variant에 따라 카드/폼 크기 클래스 설정
+  const sizing = useMemo(() => {
+    switch (variant) {
+      case 'compact':
+        return {
+          card: 'max-w-xs p-6',
+          input: 'pl-9 pr-3 py-1.5 text-sm',
+          icon: 'w-4 h-4',
+          btn: 'py-2 text-sm',
+          title: 'text-2xl',
+          lockBadge: 'p-3',
+        } as const;
+      case 'classic':
+        return {
+          card: 'max-w-md p-10',
+          input: 'pl-11 pr-4 py-3 text-base',
+          icon: 'w-5 h-5',
+          btn: 'py-3 text-base',
+          title: 'text-3xl',
+          lockBadge: 'p-5',
+        } as const;
+      default:
+        return {
+          card: 'max-w-sm p-8',
+          input: 'pl-10 pr-3 py-2 text-sm',
+          icon: 'w-5 h-5',
+          btn: 'py-2.5 text-sm',
+          title: 'text-3xl',
+          lockBadge: 'p-4',
+        } as const;
+    }
+  }, [variant]);
+
+  // variant 동기화: localStorage & URL 쿼리
+  useEffect(() => {
+    try {
+      localStorage.setItem('auth-variant', variant);
+    } catch {}
+
+    // URL 쿼리 업데이트 (불필요한 replace 방지)
+    const currentInQuery = searchParams?.get('variant');
+    if (currentInQuery !== variant) {
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      params.set('variant', variant);
+      router.replace(`/auth?${params.toString()}`);
+    }
+  }, [variant, router, searchParams]);
 
   // 세션 체크
   useEffect(() => {
@@ -93,7 +157,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden" data-variant={variant}>
       {/* 배경 효과 */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-25 animate-spin-slow" viewBox="0 0 400 400" fill="none">
@@ -126,12 +190,27 @@ export default function AuthPage() {
           </text>
         </svg>
       </div>
-      <Card className="relative z-10 w-full max-w-sm p-8 shadow-2xl rounded-2xl bg-white/80 border-0">
+      {/* 디자인 전환 버튼 */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        {(['basic','compact','classic'] as Variant[]).map((v) => (
+          <button
+            key={v}
+            onClick={() => setVariant(v)}
+            className={`px-3 py-1 rounded border transition ${variant === v ? 'bg-white/30 text-white border-white/50' : 'bg-white/10 text-gray-200 border-white/20 hover:bg-white/20'}`}
+            type="button"
+            aria-pressed={variant === v}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+
+      <Card className={`relative z-10 w-full ${sizing.card} shadow-2xl rounded-2xl bg-white/80 border-0`}>
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-blue-600 rounded-full p-4 shadow-lg mb-4 animate-bounce">
+          <div className={`bg-blue-600 rounded-full ${sizing.lockBadge} shadow-lg mb-4 animate-bounce`}>
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">HTNS 경영정보시스템</h1>
+          <h1 className={`${sizing.title} font-extrabold text-slate-800 tracking-tight mb-2`}>HTNS 경영정보시스템</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -140,14 +219,14 @@ export default function AuthPage() {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500">
-                <User className="w-5 h-5" />
+                <User className={sizing.icon} />
               </span>
               <input
                 type="text"
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${sizing.input}`}
                 required
                 autoFocus
                 placeholder="아이디를 입력하세요"
@@ -161,14 +240,14 @@ export default function AuthPage() {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500">
-                <Lock className="w-5 h-5" />
+                <Lock className={sizing.icon} />
               </span>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${sizing.input}`}
                 required
                 placeholder="비밀번호를 입력하세요"
                 autoComplete="current-password"
@@ -184,7 +263,7 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white py-2.5 px-4 rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white px-4 rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${sizing.btn}`}
           >
             {isLoading ? "로그인 중..." : "로그인"}
           </button>

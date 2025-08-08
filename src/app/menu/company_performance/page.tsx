@@ -3,9 +3,8 @@
 import { Card } from '@/components/card';
 import { PerformanceTable } from './components/performance_table';
 import { useEffect } from 'react';
-import { DollarSign, TrendingUp, Percent, BarChart3, Building2, Users, Target, Calendar } from "lucide-react";
+import { DollarSign, TrendingUp, Percent, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { useCompanyPerformanceStore } from './store';
 import { useGlobalStore } from '@/store/global';
@@ -22,18 +21,11 @@ export default function CompanyPerformancePage() {
     periodType, 
     setPeriodType, 
     fetchAllData,
-    kpiLoading,
-    gridLoading,
-    chart1Loading,
-    chart2Loading,
-    chart3Loading,
     currentYear,
     currentMonth
   } = useCompanyPerformanceStore();
 
   const { setCurrentPage, isRefreshing } = useGlobalStore();
-
-
 
   // 컴포넌트 마운트 시 데이터 로드 및 현재 페이지 설정
   useEffect(() => {
@@ -44,17 +36,17 @@ export default function CompanyPerformancePage() {
   // 전역 조회 이벤트 감지
   useEffect(() => {
     if (isRefreshing) {
-      // 부드러운 데이터 갱신을 위해 로딩 상태만 변경
       fetchAllData();
     }
   }, [isRefreshing, fetchAllData]);
 
-  // 기간 변경 시 데이터 재로드
+  // 기간 변경 시 데이터 재로드 (부드러운 전환)
   useEffect(() => {
     if (data) {
+      // 기존 데이터를 유지하면서 새 데이터 로드
       fetchAllData();
     }
-  }, [periodType, fetchAllData]);
+  }, [periodType]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -90,7 +82,7 @@ export default function CompanyPerformancePage() {
           </div>
         </div>
 
-        {/* 로딩 상태 표시 */}
+        {/* 로딩 상태 표시 - 초기 로딩 시에만 표시 */}
         {loading && !data && (
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -279,7 +271,7 @@ export default function CompanyPerformancePage() {
             <div className="mb-4">
               <PerformanceTable 
                 data={data.gridData.divisions} 
-                loading={gridLoading} 
+                loading={loading} 
                 periodType={periodType}
                 currentYear={currentYear}
                 currentMonth={currentMonth}
@@ -495,7 +487,7 @@ export default function CompanyPerformancePage() {
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-white/50">
-                        {chart2Loading ? '데이터를 불러오는 중...' : '데이터가 없습니다'}
+                        {loading ? '데이터를 불러오는 중...' : '데이터가 없습니다'}
                       </div>
                     )}
                   </div>
@@ -585,7 +577,7 @@ export default function CompanyPerformancePage() {
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-white/50">
-                          {chart3Loading ? '데이터를 불러오는 중...' : '데이터가 없습니다'}
+                          {loading ? '데이터를 불러오는 중...' : '데이터가 없습니다'}
                         </div>
                       )}
                   </div>

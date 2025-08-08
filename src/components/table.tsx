@@ -1,6 +1,28 @@
 import * as React from "react"
 import { cn } from "@/utils"
 
+// 표 행 병합(rowSpan) 계산 유틸리티
+// - 연속된 같은 그룹 키를 가진 행들을 하나의 영역으로 계산합니다.
+// - 각 영역의 "첫 번째 행"에만 병합 크기(양수)를 부여하고,
+//   나머지 행에는 0을 부여합니다. (렌더링 시 첫 행에만 rowSpan 적용)
+// - 특정 페이지/컴포넌트에 종속되지 않도록 범용적으로 구현.
+export function computeRowSpans<T>(
+  rows: T[],
+  getGroupingKey: (row: T) => string | number
+): number[] {
+  const spans: number[] = new Array(rows.length).fill(0)
+  let i = 0
+  while (i < rows.length) {
+    const start = i
+    const key = getGroupingKey(rows[i])
+    while (i < rows.length && getGroupingKey(rows[i]) === key) {
+      i += 1
+    }
+    spans[start] = i - start
+  }
+  return spans
+}
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>

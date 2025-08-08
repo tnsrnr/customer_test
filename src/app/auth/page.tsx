@@ -29,6 +29,20 @@ export default function AuthPage() {
     }
   });
 
+  // 배경 변형 상태
+  type BgVariant = 'default' | 'galaxy';
+  const [bgVariant, setBgVariant] = useState<BgVariant>(() => {
+    try {
+      const fromQuery = typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('bg') as BgVariant | null) : null;
+      if (fromQuery === 'default' || fromQuery === 'galaxy') return fromQuery;
+      const saved = typeof window !== 'undefined' ? (localStorage.getItem('auth-bg') as BgVariant | null) : null;
+      if (saved === 'default' || saved === 'galaxy') return saved;
+      return 'default';
+    } catch {
+      return 'default';
+    }
+  });
+
   // variant에 따라 카드/폼 크기 클래스 설정
   const sizing = useMemo(() => {
     switch (variant) {
@@ -76,6 +90,19 @@ export default function AuthPage() {
       router.replace(`/auth?${params.toString()}`);
     }
   }, [variant, router, searchParams]);
+
+  // bgVariant 동기화: localStorage & URL 쿼리
+  useEffect(() => {
+    try {
+      localStorage.setItem('auth-bg', bgVariant);
+    } catch {}
+    const currentBg = searchParams?.get('bg');
+    if (currentBg !== bgVariant) {
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      params.set('bg', bgVariant);
+      router.replace(`/auth?${params.toString()}`);
+    }
+  }, [bgVariant, router, searchParams]);
 
   // 세션 체크
   useEffect(() => {
@@ -156,40 +183,26 @@ export default function AuthPage() {
     localStorage.removeItem('htns-session');
   };
 
+  const bgContainerClass = bgVariant === 'galaxy'
+    ? 'bg-slate-950'
+    : 'bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800';
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden" data-variant={variant}>
+    <div className={`min-h-screen flex items-center justify-center relative overflow-hidden ${bgContainerClass}`} data-variant={variant} data-bg={bgVariant}>
       {/* 배경 효과 */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-25 animate-spin-slow" viewBox="0 0 400 400" fill="none">
-          <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
-          <text
-            x="200"
-            y="235"
-            textAnchor="middle"
-            fontSize="72"
-            fontWeight="bold"
-            fill="white"
-            opacity="0.25"
-            style={{ letterSpacing: 18 }}
-          >
-            HTNS
-          </text>
-        </svg>
-        <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-50 animate-pulse-slow" viewBox="0 0 512 512" fill="none">
-          <text
-            x="256"
-            y="320"
-            textAnchor="middle"
-            fontSize="110"
-            fontWeight="900"
-            fill="#3b82f6"
-            opacity="0.5"
-            style={{ letterSpacing: 32 }}
-          >
-            HTNS
-          </text>
-        </svg>
-      </div>
+      {bgVariant === 'galaxy' ? (
+        <div className="absolute inset-0 z-0 pointer-events-none rb-galaxy" />
+      ) : (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-25 animate-spin-slow" viewBox="0 0 400 400" fill="none">
+            <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
+            <text x="200" y="235" textAnchor="middle" fontSize="72" fontWeight="bold" fill="white" opacity="0.25" style={{ letterSpacing: 18 }}>HTNS</text>
+          </svg>
+          <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-50 animate-pulse-slow" viewBox="0 0 512 512" fill="none">
+            <text x="256" y="320" textAnchor="middle" fontSize="110" fontWeight="900" fill="#3b82f6" opacity="0.5" style={{ letterSpacing: 32 }}>HTNS</text>
+          </svg>
+        </div>
+      )}
       {/* 디자인 전환 버튼 */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
         {(['basic','compact','classic'] as Variant[]).map((v) => (
@@ -201,6 +214,19 @@ export default function AuthPage() {
             aria-pressed={variant === v}
           >
             {v}
+          </button>
+        ))}
+        <span className="mx-1 h-6 w-px bg-white/30" aria-hidden />
+        {(['default','galaxy'] as BgVariant[]).map((b) => (
+          <button
+            key={b}
+            onClick={() => setBgVariant(b)}
+            className={`px-3 py-1 rounded border transition ${bgVariant === b ? 'bg-white/30 text-white border-white/50' : 'bg-white/10 text-gray-200 border-white/20 hover:bg-white/20'}`}
+            type="button"
+            aria-pressed={bgVariant === b}
+            title={b === 'galaxy' ? 'ReactBits Galaxy' : '기본 배경'}
+          >
+            {b}
           </button>
         ))}
       </div>

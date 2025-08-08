@@ -14,7 +14,7 @@ export interface PersonnelData {
   // 2번째 API: 중간 그리드 테이블 데이터
   gridData: {
     divisions: Array<{
-      name: string;                    // 회사명/지역명
+      company_name: string;            // 회사명/지역명
       q1: number;                     // 1분기
       q2: number;                     // 2분기
       q3: number;                     // 3분기

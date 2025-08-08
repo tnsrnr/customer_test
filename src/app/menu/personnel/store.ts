@@ -76,7 +76,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
     // 데이터 처리
     if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
       const divisions = responseData.MIS030231.map((item: any) => ({
-        name: item.NAME || '하나로TNS',
+        company_name: item.NAME || '하나로TNS',
         q1: item.Q1 || 185,
         q2: item.Q2 || 174,
         q3: item.Q3 || 178,
@@ -100,7 +100,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
       divisions: [
         // 국내 그룹
         {
-          name: '하나로TNS',
+          company_name: '하나로TNS',
           q1: 185,
           q2: 174,
           q3: 178,
@@ -113,7 +113,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '국내'
         },
         {
-          name: '하나로S',
+          company_name: '하나로S',
           q1: 225,
           q2: 220,
           q3: 177,
@@ -126,7 +126,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '국내'
         },
         {
-          name: '하나로넷',
+          company_name: '하나로넷',
           q1: 522,
           q2: 522,
           q3: 525,
@@ -139,7 +139,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '국내'
         },
         {
-          name: '하나로에이',
+          company_name: '하나로에이',
           q1: 117,
           q2: 120,
           q3: 119,
@@ -152,7 +152,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '국내'
         },
         {
-          name: '하나로인터내셔널',
+          company_name: '하나로인터내셔널',
           q1: 3,
           q2: 3,
           q3: 2,
@@ -165,7 +165,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '국내'
         },
         {
-          name: '소계',
+          company_name: '소계',
           q1: 1052,
           q2: 1039,
           q3: 1001,
@@ -179,7 +179,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
         },
         // 해외 그룹
         {
-          name: '중국',
+          company_name: '중국',
           q1: 370,
           q2: 371,
           q3: 377,
@@ -192,7 +192,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '해외'
         },
         {
-          name: '유럽',
+          company_name: '유럽',
           q1: 168,
           q2: 163,
           q3: 161,
@@ -205,7 +205,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '해외'
         },
         {
-          name: '아시아',
+          company_name: '아시아',
           q1: 407,
           q2: 400,
           q3: 386,
@@ -218,7 +218,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '해외'
         },
         {
-          name: '기타(중동+미국)',
+          company_name: '기타(중동+미국)',
           q1: 28,
           q2: 27,
           q3: 26,
@@ -231,7 +231,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
           groupCategory: '해외'
         },
         {
-          name: '소계',
+          company_name: '소계',
           q1: 973,
           q2: 961,
           q3: 950,
@@ -245,7 +245,7 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
         },
         // 총계
         {
-          name: '총계',
+          company_name: '총계',
           q1: 2025,
           q2: 2000,
           q3: 1951,

@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, computeR
 import CountUp from 'react-countup';
 
 interface DivisionData {
-  name: string;                    // 회사명/지역명
+  company_name: string;            // 회사명/지역명
   q1: number;                     // 1분기
   q2: number;                     // 2분기
   q3: number;                     // 3분기
@@ -138,9 +138,9 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
         <TableBody>
           {data.map((division, index) => (
             <TableRow 
-              key={division.name}
+              key={division.company_name}
               className={`hover:bg-white/5 transition-colors duration-200 border-b border-white/20 ${
-                division.name === '소계' || division.name === '총계' ? 'bg-white/10 font-bold' : ''
+                division.company_name === '소계' || division.company_name === '총계' ? 'bg-white/10 font-bold' : ''
               }`}
             >
               {/* 국외구분: 같은 값 연속 시 첫 행만 출력 + rowSpan 적용. 다른 컬럼에는 영향 없음 */}
@@ -155,7 +155,7 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
               )}
 
               <TableCell className="text-white font-semibold text-base text-center border-r border-white/20 py-3">
-                {division.name}
+                {division.company_name}
               </TableCell>
               <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
                 <CountUp 

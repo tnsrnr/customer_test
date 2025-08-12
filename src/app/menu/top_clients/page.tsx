@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Card } from "@/components/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Building2, TrendingUp, Package, DollarSign, BarChart2, ArrowUpRight, Plane, Ship, Truck, Train, ArrowDownRight, Minus, Trophy, LineChart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AuthGuard } from "@/components/auth_guard";
 import { Chart } from 'react-chartjs-2';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart_config';
+import '@/lib/chart/config';
 
 interface CountUpAnimationProps {
   end: number;

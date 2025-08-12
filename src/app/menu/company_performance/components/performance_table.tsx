@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CountUp from 'react-countup';
 
 interface DivisionData {

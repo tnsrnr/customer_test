@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card } from "@/components/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Chart } from 'react-chartjs-2';
 import { Truck, Ship, Plane, Package, Users, Building2, SquareStack, BoxSelect, PieChart, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart_config';
+import '@/lib/chart/config';
 
 type ChartType = 'bar';
 

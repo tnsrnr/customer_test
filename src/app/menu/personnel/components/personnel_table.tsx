@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, computeRowSpans } from "@/components/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, computeRowSpans } from "@/components/ui/table";
 import CountUp from 'react-countup';
 
 interface DivisionData {
@@ -26,18 +26,7 @@ interface PersonnelTableProps {
 }
 
 export function PersonnelTable({ data, loading, currentYear, currentMonth }: PersonnelTableProps) {
-  useEffect(() => {
-    console.log('PersonnelTable mounted');
-  }, []);
 
-  useEffect(() => {
-    console.log('🔍 PersonnelTable 데이터:', data);
-    console.log('🔍 PersonnelTable 로딩 상태:', loading);
-    if (data) {
-      console.log('🔍 PersonnelTable 데이터 개수:', data.length);
-      console.log('🔍 PersonnelTable 첫 번째 항목:', data[0]);
-    }
-  }, [data, loading]);
 
   if (loading) {
     return (
@@ -140,7 +129,8 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
             <TableRow 
               key={division.company_name}
               className={`hover:bg-white/5 transition-colors duration-200 border-b border-white/20 ${
-                division.company_name === '소계' || division.company_name === '총계' ? 'bg-white/10 font-bold' : ''
+                division.company_name === '소계' ? 'bg-white/10 font-bold' : 
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'bg-gradient-to-r from-blue-700/40 to-purple-700/40 font-bold border-t-2 border-b-2 border-blue-300/60 shadow-lg' : ''
               }`}
             >
               {/* 국외구분: 같은 값 연속 시 첫 행만 출력 + rowSpan 적용. 다른 컬럼에는 영향 없음 */}
@@ -154,75 +144,97 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
                 </TableCell>
               )}
 
-              <TableCell className="text-white font-semibold text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`font-semibold text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold' : 'text-white text-base'
+              }`}>
                 {division.company_name}
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.q1} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.q2} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.q3} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.q4} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.currentLocal} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.currentKorean} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.previousMonth} 
                   duration={1.5}
                   separator=","
-                  className="text-white"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className="text-white text-base text-center border-r border-white/20 py-3">
+              <TableCell className={`text-center border-r border-white/20 py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
+              }`}>
                 <CountUp 
                   end={division.currentMonth} 
                   duration={1.5}
                   separator=","
-                  className="text-white font-semibold"
+                  className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 font-bold' : 'text-white font-semibold'}
                 />
               </TableCell>
-              <TableCell className="text-base text-center py-3">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              <TableCell className={`text-center py-3 ${
+                division.company_name === '총계' || division.company_name === 'ALL' ? 'text-lg font-bold bg-blue-900/20' : 'text-base'
+              }`}>
+                <span className={`px-2 py-1 rounded-full font-medium ${
+                  division.company_name === '총계' || division.company_name === 'ALL' ? 'text-sm' : 'text-xs'
+                } ${
                   division.change > 0 
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                     : division.change < 0 

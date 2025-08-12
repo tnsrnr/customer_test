@@ -21,7 +21,11 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/common/components/*"],
+      "@/lib/*": ["./src/common/lib/*"],
+      "@/store/*": ["./src/common/store/*"],
+      "@/styles/*": ["./src/common/styles/*"]
     },
     "plugins": [
       {

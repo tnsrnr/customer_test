@@ -1,96 +1,42 @@
 'use client';
 
-import { Card } from "@/components/card";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar, Line, Chart } from 'react-chartjs-2';
+import { Card } from '@/components/ui/card';
+import { HQPerformanceTable } from './components/hq_performance_table';
+import { useEffect } from 'react';
+import { DollarSign, TrendingUp, Percent, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
-import { TrendingUp, DollarSign, Target, BarChart3 } from "lucide-react";
+import { Bar, Line } from 'react-chartjs-2';
+import { useHQPerformanceStore } from './store';
+import { useGlobalStore } from '@/store/slices/global';
+import CountUp from 'react-countup';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// 전역 Chart.js 설정 사용
+import '@/lib/chart/config';
 
 export default function HQPerformancePage() {
-  // 월별 상세 데이터
-  const monthlyDetailData = [
-    {
-      category: '매출',
-      jan: 175,
-      feb: 165,
-      mar: 195,
-      apr: 211,
-      may: 188,
-      total: 934,
-      growth: '▼11%'
-    },
-    {
-      category: '매출원가',
-      jan: 169,
-      feb: 160,
-      mar: 187,
-      apr: 205,
-      may: 179,
-      total: 900,
-      growth: '▼13%'
-    },
-    {
-      category: '매출총이익',
-      jan: 5.6,
-      feb: 5.9,
-      mar: 8.1,
-      apr: 5.7,
-      may: 8.6,
-      total: 34,
-      growth: '▲50%'
-    },
-    {
-      category: '관리비',
-      jan: 8.6,
-      feb: 9.1,
-      mar: 8.1,
-      apr: 8.3,
-      may: 8.5,
-      total: 43,
-      growth: '▲3%'
-    },
-    {
-      category: '영업이익',
-      jan: -3.0,
-      feb: -3.2,
-      mar: 0.1,
-      apr: -2.6,
-      may: 0.0,
-      total: -8.6,
-      growth: '손익분기점'
-    },
-    {
-      category: '영업이익율',
-      jan: '-1.73%',
-      feb: '-1.91%',
-      mar: '0.03%',
-      apr: '-1.22%',
-      may: '0.03%',
-      total: '-0.92%',
-      growth: '개선'
+  const { 
+    data, 
+    loading, 
+    error, 
+    fetchAllData,
+    currentYear,
+    currentMonth
+  } = useHQPerformanceStore();
+
+  const { setCurrentPage, isRefreshing } = useGlobalStore();
+
+  // 컴포넌트 마운트 시 데이터 로드 및 현재 페이지 설정
+  useEffect(() => {
+    setCurrentPage('hq-performance');
+    fetchAllData();
+  }, [fetchAllData, setCurrentPage]);
+
+  // 전역 조회 이벤트 감지
+  useEffect(() => {
+    if (isRefreshing) {
+      fetchAllData();
     }
-  ];
+  }, [isRefreshing, fetchAllData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -99,298 +45,337 @@ export default function HQPerformancePage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(30,58,138,0.15),transparent_50%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(15,23,42,0.2),transparent_50%)]"></div>
       
-      <div className="relative z-10 h-[calc(100vh-64px)] p-4 space-y-4 overflow-hidden">
-        {/* 상단 좌측 - 핵심 KPI 대시보드 */}
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-3">
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 h-full"
-            >
-              <div className="bg-white/10 text-white text-center py-2 -mx-5 -mt-5 mb-4 rounded-t-xl">
-                <div className="text-sm font-semibold">핵심 성과 지표 (KPI)</div>
-              </div>
-              <div className="space-y-3">
-                {/* 핵심 지표 - 합쳐진 카드 */}
-                <div className="bg-blue-500/20 rounded-lg p-3 border-l-4 border-blue-400">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1">
-                      <div className="text-xs text-blue-100 font-medium mb-1">당월 매출</div>
-                      <div className="text-lg font-bold text-white">188억원</div>
-                      <div className="text-xs text-amber-300">▼11% (전월대비)</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs text-blue-100 font-medium mb-1">목표 달성률</div>
-                      <div className="text-lg font-bold text-white">85%</div>
-                      <div className="text-xs text-slate-300">매출 기준</div>
+      <div className="relative z-10 h-[calc(100vh-64px)] p-4 overflow-hidden">
+        {/* 로딩 상태 표시 - 초기 로딩 시에만 표시 */}
+        {loading && !data && (
+          <div className="flex items-center justify-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            <span className="ml-2 text-white">데이터를 불러오는 중...</span>
+          </div>
+        )}
+
+        {/* 에러 상태 표시 */}
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 text-red-300">
+            {error}
+          </div>
+        )}
+
+        {/* 데이터가 로드된 경우에만 컨텐츠 표시 */}
+        {data ? (
+          <>
+            {/* 통합된 상단 카드 섹션 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full mx-auto">
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-emerald-500/20 via-emerald-600/15 to-emerald-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-emerald-400/30 hover:border-emerald-300/50 transition-all duration-300 overflow-hidden group"
+              >
+                {/* 배경 그라데이션 효과 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {/* 아이콘 */}
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl shadow-lg group-hover:shadow-emerald-400/25 transition-all duration-300">
+                    <DollarSign className="w-8 h-8 text-white drop-shadow-lg" />
+                  </div>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-emerald-200 mb-1 block">매출</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.revenue} 
+                            duration={2}
+                            separator=","
+                            className="text-white"
+                          />
+                        </span>
+                        <span className="text-lg font-medium text-emerald-200 ml-1">백만원</span>
+                      </div>
                     </div>
                   </div>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
+                    data.kpiMetrics.revenueChange > 0 
+                      ? 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30' 
+                      : 'text-red-300 bg-red-600/30 border-red-400/30'
+                  }`}>
+                    {data.kpiMetrics.revenueChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.revenueChange)}%
+                  </span>
                 </div>
                 
-                <div className="bg-amber-500/20 rounded-lg p-3 border-l-4 border-amber-400">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1">
-                      <div className="text-xs text-amber-100 font-medium mb-1">영업이익</div>
-                      <div className="text-lg font-bold text-white">0.0억원</div>
-                      <div className="text-xs text-amber-300">손익분기점 달성</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs text-amber-100 font-medium mb-1">영업이익율</div>
-                      <div className="text-lg font-bold text-white">0.03%</div>
-                      <div className="text-xs text-amber-300">개선</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* 세부 지표 */}
-              <div className="grid grid-cols-2 gap-2 mt-3">
-                <div className="bg-white/10 rounded-lg p-2 text-center">
-                  <div className="text-xs text-slate-300 mb-1">매출총이익</div>
-                  <div className="text-sm font-semibold text-white">8.6억원</div>
-                  <div className="text-xs text-emerald-400">▲50%</div>
-                </div>
-                <div className="bg-white/10 rounded-lg p-2 text-center">
-                  <div className="text-xs text-slate-300 mb-1">관리비</div>
-                  <div className="text-sm font-semibold text-white">8.5억원</div>
-                  <div className="text-xs text-red-400">▲3%</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 opacity-60"></div>
+              </motion.div>
 
-          {/* 상단 우측 - 월별 트렌드 차트 */}
-          <div className="col-span-9">
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 h-full"
-            >
-              <div className="bg-white/10 text-white text-center py-2 -mx-5 -mt-5 mb-4 rounded-t-xl">
-                <div className="text-sm font-semibold">월별 트렌드 (최근 12개월)</div>
-              </div>
-              <div className="text-right text-xs text-slate-300 mb-2">단위: 억원</div>
-              <div className="h-56">
-                <Chart
-                  type="line"
-                  data={{
-                    labels: ['24년6월', '7월', '8월', '9월', '10월', '11월', '12월', '25년1월', '2월', '3월', '4월', '5월'],
-                    datasets: [
-                      {
-                        type: 'bar' as const,
-                        label: '매출',
-                        data: [237, 247, 238, 210, 215, 214, 232, 175, 165, 195, 211, 188],
-                        backgroundColor: 'rgba(30, 58, 138, 0.8)',
-                        borderColor: 'rgb(30, 58, 138)',
-                        borderWidth: 1,
-                        yAxisID: 'y',
-                      },
-                      {
-                        type: 'bar' as const,
-                        label: '매출원가',
-                        data: [228, 238, 230, 203, 208, 207, 224, 169, 160, 187, 205, 179],
-                        backgroundColor: 'rgba(75, 85, 99, 0.8)',
-                        borderColor: 'rgb(75, 85, 99)',
-                        borderWidth: 1,
-                        yAxisID: 'y',
-                      },
-                      {
-                        type: 'line' as const,
-                        label: '영업이익',
-                        data: [0.8, 0.2, -0.8, -1.2, -1.8, -1.5, -0.3, -3.0, -3.2, 0.1, -2.6, 0.0],
-                        borderColor: 'rgb(120, 53, 15)',
-                        backgroundColor: 'rgba(120, 53, 15, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.3,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgb(120, 53, 15)',
-                        pointBorderColor: 'white',
-                        pointBorderWidth: 2,
-                        yAxisID: 'y1',
-                      }
-                    ]
-                  }}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                          usePointStyle: true,
-                          padding: 12,
-                          color: '#cbd5e1',
-                          font: {
-                            size: 11
-                          }
-                        }
-                      },
-                      tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        titleColor: '#f1f5f9',
-                        bodyColor: '#e2e8f0',
-                        borderColor: '#475569',
-                        borderWidth: 1,
-                        callbacks: {
-                          label: function(context) {
-                            const value = context.raw as number;
-                            return context.dataset.label + ': ' + value.toLocaleString() + '억원';
-                          }
-                        }
-                      }
-                    },
-                    scales: {
-                      x: {
-                        grid: {
-                          display: false
-                        },
-                        ticks: {
-                          color: '#cbd5e1',
-                          font: {
-                            size: 10
-                          }
-                        }
-                      },
-                      y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: {
-                          display: true,
-                          text: '매출 (억원)',
-                          color: '#cbd5e1',
-                          font: {
-                            size: 10
-                          }
-                        },
-                        grid: {
-                          color: 'rgba(203, 213, 225, 0.2)'
-                        },
-                        ticks: {
-                          color: '#cbd5e1',
-                          font: {
-                            size: 9
-                          },
-                          callback: function(value) {
-                            return (value as number).toLocaleString();
-                          }
-                        }
-                      },
-                      y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: {
-                          display: true,
-                          text: '이익 (억원)',
-                          color: '#cbd5e1',
-                          font: {
-                            size: 10
-                          }
-                        },
-                        grid: {
-                          drawOnChartArea: false,
-                        },
-                        ticks: {
-                          color: '#cbd5e1',
-                          font: {
-                            size: 9
-                          },
-                          callback: function(value) {
-                            return (value as number).toLocaleString();
-                          }
-                        }
-                      }
-                    }
-                  }}
-                />
-              </div>
-            </motion.div>
-          </div>
-
-          {/* 하단 - 상세 분석 테이블 */}
-          <div className="col-span-12">
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="p-5 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 h-full"
-            >
-              <div className="bg-white/10 text-white text-center py-2 -mx-5 -mt-5 mb-4 rounded-t-xl">
-                <div className="text-sm font-semibold">월별 상세 분석</div>
-              </div>
-              <div className="text-right text-xs text-slate-300 mb-2">단위: 억원 (영업이익율 제외)</div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-white/15 text-white">
-                      <th className="py-2 px-3 text-center font-medium border-r border-white/20">구분</th>
-                      <th className="py-2 px-3 text-center font-medium border-r border-white/20">1월</th>
-                      <th className="py-2 px-3 text-center font-medium border-r border-white/20">2월</th>
-                      <th className="py-2 px-3 text-center font-medium border-r border-white/20">3월</th>
-                      <th className="py-2 px-3 text-center font-medium border-r border-white/20">4월</th>
-                      <th className="py-2 px-3 text-center font-medium bg-red-500/40 border-2 border-red-400">5월 (당월)</th>
-                      <th className="py-2 px-3 text-center font-medium border-r border-white/20">누계</th>
-                      <th className="py-2 px-3 text-center font-medium">전월대비</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/20">
-                    {monthlyDetailData.map((row, index) => (
-                      <tr key={index} className={`hover:bg-white/5 ${index % 2 === 0 ? 'bg-white/5' : 'bg-white/10'}`}>
-                        <td className="py-2 px-3 text-center font-semibold text-white border-r border-white/20">{row.category}</td>
-                        <td className="py-2 px-3 text-center text-white border-r border-white/20">{row.jan}</td>
-                        <td className="py-2 px-3 text-center text-white border-r border-white/20">{row.feb}</td>
-                        <td className="py-2 px-3 text-center text-white border-r border-white/20">{row.mar}</td>
-                        <td className="py-2 px-3 text-center text-white border-r border-white/20">{row.apr}</td>
-                        <td className="py-2 px-3 text-center bg-red-500/20 border-l-2 border-r-2 border-red-400 font-bold text-white">
-                          {row.may}
-                        </td>
-                        <td className="py-2 px-3 text-center font-bold text-white border-r border-white/20">{row.total}</td>
-                        <td className="py-2 px-3 text-center">
-                          {row.growth && (
-                            <span className={`font-semibold ${
-                              row.growth.includes('▲') ? 'text-emerald-400' : 
-                              row.growth.includes('▼') ? 'text-blue-400' : 
-                              'text-emerald-400'
-                            }`}>
-                              {row.growth}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              {/* 하단 요약 */}
-              <div className="mt-4 p-3 bg-white/10 rounded-lg">
-                <div className="grid grid-cols-4 gap-4 text-center">
-                  <div>
-                    <div className="text-xs text-slate-300 mb-1">매출 증감률</div>
-                    <div className="text-sm font-bold text-blue-400">▼11%</div>
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-blue-500/20 via-blue-600/15 to-blue-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-blue-400/30 hover:border-blue-300/50 transition-all duration-300 overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg group-hover:shadow-blue-400/25 transition-all duration-300">
+                    <TrendingUp className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
-                  <div>
-                    <div className="text-xs text-slate-300 mb-1">이익 개선도</div>
-                    <div className="text-sm font-bold text-emerald-400">+2.6억원</div>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-blue-200 mb-1 block">매출총이익</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.grossProfit} 
+                            duration={2}
+                            separator=","
+                            className="text-white"
+                          />
+                        </span>
+                        <span className="text-lg font-medium text-blue-200 ml-1">백만원</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-slate-300 mb-1">원가율</div>
-                    <div className="text-sm font-bold text-white">95.2%</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-300 mb-1">관리비율</div>
-                    <div className="text-sm font-bold text-white">4.5%</div>
-                  </div>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
+                    data.kpiMetrics.grossProfitChange > 0 
+                      ? 'text-blue-300 bg-blue-600/30 border-blue-400/30' 
+                      : 'text-red-300 bg-red-600/30 border-red-400/30'
+                  }`}>
+                    {data.kpiMetrics.grossProfitChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.grossProfitChange)}%
+                  </span>
                 </div>
-              </div>
+                
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-blue-600 opacity-60"></div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-orange-500/20 via-orange-600/15 to-orange-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-orange-400/30 hover:border-orange-300/50 transition-all duration-300 overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl shadow-lg group-hover:shadow-orange-400/25 transition-all duration-300">
+                    <BarChart3 className="w-8 h-8 text-white drop-shadow-lg" />
+                  </div>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-orange-200 mb-1 block">영업이익</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.operatingIncome} 
+                            duration={2}
+                            separator=","
+                            decimals={1}
+                            className="text-white"
+                          />
+                        </span>
+                        <span className="text-lg font-medium text-orange-200 ml-1">백만원</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
+                    data.kpiMetrics.operatingIncomeChange > 0 
+                      ? 'text-orange-300 bg-orange-600/30 border-orange-400/30' 
+                      : 'text-red-300 bg-red-600/30 border-red-400/30'
+                  }`}>
+                    {data.kpiMetrics.operatingIncomeChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.operatingIncomeChange)}%
+                  </span>
+                </div>
+                
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600 opacity-60"></div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="relative p-6 bg-gradient-to-br from-purple-500/20 via-purple-600/15 to-purple-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-purple-400/30 hover:border-purple-300/50 transition-all duration-300 overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative flex items-center h-full">
+                  <div className="p-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl shadow-lg group-hover:shadow-purple-400/25 transition-all duration-300">
+                    <Percent className="w-8 h-8 text-white drop-shadow-lg" />
+                  </div>
+                  <div className="flex-1 flex items-center justify-center ml-4">
+                    <div className="text-center">
+                      <span className="text-sm font-medium text-purple-200 mb-1 block">영업이익율</span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                          <CountUp 
+                            end={data.kpiMetrics.operatingMargin} 
+                            duration={2}
+                            separator=","
+                            decimals={2}
+                            className="text-white"
+                          />
+                        </span>
+                        <span className="text-lg font-medium text-purple-200 ml-1">%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
+                    data.kpiMetrics.operatingMarginChange > 0 
+                      ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' 
+                      : 'text-red-300 bg-red-600/30 border-red-400/30'
+                  }`}>
+                    {data.kpiMetrics.operatingMarginChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.operatingMarginChange)}%
+                  </span>
+                </div>
+                
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-600 opacity-60"></div>
+              </motion.div>
+            </div>
+
+            {/* 차트 섹션 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="bg-white/5 backdrop-blur-md rounded-xl p-2 border border-white/10"
+              >
+                <div className="h-56">
+                  <Line 
+                    data={data.chartData.revenueChart}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          labels: {
+                            color: 'white',
+                            font: {
+                              size: 11
+                            }
+                          }
+                        }
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
+                            color: 'white',
+                            font: {
+                              size: 10
+                            }
+                          },
+                          grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                          }
+                        },
+                        y: {
+                          ticks: {
+                            color: 'white',
+                            font: {
+                              size: 10
+                            }
+                          },
+                          grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                          }
+                        }
+                      },
+                      layout: {
+                        padding: {
+                          top: 5,
+                          bottom: 5,
+                          left: 5,
+                          right: 5
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="bg-white/5 backdrop-blur-md rounded-xl p-2 border border-white/10"
+              >
+                <div className="h-56">
+                  <Line 
+                    data={data.chartData.profitChart}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          labels: {
+                            color: 'white',
+                            font: {
+                              size: 11
+                            }
+                          }
+                        }
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
+                            color: 'white',
+                            font: {
+                              size: 10
+                            }
+                          },
+                          grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                          }
+                        },
+                        y: {
+                          ticks: {
+                            color: 'white',
+                            font: {
+                              size: 10
+                            }
+                          },
+                          grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                          }
+                        }
+                      },
+                      layout: {
+                        padding: {
+                          top: 5,
+                          bottom: 5,
+                          left: 5,
+                          right: 5
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* 그리드 테이블 섹션 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="mb-4"
+            >
+              <HQPerformanceTable 
+                data={data.gridData.monthlyDetails} 
+                loading={loading} 
+                currentYear={currentYear}
+                currentMonth={currentMonth}
+              />
             </motion.div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-32">
+            <span className="text-white">데이터를 불러오는 중...</span>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

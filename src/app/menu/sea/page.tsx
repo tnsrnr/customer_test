@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card } from "@/components/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Chart } from 'react-chartjs-2';
 import { Ship, Package, TrendingUp, DollarSign, Users, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart_config';
+import '@/lib/chart/config';
 
 // 해상수출 데이터
 const exportData = {

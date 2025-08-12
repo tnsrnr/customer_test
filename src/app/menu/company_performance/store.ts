@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { CompanyPerformanceData } from './types';
-import { useGlobalStore } from '@/store/global';
+import { useGlobalStore } from '@/store/slices/global';
 
 // API 호출과 데이터 처리를 하나로 합친 함수들
 const company_performance_header = async (year: number, month: number, periodType: 'monthly' | 'cumulative'): Promise<CompanyPerformanceData['kpiMetrics']> => {
@@ -364,8 +364,11 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           })
         ]);
         
+        // 성공한 API 개수 확인
+        const successCount = [kpiData, gridData, chartData1, chartData2, chartData3].filter(Boolean).length;
+        
         // 데이터가 하나라도 성공적으로 로드된 경우에만 상태 업데이트
-        if (kpiData || gridData || chartData1 || chartData2 || chartData3) {
+        if (successCount > 0) {
           const combinedData: CompanyPerformanceData = {
             kpiMetrics: kpiData || {
               ACTUAL_SALES: 0,
@@ -392,10 +395,14 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           
           set({ 
             data: combinedData, 
-            loading: false
+            loading: false,
+            error: null // 에러 상태 초기화
           });
           
-  
+          // 일부 API만 실패한 경우 콘솔에 경고만 출력
+          if (successCount < 5) {
+            console.warn(`⚠️ 일부 데이터만 로드됨 (${successCount}/5): 일부 차트나 데이터가 표시되지 않을 수 있습니다.`);
+          }
         } else {
           throw new Error('모든 데이터 조회에 실패했습니다.');
         }

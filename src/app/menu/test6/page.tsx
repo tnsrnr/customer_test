@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card } from "@/components/card";
+import { Card } from "@/components/ui/card";
 
 interface AnimatedCardProps {
   delay: number;

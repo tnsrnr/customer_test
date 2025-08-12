@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Card } from '@/components/card';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card } from '@/components/ui/card';
 import { Lock, User } from 'lucide-react';
-
-type Variant = 'basic' | 'compact' | 'classic';
 
 export default function AuthPage() {
   const [username, setUsername] = useState('tnsrnr');
@@ -14,100 +12,6 @@ export default function AuthPage() {
   const [error, setError] = useState('');
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // 디자인 변형 상태 (SSR/CSR 초기 일치 보장)
-  const [variant, setVariant] = useState<Variant>('basic');
-
-  // 배경 변형 상태 (SSR/CSR 초기 일치 보장)
-  type BgVariant = 'default' | 'galaxy';
-  const [bgVariant, setBgVariant] = useState<BgVariant>('default');
-
-  // 마운트 후 URL/localStorage에서 초기 상태 로드
-  useEffect(() => {
-    try {
-      const vFromQuery = searchParams?.get('variant') as Variant | null;
-      const vSaved = (typeof window !== 'undefined' ? (localStorage.getItem('auth-variant') as Variant | null) : null);
-      const resolvedV: Variant = (vFromQuery === 'basic' || vFromQuery === 'compact' || vFromQuery === 'classic')
-        ? vFromQuery
-        : (vSaved === 'basic' || vSaved === 'compact' || vSaved === 'classic')
-          ? vSaved
-          : 'basic';
-      if (resolvedV !== variant) setVariant(resolvedV);
-
-      const bFromQuery = searchParams?.get('bg') as BgVariant | null;
-      const bSaved = (typeof window !== 'undefined' ? (localStorage.getItem('auth-bg') as BgVariant | null) : null);
-      const resolvedB: BgVariant = (bFromQuery === 'default' || bFromQuery === 'galaxy')
-        ? bFromQuery
-        : (bSaved === 'default' || bSaved === 'galaxy')
-          ? bSaved
-          : 'default';
-      if (resolvedB !== bgVariant) setBgVariant(resolvedB);
-    } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // variant에 따라 카드/폼 크기 클래스 설정
-  const sizing = useMemo(() => {
-    switch (variant) {
-      case 'compact':
-        return {
-          card: 'max-w-xs p-6',
-          input: 'pl-9 pr-3 py-1.5 text-sm',
-          icon: 'w-4 h-4',
-          btn: 'py-2 text-sm',
-          title: 'text-2xl',
-          lockBadge: 'p-3',
-        } as const;
-      case 'classic':
-        return {
-          card: 'max-w-md p-10',
-          input: 'pl-11 pr-4 py-3 text-base',
-          icon: 'w-5 h-5',
-          btn: 'py-3 text-base',
-          title: 'text-3xl',
-          lockBadge: 'p-5',
-        } as const;
-      default:
-        return {
-          card: 'max-w-sm p-8',
-          input: 'pl-10 pr-3 py-2 text-sm',
-          icon: 'w-5 h-5',
-          btn: 'py-2.5 text-sm',
-          title: 'text-3xl',
-          lockBadge: 'p-4',
-        } as const;
-    }
-  }, [variant]);
-
-  // variant 동기화: localStorage & URL 쿼리 (마운트 이후에만 실행)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem('auth-variant', variant);
-    } catch {}
-
-    const currentInQuery = searchParams?.get('variant');
-    if (currentInQuery !== variant) {
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.set('variant', variant);
-      router.replace(`/auth?${params.toString()}`);
-    }
-  }, [variant]);
-
-  // bgVariant 동기화: localStorage & URL 쿼리 (마운트 이후에만 실행)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem('auth-bg', bgVariant);
-    } catch {}
-    const currentBg = searchParams?.get('bg');
-    if (currentBg !== bgVariant) {
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.set('bg', bgVariant);
-      router.replace(`/auth?${params.toString()}`);
-    }
-  }, [bgVariant]);
 
   // 세션 체크
   useEffect(() => {
@@ -188,50 +92,46 @@ export default function AuthPage() {
     localStorage.removeItem('htns-session');
   };
 
-  const bgContainerClass = bgVariant === 'galaxy'
-    ? 'bg-slate-950'
-    : 'bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800';
-
   return (
-    <div className={`min-h-screen flex items-center justify-center relative overflow-hidden ${bgContainerClass}`} data-variant={variant} data-bg={bgVariant}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
       {/* 배경 효과 */}
-      {bgVariant === 'galaxy' ? (
-        <div className="absolute inset-0 z-0 pointer-events-none rb-galaxy" />
-      ) : null}
-      {/* 디자인 전환 버튼 */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-        {(['basic','compact','classic'] as Variant[]).map((v) => (
-          <button
-            key={v}
-            onClick={() => setVariant(v)}
-            className={`px-3 py-1 rounded border transition ${variant === v ? 'bg-white/30 text-white border-white/50' : 'bg-white/10 text-gray-200 border-white/20 hover:bg-white/20'}`}
-            type="button"
-            aria-pressed={variant === v}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <svg className="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-25 animate-spin-slow" viewBox="0 0 400 400" fill="none">
+          <circle cx="200" cy="200" r="180" stroke="#2563eb" strokeWidth="40" strokeDasharray="40 40" />
+          <text
+            x="200"
+            y="235"
+            textAnchor="middle"
+            fontSize="72"
+            fontWeight="bold"
+            fill="white"
+            opacity="0.25"
+            style={{ letterSpacing: 18 }}
           >
-            {v}
-          </button>
-        ))}
-        <span className="mx-1 h-6 w-px bg-white/30" aria-hidden />
-        {(['default','galaxy'] as BgVariant[]).map((b) => (
-          <button
-            key={b}
-            onClick={() => setBgVariant(b)}
-            className={`px-3 py-1 rounded border transition ${bgVariant === b ? 'bg-white/30 text-white border-white/50' : 'bg-white/10 text-gray-200 border-white/20 hover:bg-white/20'}`}
-            type="button"
-            aria-pressed={bgVariant === b}
-            title={b === 'galaxy' ? 'ReactBits Galaxy' : '기본 배경'}
+            HTNS
+          </text>
+        </svg>
+        <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-50 animate-pulse-slow" viewBox="0 0 512 512" fill="none">
+          <text
+            x="256"
+            y="320"
+            textAnchor="middle"
+            fontSize="110"
+            fontWeight="900"
+            fill="#3b82f6"
+            opacity="0.5"
+            style={{ letterSpacing: 32 }}
           >
-            {b}
-          </button>
-        ))}
+            HTNS
+          </text>
+        </svg>
       </div>
-
-      <Card className={`relative z-10 w-full ${sizing.card} shadow-2xl rounded-2xl bg-white/80 border-0`}>
+      <Card className="relative z-10 w-full max-w-sm p-8 shadow-2xl rounded-2xl bg-white/80 border-0">
         <div className="flex flex-col items-center mb-8">
-          <div className={`bg-blue-600 rounded-full ${sizing.lockBadge} shadow-lg mb-4 animate-bounce`}>
+          <div className="bg-blue-600 rounded-full p-4 shadow-lg mb-4 animate-bounce">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className={`${sizing.title} font-extrabold text-slate-800 tracking-tight mb-2`}>HTNS 경영정보시스템</h1>
+          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">HTNS 경영정보시스템</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -240,14 +140,14 @@ export default function AuthPage() {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500">
-                <User className={sizing.icon} />
+                <User className="w-5 h-5" />
               </span>
               <input
                 type="text"
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={`w-full border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${sizing.input}`}
+                className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
                 autoFocus
                 placeholder="아이디를 입력하세요"
@@ -261,14 +161,14 @@ export default function AuthPage() {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500">
-                <Lock className={sizing.icon} />
+                <Lock className="w-5 h-5" />
               </span>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${sizing.input}`}
+                className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
                 placeholder="비밀번호를 입력하세요"
                 autoComplete="current-password"
@@ -284,7 +184,7 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white px-4 rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${sizing.btn}`}
+            className="w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white py-2.5 px-4 rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "로그인 중..." : "로그인"}
           </button>

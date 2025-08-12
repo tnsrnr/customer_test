@@ -16,7 +16,7 @@ import {
 } from 'chart.js';
 import { Bar, Line, Chart } from 'react-chartjs-2';
 import { useFinanceStore } from './store';
-import { useGlobalStore } from '@/store/global';
+import { useGlobalStore } from '@/store/slices/global';
 import { TrendingUp, DollarSign, BarChart3, Activity, RefreshCw } from 'lucide-react';
 import { motion } from "framer-motion";
 

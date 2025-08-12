@@ -16,7 +16,7 @@ import { Truck, Ship, Plane, Package, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import { Card } from "@/components/card";
+import { Card } from "@/components/ui/card";
 
 ChartJS.register(
   CategoryScale,

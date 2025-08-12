@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 // 전역 Chart.js 설정 import
-import '@/lib/chart_config';
+import '@/lib/chart/config';
 
 interface SessionData {
   jsessionId: string;

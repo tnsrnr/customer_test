@@ -1,17 +1,17 @@
 'use client';
 
-import { Card } from '@/components/card';
+import { Card } from '@/components/ui/card';
 import { PerformanceTable } from './components/performance_table';
 import { useEffect } from 'react';
 import { DollarSign, TrendingUp, Percent, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { useCompanyPerformanceStore } from './store';
-import { useGlobalStore } from '@/store/global';
+import { useGlobalStore } from '@/store/slices/global';
 import CountUp from 'react-countup';
 
 // 전역 Chart.js 설정 사용
-import '@/lib/chart_config';
+import '@/lib/chart/config';
 
 export default function CompanyPerformancePage() {
   const { 

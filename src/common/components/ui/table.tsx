@@ -1,5 +1,7 @@
 import * as React from "react"
-import { cn } from "@/utils"
+function cn(...classes: Array<string | false | undefined | null>): string {
+  return classes.filter(Boolean).join(' ')
+}
 
 // 표 행 병합(rowSpan) 계산 유틸리티
 // - 연속된 같은 그룹 키를 가진 행들을 하나의 영역으로 계산합니다.

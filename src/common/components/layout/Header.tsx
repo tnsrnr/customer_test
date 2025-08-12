@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { menuItems } from '@/app/menu/menu_config';
-import { cn } from "@/utils";
+function cn(...classes: Array<string | false | undefined | null>): string {
+  return classes.filter(Boolean).join(' ');
+}
 import { RefreshCw, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { useGlobalStore } from '@/store/global';
+import { useGlobalStore } from '@/store/slices/global';
 import { useState } from 'react';
-import { useThemeStore } from '@/app/theme';
+// theme dependency removed; using static gradient classes instead
 
 export function Header() {
   const pathname = usePathname();
@@ -23,8 +25,7 @@ export function Header() {
   } = useGlobalStore();
   const [showAllMenus, setShowAllMenus] = useState(false);
   const initialMenuCount = 6; // 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처 (6개 표시)
-  const { getCurrentThemeConfig } = useThemeStore();
-  const themeConfig = getCurrentThemeConfig();
+  const primaryGradient = 'from-blue-900 to-slate-900';
 
   // 로그인 페이지에서는 헤더를 숨김
   if (pathname === '/auth') {
@@ -82,7 +83,7 @@ export function Header() {
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <header className={cn("bg-gradient-to-br backdrop-blur-md shadow-xl border-none z-50 relative", themeConfig.colors.primary)}>
+    <header className={cn("bg-gradient-to-br backdrop-blur-md shadow-xl border-none z-50 relative", primaryGradient)}>
       <div className="flex justify-between items-center px-3 py-3">
         <div className="flex items-center space-x-4">
           {/* HTNS 로고 */}

@@ -1,12 +1,12 @@
 'use client';
 
-import { Card } from '@/components/card';
+import { Card } from '@/components/ui/card';
 import { PersonnelTable } from './components/personnel_table';
 import { useEffect } from 'react';
 import { Users, TrendingUp, Building2, Factory, Globe2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePersonnelStore } from './store';
-import { useGlobalStore } from '@/store/global';
+import { useGlobalStore } from '@/store/slices/global';
 import CountUp from 'react-countup';
 
 export default function PersonnelPage() {
@@ -18,6 +18,8 @@ export default function PersonnelPage() {
     currentYear,
     currentMonth
   } = usePersonnelStore();
+
+
 
   const { setCurrentPage, isRefreshing } = useGlobalStore();
 
@@ -58,10 +60,10 @@ export default function PersonnelPage() {
         )}
 
         {/* 데이터가 로드된 경우에만 컨텐츠 표시 */}
-        {data && (
+        {data ? (
           <>
             {/* 통합된 상단 카드 섹션 - company_performance와 동일 사이즈 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 w-full mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full mx-auto">
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -218,7 +220,7 @@ export default function PersonnelPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="mb-3"
+              className="mt-4 mb-3"
             >
               <PersonnelTable 
                 data={data.gridData.divisions} 
@@ -228,6 +230,10 @@ export default function PersonnelPage() {
               />
             </motion.div>
           </>
+        ) : (
+          <div className="flex items-center justify-center h-32">
+            <span className="text-white">데이터를 불러오는 중...</span>
+          </div>
         )}
       </div>
     </div>

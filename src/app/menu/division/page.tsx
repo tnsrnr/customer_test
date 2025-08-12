@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from "@/components/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plane, Ship, Truck, Warehouse, Building, Package } from "lucide-react";
 import { AuthGuard } from "@/components/auth_guard";
 import { motion } from "framer-motion";

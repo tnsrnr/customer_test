@@ -20,10 +20,12 @@ export default function HQPerformancePage() {
     error, 
     fetchAllData,
     currentYear,
-    currentMonth
+    currentMonth,
+    setCurrentYear,
+    setCurrentMonth
   } = useHQPerformanceStore();
 
-  const { setCurrentPage, isRefreshing } = useGlobalStore();
+  const { setCurrentPage, isRefreshing, selectedYear, selectedMonth } = useGlobalStore();
 
   // 컴포넌트 마운트 시 데이터 로드 및 현재 페이지 설정
   useEffect(() => {
@@ -37,6 +39,14 @@ export default function HQPerformancePage() {
       fetchAllData();
     }
   }, [isRefreshing, fetchAllData]);
+
+  // 전역 조회 버튼 클릭 시 월 변경 적용
+  useEffect(() => {
+    if (isRefreshing && selectedYear && selectedMonth) {
+      setCurrentYear(selectedYear);
+      setCurrentMonth(selectedMonth);
+    }
+  }, [isRefreshing, selectedYear, selectedMonth, setCurrentYear, setCurrentMonth]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -66,10 +76,10 @@ export default function HQPerformancePage() {
           <>
             {/* 통합된 상단 카드 섹션 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full mx-auto">
-              <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+            <motion.div 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
                 whileHover={{ scale: 1.02, y: -2 }}
                 className="relative p-6 bg-gradient-to-br from-emerald-500/20 via-emerald-600/15 to-emerald-700/10 backdrop-blur-md rounded-2xl shadow-xl border border-emerald-400/30 hover:border-emerald-300/50 transition-all duration-300 overflow-hidden group"
               >
@@ -80,7 +90,7 @@ export default function HQPerformancePage() {
                 <div className="relative flex items-center h-full">
                   <div className="p-3 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl shadow-lg group-hover:shadow-emerald-400/25 transition-all duration-300">
                     <DollarSign className="w-8 h-8 text-white drop-shadow-lg" />
-                  </div>
+              </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
                       <span className="text-sm font-medium text-emerald-200 mb-1 block">매출</span>
@@ -94,7 +104,7 @@ export default function HQPerformancePage() {
                           />
                         </span>
                         <span className="text-lg font-medium text-emerald-200 ml-1">백만원</span>
-                      </div>
+                    </div>
                     </div>
                   </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
@@ -219,9 +229,9 @@ export default function HQPerformancePage() {
                           />
                         </span>
                         <span className="text-lg font-medium text-purple-200 ml-1">%</span>
-                      </div>
-                    </div>
-                  </div>
+                </div>
+              </div>
+                </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
                     data.kpiMetrics.operatingMarginChange > 0 
                       ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' 
@@ -232,53 +242,53 @@ export default function HQPerformancePage() {
                 </div>
                 
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-600 opacity-60"></div>
-              </motion.div>
-            </div>
+            </motion.div>
+          </div>
 
             {/* 차트 섹션 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10">
-              <motion.div
+            <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="bg-white/5 backdrop-blur-md rounded-xl p-2 border border-white/10"
               >
-                <div className="h-56">
+              <div className="h-56">
                   <Line 
                     data={data.chartData.revenueChart}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          labels: {
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        labels: {
                             color: 'white',
-                            font: {
-                              size: 11
+                          font: {
+                            size: 11
                             }
-                          }
                         }
-                      },
-                      scales: {
-                        x: {
-                          ticks: {
+                      }
+                    },
+                    scales: {
+                      x: {
+                        ticks: {
                             color: 'white',
-                            font: {
-                              size: 10
+                          font: {
+                            size: 10
                             }
                           },
                           grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
-                          }
-                        },
-                        y: {
+                        }
+                      },
+                      y: {
                           ticks: {
                             color: 'white',
-                            font: {
-                              size: 10
-                            }
-                          },
-                          grid: {
+                          font: {
+                            size: 10
+                          }
+                        },
+                        grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
                           }
                         }
@@ -312,7 +322,7 @@ export default function HQPerformancePage() {
                         legend: {
                           labels: {
                             color: 'white',
-                            font: {
+                          font: {
                               size: 11
                             }
                           }
@@ -322,18 +332,18 @@ export default function HQPerformancePage() {
                         x: {
                           ticks: {
                             color: 'white',
-                            font: {
-                              size: 10
-                            }
-                          },
-                          grid: {
+                          font: {
+                            size: 10
+                          }
+                        },
+                        grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
                           }
                         },
                         y: {
-                          ticks: {
+                        ticks: {
                             color: 'white',
-                            font: {
+                          font: {
                               size: 10
                             }
                           },
@@ -348,16 +358,16 @@ export default function HQPerformancePage() {
                           bottom: 5,
                           left: 5,
                           right: 5
-                        }
                       }
-                    }}
-                  />
-                </div>
-              </motion.div>
-            </div>
+                    }
+                  }}
+                />
+              </div>
+            </motion.div>
+          </div>
 
             {/* 그리드 테이블 섹션 */}
-            <motion.div
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}

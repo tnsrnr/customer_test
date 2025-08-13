@@ -53,8 +53,8 @@ export const menuItems: MenuItem[] = [
   { 
     name: '재무현황', 
     path: '/menu/finance', 
-    icon: LineChart,
-    description: '재무 현황'
+    icon: PieChart,
+    description: '재무 현황 - 탭 기반 대시보드'
   },
   { 
     name: '부문별실적', 

@@ -13,25 +13,26 @@ interface HQPerformanceStore {
 }
 
 // Mock 데이터 생성 함수
-const generateMockData = (): HQPerformanceData => {
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
+const generateMockData = (currentYear: number, currentMonth: number): HQPerformanceData => {
   
-  // 12개월 라벨 생성 (현재월 기준으로 12개월 전부터)
+  // 선택월 기준으로 뒤로 5개월 (총 6개월) 라벨 생성
   const generateMonthLabels = (): string[] => {
     const labels: string[] = [];
-    for (let i = 11; i >= 0; i--) {
+    for (let i = 5; i >= 0; i--) {
       const date = new Date(currentYear, currentMonth - 1 - i, 1);
       const month = date.getMonth() + 1;
-      labels.push(`${month}월`);
+      const year = date.getFullYear();
+      // 연도가 다른 경우 연도 표시
+      const label = year !== currentYear ? `${year}년 ${month}월` : `${month}월`;
+      labels.push(label);
     }
     return labels;
   };
   
-  // 12개월 매출 데이터 생성 (올해)
+  // 6개월 매출 데이터 생성 (올해)
   const generateRevenueData = (): number[] => {
     const data: number[] = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 6; i++) {
       // 150~220 범위의 랜덤한 매출 데이터
       const revenue = Math.floor(Math.random() * 71) + 150;
       data.push(revenue);
@@ -39,10 +40,10 @@ const generateMockData = (): HQPerformanceData => {
     return data;
   };
   
-  // 1년 전 매출 데이터 생성
+  // 1년 전 매출 데이터 생성 (6개월)
   const generateLastYearRevenueData = (): number[] => {
     const data: number[] = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 6; i++) {
       // 1년 전 데이터는 더 낮은 수준으로 생성 (120~180 범위)
       const revenue = Math.floor(Math.random() * 61) + 120;
       data.push(revenue);
@@ -50,7 +51,7 @@ const generateMockData = (): HQPerformanceData => {
     return data;
   };
   
-  // 12개월 영업이익 데이터 생성 (올해)
+  // 6개월 영업이익 데이터 생성 (올해)
   const generateProfitData = (revenueData: number[]) => {
     return revenueData.map((revenue) => {
       // 매출의 85~90%를 매출원가로 가정
@@ -62,10 +63,10 @@ const generateMockData = (): HQPerformanceData => {
     });
   };
   
-  // 1년 전 영업이익 데이터 생성
+  // 1년 전 영업이익 데이터 생성 (6개월)
   const generateLastYearProfitData = () => {
     const data: number[] = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 6; i++) {
       // 1년 전 데이터는 더 낮은 수준으로 생성 (-5~15 범위)
       const profit = (Math.random() * 20) - 5;
       data.push(parseFloat(profit.toFixed(1)));
@@ -82,15 +83,11 @@ const generateMockData = (): HQPerformanceData => {
   return {
     kpiMetrics: {
       revenue: 934,
-      costOfSales: 900,
       grossProfit: 34,
-      operatingExpense: 43,
       operatingIncome: -8.6,
       operatingMargin: -0.92,
       revenueChange: -11,
-      costOfSalesChange: -13,
       grossProfitChange: 50,
-      operatingExpenseChange: 3,
       operatingIncomeChange: 0,
       operatingMarginChange: 0
     },
@@ -160,18 +157,18 @@ const generateMockData = (): HQPerformanceData => {
     },
     chartData: {
       revenueChart: {
-        labels: monthLabels.slice(0, 6),
+        labels: monthLabels,
         datasets: [
           {
             label: '매출 (올해)',
-            data: revenueData.slice(0, 6),
+            data: revenueData,
             borderColor: 'rgb(59, 130, 246)',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             borderWidth: 2
           },
           {
             label: '매출 (1년 전)',
-            data: lastYearRevenueData.slice(0, 6),
+            data: lastYearRevenueData,
             borderColor: 'rgb(156, 163, 175)',
             backgroundColor: 'rgba(156, 163, 175, 0.1)',
             borderWidth: 2,
@@ -180,18 +177,18 @@ const generateMockData = (): HQPerformanceData => {
         ]
       },
       profitChart: {
-        labels: monthLabels.slice(6, 12),
+        labels: monthLabels,
         datasets: [
           {
             label: '영업이익 (올해)',
-            data: profitData.slice(6, 12),
+            data: profitData,
             borderColor: 'rgb(34, 197, 94)',
             backgroundColor: 'rgba(34, 197, 94, 0.1)',
             borderWidth: 2
           },
           {
             label: '영업이익 (1년 전)',
-            data: lastYearProfitData.slice(6, 12),
+            data: lastYearProfitData,
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             borderWidth: 2,
@@ -217,12 +214,11 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => ({
       // 실제 API 호출 대신 Mock 데이터 사용
       await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 지연
       
-      const mockData = generateMockData();
+      const { currentYear, currentMonth } = get();
+      const mockData = generateMockData(currentYear, currentMonth);
       set({ 
         data: mockData, 
-        loading: false,
-        currentYear: new Date().getFullYear(),
-        currentMonth: new Date().getMonth() + 1
+        loading: false
       });
     } catch (error) {
       set({ 
@@ -234,9 +230,13 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => ({
 
   setCurrentYear: (year: number) => {
     set({ currentYear: year });
+    // 연도 변경 시 데이터 다시 로드
+    get().fetchAllData();
   },
 
   setCurrentMonth: (month: number) => {
     set({ currentMonth: month });
+    // 월 변경 시 데이터 다시 로드
+    get().fetchAllData();
   }
 }));

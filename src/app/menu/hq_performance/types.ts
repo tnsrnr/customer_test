@@ -1,17 +1,20 @@
+// 그리드 테이블 컬럼 정의
+export interface GridColumn {
+  key: string;
+  label: string;
+  colSpan?: number;
+}
+
 // HQ Performance 데이터 타입 정의
 export interface HQPerformanceData {
   // 1번째 API: 상위 4개 KPI 컴포넌트 데이터
   kpiMetrics: {
     revenue: number;              // 매출
-    costOfSales: number;         // 매출원가
     grossProfit: number;         // 매출총이익
-    operatingExpense: number;    // 관리비
     operatingIncome: number;     // 영업이익
     operatingMargin: number;     // 영업이익율
     revenueChange: number;       // 매출 변화
-    costOfSalesChange: number;   // 매출원가 변화
     grossProfitChange: number;   // 매출총이익 변화
-    operatingExpenseChange: number; // 관리비 변화
     operatingIncomeChange: number;  // 영업이익 변화
     operatingMarginChange: number;  // 영업이익율 변화
   };
@@ -54,3 +57,25 @@ export interface HQPerformanceData {
     };
   };
 }
+
+// 그리드 테이블 컬럼 설정
+export const GRID_COLUMNS: GridColumn[] = [
+  { key: 'category', label: '구분' },
+  { key: 'jan', label: '1월' },
+  { key: 'feb', label: '2월' },
+  { key: 'mar', label: '3월' },
+  { key: 'apr', label: '4월' },
+  { key: 'may', label: '5월' },
+  { key: 'total', label: '합계' },
+  { key: 'growth', label: '성장률' }
+];
+
+// 그리드 테이블 헤더 설정
+export const GRID_HEADERS = {
+  topRow: [
+    { key: 'category', label: '항목', colSpan: 1 },
+    { key: 'monthly', label: '월별', colSpan: 5 },
+    { key: 'total', label: '합계', colSpan: 1 },
+    { key: 'growth', label: '성장률', colSpan: 1 }
+  ]
+};

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/common/components/ui/table";
 import CountUp from 'react-countup';
+import { GRID_COLUMNS, GRID_HEADERS } from '../types';
 
 interface MonthlyDetailData {
   category: string;          // 항목명
@@ -47,60 +48,29 @@ export function HQPerformanceTable({ data, loading, currentYear, currentMonth }:
         <TableHeader>
           {/* 상위 헤더 행 */}
           <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
-            <TableHead 
-              className="text-white font-bold text-lg text-center align-middle border border-white/20 py-3"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(12px)'
-              }}
-              colSpan={1}
-            >
-              항목
-            </TableHead>
-            <TableHead 
-              className="text-white font-bold text-lg text-center bg-white/5 backdrop-blur-md border border-white/20 py-3"
-              colSpan={5}
-            >
-              {currentYear}년 월별
-            </TableHead>
-            <TableHead 
-              className="text-white font-bold text-lg text-center bg-white/5 backdrop-blur-md border border-white/20 py-3"
-              colSpan={1}
-            >
-              합계
-            </TableHead>
-            <TableHead 
-              className="text-white font-bold text-lg text-center bg-white/5 backdrop-blur-md border border-white/20 py-3"
-            >
-              성장률
-            </TableHead>
+            {GRID_HEADERS.topRow.map((header, index) => (
+              <TableHead 
+                key={header.key}
+                className={`text-white font-bold text-lg text-center border border-white/20 py-3 ${
+                  index === 0 ? 'align-middle' : 'bg-white/5 backdrop-blur-md'
+                }`}
+                style={index === 0 ? { 
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(12px)'
+                } : {}}
+                colSpan={header.colSpan}
+              >
+                {header.key === 'monthly' ? `${currentYear}년 월별` : header.label}
+              </TableHead>
+            ))}
           </TableRow>
           {/* 하위 헤더 행 */}
           <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              구분
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              1월
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              2월
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              3월
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              4월
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              5월
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              합계
-            </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border border-white/20 py-3">
-              성장률
-            </TableHead>
+            {GRID_COLUMNS.map((column) => (
+              <TableHead key={column.key} className="text-white font-bold text-base text-center border border-white/20 py-3">
+                {column.label}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>

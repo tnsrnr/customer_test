@@ -1,166 +1,6 @@
 import { create } from 'zustand';
-import { HQPerformanceData } from './types';
-
-// Mock 데이터 생성 함수들
-const generateMockRevenueChart = (currentYear: number, currentMonth: number) => {
-  // 선택월 기준으로 뒤로 5개월 (총 6개월) 라벨 생성
-  const generateMonthLabels = (): string[] => {
-    const labels: string[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const date = new Date(currentYear, currentMonth - 1 - i, 1);
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const label = year !== currentYear ? `${year}년 ${month}월` : `${month}월`;
-      labels.push(label);
-    }
-    return labels;
-  };
-
-  const monthLabels = generateMonthLabels();
-  
-  return {
-    labels: monthLabels,
-    datasets: [
-      {
-        label: '매출 (올해)',
-        data: Array.from({ length: 6 }, () => Math.round((Math.floor(Math.random() * 71) + 150) * 10000000 / 100000000)), // 억원 단위
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        borderWidth: 2
-      },
-      {
-        label: '매출 (1년 전)',
-        data: Array.from({ length: 6 }, () => Math.round((Math.floor(Math.random() * 61) + 120) * 10000000 / 100000000)), // 억원 단위
-        borderColor: 'rgb(156, 163, 175)',
-        backgroundColor: 'rgba(156, 163, 175, 0.1)',
-        borderWidth: 2,
-        borderDash: [5, 5]
-      }
-    ]
-  };
-};
-
-const generateMockProfitChart = (currentYear: number, currentMonth: number) => {
-  const generateMonthLabels = (): string[] => {
-    const labels: string[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const date = new Date(currentYear, currentMonth - 1 - i, 1);
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const label = year !== currentYear ? `${year}년 ${month}월` : `${month}월`;
-      labels.push(label);
-    }
-    return labels;
-  };
-
-  const monthLabels = generateMonthLabels();
-  
-  return {
-    labels: monthLabels,
-    datasets: [
-      {
-        label: '영업이익 (올해)',
-        data: Array.from({ length: 6 }, () => Math.round((Math.random() * 20 - 10) * 10000000 / 100000000)), // 억원 단위
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-        borderWidth: 2
-      },
-      {
-        label: '영업이익 (1년 전)',
-        data: Array.from({ length: 6 }, () => Math.round((Math.random() * 20 - 10) * 10000000 / 100000000)), // 억원 단위
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        borderWidth: 2,
-        borderDash: [5, 5]
-      }
-    ]
-  };
-};
-
-const generateMockGridData = (currentYear: number, currentMonth: number) => {
-  // 그리드 테이블용 월 라벨 생성 (선택월 기준으로 5개월)
-  const generateGridMonthLabels = (): string[] => {
-    const labels: string[] = [];
-    for (let i = 4; i >= 0; i--) {
-      const date = new Date(currentYear, currentMonth - 1 - i, 1);
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const label = year !== currentYear ? `${year}년 ${month}월` : `${month}월`;
-      labels.push(label);
-    }
-    return labels;
-  };
-
-  const monthLabels = generateGridMonthLabels();
-  
-  const monthlyDetails = [
-    {
-      category: '매출',
-      month1: Math.round((Math.floor(Math.random() * 71) + 150) * 10000000 / 100000000), // 억원 단위
-      month2: Math.round((Math.floor(Math.random() * 71) + 150) * 10000000 / 100000000), // 억원 단위
-      month3: Math.round((Math.floor(Math.random() * 71) + 150) * 10000000 / 100000000), // 억원 단위
-      month4: Math.round((Math.floor(Math.random() * 71) + 150) * 10000000 / 100000000), // 억원 단위
-      month5: Math.round((Math.floor(Math.random() * 71) + 150) * 10000000 / 100000000), // 억원 단위
-      total: 9, // 억원 단위
-      growth: '▼11%'
-    },
-    {
-      category: '매입',
-      month1: Math.round((Math.floor(Math.random() * 71) + 140) * 10000000 / 100000000), // 억원 단위
-      month2: Math.round((Math.floor(Math.random() * 71) + 140) * 10000000 / 100000000), // 억원 단위
-      month3: Math.round((Math.floor(Math.random() * 71) + 140) * 10000000 / 100000000), // 억원 단위
-      month4: Math.round((Math.floor(Math.random() * 71) + 140) * 10000000 / 100000000), // 억원 단위
-      month5: Math.round((Math.floor(Math.random() * 71) + 140) * 10000000 / 100000000), // 억원 단위
-      total: 9, // 억원 단위
-      growth: '▼13%'
-    },
-    {
-      category: '매출총이익',
-      month1: Math.round((Math.floor(Math.random() * 20) + 5) * 10000000 / 100000000), // 억원 단위
-      month2: Math.round((Math.floor(Math.random() * 20) + 5) * 10000000 / 100000000), // 억원 단위
-      month3: Math.round((Math.floor(Math.random() * 20) + 5) * 10000000 / 100000000), // 억원 단위
-      month4: Math.round((Math.floor(Math.random() * 20) + 5) * 10000000 / 100000000), // 억원 단위
-      month5: Math.round((Math.floor(Math.random() * 20) + 5) * 10000000 / 100000000), // 억원 단위
-      total: 0, // 억원 단위
-      growth: '▲50%'
-    },
-    {
-      category: '관리비',
-      month1: Math.round((Math.floor(Math.random() * 15) + 5) * 10000000 / 100000000), // 억원 단위
-      month2: Math.round((Math.floor(Math.random() * 15) + 5) * 10000000 / 100000000), // 억원 단위
-      month3: Math.round((Math.floor(Math.random() * 15) + 5) * 10000000 / 100000000), // 억원 단위
-      month4: Math.round((Math.floor(Math.random() * 15) + 5) * 10000000 / 100000000), // 억원 단위
-      month5: Math.round((Math.floor(Math.random() * 15) + 5) * 10000000 / 100000000), // 억원 단위
-      total: 0, // 억원 단위
-      growth: '▲3%'
-    },
-    {
-      category: '영업이익',
-      month1: Math.round((Math.floor(Math.random() * 20) - 10) * 10000000 / 100000000), // 억원 단위
-      month2: Math.round((Math.floor(Math.random() * 20) - 10) * 10000000 / 100000000), // 억원 단위
-      month3: Math.round((Math.floor(Math.random() * 20) - 10) * 10000000 / 100000000), // 억원 단위
-      month4: Math.round((Math.floor(Math.random() * 20) - 10) * 10000000 / 100000000), // 억원 단위
-      month5: Math.round((Math.floor(Math.random() * 20) - 10) * 10000000 / 100000000), // 억원 단위
-      total: 0, // 억원 단위
-      growth: '손익분기점'
-    },
-    {
-      category: '영업이익율',
-      month1: Math.floor(Math.random() * 400) / 100 - 2, // 비율은 그대로
-      month2: Math.floor(Math.random() * 400) / 100 - 2, // 비율은 그대로
-      month3: Math.floor(Math.random() * 400) / 100 - 2, // 비율은 그대로
-      month4: Math.floor(Math.random() * 400) / 100 - 2, // 비율은 그대로
-      month5: Math.floor(Math.random() * 400) / 100 - 2, // 비율은 그대로
-      total: -0.92, // 비율은 그대로
-      growth: '개선'
-    }
-  ];
-
-  return {
-    monthlyDetails,
-    monthLabels
-  };
-};
+import { HQPerformanceData, ChartData } from './types';
+import { useGlobalStore } from '@/store/slices/global';
 
 // 공통 파라미터 생성 함수
 function createParams(year: number, month: number) {
@@ -221,6 +61,164 @@ const hq_performance_header = async (year: number, month: number): Promise<HQPer
   }
 };
 
+const hq_performance_grid = async (year: number, month: number): Promise<HQPerformanceData['gridData']> => {
+  try {
+    const params = createParams(year, month);
+    const response = await fetch(`/auth/api/proxy?path=/api/MIS030231SVC/hq_performance_grid`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    
+    const responseData = await response.json();
+    
+    if (responseData.data && responseData.data.includes('<!DOCTYPE html>')) {
+      throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+    
+    // 데이터 처리
+    if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
+      const monthlyDetails = responseData.MIS030231.map((item: any) => ({
+        column1: item.COLUMN1 || '', // 구분 - 문자열
+        column2: item.COLUMN2 || 0, // 첫 번째 월 데이터
+        column3: item.COLUMN3 || 0, // 두 번째 월 데이터
+        column4: item.COLUMN4 || 0, // 세 번째 월 데이터
+        column5: item.COLUMN5 || 0, // 네 번째 월 데이터
+        column6: item.COLUMN6 || 0, // 다섯 번째 월 데이터 (선택한 월)
+        column7: item.COLUMN7 || 0, // 합계
+        column8: item.COLUMN8 || '' // 성장률 - 문자열
+      }));
+      
+      // 월 라벨 생성 (선택월 기준으로 5개월: 이전 4개월 + 선택한 월)
+      const monthLabels: string[] = [];
+      for (let i = 4; i >= 0; i--) {
+        const date = new Date(year, month - 1 - i, 1);
+        const monthNum = date.getMonth() + 1;
+        const yearNum = date.getFullYear();
+        const label = yearNum !== year ? `${yearNum}년 ${monthNum}월` : `${monthNum}월`;
+        monthLabels.push(label);
+      }
+      
+      return { 
+        monthlyDetails,
+        monthLabels
+      };
+    }
+    
+    throw new Error('데이터 형식이 올바르지 않습니다.');
+  } catch (error) {
+    console.error('그리드 데이터 조회 실패:', error);
+    throw error;
+  }
+};
+
+const hq_performance_chart = async (year: number, month: number): Promise<{ revenueChart: ChartData; profitChart: ChartData }> => {
+  try {
+    const params = createParams(year, month);
+    const response = await fetch(`/auth/api/proxy?path=/api/MIS030231SVC/hq_performance_chart`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    
+    const responseData = await response.json();
+    
+    if (responseData.data && responseData.data.includes('<!DOCTYPE html>')) {
+      throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+    
+    // 데이터 처리
+    if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
+      const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+      
+      // 데이터 분리
+      const revenueCurrent = responseData.MIS030231.find((item: any) => item.DIVISION_TYPE === '매출_현재');
+      const revenueLastYear = responseData.MIS030231.find((item: any) => item.DIVISION_TYPE === '매출_1년전');
+      const profitCurrent = responseData.MIS030231.find((item: any) => item.DIVISION_TYPE === '영업이익_현재');
+      const profitLastYear = responseData.MIS030231.find((item: any) => item.DIVISION_TYPE === '영업이익_1년전');
+      
+      // 매출 차트 데이터
+      const revenueChart: ChartData = {
+        labels: monthLabels,
+        datasets: [
+          {
+            label: '매출 (올해)',
+            data: Array.from({ length: 12 }, (_, index) => {
+              const monthKey = `MONTH${index + 1}`;
+              // 현재 월까지만 데이터 표시, 나머지는 null
+              return index < month ? (revenueCurrent?.[monthKey] || 0) : null;
+            }),
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 2,
+            spanGaps: false
+          },
+          {
+            label: '매출 (1년 전)',
+            data: Array.from({ length: 12 }, (_, index) => {
+              const monthKey = `MONTH${index + 1}`;
+              // 1년전 데이터는 전체 12개월 표시
+              return revenueLastYear?.[monthKey] || 0;
+            }),
+            borderColor: 'rgb(156, 163, 175)',
+            backgroundColor: 'rgba(156, 163, 175, 0.1)',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            spanGaps: false
+          }
+        ]
+      };
+      
+      // 영업이익 차트 데이터
+      const profitChart: ChartData = {
+        labels: monthLabels,
+        datasets: [
+          {
+            label: '영업이익 (올해)',
+            data: Array.from({ length: 12 }, (_, index) => {
+              const monthKey = `MONTH${index + 1}`;
+              // 현재 월까지만 데이터 표시, 나머지는 null
+              return index < month ? (profitCurrent?.[monthKey] || 0) : null;
+            }),
+            borderColor: 'rgb(34, 197, 94)',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            borderWidth: 2,
+            spanGaps: false
+          },
+          {
+            label: '영업이익 (1년 전)',
+            data: Array.from({ length: 12 }, (_, index) => {
+              const monthKey = `MONTH${index + 1}`;
+              // 1년전 데이터는 전체 12개월 표시
+              return profitLastYear?.[monthKey] || 0;
+            }),
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            spanGaps: false
+          }
+        ]
+      };
+      
+      return { revenueChart, profitChart };
+    }
+    
+    throw new Error('데이터 형식이 올바르지 않습니다.');
+  } catch (error) {
+    console.error('차트 데이터 조회 실패:', error);
+    throw error;
+  }
+};
+
 interface HQPerformanceStore {
   data: HQPerformanceData | null;
   loading: boolean;
@@ -238,8 +236,12 @@ interface HQPerformanceStore {
 
 export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
   const getCurrentDate = () => {
-    const state = get();
-    return { year: state.currentYear, month: state.currentMonth };
+    // 전역 스토어에서 현재 선택된 날짜 가져오기
+    const globalStore = useGlobalStore.getState();
+    return { 
+      year: globalStore.selectedYear || new Date().getFullYear(), 
+      month: globalStore.selectedMonth || new Date().getMonth() + 1 
+    };
   };
 
   return {
@@ -252,24 +254,23 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
     fetchAllData: async () => {
       const { year: currentYear, month: currentMonth } = getCurrentDate();
       
+      // 현재 날짜를 store에 업데이트
+      set({ currentYear, currentMonth });
+      
       set({ loading: true, error: null });
       
       try {
         // API를 병렬로 호출
-        const [kpiMetrics, revenueChart, profitChart, gridData] = await Promise.all([
+        const [kpiMetrics, chartData, gridData] = await Promise.all([
           hq_performance_header(currentYear, currentMonth),
-          generateMockRevenueChart(currentYear, currentMonth),
-          generateMockProfitChart(currentYear, currentMonth),
-          generateMockGridData(currentYear, currentMonth)
+          hq_performance_chart(currentYear, currentMonth), // 실제 차트 API 호출
+          hq_performance_grid(currentYear, currentMonth) // 실제 그리드 API 호출
         ]);
 
-        const combinedData: HQPerformanceData = {
-          kpiMetrics,
-          chartData: {
-            revenueChart,
-            profitChart
-          },
-          gridData
+        const combinedData: HQPerformanceData = { 
+          kpiMetrics, 
+          chartData, 
+          gridData 
         };
 
         set({ data: combinedData, loading: false });

@@ -39,12 +39,19 @@ export default function HQPerformancePage() {
     }
   }, [isRefreshing, fetchAllData]);
 
-  // 전역 조회 버튼 클릭 시 월 변경 적용
-  useEffect(() => {
-    if (isRefreshing && selectedYear && selectedMonth) {
-      setCurrentDate(selectedYear, selectedMonth);
-    }
-  }, [isRefreshing, selectedYear, selectedMonth, setCurrentDate]);
+  // 날짜가 변경되면 데이터 조회 - 제거
+  // useEffect(() => {
+  //   if (currentYear && currentMonth) {
+  //     fetchAllData();
+  //   }
+  // }, [currentYear, currentMonth, fetchAllData]);
+
+  // 전역 조회 버튼 클릭 시 월 변경 적용 - 이 useEffect는 제거
+  // useEffect(() => {
+  //   if (isRefreshing && selectedYear && selectedMonth) {
+  //     setCurrentDate(selectedYear, selectedMonth);
+  //   }
+  // }, [isRefreshing, selectedYear, selectedMonth, setCurrentDate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -254,39 +261,40 @@ export default function HQPerformancePage() {
               <div className="h-56">
                   <Line 
                     data={data.chartData.revenueChart}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        labels: {
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      spanGaps: false,
+                      plugins: {
+                        legend: {
+                          labels: {
                             color: 'white',
-                          font: {
-                            size: 11
+                            font: {
+                              size: 11
                             }
+                          }
                         }
-                      }
-                    },
-                    scales: {
-                      x: {
-                        ticks: {
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
                             color: 'white',
-                          font: {
-                            size: 10
+                            font: {
+                              size: 10
                             }
                           },
                           grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                      },
-                      y: {
-                          ticks: {
-                            color: 'white',
-                          font: {
-                            size: 10
                           }
                         },
-                        grid: {
+                        y: {
+                          ticks: {
+                            color: 'white',
+                            font: {
+                              size: 10
+                            }
+                          },
+                          grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
                           }
                         }
@@ -316,11 +324,12 @@ export default function HQPerformancePage() {
                     options={{
                       responsive: true,
                       maintainAspectRatio: false,
+                      spanGaps: false,
                       plugins: {
                         legend: {
                           labels: {
                             color: 'white',
-                          font: {
+                            font: {
                               size: 11
                             }
                           }
@@ -330,11 +339,11 @@ export default function HQPerformancePage() {
                         x: {
                           ticks: {
                             color: 'white',
-                          font: {
-                            size: 10
-                          }
-                        },
-                        grid: {
+                            font: {
+                              size: 10
+                            }
+                          },
+                          grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
                           }
                         },

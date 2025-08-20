@@ -236,23 +236,23 @@ export default function TopClientsPage() {
   function GrowthIndicator({ value }: { value: number }) {
     if (value > 0) {
       return (
-        <div className="flex items-center text-green-600">
-          <ArrowUpRight className="w-4 h-4 mr-1" />
-          <span className="text-sm font-medium">+{value.toFixed(1)}%</span>
+        <div className="flex items-center text-emerald-400">
+          <ArrowUpRight className="w-3 h-3 mr-1" />
+          <span className="text-xs font-medium">+{value.toFixed(1)}%</span>
         </div>
       );
     } else if (value < 0) {
       return (
-        <div className="flex items-center text-red-600">
-          <ArrowDownRight className="w-4 h-4 mr-1" />
-          <span className="text-sm font-medium">{value.toFixed(1)}%</span>
+        <div className="flex items-center text-blue-400">
+          <ArrowDownRight className="w-3 h-3 mr-1" />
+          <span className="text-xs font-medium">{value.toFixed(1)}%</span>
         </div>
       );
     } else {
       return (
-        <div className="flex items-center text-gray-500">
-          <Minus className="w-4 h-4 mr-1" />
-          <span className="text-sm font-medium">0.0%</span>
+        <div className="flex items-center text-slate-400">
+          <Minus className="w-3 h-3 mr-1" />
+          <span className="text-xs font-medium">0.0%</span>
         </div>
       );
     }
@@ -403,73 +403,94 @@ export default function TopClientsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* 메인 테이블 */}
             <div className="lg:col-span-2">
-              <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+              <Card className="p-6 shadow-2xl rounded-2xl bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-slate-700/50 backdrop-blur-sm h-full">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="bg-gradient-to-r from-blue-600 to-sky-500 rounded-lg p-2">
                     <BarChart2 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800">{currentData.title}</h3>
-                    <p className="text-sm text-slate-500">매출 및 수익 현황</p>
+                    <h3 className="text-xl font-bold text-white">{currentData.title}</h3>
+                    <p className="text-sm text-slate-300">매출 및 수익 현황</p>
                   </div>
                 </div>
                 
                 <div className="overflow-x-auto flex-1">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-slate-50">
-                        <TableHead className="text-slate-700 font-semibold text-lg">거래처</TableHead>
-                        <TableHead className="text-slate-700 font-semibold text-right text-lg">매출 (억원)</TableHead>
-                        <TableHead className="text-slate-700 font-semibold text-right text-lg">수익 (억원)</TableHead>
-                        <TableHead className="text-slate-700 font-semibold text-right text-lg">물량 (톤)</TableHead>
-                        <TableHead className="text-slate-700 font-semibold text-right text-lg">수익률 (%)</TableHead>
-                        <TableHead className="text-slate-700 font-semibold text-center text-lg">트렌드</TableHead>
+                      <TableRow className="bg-slate-700/80 backdrop-blur-sm">
+                        <TableHead className="text-slate-200 font-semibold text-lg py-4">거래처</TableHead>
+                        <TableHead className="text-slate-200 font-semibold text-center text-lg py-4">매출 (억원)</TableHead>
+                        <TableHead className="text-slate-200 font-semibold text-center text-lg py-4">수익 (억원)</TableHead>
+                        <TableHead className="text-slate-200 font-semibold text-center text-lg py-4">물량 (톤)</TableHead>
+                        <TableHead className="text-slate-200 font-semibold text-center text-lg py-4">수익률 (%)</TableHead>
+                        <TableHead className="text-slate-200 font-semibold text-center text-lg py-4">트렌드</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {currentData.data.map((client, index) => {
-                        // division 카드 스타일 적용용 색상(예시)
-                        const colors = [
-                          'bg-blue-50/80 border-blue-200 text-blue-900 border-l-blue-500',
-                          'bg-slate-50/80 border-slate-200 text-slate-700 border-l-slate-500',
-                          'bg-amber-50/80 border-amber-200 text-amber-800 border-l-amber-500',
-                          'bg-green-50/80 border-green-200 text-green-800 border-l-green-500',
-                          'bg-purple-50/80 border-purple-200 text-purple-800 border-l-purple-500',
-                          'bg-orange-50/80 border-orange-200 text-orange-800 border-l-orange-500',
+                        // 다크 테마 색상 매핑
+                        const colorMap = [
+                          { bg: 'bg-gradient-to-r from-blue-600/30 to-blue-700/30', text: 'text-blue-200', border: 'border-blue-500/50' },
+                          { bg: 'bg-gradient-to-r from-emerald-600/30 to-emerald-700/30', text: 'text-emerald-200', border: 'border-emerald-500/50' },
+                          { bg: 'bg-gradient-to-r from-purple-600/30 to-purple-700/30', text: 'text-purple-200', border: 'border-purple-500/50' },
+                          { bg: 'bg-gradient-to-r from-orange-600/30 to-orange-700/30', text: 'text-orange-200', border: 'border-orange-500/50' },
+                          { bg: 'bg-gradient-to-r from-pink-600/30 to-pink-700/30', text: 'text-pink-200', border: 'border-pink-500/50' },
+                          { bg: 'bg-gradient-to-r from-cyan-600/30 to-cyan-700/30', text: 'text-cyan-200', border: 'border-cyan-500/50' }
                         ];
-                        const color = colors[index % colors.length];
+                        const color = colorMap[index % colorMap.length];
+                        
                         return (
                           <TableRow
                             key={client.name}
-                            className={`overflow-hidden backdrop-blur-sm border-l-4 ${color} transition-all duration-200 ${selectedClient === client.name ? 'ring-2 ring-blue-400 scale-[1.01]' : ''}`}
+                            className={`${color.bg} ${color.border} border-l-4 overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] ${
+                              selectedClient === client.name ? 'ring-2 ring-blue-400 shadow-lg' : ''
+                            }`}
                             onClick={() => setSelectedClient(client.name)}
                             style={{ cursor: 'pointer' }}
                           >
                             {/* 거래처명 + 순위 */}
                             <TableCell className="py-4">
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-slate-400">#{index + 1}</span>
-                                <span className={`text-base font-semibold ${color.split(' ')[2]}`}>{client.name}</span>
+                              <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full">
+                                  <span className="text-sm font-bold text-white">#{index + 1}</span>
+                                </div>
+                                <span className={`text-lg font-semibold ${color.text}`}>{client.name}</span>
                               </div>
                             </TableCell>
                             {/* 매출 */}
                             <TableCell className="text-center py-4">
-                              <span className={`text-2xl font-bold ${color.split(' ')[2]}`}>{client.sales.toLocaleString()}</span>
-                              <span className="text-xs text-slate-500 ml-1">억원</span>
+                              <div className="flex flex-col items-center">
+                                <span className={`text-2xl font-bold ${color.text}`}>
+                                  {client.sales.toLocaleString()}
+                                </span>
+                                <span className="text-xs text-slate-400">억원</span>
+                              </div>
                             </TableCell>
                             {/* 수익 */}
                             <TableCell className="text-center py-4">
-                              <span className={`text-lg font-semibold text-green-700`}>{client.profit.toLocaleString()}</span>
-                              <span className="text-xs text-slate-500 ml-1">억원</span>
+                              <div className="flex flex-col items-center">
+                                <span className={`text-xl font-semibold text-emerald-300`}>
+                                  {client.profit.toLocaleString()}
+                                </span>
+                                <span className="text-xs text-slate-400">억원</span>
+                              </div>
                             </TableCell>
                             {/* 물량 */}
                             <TableCell className="text-center py-4">
-                              <span className={`text-lg font-semibold text-purple-700`}>{client.volume.toLocaleString()}</span>
-                              <span className="text-xs text-slate-500 ml-1">톤</span>
+                              <div className="flex flex-col items-center">
+                                <span className={`text-lg font-semibold text-purple-300`}>
+                                  {client.volume.toLocaleString()}
+                                </span>
+                                <span className="text-xs text-slate-400">톤</span>
+                              </div>
                             </TableCell>
                             {/* 수익률 */}
                             <TableCell className="text-center py-4">
-                              <span className="text-base font-bold text-orange-600">{client.profitRatio}%</span>
+                              <div className="flex flex-col items-center">
+                                <span className="text-lg font-bold text-orange-300">
+                                  {client.profitRatio}%
+                                </span>
+                              </div>
                             </TableCell>
                             {/* 트렌드 */}
                             <TableCell className="text-center py-4">
@@ -479,12 +500,39 @@ export default function TopClientsPage() {
                         );
                       })}
                       {/* 합계(총계) Row */}
-                      <TableRow className="bg-slate-600 text-white border-l-4 border-l-blue-700">
+                      <TableRow className="bg-gradient-to-r from-slate-700/80 to-slate-800/80 text-white border-l-4 border-l-blue-500 backdrop-blur-sm">
                         <TableCell className="py-4 font-semibold">합 계</TableCell>
-                        <TableCell className="text-center py-4 text-2xl font-bold">{currentData.data.reduce((sum, c) => sum + c.sales, 0).toLocaleString()}<span className="text-xs ml-1">억원</span></TableCell>
-                        <TableCell className="text-center py-4 text-lg font-semibold">{currentData.data.reduce((sum, c) => sum + c.profit, 0).toLocaleString()}<span className="text-xs ml-1">억원</span></TableCell>
-                        <TableCell className="text-center py-4 text-lg font-semibold">{currentData.data.reduce((sum, c) => sum + c.volume, 0).toLocaleString()}<span className="text-xs ml-1">톤</span></TableCell>
-                        <TableCell className="text-center py-4 text-base font-bold text-orange-200">{(currentData.data.reduce((sum, c) => sum + c.profitRatio, 0) / currentData.data.length).toFixed(1)}%</TableCell>
+                        <TableCell className="text-center py-4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-2xl font-bold text-white">
+                              {currentData.data.reduce((sum, c) => sum + c.sales, 0).toLocaleString()}
+                            </span>
+                            <span className="text-xs text-slate-400">억원</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center py-4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-xl font-semibold text-emerald-300">
+                              {currentData.data.reduce((sum, c) => sum + c.profit, 0).toLocaleString()}
+                            </span>
+                            <span className="text-xs text-slate-400">억원</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center py-4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-purple-300">
+                              {currentData.data.reduce((sum, c) => sum + c.volume, 0).toLocaleString()}
+                            </span>
+                            <span className="text-xs text-slate-400">톤</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center py-4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-bold text-orange-300">
+                              {(currentData.data.reduce((sum, c) => sum + c.profitRatio, 0) / currentData.data.length).toFixed(1)}%
+                            </span>
+                          </div>
+                        </TableCell>
                         <TableCell className="text-center py-4 text-blue-200">-</TableCell>
                       </TableRow>
                     </TableBody>
@@ -495,34 +543,42 @@ export default function TopClientsPage() {
 
             {/* 상세 정보 */}
             <div className="lg:col-span-1">
-              <Card className="p-6 shadow-2xl rounded-2xl bg-white/90 border-0 backdrop-blur-sm h-full">
+              <Card className="p-6 shadow-2xl rounded-2xl bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-slate-700/50 backdrop-blur-sm h-full">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="bg-gradient-to-r from-emerald-600 to-teal-500 rounded-lg p-2">
                     <LineChart className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800">상세 정보</h3>
-                    <p className="text-sm text-slate-500">선택된 거래처 정보</p>
+                    <h3 className="text-xl font-bold text-white">상세 정보</h3>
+                    <p className="text-sm text-slate-300">선택된 거래처 정보</p>
                   </div>
                 </div>
 
                 {selectedClient ? (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {(() => {
                       const client = currentData.data.find(c => c.name === selectedClient);
                       if (!client) return null;
 
                       return (
                         <>
-                          <div className="text-center">
-                            <h4 className="text-2xl font-bold text-slate-800 mb-2">{client.name}</h4>
-                            <p className="text-slate-600 mb-4">{client.mainItems}</p>
+                          {/* 거래처 정보 헤더 */}
+                          <div className="text-center bg-gradient-to-r from-slate-700/80 to-slate-800/80 p-4 rounded-xl border border-slate-600/50">
+                            <h4 className="text-2xl font-bold text-white mb-2">{client.name}</h4>
+                            <p className="text-slate-300 font-medium">{client.mainItems}</p>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
-                              <div className="text-sm text-blue-600 font-medium">매출</div>
-                              <div className="text-2xl font-bold text-blue-800">{client.sales.toLocaleString()}억원</div>
+                          {/* 주요 지표 카드들 */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-gradient-to-br from-blue-600/40 to-blue-700/40 p-4 rounded-xl border border-blue-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-blue-200">매출</span>
+                                <DollarSign className="w-4 h-4 text-blue-300" />
+                              </div>
+                              <div className="text-2xl font-bold text-blue-100 mb-1">
+                                {client.sales.toLocaleString()}
+                              </div>
+                              <div className="text-xs text-blue-300 mb-2">억원</div>
                               <GrowthIndicator 
                                 value={calculateGrowth(
                                   client.sales, 
@@ -530,9 +586,16 @@ export default function TopClientsPage() {
                                 )} 
                               />
                             </div>
-                            <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
-                              <div className="text-sm text-green-600 font-medium">수익</div>
-                              <div className="text-2xl font-bold text-green-800">{client.profit.toLocaleString()}억원</div>
+                            
+                            <div className="bg-gradient-to-br from-emerald-600/40 to-emerald-700/40 p-4 rounded-xl border border-emerald-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-emerald-200">수익</span>
+                                <TrendingUp className="w-4 h-4 text-emerald-300" />
+                              </div>
+                              <div className="text-2xl font-bold text-emerald-100 mb-1">
+                                {client.profit.toLocaleString()}
+                              </div>
+                              <div className="text-xs text-emerald-300 mb-2">억원</div>
                               <GrowthIndicator 
                                 value={calculateGrowth(
                                   client.profit, 
@@ -540,9 +603,16 @@ export default function TopClientsPage() {
                                 )} 
                               />
                             </div>
-                            <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
-                              <div className="text-sm text-purple-600 font-medium">물량</div>
-                              <div className="text-2xl font-bold text-purple-800">{client.volume.toLocaleString()}톤</div>
+                            
+                            <div className="bg-gradient-to-br from-purple-600/40 to-purple-700/40 p-4 rounded-xl border border-purple-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-purple-200">물량</span>
+                                <Package className="w-4 h-4 text-purple-300" />
+                              </div>
+                              <div className="text-2xl font-bold text-purple-100 mb-1">
+                                {client.volume.toLocaleString()}
+                              </div>
+                              <div className="text-xs text-purple-300 mb-2">톤</div>
                               <GrowthIndicator 
                                 value={calculateGrowth(
                                   client.volume, 
@@ -550,9 +620,16 @@ export default function TopClientsPage() {
                                 )} 
                               />
                             </div>
-                            <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg">
-                              <div className="text-sm text-orange-600 font-medium">수익률</div>
-                              <div className="text-2xl font-bold text-orange-800">{client.profitRatio}%</div>
+                            
+                            <div className="bg-gradient-to-br from-orange-600/40 to-orange-700/40 p-4 rounded-xl border border-orange-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-orange-200">수익률</span>
+                                <BarChart2 className="w-4 h-4 text-orange-300" />
+                              </div>
+                              <div className="text-2xl font-bold text-orange-100 mb-1">
+                                {client.profitRatio}%
+                              </div>
+                              <div className="text-xs text-orange-300 mb-2">비율</div>
                               <GrowthIndicator 
                                 value={calculateGrowth(
                                   client.profitRatio, 
@@ -565,10 +642,13 @@ export default function TopClientsPage() {
                           {/* 월별 차트 */}
                           {showCharts && (
                             <div className="mt-6">
-                              <h5 className="text-lg font-semibold text-slate-800 mb-3">
-                                {selectedClient ? '월별 추이' : '상위 5개 거래처 월별 추이'}
-                              </h5>
-                              <div className="h-48">
+                              <div className="flex items-center gap-2 mb-3">
+                                <LineChart className="w-5 h-5 text-slate-300" />
+                                <h5 className="text-lg font-semibold text-white">
+                                  월별 추이
+                                </h5>
+                              </div>
+                              <div className="h-48 bg-slate-700/50 rounded-xl p-3">
                                 <Chart
                                   type="line"
                                   data={chartData}
@@ -582,17 +662,17 @@ export default function TopClientsPage() {
                                         labels: {
                                           usePointStyle: true,
                                           padding: 20,
-                                          color: '#475569',
+                                          color: '#e2e8f0',
                                           font: {
                                             weight: 600
                                           }
                                         }
                                       },
                                       tooltip: {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                        titleColor: '#1e293b',
-                                        bodyColor: '#1e293b',
-                                        borderColor: '#e2e8f0',
+                                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                                        titleColor: '#f1f5f9',
+                                        bodyColor: '#f1f5f9',
+                                        borderColor: '#475569',
                                         borderWidth: 1,
                                         cornerRadius: 8
                                       }
@@ -603,7 +683,7 @@ export default function TopClientsPage() {
                                           display: false
                                         },
                                         ticks: {
-                                          color: '#64748b',
+                                          color: '#cbd5e1',
                                           font: {
                                             weight: 500
                                           }
@@ -611,10 +691,10 @@ export default function TopClientsPage() {
                                       },
                                       y: {
                                         grid: {
-                                          color: '#f1f5f9'
+                                          color: '#475569'
                                         },
                                         ticks: {
-                                          color: '#64748b',
+                                          color: '#cbd5e1',
                                           font: {
                                             weight: 500
                                           }
@@ -631,7 +711,7 @@ export default function TopClientsPage() {
                     })()}
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {(() => {
                       // 탑5개 거래처의 합계 계산
                       const top5Data = currentData.data.slice(0, 5);
@@ -642,71 +722,103 @@ export default function TopClientsPage() {
 
                       return (
                         <>
-                          <div className="text-center">
-                            <h4 className="text-2xl font-bold text-slate-800 mb-2">탑 5 거래처 합계</h4>
-                            <p className="text-slate-600 mb-4">상위 5개 거래처 통합 정보</p>
+                          {/* 합계 정보 헤더 */}
+                          <div className="text-center bg-gradient-to-r from-slate-700/80 to-slate-800/80 p-4 rounded-xl border border-slate-600/50">
+                            <h4 className="text-2xl font-bold text-white mb-2">탑 5 거래처 합계</h4>
+                            <p className="text-slate-300 font-medium">상위 5개 거래처 통합 정보</p>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
-                              <div className="text-sm text-blue-600 font-medium">총 매출</div>
+                          {/* 주요 지표 카드들 */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-gradient-to-br from-blue-600/40 to-blue-700/40 p-4 rounded-xl border border-blue-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-blue-200">총 매출</span>
+                                <DollarSign className="w-4 h-4 text-blue-300" />
+                              </div>
                               {isInitialLoad ? (
                                 <CountUpAnimation 
                                   end={totalSales} 
                                   suffix="억원"
-                                  className="text-2xl font-bold text-blue-800"
+                                  className="text-2xl font-bold text-blue-100 mb-1"
                                 />
                               ) : (
-                                <div className="text-2xl font-bold text-blue-800">{totalSales.toLocaleString()}억원</div>
+                                <div className="text-2xl font-bold text-blue-100 mb-1">
+                                  {totalSales.toLocaleString()}
+                                </div>
                               )}
-                              <div className="text-xs text-blue-600 mt-1">상위 5개 합계</div>
+                              <div className="text-xs text-blue-300 mb-2">억원</div>
+                              <div className="text-xs text-blue-300">상위 5개 합계</div>
                             </div>
-                            <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
-                              <div className="text-sm text-green-600 font-medium">총 수익</div>
+                            
+                            <div className="bg-gradient-to-br from-emerald-600/40 to-emerald-700/40 p-4 rounded-xl border border-emerald-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-emerald-200">총 수익</span>
+                                <TrendingUp className="w-4 h-4 text-emerald-300" />
+                              </div>
                               {isInitialLoad ? (
                                 <CountUpAnimation 
                                   end={totalProfit} 
                                   suffix="억원"
-                                  className="text-2xl font-bold text-green-800"
+                                  className="text-2xl font-bold text-emerald-100 mb-1"
                                 />
                               ) : (
-                                <div className="text-2xl font-bold text-green-800">{totalProfit.toLocaleString()}억원</div>
+                                <div className="text-2xl font-bold text-emerald-100 mb-1">
+                                  {totalProfit.toLocaleString()}
+                                </div>
                               )}
-                              <div className="text-xs text-green-600 mt-1">상위 5개 합계</div>
+                              <div className="text-xs text-emerald-300 mb-2">억원</div>
+                              <div className="text-xs text-emerald-300">상위 5개 합계</div>
                             </div>
-                            <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
-                              <div className="text-sm text-purple-600 font-medium">총 물량</div>
+                            
+                            <div className="bg-gradient-to-br from-purple-600/40 to-purple-700/40 p-4 rounded-xl border border-purple-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-purple-200">총 물량</span>
+                                <Package className="w-4 h-4 text-purple-300" />
+                              </div>
                               {isInitialLoad ? (
                                 <CountUpAnimation 
                                   end={totalVolume} 
                                   suffix="톤"
-                                  className="text-2xl font-bold text-purple-800"
+                                  className="text-2xl font-bold text-purple-100 mb-1"
                                 />
                               ) : (
-                                <div className="text-2xl font-bold text-purple-800">{totalVolume.toLocaleString()}톤</div>
+                                <div className="text-2xl font-bold text-purple-100 mb-1">
+                                  {totalVolume.toLocaleString()}
+                                </div>
                               )}
-                              <div className="text-xs text-purple-600 mt-1">상위 5개 합계</div>
+                              <div className="text-xs text-purple-300 mb-2">톤</div>
+                              <div className="text-xs text-purple-300">상위 5개 합계</div>
                             </div>
-                            <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg">
-                              <div className="text-sm text-orange-600 font-medium">평균 수익률</div>
+                            
+                            <div className="bg-gradient-to-br from-orange-600/40 to-orange-700/40 p-4 rounded-xl border border-orange-500/50 backdrop-blur-sm">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-orange-200">평균 수익률</span>
+                                <BarChart2 className="w-4 h-4 text-orange-300" />
+                              </div>
                               {isInitialLoad ? (
                                 <CountUpAnimation 
                                   end={avgProfitRatio} 
                                   suffix="%"
-                                  className="text-2xl font-bold text-orange-800"
+                                  className="text-2xl font-bold text-orange-100 mb-1"
                                 />
                               ) : (
-                                <div className="text-2xl font-bold text-orange-800">{avgProfitRatio.toFixed(1)}%</div>
+                                <div className="text-2xl font-bold text-orange-100 mb-1">
+                                  {avgProfitRatio.toFixed(1)}%
+                                </div>
                               )}
-                              <div className="text-xs text-orange-600 mt-1">상위 5개 평균</div>
+                              <div className="text-xs text-orange-300 mb-2">비율</div>
+                              <div className="text-xs text-orange-300">상위 5개 평균</div>
                             </div>
                           </div>
 
                           {/* 월별 차트 */}
                           {showCharts && (
                             <div className="mt-6">
-                              <h5 className="text-lg font-semibold text-slate-800 mb-3">상위 5개 거래처 월별 추이</h5>
-                              <div className="h-48">
+                              <div className="flex items-center gap-2 mb-3">
+                                <LineChart className="w-5 h-5 text-slate-300" />
+                                <h5 className="text-lg font-semibold text-white">상위 5개 거래처 월별 추이</h5>
+                              </div>
+                              <div className="h-48 bg-slate-700/50 rounded-xl p-3">
                                 <Chart
                                   type="line"
                                   data={chartData}
@@ -720,17 +832,17 @@ export default function TopClientsPage() {
                                         labels: {
                                           usePointStyle: true,
                                           padding: 20,
-                                          color: '#475569',
+                                          color: '#e2e8f0',
                                           font: {
                                             weight: 600
                                           }
                                         }
                                       },
                                       tooltip: {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                        titleColor: '#1e293b',
-                                        bodyColor: '#1e293b',
-                                        borderColor: '#e2e8f0',
+                                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                                        titleColor: '#f1f5f9',
+                                        bodyColor: '#f1f5f9',
+                                        borderColor: '#475569',
                                         borderWidth: 1,
                                         cornerRadius: 8
                                       }
@@ -741,7 +853,7 @@ export default function TopClientsPage() {
                                           display: false
                                         },
                                         ticks: {
-                                          color: '#64748b',
+                                          color: '#cbd5e1',
                                           font: {
                                             weight: 500
                                           }
@@ -749,10 +861,10 @@ export default function TopClientsPage() {
                                       },
                                       y: {
                                         grid: {
-                                          color: '#f1f5f9'
+                                          color: '#475569'
                                         },
                                         ticks: {
-                                          color: '#64748b',
+                                          color: '#cbd5e1',
                                           font: {
                                             weight: 500
                                           }

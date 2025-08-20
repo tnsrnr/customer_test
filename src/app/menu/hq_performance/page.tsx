@@ -21,8 +21,7 @@ export default function HQPerformancePage() {
     fetchAllData,
     currentYear,
     currentMonth,
-    setCurrentYear,
-    setCurrentMonth
+    setCurrentDate
   } = useHQPerformanceStore();
 
   const { setCurrentPage, isRefreshing, selectedYear, selectedMonth } = useGlobalStore();
@@ -43,10 +42,9 @@ export default function HQPerformancePage() {
   // 전역 조회 버튼 클릭 시 월 변경 적용
   useEffect(() => {
     if (isRefreshing && selectedYear && selectedMonth) {
-      setCurrentYear(selectedYear);
-      setCurrentMonth(selectedMonth);
+      setCurrentDate(selectedYear, selectedMonth);
     }
-  }, [isRefreshing, selectedYear, selectedMonth, setCurrentYear, setCurrentMonth]);
+  }, [isRefreshing, selectedYear, selectedMonth, setCurrentDate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -97,22 +95,22 @@ export default function HQPerformancePage() {
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
-                            end={data.kpiMetrics.revenue} 
+                            end={data.kpiMetrics.actualSales} 
                             duration={2}
                             separator=","
                             className="text-white"
                           />
                         </span>
-                        <span className="text-lg font-medium text-emerald-200 ml-1">백만원</span>
+                        <span className="text-lg font-medium text-emerald-200 ml-1">억원</span>
                     </div>
                     </div>
                   </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
-                    data.kpiMetrics.revenueChange > 0 
+                    data.kpiMetrics.actualSalesChange > 0 
                       ? 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.revenueChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.revenueChange)}%
+                    {data.kpiMetrics.actualSalesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualSalesChange)}억원
                   </span>
                 </div>
                 
@@ -134,26 +132,26 @@ export default function HQPerformancePage() {
                   </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
-                      <span className="text-sm font-medium text-blue-200 mb-1 block">매출총이익</span>
+                      <span className="text-sm font-medium text-blue-200 mb-1 block">매입</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
-                            end={data.kpiMetrics.grossProfit} 
+                            end={data.kpiMetrics.actualPurchases} 
                             duration={2}
                             separator=","
                             className="text-white"
                           />
                         </span>
-                        <span className="text-lg font-medium text-blue-200 ml-1">백만원</span>
+                        <span className="text-lg font-medium text-blue-200 ml-1">억원</span>
                       </div>
                     </div>
                   </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
-                    data.kpiMetrics.grossProfitChange > 0 
+                    data.kpiMetrics.actualPurchasesChange > 0 
                       ? 'text-blue-300 bg-blue-600/30 border-blue-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.grossProfitChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.grossProfitChange)}%
+                    {data.kpiMetrics.actualPurchasesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualPurchasesChange)}억원
                   </span>
                 </div>
                 
@@ -179,23 +177,23 @@ export default function HQPerformancePage() {
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
-                            end={data.kpiMetrics.operatingIncome} 
+                            end={data.kpiMetrics.actualOpProfit} 
                             duration={2}
                             separator=","
                             decimals={1}
                             className="text-white"
                           />
                         </span>
-                        <span className="text-lg font-medium text-orange-200 ml-1">백만원</span>
+                        <span className="text-lg font-medium text-orange-200 ml-1">억원</span>
                       </div>
                     </div>
                   </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
-                    data.kpiMetrics.operatingIncomeChange > 0 
+                    data.kpiMetrics.actualOpProfitChange > 0 
                       ? 'text-orange-300 bg-orange-600/30 border-orange-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.operatingIncomeChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.operatingIncomeChange)}%
+                    {data.kpiMetrics.actualOpProfitChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpProfitChange)}억원
                   </span>
                 </div>
                 
@@ -221,7 +219,7 @@ export default function HQPerformancePage() {
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
-                            end={data.kpiMetrics.operatingMargin} 
+                            end={data.kpiMetrics.actualOpMargin} 
                             duration={2}
                             separator=","
                             decimals={2}
@@ -233,11 +231,11 @@ export default function HQPerformancePage() {
               </div>
                 </div>
                   <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${
-                    data.kpiMetrics.operatingMarginChange > 0 
+                    data.kpiMetrics.actualOpMarginChange > 0 
                       ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.operatingMarginChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.operatingMarginChange)}%
+                    {data.kpiMetrics.actualOpMarginChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpMarginChange)}%
                   </span>
                 </div>
                 
@@ -375,6 +373,7 @@ export default function HQPerformancePage() {
             >
               <HQPerformanceTable 
                 data={data.gridData.monthlyDetails} 
+                monthLabels={data.gridData.monthLabels}
                 loading={loading} 
                 currentYear={currentYear}
                 currentMonth={currentMonth}

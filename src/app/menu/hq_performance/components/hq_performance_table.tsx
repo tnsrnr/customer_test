@@ -3,27 +3,23 @@
 import { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/common/components/ui/table";
 import CountUp from 'react-countup';
-import { GRID_COLUMNS, GRID_HEADERS } from '../types';
-
-interface MonthlyDetailData {
-  category: string;          // 항목명
-  jan: number;              // 1월
-  feb: number;              // 2월
-  mar: number;              // 3월
-  apr: number;              // 4월
-  may: number;              // 5월
-  total: number;            // 합계
-  growth: string;           // 성장률
-}
+import { generateGridColumns, generateGridHeaders, MonthlyDetailData } from '../types';
 
 interface HQPerformanceTableProps {
   data?: MonthlyDetailData[];
+  monthLabels?: string[];   // 월 라벨 배열
   loading?: boolean;
   currentYear?: number;
   currentMonth?: number;
 }
 
-export function HQPerformanceTable({ data, loading, currentYear, currentMonth }: HQPerformanceTableProps) {
+export function HQPerformanceTable({ 
+  data, 
+  monthLabels = [], 
+  loading, 
+  currentYear, 
+  currentMonth 
+}: HQPerformanceTableProps) {
 
   if (loading) {
     return (
@@ -42,13 +38,20 @@ export function HQPerformanceTable({ data, loading, currentYear, currentMonth }:
     );
   }
 
+  // 동적 컬럼과 헤더 생성
+  const gridColumns = generateGridColumns(monthLabels);
+  const gridHeaders = generateGridHeaders(monthLabels);
+
+  // 고정 컬럼명 배열
+  const fixedColumns = ['month1', 'month2', 'month3', 'month4', 'month5'];
+
   return (
     <div className="overflow-x-auto flex-1">
       <Table>
         <TableHeader>
           {/* 상위 헤더 행 */}
           <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
-            {GRID_HEADERS.topRow.map((header, index) => (
+            {gridHeaders.topRow.map((header, index) => (
               <TableHead 
                 key={header.key}
                 className={`text-white font-bold text-lg text-center border border-white/20 py-3 ${
@@ -66,7 +69,7 @@ export function HQPerformanceTable({ data, loading, currentYear, currentMonth }:
           </TableRow>
           {/* 하위 헤더 행 */}
           <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
-            {GRID_COLUMNS.map((column) => (
+            {gridColumns.map((column) => (
               <TableHead key={column.key} className="text-white font-bold text-base text-center border border-white/20 py-3">
                 {column.label}
               </TableHead>
@@ -83,56 +86,21 @@ export function HQPerformanceTable({ data, loading, currentYear, currentMonth }:
               <TableCell className="font-semibold text-center border border-white/20 py-3 text-white text-base">
                 {item.category}
               </TableCell>
-              <TableCell className="text-center border border-white/20 py-3 text-white text-base">
-                <CountUp 
-                  end={item.jan} 
-                  duration={1.5}
-                  separator=","
-                  decimals={item.category === '영업이익율' ? 2 : 0}
-                  className="text-white"
-                />
-                {item.category === '영업이익율' && '%'}
-              </TableCell>
-              <TableCell className="text-center border border-white/20 py-3 text-white text-base">
-                <CountUp 
-                  end={item.feb} 
-                  duration={1.5}
-                  separator=","
-                  decimals={item.category === '영업이익율' ? 2 : 0}
-                  className="text-white"
-                />
-                {item.category === '영업이익율' && '%'}
-              </TableCell>
-              <TableCell className="text-center border border-white/20 py-3 text-white text-base">
-                <CountUp 
-                  end={item.mar} 
-                  duration={1.5}
-                  separator=","
-                  decimals={item.category === '영업이익율' ? 2 : 0}
-                  className="text-white"
-                />
-                {item.category === '영업이익율' && '%'}
-              </TableCell>
-              <TableCell className="text-center border border-white/20 py-3 text-white text-base">
-                <CountUp 
-                  end={item.apr} 
-                  duration={1.5}
-                  separator=","
-                  decimals={item.category === '영업이익율' ? 2 : 0}
-                  className="text-white"
-                />
-                {item.category === '영업이익율' && '%'}
-              </TableCell>
-              <TableCell className="text-center border border-white/20 py-3 text-white text-base">
-                <CountUp 
-                  end={item.may} 
-                  duration={1.5}
-                  separator=","
-                  decimals={item.category === '영업이익율' ? 2 : 0}
-                  className="text-white"
-                />
-                {item.category === '영업이익율' && '%'}
-              </TableCell>
+              
+              {/* 고정 컬럼명 기반 월별 데이터 셀 */}
+              {fixedColumns.map((columnKey) => (
+                <TableCell key={columnKey} className="text-center border border-white/20 py-3 text-white text-base">
+                  <CountUp 
+                    end={item[columnKey as keyof MonthlyDetailData] as number || 0} 
+                    duration={1.5}
+                    separator=","
+                    decimals={item.category === '영업이익율' ? 2 : 0}
+                    className="text-white"
+                  />
+                  {item.category === '영업이익율' && '%'}
+                </TableCell>
+              ))}
+              
               <TableCell className="text-center border border-white/20 py-3 text-white text-base">
                 <CountUp 
                   end={item.total} 

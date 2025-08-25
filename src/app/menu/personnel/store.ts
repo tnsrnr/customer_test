@@ -134,7 +134,13 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
     currentMonth: new Date().getMonth() + 1,
 
     fetchAllData: async () => {
-      const { year: currentYear, month: currentMonth } = getCurrentDate();
+      // global store에서 현재 선택된 날짜 가져오기
+      const { selectedYear, selectedMonth } = useGlobalStore.getState();
+      const currentYear = selectedYear || new Date().getFullYear();
+      const currentMonth = selectedMonth || new Date().getMonth() + 1;
+      
+      // store의 현재 날짜도 업데이트
+      set({ currentYear, currentMonth });
       
       set({ loading: true, error: null });
       

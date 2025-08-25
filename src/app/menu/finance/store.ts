@@ -1,163 +1,253 @@
 import { create } from 'zustand';
 import { FinanceData } from './types';
+import { useGlobalStore } from '@/store/slices/global';
 
-interface FinanceState {
+const finance_overview_kpi = async (year: number, month: number): Promise<FinanceData['kpiMetrics']> => {
+  try {
+    const params = createParams(year, month);
+    const response = await fetch(`/auth/api/proxy?path=/api/MIS030231SVC/finance_overview_kpi`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    
+    const responseData = await response.json();
+    
+    if (responseData.data && responseData.data.includes('<!DOCTYPE html>')) {
+      throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+
+    if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
+      const kpiData = responseData.MIS030231[0];
+      
+      const totalAssets = Math.round((kpiData.TOTALASSETS || 0) / 100000000 * 10) / 10;
+      const totalLiabilities = Math.round((kpiData.TOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      const totalEquity = Math.round((kpiData.TOTALEQUITY || 0) / 100000000 * 10) / 10;
+      const debtWeight = Math.round((kpiData.DEBTWEIGHT || 0) * 10) / 10;
+      
+
+      
+      const totalAssetsChange = Math.round((kpiData.TOTALASSETSCHANGE || 0) * 10) / 10;
+      const totalLiabilitiesChange = Math.round((kpiData.TOTALLIABILITIESCHANGE || 0) * 10) / 10;
+      const totalEquityChange = Math.round((kpiData.TOTALEQUITYCHANGE || 0) * 10) / 10;
+      
+      return {
+        totalAssets,
+        totalLiabilities,
+        totalEquity,
+        debtWeight,
+        totalAssetsChange,
+        totalLiabilitiesChange,
+        totalEquityChange,
+        debtWeightChange: Math.round((kpiData.DEBTWEIGHTCHANGE || 0) * 10) / 10
+      };
+    }
+    
+    throw new Error('데이터 형식이 올바르지 않습니다.');
+  } catch (error) {
+    throw error;
+  }
+};
+
+const finance_overview_charts = async (year: number, month: number): Promise<FinanceData['chartData']> => {
+  try {
+    const params = createParams(year, month);
+    const response = await fetch(`/auth/api/proxy?path=/api/MIS030231SVC/finance_overview_charts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    
+    const responseData = await response.json();
+    
+    if (responseData.data && responseData.data.includes('<!DOCTYPE html>')) {
+      throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+    
+    if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
+      const chartData = responseData.MIS030231[0];
+      
+      const currentAssets = Math.round((chartData.TOTALASSETS || 0) / 100000000 * 10) / 10;
+      const currentLiabilities = Math.round((chartData.TOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      const currentEquity = Math.round((chartData.TOTALEQUITY || 0) / 100000000 * 10) / 10;
+      const currentShortLoan = Math.round((chartData.TOTALSHORTLOAN || 0) / 100000000 * 10) / 10;
+      const currentLongLoan = Math.round((chartData.TOTALLONGLOAN || 0) / 100000000 * 10) / 10;
+      
+      const prevAssets = Math.round((chartData.PREVTOTALASSETS || 0) / 100000000 * 10) / 10;
+      const prevLiabilities = Math.round((chartData.PREVTOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      const prevEquity = Math.round((chartData.PREVTOTALEQUITY || 0) / 100000000 * 10) / 10;
+      const prevShortLoan = Math.round((chartData.PREVTOTALSHORTLOAN || 0) / 100000000 * 10) / 10;
+      const prevLongLoan = Math.round((chartData.PREVTOTALLONGLOAN || 0) / 100000000 * 10) / 10;
+      
+      const capitalStructure = {
+        labels: [`${year-1}`, `${year}`],
+        capital: [prevEquity, currentEquity],
+        debt: [prevLiabilities, currentLiabilities],
+        assets: [prevAssets, currentAssets]
+      };
+      
+      const loanStructure = {
+        labels: [`${year-1}`, `${year}`],
+        shortTermLoan: [prevShortLoan, currentShortLoan],
+        longTermLoan: [prevLongLoan, currentLongLoan],
+        totalLoan: [
+          Math.round((prevShortLoan + prevLongLoan) * 10) / 10, 
+          Math.round((currentShortLoan + currentLongLoan) * 10) / 10
+        ]
+      };
+      
+      return { capitalStructure, loanStructure };
+    }
+    
+    throw new Error('데이터 형식이 올바르지 않습니다.');
+  } catch (error) {
+    throw error;
+  }
+};
+
+const finance_overview_trends = async (year: number, month: number): Promise<FinanceData['trendData']> => {
+  try {
+    const params = createParams(year, month);
+    const response = await fetch(`/auth/api/proxy?path=/api/MIS030231SVC/finance_overview_trends`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    
+    const responseData = await response.json();
+    
+    if (responseData.data && responseData.data.includes('<!DOCTYPE html>')) {
+      throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+    
+    if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
+      const trendData = responseData.MIS030231[0];
+      
+      const labels: string[] = [];
+      for (let i = 9; i >= 0; i--) {
+        labels.push((year - i).toString());
+      }
+      
+      const totalLoan: number[] = [];
+      for (let i = 0; i <= 9; i++) {
+        totalLoan.push(Math.round((trendData[`TOTALLOAN_${i}`] || 0) / 100000000 * 10) / 10);
+      }
+      
+      const debtRatio: number[] = [];
+      for (let i = 0; i <= 9; i++) {
+        debtRatio.push(Math.round((trendData[`DEBTRATIO_${i}`] || 0) * 10) / 10);
+      }
+      
+      const equityRatio: number[] = [];
+      for (let i = 0; i <= 9; i++) {
+        equityRatio.push(Math.round((trendData[`EQUITYRATIO_${i}`] || 0) * 10) / 10);
+      }
+      
+      const returnOnEquity: number[] = [];
+      for (let i = 0; i <= 9; i++) {
+        returnOnEquity.push(Math.round((trendData[`ROE_${i}`] || 0) * 10) / 10);
+      }
+      
+      const returnOnAssets: number[] = [];
+      for (let i = 0; i <= 9; i++) {
+        returnOnAssets.push(Math.round((trendData[`ROA_${i}`] || 0) * 10) / 10);
+      }
+      
+      return {
+        labels,
+        totalLoan,
+        debtRatio,
+        equityRatio,
+        returnOnEquity,
+        returnOnAssets
+      };
+    }
+    
+    throw new Error('데이터 형식이 올바르지 않습니다.');
+  } catch (error) {
+    throw error;
+  }
+};
+
+function createParams(year: number, month: number) {
+  return {
+    MIS030231F1: {
+      BASE_YEAR: year.toString(),
+      BASE_MONTH: month.toString().padStart(2, '0'),
+      crudState: "I"
+    },
+    page: 1,
+    start: 0,
+    limit: 25,
+    pageId: "MIS030231V"
+  };
+}
+
+interface FinanceStore {
   data: FinanceData | null;
   loading: boolean;
   error: string | null;
-  fetchFinanceData: () => Promise<void>;
+  currentYear: number;
+  currentMonth: number;
+  
+  fetchAllData: () => Promise<void>;
+  setData: (data: FinanceData) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  setCurrentDate: (year: number, month: number) => void;
+  reset: () => void;
 }
 
-// API 호출 함수들
-const fetchTopLeftChartAPI = async (): Promise<any> => {
-  try {
-    const response = await fetch('/auth/api/proxy', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: '/api/finance/top-left-chart',
-        method: 'GET',
-      }),
-    });
+export const useFinanceStore = create<FinanceStore>((set, get) => {
+  return {
+    data: null,
+    loading: false,
+    error: null,
+    currentYear: new Date().getFullYear(),
+    currentMonth: new Date().getMonth() + 1,
 
-    if (!response.ok) {
-      throw new Error('API 호출 실패');
-    }
+    fetchAllData: async () => {
+      const { selectedYear, selectedMonth } = useGlobalStore.getState();
+      const currentYear = selectedYear || new Date().getFullYear();
+      const currentMonth = selectedMonth || new Date().getMonth() + 1;
+      
+      set({ currentYear, currentMonth, loading: true, error: null });
+      
+      try {
+        const [kpiMetrics, chartData, trendData] = await Promise.all([
+          finance_overview_kpi(currentYear, currentMonth),
+          finance_overview_charts(currentYear, currentMonth),
+          finance_overview_trends(currentYear, currentMonth)
+        ]);
 
-    const result = await response.json();
-    return result.data || generateMockTopLeftData();
-  } catch (error) {
-    console.warn('Top Left Chart API 호출 실패, 목 데이터 사용:', error);
-    return generateMockTopLeftData();
-  }
-};
+        const combinedData: FinanceData = {
+          kpiMetrics,
+          chartData,
+          trendData
+        };
 
-const fetchTopRightChartAPI = async (): Promise<any> => {
-  try {
-    const response = await fetch('/auth/api/proxy', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: '/api/finance/top-right-chart',
-        method: 'GET',
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('API 호출 실패');
-    }
-
-    const result = await response.json();
-    return result.data || generateMockTopRightData();
-  } catch (error) {
-    console.warn('Top Right Chart API 호출 실패, 목 데이터 사용:', error);
-    return generateMockTopRightData();
-  }
-};
-
-const fetchBottomChartAPI = async (): Promise<any> => {
-  try {
-    const response = await fetch('/auth/api/proxy', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: '/api/finance/bottom-chart',
-        method: 'GET',
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('API 호출 실패');
-    }
-
-    const result = await response.json();
-    return result.data || generateMockBottomData();
-  } catch (error) {
-    console.warn('Bottom Chart API 호출 실패, 목 데이터 사용:', error);
-    return generateMockBottomData();
-  }
-};
-
-// 목 데이터 생성 함수들
-const generateMockTopLeftData = () => ({
-  labels: ['2023', '2024'],
-  capital: [8500, 9200],
-  debt: [3200, 3500],
-  assets: [15000, 16500]
-});
-
-const generateMockTopRightData = () => ({
-  labels: ['2024', '2025'],
-  shortTermLoan: [1800, 2100],
-  longTermLoan: [1400, 1600]
-});
-
-const generateMockBottomData = () => ({
-  labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
-  totalLoan: [2800, 3100, 2900, 3200, 3500, 3800, 3600, 3900, 3200, 3700],
-  debtRatio: [18.7, 20.0, 19.3, 20.0, 23.3, 25.3, 24.0, 26.0, 21.3, 22.4]
-});
-
-// 데이터 파싱 함수
-const parseFinanceData = (topLeftData: any, topRightData: any, bottomData: any): FinanceData => {
-  try {
-    return {
-      topLeftChart: {
-        labels: topLeftData.labels || ['2023', '2024'],
-        capital: topLeftData.capital || [8500, 9200],
-        debt: topLeftData.debt || [3200, 3500],
-        assets: topLeftData.assets || [15000, 16500]
-      },
-      topRightChart: {
-        labels: topRightData.labels || ['2024', '2025'],
-        shortTermLoan: topRightData.shortTermLoan || [1800, 2100],
-        longTermLoan: topRightData.longTermLoan || [1400, 1600]
-      },
-      bottomChart: {
-        labels: bottomData.labels || ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
-        totalLoan: bottomData.totalLoan || [2800, 3100, 2900, 3200, 3500, 3800, 3600, 3900, 3200, 3700],
-        debtRatio: bottomData.debtRatio || [18.7, 20.0, 19.3, 20.0, 23.3, 25.3, 24.0, 26.0, 21.3, 22.4]
+        set({ data: combinedData, loading: false });
+      } catch (error) {
+        set({ loading: false, error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.' });
       }
-    };
-  } catch (error) {
-    console.error('데이터 파싱 오류:', error);
-    return {
-      topLeftChart: generateMockTopLeftData(),
-      topRightChart: generateMockTopRightData(),
-      bottomChart: generateMockBottomData()
-    };
-  }
-};
+    },
 
-export const useFinanceStore = create<FinanceState>((set) => ({
-  data: null,
-  loading: false,
-  error: null,
-  fetchFinanceData: async () => {
-    set({ loading: true, error: null });
-    
-    try {
-      // 3개의 API를 병렬로 호출
-      const [topLeftData, topRightData, bottomData] = await Promise.all([
-        fetchTopLeftChartAPI(),
-        fetchTopRightChartAPI(),
-        fetchBottomChartAPI()
-      ]);
-
-      const parsedData = parseFinanceData(topLeftData, topRightData, bottomData);
-      set({ data: parsedData, loading: false });
-    } catch (error) {
-      console.error('재무 데이터 로딩 오류:', error);
-      set({ 
-        error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.', 
-        loading: false 
-      });
-    }
-  },
-}));
+    setData: (data) => set({ data }),
+    setLoading: (loading) => set({ loading }),
+    setError: (error) => set({ error }),
+    setCurrentDate: (year, month) => set({ currentYear: year, currentMonth: month }),
+    reset: () => set({ data: null, loading: false, error: null })
+  };
+});

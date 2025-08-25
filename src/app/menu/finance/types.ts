@@ -1,24 +1,37 @@
-export interface TopLeftChartData {
-  labels: string[];
-  capital: number[];
-  debt: number[];
-  assets: number[];
-}
-
-export interface TopRightChartData {
-  labels: string[];
-  shortTermLoan: number[];
-  longTermLoan: number[];
-}
-
-export interface BottomChartData {
-  labels: string[];
-  totalLoan: number[];
-  debtRatio: number[];
-}
-
 export interface FinanceData {
-  topLeftChart: TopLeftChartData;
-  topRightChart: TopRightChartData;
-  bottomChart: BottomChartData;
+  kpiMetrics: {
+    totalAssets: number;
+    totalLiabilities: number;
+    totalEquity: number;
+    debtWeight: number;
+    totalAssetsChange: number;
+    totalLiabilitiesChange: number;
+    totalEquityChange: number;
+    debtWeightChange: number;
+  };
+  
+  chartData: {
+    capitalStructure: {
+      labels: string[];
+      capital: number[];
+      debt: number[];
+      assets: number[];
+    };
+    loanStructure: {
+      labels: string[];
+      shortTermLoan: number[];
+      longTermLoan: number[];
+      totalLoan: number[];
+    };
+  };
+  
+  trendData: {
+    labels: string[];
+    totalLoan: number[];
+    debtRatio: number[];
+    equityRatio: number[];
+    returnOnEquity: number[];
+    returnOnAssets: number[];
+  };
 }
+

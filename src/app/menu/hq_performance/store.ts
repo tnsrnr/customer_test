@@ -154,7 +154,7 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
               // 현재 월까지만 데이터 표시, 나머지는 null
-              return index < month ? (revenueCurrent?.[monthKey] || 0) : null;
+              return index < month ? Math.round((revenueCurrent?.[monthKey] || 0) / 100000000) : null;
             }),
             borderColor: 'rgb(59, 130, 246)',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -166,7 +166,7 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
               // 1년전 데이터는 전체 12개월 표시
-              return revenueLastYear?.[monthKey] || 0;
+              return Math.round((revenueLastYear?.[monthKey] || 0) / 100000000);
             }),
             borderColor: 'rgb(156, 163, 175)',
             backgroundColor: 'rgba(156, 163, 175, 0.1)',
@@ -186,10 +186,10 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
               // 현재 월까지만 데이터 표시, 나머지는 null
-              return index < month ? (profitCurrent?.[monthKey] || 0) : null;
+              return index < month ? Math.round((profitCurrent?.[monthKey] || 0) / 100000000) : null;
             }),
-            borderColor: 'rgb(34, 197, 94)',
-            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
             borderWidth: 2,
             spanGaps: false
           },
@@ -198,10 +198,10 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
               // 1년전 데이터는 전체 12개월 표시
-              return profitLastYear?.[monthKey] || 0;
+              return Math.round((profitLastYear?.[monthKey] || 0) / 100000000);
             }),
-            borderColor: 'rgb(239, 68, 68)',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderColor: 'rgb(156, 163, 175)',
+            backgroundColor: 'rgba(156, 163, 175, 0.1)',
             borderWidth: 2,
             borderDash: [5, 5],
             spanGaps: false

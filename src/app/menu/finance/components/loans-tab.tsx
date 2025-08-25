@@ -4,17 +4,43 @@ import { Card } from "@/components/ui/card";
 import { Bar } from 'react-chartjs-2';
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangle, Target, PieChart, BarChart3 } from 'lucide-react';
+import { FinanceData } from '../types';
 
 interface LoansTabProps {
-  topRightChartData: any;
+  data: FinanceData;
 }
 
-export function LoansTab({ topRightChartData }: LoansTabProps) {
+export function LoansTab({ data }: LoansTabProps) {
+  const { chartData } = data;
+  
+  // 차트 데이터 준비
+  const loanStructureChartData = {
+    labels: chartData.loanStructure.labels,
+    datasets: [
+      {
+        label: '단기차입금',
+        data: chartData.loanStructure.shortTermLoan,
+        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+        borderColor: 'rgba(168, 85, 247, 0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+      },
+      {
+        label: '장기차입금',
+        data: chartData.loanStructure.longTermLoan,
+        backgroundColor: 'rgba(236, 72, 153, 0.2)',
+        borderColor: 'rgba(236, 72, 153, 0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+      }
+    ]
+  };
+
   // 차입금 데이터에서 현재 값들 추출
-  const currentShortTerm = topRightChartData.datasets[0].data[topRightChartData.datasets[0].data.length - 1] || 2100;
-  const currentLongTerm = topRightChartData.datasets[1].data[topRightChartData.datasets[1].data.length - 1] || 1600;
-  const previousShortTerm = topRightChartData.datasets[0].data[0] || 1800;
-  const previousLongTerm = topRightChartData.datasets[1].data[0] || 1400;
+  const currentShortTerm = chartData.loanStructure.shortTermLoan[chartData.loanStructure.shortTermLoan.length - 1] || 2100;
+  const currentLongTerm = chartData.loanStructure.longTermLoan[chartData.loanStructure.longTermLoan.length - 1] || 1600;
+  const previousShortTerm = chartData.loanStructure.shortTermLoan[0] || 1800;
+  const previousLongTerm = chartData.loanStructure.longTermLoan[0] || 1400;
   
   const totalCurrent = currentShortTerm + currentLongTerm;
   const totalPrevious = previousShortTerm + previousLongTerm;
@@ -172,7 +198,7 @@ export function LoansTab({ topRightChartData }: LoansTabProps) {
       <h3 className="text-white font-semibold text-lg mb-6">단기/장기 차입금 상세 분석</h3>
               <div className="h-90">
         <Bar
-          data={topRightChartData}
+          data={loanStructureChartData}
           options={{
             responsive: true,
             maintainAspectRatio: false,

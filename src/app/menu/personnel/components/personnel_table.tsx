@@ -70,10 +70,10 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
               {currentYear}년
             </TableHead>
             <TableHead 
-              className="text-white font-bold text-lg text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-3"
+              className="text-white font-bold text-2xl text-center bg-red-500/20 backdrop-blur-md border-r border-white/20 py-3"
               colSpan={2}
             >
-              현재월
+              현재월 ({currentMonth}월)
             </TableHead>
             <TableHead 
               className="text-white font-bold text-lg text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-3"
@@ -107,10 +107,10 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
             <TableHead className="text-white font-bold text-base text-center border-r border-white/20 py-3">
               4분기
             </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border-r border-white/20 py-3">
+            <TableHead className="text-white font-bold text-base text-center border-r border-white/20 py-3 bg-red-500/20">
               현지인
             </TableHead>
-            <TableHead className="text-white font-bold text-base text-center border-r border-white/20 py-3">
+            <TableHead className="text-white font-bold text-base text-center border-r border-white/20 py-3 bg-red-500/20">
               한국인
             </TableHead>
             <TableHead className="text-white font-bold text-base text-center border-r border-white/20 py-3">
@@ -189,7 +189,7 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
                   className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className={`text-center border-r border-white/20 py-3 ${
+              <TableCell className={`text-center border-r border-white/20 py-3 bg-red-500/10 ${
                 division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
               }`}>
                 <CountUp 
@@ -199,7 +199,7 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
                   className={division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200' : 'text-white'}
                 />
               </TableCell>
-              <TableCell className={`text-center border-r border-white/20 py-3 ${
+              <TableCell className={`text-center border-r border-white/20 py-3 bg-red-500/10 ${
                 division.company_name === '총계' || division.company_name === 'ALL' ? 'text-blue-200 text-lg font-bold bg-blue-900/20' : 'text-white text-base'
               }`}>
                 <CountUp 

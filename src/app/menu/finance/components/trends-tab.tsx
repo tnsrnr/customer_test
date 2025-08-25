@@ -4,24 +4,57 @@ import { Card } from "@/components/ui/card";
 import { Chart } from 'react-chartjs-2';
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangle, Target, PieChart, BarChart3, Calendar, LineChart } from 'lucide-react';
+import { FinanceData } from '../types';
 
 interface TrendsTabProps {
-  bottomChartData: any;
+  data: FinanceData;
 }
 
-export function TrendsTab({ bottomChartData }: TrendsTabProps) {
+export function TrendsTab({ data }: TrendsTabProps) {
+  const { trendData } = data;
+  
+  // 차트 데이터 준비
+  const trendChartData: any = {
+    labels: trendData.labels,
+    datasets: [
+      {
+        label: '총 차입금',
+        data: trendData.totalLoan,
+        backgroundColor: 'rgba(14, 165, 233, 0.2)',
+        borderColor: 'rgba(14, 165, 233, 0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+        yAxisID: 'y',
+      },
+      {
+        label: '부채비율',
+        data: trendData.debtRatio,
+        borderColor: 'rgba(251, 146, 60, 0.4)',
+        backgroundColor: 'rgba(251, 146, 60, 0.05)',
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: 'rgba(251, 146, 60, 0.4)',
+        pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+        pointBorderWidth: 1,
+        yAxisID: 'y1',
+        type: 'line',
+      }
+    ]
+  };
+
   // 10년 트렌드 데이터에서 현재 값들 추출
-  const currentTotalLoan = bottomChartData.datasets[0].data[bottomChartData.datasets[0].data.length - 1] || 3700;
-  const currentDebtRatio = bottomChartData.datasets[1].data[bottomChartData.datasets[1].data.length - 1] || 22.4;
-  const previousTotalLoan = bottomChartData.datasets[0].data[0] || 2800;
-  const previousDebtRatio = bottomChartData.datasets[1].data[0] || 18.7;
+  const currentTotalLoan = trendData.totalLoan[trendData.totalLoan.length - 1] || 3700;
+  const currentDebtRatio = trendData.debtRatio[trendData.debtRatio.length - 1] || 22.4;
+  const previousTotalLoan = trendData.totalLoan[0] || 2800;
+  const previousDebtRatio = trendData.debtRatio[0] || 18.7;
   
   const totalLoanChange = ((currentTotalLoan - previousTotalLoan) / previousTotalLoan * 100).toFixed(1);
   const debtRatioChange = ((currentDebtRatio - previousDebtRatio) / previousDebtRatio * 100).toFixed(1);
   
   // 10년간 최대/최소값 계산
-  const totalLoanValues = bottomChartData.datasets[0].data;
-  const debtRatioValues = bottomChartData.datasets[1].data;
+  const totalLoanValues = trendData.totalLoan;
+  const debtRatioValues = trendData.debtRatio;
   const maxTotalLoan = Math.max(...totalLoanValues);
   const minTotalLoan = Math.min(...totalLoanValues);
   const maxDebtRatio = Math.max(...debtRatioValues);
@@ -174,7 +207,7 @@ export function TrendsTab({ bottomChartData }: TrendsTabProps) {
         <div className="h-[500px]">
         <Chart
           type="bar"
-          data={bottomChartData}
+          data={trendChartData}
           options={{
             responsive: true,
             maintainAspectRatio: false,

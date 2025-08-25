@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/common/components/ui/table";
 import CountUp from 'react-countup';
 import { generateGridColumns, generateGridHeaders, MonthlyDetailData } from '../types';
+import { TrendingUp, TrendingDown, Minus, DollarSign, ShoppingCart, BarChart3, PieChart, Percent } from 'lucide-react';
 
 interface HQPerformanceTableProps {
   data?: MonthlyDetailData[];
@@ -12,6 +13,35 @@ interface HQPerformanceTableProps {
   currentYear?: number;
   currentMonth?: number;
 }
+
+// 카테고리별 아이콘과 색상 매핑
+const getCategoryStyle = (category: string) => {
+  switch (category) {
+    case '매출':
+      return { icon: DollarSign, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' };
+    case '매입':
+      return { icon: ShoppingCart, color: 'text-green-400', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/20' };
+    case '매출이익':
+      return { icon: BarChart3, color: 'text-purple-400', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/20' };
+    case '판관비':
+      return { icon: PieChart, color: 'text-orange-400', bgColor: 'bg-orange-500/10', borderColor: 'border-orange-500/20' };
+    case '영업이익':
+      return { icon: TrendingUp, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' };
+    case '영업이익율':
+      return { icon: Percent, color: 'text-cyan-400', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/20' };
+    default:
+      return { icon: BarChart3, color: 'text-gray-400', bgColor: 'bg-gray-500/10', borderColor: 'border-gray-500/20' };
+  }
+};
+
+// 성장률에 따른 색상과 아이콘
+const getGrowthStyle = (value: string) => {
+  const numValue = parseFloat(value);
+  if (isNaN(numValue)) return { color: 'text-gray-400', icon: Minus };
+  if (numValue > 0) return { color: 'text-green-400', icon: TrendingUp };
+  if (numValue < 0) return { color: 'text-red-400', icon: TrendingDown };
+  return { color: 'text-gray-400', icon: Minus };
+};
 
 export function HQPerformanceTable({ 
   data, 
@@ -47,15 +77,15 @@ export function HQPerformanceTable({
 
   return (
     <div className="overflow-x-auto flex-1">
-      <Table>
+      <Table className="relative">
         <TableHeader>
           {/* 상단 헤더 행 */}
-          <TableRow className="border-b border-white/20">
+          <TableRow className="border-b border-white/20 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
             {gridHeaders.topRow.map((header, index) => (
               <TableHead 
                 key={index} 
                 colSpan={header.colSpan}
-                className="text-center border border-white/20 py-3 text-white text-base font-semibold bg-white/5"
+                className="text-center border border-white/30 py-2 text-white text-xl font-bold bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm"
               >
                 {header.label}
               </TableHead>
@@ -63,11 +93,11 @@ export function HQPerformanceTable({
           </TableRow>
           
           {/* 하단 컬럼 헤더 행 */}
-          <TableRow className="border-b border-white/20">
+          <TableRow className="border-b border-white/20 bg-gradient-to-r from-gray-600/20 to-gray-500/20">
             {gridColumns.map((column, index) => (
               <TableHead 
                 key={column.key} 
-                className="text-center border border-white/20 py-3 text-white text-base font-semibold bg-white/5"
+                className="text-center border border-white/30 py-2 text-white text-lg font-bold bg-white/5 backdrop-blur-sm"
               >
                 {column.label}
               </TableHead>
@@ -75,34 +105,74 @@ export function HQPerformanceTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item, index) => (
-            <TableRow 
-              key={index}
-              className="hover:bg-white/5 transition-colors duration-200 border-b border-white/20"
-              style={{ borderBottom: index === data.length - 1 ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)' }}
-            >
-              {/* 고정 컬럼명 기반 월별 데이터 셀 */}
-              {fixedColumns.map((columnKey) => (
-                <TableCell key={columnKey} className="text-center border border-white/20 py-3 text-white text-base">
-                  {columnKey === 'column1' || columnKey === 'column8' ? (
-                    // column1(구분)과 column8(성장률)은 문자열로 표시
-                    <span className="text-white">
-                      {item[columnKey as keyof MonthlyDetailData] as string}
-                    </span>
-                  ) : (
-                    // 나머지 컬럼은 숫자로 CountUp 표시
-                    <CountUp 
-                      end={item[columnKey as keyof MonthlyDetailData] as number || 0} 
-                      duration={1.5} separator=","
-                      decimals={item.column1 === '영업이익율' ? 2 : 0}
-                      className="text-white"
-                    />
-                  )}
-                  {item.column1 === '영업이익율' && columnKey !== 'column1' && columnKey !== 'column8' && '%'}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {data.map((item, index) => {
+            const categoryStyle = getCategoryStyle(item.column1);
+            const IconComponent = categoryStyle.icon;
+            
+            return (
+              <TableRow 
+                key={index}
+                className="hover:bg-white/5 transition-all duration-300 border-b border-white/20"
+                style={{ 
+                  borderBottom: index === data.length - 1 ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)'
+                }}
+              >
+                {/* 고정 컬럼명 기반 월별 데이터 셀 */}
+                {fixedColumns.map((columnKey, colIndex) => {
+                  const isFirstColumn = columnKey === 'column1';
+                  const isGrowthColumn = columnKey === 'column8';
+                  const isDataColumn = !isFirstColumn && !isGrowthColumn; // column2~column7
+                  
+                  return (
+                    <TableCell 
+                      key={columnKey} 
+                      className={`text-center border border-white/30 py-4 text-white text-base transition-all duration-200 ${
+                        isFirstColumn ? 'font-semibold' : ''
+                      }`}
+                    >
+                      {isFirstColumn ? (
+                        // 구분 컬럼 - 아이콘과 함께 표시
+                        <div className="flex items-center justify-center space-x-2">
+                          <IconComponent className={`w-4 h-4 ${categoryStyle.color}`} />
+                          <span className={categoryStyle.color}>
+                            {item[columnKey as keyof MonthlyDetailData] as string}
+                          </span>
+                        </div>
+                      ) : isGrowthColumn ? (
+                        // 성장률 컬럼 - 색상과 아이콘으로 표시
+                        (() => {
+                          const growthValue = item[columnKey as keyof MonthlyDetailData] as string;
+                          const growthStyle = getGrowthStyle(growthValue);
+                          const GrowthIcon = growthStyle.icon;
+                          
+                          return (
+                            <div className="flex items-center justify-center space-x-1">
+                              <GrowthIcon className={`w-4 h-4 ${growthStyle.color}`} />
+                              <span className={`font-semibold ${growthStyle.color}`}>
+                                {growthValue}
+                              </span>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        // 월별 데이터 컬럼 - 원래 깔끔한 스타일
+                        <span className="text-white">
+                          <CountUp 
+                            end={item[columnKey as keyof MonthlyDetailData] as number || 0} 
+                            duration={1.5} 
+                            separator=","
+                            decimals={item.column1 === '영업이익율' ? 2 : 0}
+                            className="text-white"
+                          />
+                          {item.column1 === '영업이익율' && '%'}
+                        </span>
+                      )}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

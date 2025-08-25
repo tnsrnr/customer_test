@@ -4,26 +4,46 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Bar } from 'react-chartjs-2';
 import { TrendingUp, TrendingDown, DollarSign, BarChart3, Target } from 'lucide-react';
+import { FinanceData } from '../types';
 
 interface CapitalTabProps {
-  topLeftChartData: any;
-  currentCapital: number;
-  currentDebt: number;
-  currentAssets: number;
-  capitalChange: string;
-  debtChange: string;
-  assetsChange: string;
+  data: FinanceData;
 }
 
-export function CapitalTab({
-  topLeftChartData,
-  currentCapital,
-  currentDebt,
-  currentAssets,
-  capitalChange,
-  debtChange,
-  assetsChange
-}: CapitalTabProps) {
+export function CapitalTab({ data }: CapitalTabProps) {
+  const { kpiMetrics, chartData } = data;
+  
+  // 차트 데이터 준비
+  const capitalStructureChartData = {
+    labels: chartData.capitalStructure.labels,
+    datasets: [
+      {
+        label: '자본금',
+        data: chartData.capitalStructure.capital,
+        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+        borderColor: 'rgba(34, 197, 94, 0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+      },
+      {
+        label: '부채',
+        data: chartData.capitalStructure.debt,
+        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+        borderColor: 'rgba(239, 68, 68, 0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+      },
+      {
+        label: '총자산',
+        data: chartData.capitalStructure.assets,
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+        borderColor: 'rgba(59, 130, 246, 0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+      }
+    ]
+  };
+
   return (
     <div className="space-y-4 px-2 lg:px-3">
       {/* 주요 차트 */}
@@ -31,7 +51,7 @@ export function CapitalTab({
         <h3 className="text-white font-semibold text-lg mb-3">자본/부채/자산 비교 차트</h3>
         <div className="h-52">
           <Bar
-            data={topLeftChartData}
+            data={capitalStructureChartData}
             options={{
               responsive: true,
               maintainAspectRatio: false,
@@ -102,25 +122,25 @@ export function CapitalTab({
             <div className="flex justify-between items-center p-2 bg-emerald-500/10 rounded-lg">
               <span className="text-emerald-100 text-sm">자본비율</span>
               <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{((currentCapital / currentAssets) * 100).toFixed(1)}%</span>
+                <span className="text-emerald-200 font-semibold">{((kpiMetrics.totalEquity / kpiMetrics.totalAssets) * 100).toFixed(1)}%</span>
                 <div className="text-emerald-300 text-xs">건전한 수준</div>
               </div>
             </div>
             <div className="flex justify-between items-center p-2 bg-emerald-500/10 rounded-lg">
               <span className="text-emerald-100 text-sm">부채비율</span>
               <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{((currentDebt / currentAssets) * 100).toFixed(1)}%</span>
+                <span className="text-emerald-200 font-semibold">{((kpiMetrics.totalLiabilities / kpiMetrics.totalAssets) * 100).toFixed(1)}%</span>
                 <div className="text-emerald-300 text-xs">적정 수준</div>
               </div>
             </div>
             <div className="flex justify-between items-center p-2 bg-emerald-500/10 rounded-lg">
               <span className="text-emerald-100 text-sm">자본증가율</span>
               <div className="text-right">
-                <span className={`font-semibold ${parseFloat(capitalChange) >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
-                  {parseFloat(capitalChange) >= 0 ? '+' : ''}{capitalChange}%
+                <span className={`font-semibold ${kpiMetrics.totalEquityChange >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                  {kpiMetrics.totalEquityChange >= 0 ? '+' : ''}{kpiMetrics.totalEquityChange}%
                 </span>
-                <div className={`text-xs ${parseFloat(capitalChange) >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
-                  {parseFloat(capitalChange) >= 0 ? '양호' : '개선 필요'}
+                <div className={`text-xs ${kpiMetrics.totalEquityChange >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                  {kpiMetrics.totalEquityChange >= 0 ? '양호' : '개선 필요'}
                 </div>
               </div>
             </div>
@@ -145,27 +165,27 @@ export function CapitalTab({
             <div className="flex justify-between items-center p-2 bg-blue-500/10 rounded-lg">
               <span className="text-blue-100 text-sm">자본 변화</span>
               <div className="text-right">
-                <span className="text-blue-200 font-semibold">{currentCapital.toLocaleString()}억원</span>
-                <div className={`text-xs ${parseFloat(capitalChange) >= 0 ? 'text-blue-300' : 'text-red-300'}`}>
-                  {parseFloat(capitalChange) >= 0 ? '▲' : '▼'} {Math.abs(parseFloat(capitalChange))}%
+                <span className="text-blue-200 font-semibold">{kpiMetrics.totalEquity.toLocaleString()}억원</span>
+                <div className={`text-xs ${kpiMetrics.totalEquityChange >= 0 ? 'text-blue-300' : 'text-red-300'}`}>
+                  {kpiMetrics.totalEquityChange >= 0 ? '▲' : '▼'} {Math.abs(kpiMetrics.totalEquityChange)}%
                 </div>
               </div>
             </div>
             <div className="flex justify-between items-center p-2 bg-blue-500/10 rounded-lg">
               <span className="text-blue-100 text-sm">부채 변화</span>
               <div className="text-right">
-                <span className="text-blue-200 font-semibold">{currentDebt.toLocaleString()}억원</span>
-                <div className={`text-xs ${parseFloat(debtChange) >= 0 ? 'text-red-300' : 'text-blue-300'}`}>
-                  {parseFloat(debtChange) >= 0 ? '▲' : '▼'} {Math.abs(parseFloat(debtChange))}%
+                <span className="text-blue-200 font-semibold">{kpiMetrics.totalLiabilities.toLocaleString()}억원</span>
+                <div className={`text-xs ${kpiMetrics.totalLiabilitiesChange >= 0 ? 'text-red-300' : 'text-blue-300'}`}>
+                  {kpiMetrics.totalLiabilitiesChange >= 0 ? '▲' : '▼'} {Math.abs(kpiMetrics.totalLiabilitiesChange)}%
                 </div>
               </div>
             </div>
             <div className="flex justify-between items-center p-2 bg-blue-500/10 rounded-lg">
               <span className="text-blue-100 text-sm">자산 변화</span>
               <div className="text-right">
-                <span className="text-blue-200 font-semibold">{currentAssets.toLocaleString()}억원</span>
-                <div className={`text-xs ${parseFloat(assetsChange) >= 0 ? 'text-blue-300' : 'text-red-300'}`}>
-                  {parseFloat(assetsChange) >= 0 ? '▲' : '▼'} {Math.abs(parseFloat(assetsChange))}%
+                <span className="text-blue-200 font-semibold">{kpiMetrics.totalAssets.toLocaleString()}억원</span>
+                <div className={`text-xs ${kpiMetrics.totalAssetsChange >= 0 ? 'text-blue-300' : 'text-red-300'}`}>
+                  {kpiMetrics.totalAssetsChange >= 0 ? '▲' : '▼'} {Math.abs(kpiMetrics.totalAssetsChange)}%
                 </div>
               </div>
             </div>
@@ -192,13 +212,13 @@ export function CapitalTab({
           <div className="space-y-2">
             <div className="text-center p-2 bg-purple-500/10 rounded-lg">
               <div className="text-2xl font-bold text-purple-200 mb-1">
-                {((currentCapital / currentAssets) * 100).toFixed(1)}%
+                {((kpiMetrics.totalEquity / kpiMetrics.totalAssets) * 100).toFixed(1)}%
               </div>
               <div className="text-purple-100 text-sm">자본비율</div>
             </div>
             <div className="text-center p-2 bg-purple-500/10 rounded-lg">
               <div className="text-2xl font-bold text-purple-200 mb-1">
-                {((currentDebt / currentAssets) * 100).toFixed(1)}%
+                {((kpiMetrics.totalLiabilities / kpiMetrics.totalAssets) * 100).toFixed(1)}%
               </div>
               <div className="text-purple-100 text-sm">부채비율</div>
             </div>
@@ -222,13 +242,13 @@ export function CapitalTab({
           <div className="space-y-2">
             <div className="text-center p-2 bg-orange-500/10 rounded-lg">
               <div className="text-2xl font-bold text-orange-200 mb-1">
-                {parseFloat(capitalChange) >= 0 ? '+' : ''}{capitalChange}%
+                {kpiMetrics.totalEquityChange >= 0 ? '+' : ''}{kpiMetrics.totalEquityChange}%
               </div>
               <div className="text-orange-100 text-sm">자본증가율</div>
             </div>
             <div className="text-center p-2 bg-orange-500/10 rounded-lg">
               <div className="text-2xl font-bold text-orange-200 mb-1">
-                {parseFloat(assetsChange) >= 0 ? '+' : ''}{assetsChange}%
+                {kpiMetrics.totalAssetsChange >= 0 ? '+' : ''}{kpiMetrics.totalAssetsChange}%
               </div>
               <div className="text-orange-100 text-sm">자산증가율</div>
             </div>
@@ -252,13 +272,13 @@ export function CapitalTab({
           <div className="space-y-2">
             <div className="text-center p-2 bg-red-500/10 rounded-lg">
               <div className="text-2xl font-bold text-red-200 mb-1">
-                {((currentDebt / currentAssets) * 100).toFixed(1)}%
+                {((kpiMetrics.totalLiabilities / kpiMetrics.totalAssets) * 100).toFixed(1)}%
               </div>
               <div className="text-red-100 text-sm">부채비율</div>
             </div>
             <div className="text-center p-2 bg-red-500/10 rounded-lg">
               <div className="text-2xl font-bold text-red-200 mb-1">
-                {parseFloat(debtChange) >= 0 ? '+' : ''}{debtChange}%
+                {kpiMetrics.totalLiabilitiesChange >= 0 ? '+' : ''}{kpiMetrics.totalLiabilitiesChange}%
               </div>
               <div className="text-red-100 text-sm">부채증가율</div>
             </div>
@@ -266,57 +286,7 @@ export function CapitalTab({
         </motion.div>
       </div>
 
-      {/* 종합 평가 */}
-      <motion.div 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-        className="p-3 bg-gradient-to-br from-slate-500/15 to-slate-600/10 backdrop-blur-md rounded-xl border border-slate-400/25"
-      >
-        <div className="flex items-center mb-3">
-          <div className="p-2 bg-slate-500/30 rounded-lg mr-3">
-            <DollarSign className="w-5 h-5 text-slate-300" />
-          </div>
-          <h4 className="text-slate-200 font-semibold text-lg">종합 재무 평가</h4>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <h5 className="text-slate-200 font-medium">긍정적 요소</h5>
-            <ul className="space-y-2 text-slate-100 text-sm">
-              <li className="flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                자본비율이 건전한 수준 유지
-              </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                자산 규모 지속적 확대
-              </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                안정적인 재무 구조
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-2">
-            <h5 className="text-slate-200 font-medium">개선 필요 요소</h5>
-            <ul className="space-y-2 text-slate-100 text-sm">
-              <li className="flex items-center">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
-                부채 증가율 모니터링 필요
-              </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
-                자본 효율성 개선 여지
-              </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
-                리스크 관리 강화
-              </li>
-            </ul>
-          </div>
-        </div>
-      </motion.div>
+
     </div>
   );
 }

@@ -63,11 +63,11 @@ export function DivisionChart({ divisionData, months, loading }: DivisionChartPr
         text: 'text-emerald-200',
         chart: 'rgba(16, 185, 129, 0.8)'
       },
-      purple: {
-        bg: 'bg-purple-500/20',
-        border: 'border-purple-400/30',
-        text: 'text-purple-200',
-        chart: 'rgba(147, 51, 234, 0.8)'
+      yellow: {
+        bg: 'bg-yellow-500/20',
+        border: 'border-yellow-400/30',
+        text: 'text-yellow-200',
+        chart: 'rgba(234, 179, 8, 0.8)'
       },
       orange: {
         bg: 'bg-orange-500/20',
@@ -207,85 +207,140 @@ export function DivisionChart({ divisionData, months, loading }: DivisionChartPr
         <h2 className={`text-2xl font-bold ${colors.text} mb-2`}>
           {divisionData.name} 부문 상세 분석
         </h2>
-        <p className="text-white/70 text-sm">2024년 9월 ~ 2025년 8월 (12개월)</p>
       </div>
 
       {/* KPI 카드들 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 w-full mx-auto">
+        {/* 총 매출 카드 */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className={`p-4 ${colors.bg} backdrop-blur-md rounded-xl border ${colors.border} hover:border-white/50 transition-all duration-300`}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/70 text-sm">총 매출</p>
-              <p className={`text-xl font-bold ${colors.text}`}>
-                {totalRevenue.toLocaleString()}
-              </p>
-              <p className="text-white/50 text-xs">억원</p>
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <DollarSign className="w-8 h-8 text-white drop-shadow-lg" />
             </div>
-            <DollarSign className={`w-6 h-6 ${colors.text}`} />
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">총 매출</span>
+                <div className="flex items-center justify-center">
+                  <span className="text-3xl font-bold text-white drop-shadow-sm">
+                    {totalRevenue.toLocaleString()}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원</span>
+                </div>
+              </div>
+            </div>
           </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
         </motion.div>
 
+        {/* 총 영업이익 카드 */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className={`p-4 ${colors.bg} backdrop-blur-md rounded-xl border ${colors.border} hover:border-white/50 transition-all duration-300`}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/70 text-sm">총 영업이익</p>
-              <p className={`text-xl font-bold ${totalProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-                {totalProfit.toFixed(1)}
-              </p>
-              <p className="text-white/50 text-xs">억원</p>
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              {totalProfit >= 0 ? (
+                <TrendingUp className="w-8 h-8 text-green-300 drop-shadow-lg" />
+              ) : (
+                <TrendingDown className="w-8 h-8 text-red-300 drop-shadow-lg" />
+              )}
             </div>
-            {totalProfit >= 0 ? (
-              <TrendingUp className="w-6 h-6 text-green-300" />
-            ) : (
-              <TrendingDown className="w-6 h-6 text-red-300" />
-            )}
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">총 영업이익</span>
+                <div className="flex items-center justify-center">
+                  <span className={`text-3xl font-bold drop-shadow-sm ${totalProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                    {Math.round(totalProfit)}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원</span>
+                </div>
+              </div>
+            </div>
           </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
         </motion.div>
 
+        {/* 평균 매출 카드 */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className={`p-4 ${colors.bg} backdrop-blur-md rounded-xl border ${colors.border} hover:border-white/50 transition-all duration-300`}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/70 text-sm">평균 매출</p>
-              <p className={`text-xl font-bold ${colors.text}`}>
-                {avgRevenue.toFixed(0)}
-              </p>
-              <p className="text-white/50 text-xs">억원/월</p>
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <Activity className="w-8 h-8 text-white drop-shadow-lg" />
             </div>
-            <Activity className={`w-6 h-6 ${colors.text}`} />
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">평균 매출</span>
+                <div className="flex items-center justify-center">
+                  <span className="text-3xl font-bold text-white drop-shadow-sm">
+                    {Math.round(avgRevenue)}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원/월</span>
+                </div>
+              </div>
+            </div>
           </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
         </motion.div>
 
+        {/* 평균 영업이익 카드 */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className={`p-4 ${colors.bg} backdrop-blur-md rounded-xl border ${colors.border} hover:border-white/50 transition-all duration-300`}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/70 text-sm">평균 영업이익</p>
-              <p className={`text-xl font-bold ${avgProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-                {avgProfit.toFixed(1)}
-              </p>
-              <p className="text-white/50 text-xs">억원/월</p>
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <Activity className={`w-8 h-8 drop-shadow-lg ${avgProfit >= 0 ? 'text-green-300' : 'text-red-300'}`} />
             </div>
-            <Activity className={`w-6 h-6 ${avgProfit >= 0 ? 'text-green-300' : 'text-red-300'}`} />
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">평균 영업이익</span>
+                <div className="flex items-center justify-center">
+                  <span className={`text-3xl font-bold drop-shadow-sm ${avgProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                    {Math.round(avgProfit)}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원/월</span>
+                </div>
+              </div>
+            </div>
           </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
         </motion.div>
       </div>
 
@@ -298,31 +353,134 @@ export function DivisionChart({ divisionData, months, loading }: DivisionChartPr
       </Card>
 
       {/* 상세 통계 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className={`p-3 ${colors.bg} backdrop-blur-md rounded-lg border ${colors.border}`}>
-          <p className="text-white/70 text-xs">최고 매출</p>
-          <p className={`text-lg font-semibold ${colors.text}`}>
-            {maxRevenue.toLocaleString()}
-          </p>
-        </div>
-        <div className={`p-3 ${colors.bg} backdrop-blur-md rounded-lg border ${colors.border}`}>
-          <p className="text-white/70 text-xs">최저 매출</p>
-          <p className={`text-lg font-semibold ${colors.text}`}>
-            {minRevenue.toLocaleString()}
-          </p>
-        </div>
-        <div className={`p-3 ${colors.bg} backdrop-blur-md rounded-lg border ${colors.border}`}>
-          <p className="text-white/70 text-xs">최고 영업이익</p>
-          <p className={`text-lg font-semibold ${maxProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-            {maxProfit.toFixed(1)}
-          </p>
-        </div>
-        <div className={`p-3 ${colors.bg} backdrop-blur-md rounded-lg border ${colors.border}`}>
-          <p className="text-white/70 text-xs">최저 영업이익</p>
-          <p className={`text-lg font-semibold ${minProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-            {minProfit.toFixed(1)}
-          </p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 w-full mx-auto">
+        {/* 최고 매출 카드 */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
+        >
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <TrendingUp className="w-8 h-8 text-white drop-shadow-lg" />
+            </div>
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">최고 매출</span>
+                <div className="flex items-center justify-center">
+                  <span className="text-3xl font-bold text-white drop-shadow-sm">
+                    {maxRevenue.toLocaleString()}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
+        </motion.div>
+
+        {/* 최저 매출 카드 */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
+        >
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <TrendingDown className="w-8 h-8 text-white drop-shadow-lg" />
+            </div>
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">최저 매출</span>
+                <div className="flex items-center justify-center">
+                  <span className="text-3xl font-bold text-white drop-shadow-sm">
+                    {minRevenue.toLocaleString()}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
+        </motion.div>
+
+        {/* 최고 영업이익 카드 */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
+        >
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <TrendingUp className={`w-8 h-8 drop-shadow-lg ${maxProfit >= 0 ? 'text-green-300' : 'text-red-300'}`} />
+            </div>
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">최고 영업이익</span>
+                <div className="flex items-center justify-center">
+                  <span className={`text-3xl font-bold drop-shadow-sm ${maxProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                    {Math.round(maxProfit)}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
+        </motion.div>
+
+        {/* 최저 영업이익 카드 */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`relative p-6 ${colors.bg} backdrop-blur-md rounded-2xl shadow-xl border ${colors.border} hover:border-white/50 transition-all duration-300 overflow-hidden group`}
+        >
+          {/* 배경 그라데이션 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <div className="relative flex items-center h-full">
+            <div className="p-3 bg-gradient-to-br from-white/20 to-white/10 rounded-xl shadow-lg group-hover:shadow-white/25 transition-all duration-300">
+              <TrendingDown className={`w-8 h-8 drop-shadow-lg ${minProfit >= 0 ? 'text-green-300' : 'text-red-300'}`} />
+            </div>
+            <div className="flex-1 flex items-center justify-center ml-4">
+              <div className="text-center">
+                <span className="text-sm font-medium text-white/80 mb-1 block">최저 영업이익</span>
+                <div className="flex items-center justify-center">
+                  <span className={`text-3xl font-bold drop-shadow-sm ${minProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                    {Math.round(minProfit)}
+                  </span>
+                  <span className="text-lg font-medium text-white/80 ml-1">억원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 하단 장식선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/40 to-white/20 opacity-60"></div>
+        </motion.div>
       </div>
     </div>
   );

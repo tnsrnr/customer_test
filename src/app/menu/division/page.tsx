@@ -79,7 +79,7 @@ const DivisionCard = ({
             <div className="flex items-center justify-center gap-1">
               <span className={`text-lg font-semibold ${division.profit >= 0 ? 'text-white' : 'text-red-400'}`}>
                 {division.profit > 0 ? '+' : ''}
-                {division.profit.toFixed(1)}
+                {Math.round(division.profit)}
               </span>
               <span className="text-sm text-slate-300">억원</span>
             </div>
@@ -96,30 +96,40 @@ export default function DivisionPage() {
     loading, 
     error, 
     selectedDivision,
-    fetchDivisionData,
-    setSelectedDivision
+    currentYear,
+    currentMonth,
+    displayYear,
+    displayMonth,
+    fetchDivisionData: fetchAllData,
+    setSelectedDivision,
+    setCurrentDate
   } = useDivisionStore();
 
   const { setCurrentPage, isRefreshing } = useGlobalStore();
 
   // 컴포넌트 마운트 시 데이터 로드 및 현재 페이지 설정
   useEffect(() => {
+    console.log('🚀 division 페이지 마운트');
     setCurrentPage('division');
-    fetchDivisionData();
-  }, [fetchDivisionData, setCurrentPage]);
+    fetchAllData();
+  }, [setCurrentPage]);
 
   // 전역 조회 이벤트 감지
   useEffect(() => {
+    console.log('🔄 division isRefreshing 변경:', isRefreshing);
     if (isRefreshing) {
-      fetchDivisionData();
+      console.log('✅ division 조회 버튼 클릭으로 인한 데이터 조회');
+      fetchAllData();
     }
-  }, [isRefreshing, fetchDivisionData]);
+  }, [isRefreshing]);
 
 
 
   const totalRevenue = data?.divisionCards.reduce((sum, item) => sum + item.revenue, 0) || 0;
 
   function DivisionPageContent() {
+    console.log('🔄 DivisionPageContent 렌더링:', { displayYear, displayMonth });
+    
     return (
       <div className="h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden flex items-center justify-center">
         {/* 고급스러운 배경 효과 */}
@@ -145,13 +155,13 @@ export default function DivisionPage() {
 
           {/* 데이터가 로드된 경우에만 컨텐츠 표시 */}
           {data ? (
-            <div className="grid grid-cols-12 gap-2 h-full">
+            <div className="grid grid-cols-12 gap-2" style={{ height: 'calc(100vh - 200px)' }}>
               {/* 좌측 - 부문별 카드 테이블 형태 */}
               <div className="col-span-3">
-                <div className="p-3 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 transition-all duration-300 flex flex-col max-h-[calc(100vh-120px)] overflow-hidden">
+                <div className="h-full p-3 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 transition-all duration-300 flex flex-col">
                   {/* 헤더 */}
-                  <div className="bg-white/10 text-white text-center py-1 -mx-3 -mt-3 mb-2 rounded-t-xl">
-                    <div className="text-sm font-semibold">부문별 실적</div>
+                  <div className="bg-white/10 text-white text-center py-3 -mx-3 -mt-3 mb-3 rounded-t-xl">
+                    <div className="text-2xl font-bold">부문별 실적</div>
                   </div>
                   <div className="grid grid-cols-12 gap-2 mb-3 px-2">
                     <div className="col-span-2 text-lg font-semibold text-white">부문</div>
@@ -210,34 +220,39 @@ export default function DivisionPage() {
 
               {/* 우측 - 부문별 실적 테이블 또는 차트 */}
               <div className="col-span-9">
-                <div className="p-3 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 transition-all duration-300 flex flex-col">
-                  <div className="bg-white/10 text-white text-center py-1 -mx-3 -mt-3 mb-2 rounded-t-xl">
-                    <div className="text-sm font-semibold">
+                <div className="h-full p-3 bg-white/5 backdrop-blur-md rounded-xl shadow-lg border border-white/10 transition-all duration-300 flex flex-col">
+                  <div className="bg-white/10 text-white text-center py-3 -mx-3 -mt-3 mb-3 rounded-t-xl">
+                    <div className="text-2xl font-bold">
                       {selectedDivision ? '부문별 상세 분석' : '부문별 상세 실적'}
                     </div>
                   </div>
-                  {selectedDivision && selectedDivision !== 'total' ? (
-                    <DivisionChart 
-                      divisionData={data.divisionTable.divisions.find(d => {
-                        const divisionMap: { [key: string]: string } = {
-                          'air': '항공',
-                          'sea': '해상',
-                          'transport': '운송',
-                          'warehouse': '창고',
-                          'construction': '도급',
-                          'other': '기타'
-                        };
-                        return d.name === divisionMap[selectedDivision];
-                      })}
-                      months={data.divisionTable.months}
-                      loading={loading}
-                    />
-                  ) : (
-                    <DivisionTable 
-                      data={data.divisionTable}
-                      loading={loading}
-                    />
-                  )}
+                  <div className="flex-1 overflow-hidden">
+                    {selectedDivision && selectedDivision !== 'total' ? (
+                      <DivisionChart 
+                        divisionData={data.divisionTable.divisions.find(d => {
+                          const divisionMap: { [key: string]: string } = {
+                            'air': '항공',
+                            'sea': '해상',
+                            'transport': '운송',
+                            'warehouse': '창고',
+                            'construction': '도급',
+                            'other': '기타'
+                          };
+                          return d.name === divisionMap[selectedDivision];
+                        })}
+                        months={data.divisionTable.months}
+                        loading={loading}
+                      />
+                    ) : (
+                                    <DivisionTable 
+                data={data.divisionTable.monthlyDetails}
+                monthLabels={data.divisionTable.monthLabels}
+                loading={loading}
+                selectedYear={currentYear}
+                selectedMonth={currentMonth}
+              />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

@@ -27,8 +27,14 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   // 상태 설정
   setRefreshing: (refreshing) => set({ isRefreshing: refreshing }),
   setCurrentPage: (page) => set({ currentPage: page }),
-  setSelectedYear: (year) => set({ selectedYear: year }),
-  setSelectedMonth: (month) => set({ selectedMonth: month }),
+  setSelectedYear: (year) => {
+    console.log('📅 selectedYear 변경:', year);
+    set({ selectedYear: year });
+  },
+  setSelectedMonth: (month) => {
+    console.log('📅 selectedMonth 변경:', month);
+    set({ selectedMonth: month });
+  },
   
   // 전역 조회 트리거
   triggerGlobalRefresh: () => {

@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Bar } from 'react-chartjs-2';
 import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangle, Target, PieChart, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangle, Target, PieChart, BarChart3, HelpCircle } from 'lucide-react';
 import { FinanceData } from '../types';
 
 interface LoansTabProps {
@@ -12,6 +12,81 @@ interface LoansTabProps {
 
 export function LoansTab({ data }: LoansTabProps) {
   const { chartData } = data;
+  
+  // 차입금 구조 평가 함수들
+  const getShortTermRatioStatus = (ratio: number) => {
+    if (ratio <= 30) return { 
+      text: '매우 양호', 
+      color: 'text-green-300', 
+      bgColor: 'bg-green-500/10'
+    };
+    if (ratio <= 50) return { 
+      text: '양호', 
+      color: 'text-emerald-300', 
+      bgColor: 'bg-emerald-500/10'
+    };
+    if (ratio <= 70) return { 
+      text: '적정', 
+      color: 'text-yellow-300', 
+      bgColor: 'bg-yellow-500/10'
+    };
+    return { 
+      text: '위험', 
+      color: 'text-red-300', 
+      bgColor: 'bg-red-500/10'
+    };
+  };
+
+  const getShortLongRatioStatus = (ratio: number) => {
+    if (ratio <= 0.5) return { 
+      text: '매우 건전', 
+      color: 'text-green-300', 
+      bgColor: 'bg-green-500/10'
+    };
+    if (ratio <= 1.0) return { 
+      text: '건전', 
+      color: 'text-emerald-300', 
+      bgColor: 'bg-emerald-500/10'
+    };
+    if (ratio <= 1.5) return { 
+      text: '적정', 
+      color: 'text-yellow-300', 
+      bgColor: 'bg-yellow-500/10'
+    };
+    return { 
+      text: '위험', 
+      color: 'text-red-300', 
+      bgColor: 'bg-red-500/10'
+    };
+  };
+
+  const getLoanGrowthStatus = (change: number) => {
+    if (change <= -10) return { 
+      text: '매우 양호', 
+      color: 'text-green-300', 
+      bgColor: 'bg-green-500/10'
+    };
+    if (change <= -5) return { 
+      text: '양호', 
+      color: 'text-emerald-300', 
+      bgColor: 'bg-emerald-500/10'
+    };
+    if (change <= 0) return { 
+      text: '안정', 
+      color: 'text-blue-300', 
+      bgColor: 'bg-blue-500/10'
+    };
+    if (change <= 10) return { 
+      text: '주의', 
+      color: 'text-yellow-300', 
+      bgColor: 'bg-yellow-500/10'
+    };
+    return { 
+      text: '위험', 
+      color: 'text-red-300', 
+      bgColor: 'bg-red-500/10'
+    };
+  };
   
   // 차트 데이터 준비
   const loanStructureChartData = {
@@ -194,60 +269,67 @@ export function LoansTab({ data }: LoansTabProps) {
       </div>
 
       {/* 주요 차트 */}
-      <Card className="p-6 bg-white/10 backdrop-blur-md border border-white/20">
-      <h3 className="text-white font-semibold text-lg mb-6">단기/장기 차입금 상세 분석</h3>
-              <div className="h-90">
-        <Bar
-          data={loanStructureChartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                labels: {
-                  color: 'white',
-                  font: {
-                    size: 11
-                  }
-                }
-              }
-            },
-            scales: {
-              x: {
-                ticks: {
-                  color: 'white',
-                  font: {
-                    size: 10
-                  }
-                },
-                grid: {
-                  color: 'rgba(255, 255, 255, 0.1)'
+      <Card className="p-3 pb-2 bg-white/10 backdrop-blur-md border border-white/20">
+        <h3 className="text-white font-semibold text-lg mb-2">단기/장기 차입금 상세 분석</h3>
+        <div className="h-72">
+          <Bar
+            data={loanStructureChartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  labels: {
+                    color: 'white',
+                    font: {
+                      size: 12,
+                      weight: 'bold'
+                    }
+                  },
+                  position: 'top' as const
                 }
               },
-              y: {
-                ticks: {
-                  color: 'white',
-                  font: {
-                    size: 10
+              scales: {
+                x: {
+                  ticks: {
+                    color: 'white',
+                    font: {
+                      size: 14,
+                      weight: 'bold'
+                    },
+                    padding: 8
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
                   }
                 },
-                grid: {
-                  color: 'rgba(255, 255, 255, 0.1)'
+                y: {
+                  ticks: {
+                    color: 'white',
+                    font: {
+                      size: 11
+                    },
+                    callback: function(value) {
+                      return value + '억원';
+                    }
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                  }
+                }
+              },
+              layout: {
+                padding: {
+                  top: 8,
+                  bottom: 4,
+                  left: 8,
+                  right: 8
                 }
               }
-            },
-            layout: {
-              padding: {
-                top: 5,
-                bottom: 5,
-                left: 5,
-                right: 5
-              }
-            }
-          }}
-        />
-      </div>
-    </Card>
+            }}
+          />
+        </div>
+      </Card>
 
       {/* 상세 분석 섹션 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -263,30 +345,77 @@ export function LoansTab({ data }: LoansTabProps) {
               <BarChart3 className="w-5 h-5 text-emerald-300" />
             </div>
             <h4 className="text-emerald-200 font-semibold text-lg">차입금 구조 분석</h4>
+            <div className="ml-2 relative group">
+              <HelpCircle className="w-4 h-4 text-emerald-300 cursor-help" />
+              {/* 통합 툴팁 */}
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 max-w-xs">
+                <div className="font-semibold mb-1">차입금 구조 평가 기준</div>
+                <div className="mb-2">
+                  <div className="font-medium">단기차입금 비중:</div>
+                  • 30% 이하: 매우 양호한 유동성<br/>
+                  • 30-50%: 양호한 유동성<br/>
+                  • 50-70%: 적정한 수준<br/>
+                  • 70% 초과: 유동성 위험
+                </div>
+                <div className="mb-2">
+                  <div className="font-medium">단기/장기 비율:</div>
+                  • 0.5 이하: 매우 건전한 구조<br/>
+                  • 0.5-1.0: 건전한 구조<br/>
+                  • 1.0-1.5: 적정한 수준<br/>
+                  • 1.5 초과: 구조적 위험
+                </div>
+                <div>
+                  <div className="font-medium">차입금 증가율:</div>
+                  • -10% 이하: 매우 양호한 감소<br/>
+                  • -5~-10%: 양호한 감소<br/>
+                  • 0~-5%: 안정적인 상태<br/>
+                  • 0~10%: 주의가 필요한 증가<br/>
+                  • 10% 초과: 위험한 증가
+                </div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90"></div>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg">
-              <span className="text-emerald-100 text-sm">단기차입금 비중</span>
-              <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{((currentShortTerm / totalCurrent) * 100).toFixed(1)}%</span>
-                <div className="text-emerald-300 text-xs">유동성 관리</div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg">
-              <span className="text-emerald-100 text-sm">장기차입금 비중</span>
-              <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{((currentLongTerm / totalCurrent) * 100).toFixed(1)}%</span>
-                <div className="text-emerald-300 text-xs">안정적 자금</div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg">
-              <span className="text-emerald-100 text-sm">단기/장기 비율</span>
-              <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{(currentShortTerm / currentLongTerm).toFixed(2)}:1</span>
-                <div className="text-emerald-300 text-xs">건전한 수준</div>
-              </div>
-            </div>
+            {(() => {
+              const shortTermRatio = (currentShortTerm / totalCurrent) * 100;
+              const shortTermStatus = getShortTermRatioStatus(shortTermRatio);
+              return (
+                <div className={`flex justify-between items-center p-3 ${shortTermStatus.bgColor} rounded-lg`}>
+                  <span className="text-emerald-100 text-sm">단기차입금 비중</span>
+                  <div className="text-right">
+                    <span className="text-emerald-200 font-semibold">{shortTermRatio.toFixed(1)}%</span>
+                    <div className={`text-xs ${shortTermStatus.color}`}>{shortTermStatus.text}</div>
+                  </div>
+                </div>
+              );
+            })()}
+            {(() => {
+              const longTermRatio = (currentLongTerm / totalCurrent) * 100;
+              return (
+                <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg">
+                  <span className="text-emerald-100 text-sm">장기차입금 비중</span>
+                  <div className="text-right">
+                    <span className="text-emerald-200 font-semibold">{longTermRatio.toFixed(1)}%</span>
+                    <div className="text-emerald-300 text-xs">안정적 자금</div>
+                  </div>
+                </div>
+              );
+            })()}
+            {(() => {
+              const shortLongRatio = currentShortTerm / currentLongTerm;
+              const shortLongStatus = getShortLongRatioStatus(shortLongRatio);
+              return (
+                <div className={`flex justify-between items-center p-3 ${shortLongStatus.bgColor} rounded-lg`}>
+                  <span className="text-emerald-100 text-sm">단기/장기 비율</span>
+                  <div className="text-right">
+                    <span className="text-emerald-200 font-semibold">{shortLongRatio.toFixed(2)}:1</span>
+                    <div className={`text-xs ${shortLongStatus.color}`}>{shortLongStatus.text}</div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </motion.div>
 
@@ -302,42 +431,92 @@ export function LoansTab({ data }: LoansTabProps) {
               <AlertTriangle className="w-5 h-5 text-red-300" />
             </div>
             <h4 className="text-red-200 font-semibold text-lg">리스크 분석</h4>
+            <div className="ml-2 relative group">
+              <HelpCircle className="w-4 h-4 text-red-300 cursor-help" />
+              {/* 통합 툴팁 */}
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 max-w-xs">
+                <div className="font-semibold mb-1">차입금 리스크 평가 기준</div>
+                <div className="mb-2">
+                  <div className="font-medium">단기차입금 증가율:</div>
+                  • -10% 이하: 매우 양호한 감소<br/>
+                  • -5~-10%: 양호한 감소<br/>
+                  • 0~-5%: 안정적인 상태<br/>
+                  • 0~10%: 주의가 필요한 증가<br/>
+                  • 10% 초과: 위험한 증가
+                </div>
+                <div className="mb-2">
+                  <div className="font-medium">장기차입금 증가율:</div>
+                  • -10% 이하: 매우 양호한 감소<br/>
+                  • -5~-10%: 양호한 감소<br/>
+                  • 0~-5%: 안정적인 상태<br/>
+                  • 0~10%: 주의가 필요한 증가<br/>
+                  • 10% 초과: 위험한 증가
+                </div>
+                <div>
+                  <div className="font-medium">총 차입금 증가율:</div>
+                  • -10% 이하: 매우 양호한 감소<br/>
+                  • -5~-10%: 양호한 감소<br/>
+                  • 0~-5%: 안정적인 상태<br/>
+                  • 0~10%: 주의가 필요한 증가<br/>
+                  • 10% 초과: 위험한 증가
+                </div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90"></div>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
-              <span className="text-red-100 text-sm">단기차입금 증가율</span>
-              <div className="text-right">
-                <span className={`font-semibold ${parseFloat(shortTermChange) >= 0 ? 'text-red-300' : 'text-green-300'}`}>
-                  {parseFloat(shortTermChange) >= 0 ? '+' : ''}{shortTermChange}%
-                </span>
-                <div className={`text-xs ${parseFloat(shortTermChange) >= 0 ? 'text-red-300' : 'text-green-300'}`}>
-                  {parseFloat(shortTermChange) >= 0 ? '주의 필요' : '양호'}
+            {(() => {
+              const shortTermGrowth = parseFloat(shortTermChange);
+              const shortTermGrowthStatus = getLoanGrowthStatus(shortTermGrowth);
+              return (
+                <div className={`flex justify-between items-center p-3 ${shortTermGrowthStatus.bgColor} rounded-lg`}>
+                  <span className="text-red-100 text-sm">단기차입금 증가율</span>
+                  <div className="text-right">
+                    <span className={`font-semibold ${shortTermGrowthStatus.color}`}>
+                      {shortTermGrowth >= 0 ? '+' : ''}{shortTermChange}%
+                    </span>
+                    <div className={`text-xs ${shortTermGrowthStatus.color}`}>
+                      {shortTermGrowthStatus.text}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
-              <span className="text-red-100 text-sm">장기차입금 증가율</span>
-              <div className="text-right">
-                <span className={`font-semibold ${parseFloat(longTermChange) >= 0 ? 'text-red-300' : 'text-green-300'}`}>
-                  {parseFloat(longTermChange) >= 0 ? '+' : ''}{longTermChange}%
-                </span>
-                <div className={`text-xs ${parseFloat(longTermChange) >= 0 ? 'text-red-300' : 'text-green-300'}`}>
-                  {parseFloat(longTermChange) >= 0 ? '모니터링' : '개선'}
+              );
+            })()}
+            {(() => {
+              const longTermGrowth = parseFloat(longTermChange);
+              const longTermGrowthStatus = getLoanGrowthStatus(longTermGrowth);
+              return (
+                <div className={`flex justify-between items-center p-3 ${longTermGrowthStatus.bgColor} rounded-lg`}>
+                  <span className="text-red-100 text-sm">장기차입금 증가율</span>
+                  <div className="text-right">
+                    <span className={`font-semibold ${longTermGrowthStatus.color}`}>
+                      {longTermGrowth >= 0 ? '+' : ''}{longTermChange}%
+                    </span>
+                    <div className={`text-xs ${longTermGrowthStatus.color}`}>
+                      {longTermGrowthStatus.text}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
-              <span className="text-red-100 text-sm">총 차입금 증가율</span>
-              <div className="text-right">
-                <span className={`font-semibold ${parseFloat(totalChange) >= 0 ? 'text-red-300' : 'text-green-300'}`}>
-                  {parseFloat(totalChange) >= 0 ? '+' : ''}{totalChange}%
-                </span>
-                <div className={`text-xs ${parseFloat(totalChange) >= 0 ? 'text-red-300' : 'text-green-300'}`}>
-                  {parseFloat(totalChange) >= 0 ? '관리 필요' : '양호'}
+              );
+            })()}
+            {(() => {
+              const totalGrowth = parseFloat(totalChange);
+              const totalGrowthStatus = getLoanGrowthStatus(totalGrowth);
+              return (
+                <div className={`flex justify-between items-center p-3 ${totalGrowthStatus.bgColor} rounded-lg`}>
+                  <span className="text-red-100 text-sm">총 차입금 증가율</span>
+                  <div className="text-right">
+                    <span className={`font-semibold ${totalGrowthStatus.color}`}>
+                      {totalGrowth >= 0 ? '+' : ''}{totalChange}%
+                    </span>
+                    <div className={`text-xs ${totalGrowthStatus.color}`}>
+                      {totalGrowthStatus.text}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
         </motion.div>
       </div>

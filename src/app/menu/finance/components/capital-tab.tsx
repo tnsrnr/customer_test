@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Bar } from 'react-chartjs-2';
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, Target, HelpCircle } from 'lucide-react';
 import { FinanceData } from '../types';
 
 interface CapitalTabProps {
@@ -12,6 +12,83 @@ interface CapitalTabProps {
 
 export function CapitalTab({ data }: CapitalTabProps) {
   const { kpiMetrics, chartData } = data;
+  
+  // 재무 비율 평가 함수들
+  const getCapitalRatioStatus = (ratio: number) => {
+    if (ratio >= 50) return { 
+      text: '매우 건전', 
+      color: 'text-green-300', 
+      bgColor: 'bg-green-500/10'
+    };
+    if (ratio >= 30) return { 
+      text: '건전', 
+      color: 'text-emerald-300', 
+      bgColor: 'bg-emerald-500/10'
+    };
+    if (ratio >= 20) return { 
+      text: '적정', 
+      color: 'text-yellow-300', 
+      bgColor: 'bg-yellow-500/10'
+    };
+    return { 
+      text: '개선 필요', 
+      color: 'text-red-300', 
+      bgColor: 'bg-red-500/10'
+    };
+  };
+
+  const getDebtRatioStatus = (ratio: number) => {
+    if (ratio <= 30) return { 
+      text: '매우 양호', 
+      color: 'text-green-300', 
+      bgColor: 'bg-green-500/10'
+    };
+    if (ratio <= 50) return { 
+      text: '양호', 
+      color: 'text-emerald-300', 
+      bgColor: 'bg-emerald-500/10'
+    };
+    if (ratio <= 70) return { 
+      text: '적정', 
+      color: 'text-yellow-300', 
+      bgColor: 'bg-yellow-500/10'
+    };
+    return { 
+      text: '위험', 
+      color: 'text-red-300', 
+      bgColor: 'bg-red-500/10'
+    };
+  };
+
+  const getGrowthStatus = (change: number) => {
+    if (change >= 10) return { 
+      text: '매우 양호', 
+      color: 'text-green-300', 
+      bgColor: 'bg-green-500/10'
+    };
+    if (change >= 5) return { 
+      text: '양호', 
+      color: 'text-emerald-300', 
+      bgColor: 'bg-emerald-500/10'
+    };
+    if (change >= 0) return { 
+      text: '안정', 
+      color: 'text-blue-300', 
+      bgColor: 'bg-blue-500/10'
+    };
+    if (change >= -5) return { 
+      text: '주의', 
+      color: 'text-yellow-300', 
+      bgColor: 'bg-yellow-500/10'
+    };
+    return { 
+      text: '개선 필요', 
+      color: 'text-red-300', 
+      bgColor: 'bg-red-500/10'
+    };
+  };
+
+
   
   // 차트 데이터 준비
   const capitalStructureChartData = {
@@ -116,34 +193,79 @@ export function CapitalTab({ data }: CapitalTabProps) {
               <TrendingUp className="w-5 h-5 text-emerald-300" />
             </div>
             <h4 className="text-emerald-200 font-semibold text-lg">재무 비율 분석</h4>
+            <div className="ml-2 relative group">
+              <HelpCircle className="w-4 h-4 text-emerald-300 cursor-help" />
+              {/* 통합 툴팁 */}
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 max-w-xs">
+                <div className="font-semibold mb-1">재무 비율 평가 기준</div>
+                <div className="mb-2">
+                  <div className="font-medium">자본비율:</div>
+                  • 50% 이상: 매우 건전한 재무상태<br/>
+                  • 30-50%: 건전한 재무상태<br/>
+                  • 20-30%: 적정한 수준<br/>
+                  • 20% 미만: 자본 확충 필요
+                </div>
+                <div className="mb-2">
+                  <div className="font-medium">부채비율:</div>
+                  • 30% 이하: 매우 양호한 부채상태<br/>
+                  • 30-50%: 양호한 부채상태<br/>
+                  • 50-70%: 적정한 수준<br/>
+                  • 70% 초과: 부채 위험 수준
+                </div>
+                <div>
+                  <div className="font-medium">성장률:</div>
+                  • 10% 이상: 매우 양호한 성장세<br/>
+                  • 5-10%: 양호한 성장세<br/>
+                  • 0-5%: 안정적인 상태<br/>
+                  • -5-0%: 주의가 필요한 상태<br/>
+                  • -5% 미만: 개선이 필요한 상태
+                </div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90"></div>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-3">
-            <div className="flex justify-between items-center p-2 bg-emerald-500/10 rounded-lg">
-              <span className="text-emerald-100 text-sm">자본비율</span>
-              <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{((kpiMetrics.totalEquity / kpiMetrics.totalAssets) * 100).toFixed(1)}%</span>
-                <div className="text-emerald-300 text-xs">건전한 수준</div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-emerald-500/10 rounded-lg">
-              <span className="text-emerald-100 text-sm">부채비율</span>
-              <div className="text-right">
-                <span className="text-emerald-200 font-semibold">{((kpiMetrics.totalLiabilities / kpiMetrics.totalAssets) * 100).toFixed(1)}%</span>
-                <div className="text-emerald-300 text-xs">적정 수준</div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-emerald-500/10 rounded-lg">
-              <span className="text-emerald-100 text-sm">자본증가율</span>
-              <div className="text-right">
-                <span className={`font-semibold ${kpiMetrics.totalEquityChange >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
-                  {kpiMetrics.totalEquityChange >= 0 ? '+' : ''}{kpiMetrics.totalEquityChange}%
-                </span>
-                <div className={`text-xs ${kpiMetrics.totalEquityChange >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
-                  {kpiMetrics.totalEquityChange >= 0 ? '양호' : '개선 필요'}
+            {(() => {
+              const capitalRatio = (kpiMetrics.totalEquity / kpiMetrics.totalAssets) * 100;
+              const capitalStatus = getCapitalRatioStatus(capitalRatio);
+              return (
+                <div className={`flex justify-between items-center p-2 ${capitalStatus.bgColor} rounded-lg`}>
+                  <span className="text-emerald-100 text-sm">자본비율</span>
+                  <div className="text-right">
+                    <span className="text-emerald-200 font-semibold">{capitalRatio.toFixed(1)}%</span>
+                    <div className={`text-xs ${capitalStatus.color}`}>{capitalStatus.text}</div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
+            {(() => {
+              const debtRatio = (kpiMetrics.totalLiabilities / kpiMetrics.totalAssets) * 100;
+              const debtStatus = getDebtRatioStatus(debtRatio);
+              return (
+                <div className={`flex justify-between items-center p-2 ${debtStatus.bgColor} rounded-lg`}>
+                  <span className="text-emerald-100 text-sm">부채비율</span>
+                  <div className="text-right">
+                    <span className="text-emerald-200 font-semibold">{debtRatio.toFixed(1)}%</span>
+                    <div className={`text-xs ${debtStatus.color}`}>{debtStatus.text}</div>
+                  </div>
+                </div>
+              );
+            })()}
+            {(() => {
+              const growthStatus = getGrowthStatus(kpiMetrics.totalEquityChange);
+              return (
+                <div className={`flex justify-between items-center p-2 ${growthStatus.bgColor} rounded-lg`}>
+                  <span className="text-emerald-100 text-sm">자본증가율</span>
+                  <div className="text-right">
+                    <span className={`font-semibold ${growthStatus.color}`}>
+                      {kpiMetrics.totalEquityChange >= 0 ? '+' : ''}{kpiMetrics.totalEquityChange}%
+                    </span>
+                    <div className={`text-xs ${growthStatus.color}`}>{growthStatus.text}</div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </motion.div>
 

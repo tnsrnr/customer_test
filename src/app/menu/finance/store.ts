@@ -24,16 +24,18 @@ const finance_overview_kpi = async (year: number, month: number): Promise<Financ
     if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
       const kpiData = responseData.MIS030231[0];
       
-      const totalAssets = Math.round((kpiData.TOTALASSETS || 0) / 100000000 * 10) / 10;
-      const totalLiabilities = Math.round((kpiData.TOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      // 현실적인 자본/부채/자산 비율로 조정
       const totalEquity = Math.round((kpiData.TOTALEQUITY || 0) / 100000000 * 10) / 10;
-      const debtWeight = Math.round((kpiData.DEBTWEIGHT || 0) * 10) / 10;
+      const totalLiabilities = Math.round((kpiData.TOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      const totalAssets = Math.round((totalEquity + totalLiabilities) * 10) / 10; // 자본 + 부채 = 자산
+      const debtWeight = Math.round((totalLiabilities / totalAssets) * 100 * 10) / 10; // 부채비율 재계산
       
 
       
-      const totalAssetsChange = Math.round((kpiData.TOTALASSETSCHANGE || 0) * 10) / 10;
-      const totalLiabilitiesChange = Math.round((kpiData.TOTALLIABILITIESCHANGE || 0) * 10) / 10;
+      // 변화율도 현실적으로 조정
       const totalEquityChange = Math.round((kpiData.TOTALEQUITYCHANGE || 0) * 10) / 10;
+      const totalLiabilitiesChange = Math.round((kpiData.TOTALLIABILITIESCHANGE || 0) * 10) / 10;
+      const totalAssetsChange = Math.round(((totalEquity + totalEquity * totalEquityChange / 100) + (totalLiabilities + totalLiabilities * totalLiabilitiesChange / 100) - totalAssets) / totalAssets * 100 * 10) / 10;
       
       return {
         totalAssets,
@@ -75,15 +77,19 @@ const finance_overview_charts = async (year: number, month: number): Promise<Fin
     if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
       const chartData = responseData.MIS030231[0];
       
-      const currentAssets = Math.round((chartData.TOTALASSETS || 0) / 100000000 * 10) / 10;
-      const currentLiabilities = Math.round((chartData.TOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      // 현실적인 자본/부채/자산 비율로 조정
+      // 일반적으로 자본 + 부채 = 자산 관계를 유지
       const currentEquity = Math.round((chartData.TOTALEQUITY || 0) / 100000000 * 10) / 10;
+      const currentLiabilities = Math.round((chartData.TOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      const currentAssets = Math.round((currentEquity + currentLiabilities) * 10) / 10; // 자본 + 부채 = 자산
+      
       const currentShortLoan = Math.round((chartData.TOTALSHORTLOAN || 0) / 100000000 * 10) / 10;
       const currentLongLoan = Math.round((chartData.TOTALLONGLOAN || 0) / 100000000 * 10) / 10;
       
-      const prevAssets = Math.round((chartData.PREVTOTALASSETS || 0) / 100000000 * 10) / 10;
-      const prevLiabilities = Math.round((chartData.PREVTOTALLIABILITIES || 0) / 100000000 * 10) / 10;
       const prevEquity = Math.round((chartData.PREVTOTALEQUITY || 0) / 100000000 * 10) / 10;
+      const prevLiabilities = Math.round((chartData.PREVTOTALLIABILITIES || 0) / 100000000 * 10) / 10;
+      const prevAssets = Math.round((prevEquity + prevLiabilities) * 10) / 10; // 자본 + 부채 = 자산
+      
       const prevShortLoan = Math.round((chartData.PREVTOTALSHORTLOAN || 0) / 100000000 * 10) / 10;
       const prevLongLoan = Math.round((chartData.PREVTOTALLONGLOAN || 0) / 100000000 * 10) / 10;
       

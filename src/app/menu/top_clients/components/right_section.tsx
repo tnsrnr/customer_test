@@ -63,18 +63,14 @@ export function RightSection() {
   const currentData = transportData[selectedTab];
 
   const chartData = useMemo(() => {
-    if (!selectedClient) {
+    if (!selectedClient || selectedClient === 'TOTAL') {
       // 상위 5개 거래처의 합계 월별 데이터 계산
       const top5Data = currentData.data.slice(0, 5);
       const monthlySales = [0, 0, 0, 0, 0];
-      const monthlyProfit = [0, 0, 0, 0, 0];
       
       top5Data.forEach(client => {
         client.monthlyData.sales.forEach((sale, index) => {
           monthlySales[index] += sale;
-        });
-        client.monthlyData.profit.forEach((profit, index) => {
-          monthlyProfit[index] += profit;
         });
       });
 
@@ -86,14 +82,6 @@ export function RightSection() {
             data: monthlySales,
             borderColor: '#3b82f6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.4,
-            fill: true
-          },
-          {
-            label: '총 수익 (상위 5개)',
-            data: monthlyProfit,
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4,
             fill: true
           }
@@ -119,14 +107,6 @@ export function RightSection() {
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
           tension: 0.4,
           fill: true
-        },
-        {
-          label: '수익',
-          data: client.monthlyData.profit,
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.4,
-          fill: true
         }
       ]
     };
@@ -144,88 +124,115 @@ export function RightSection() {
               return (
                 <>
                   {/* 거래처 정보 헤더 */}
-                  <div className="text-center bg-gradient-to-r from-slate-700/80 to-slate-800/80 p-4 rounded-xl border border-slate-600/50">
-                    <h4 className="text-2xl font-bold text-white mb-2">{client.name}</h4>
+                  <div className="text-center bg-gradient-to-r from-slate-700/80 to-slate-800/80 p-6 rounded-xl border border-slate-600/50 backdrop-blur-sm shadow-lg">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                      <h4 className="text-3xl font-bold text-white tracking-wide">{client.name}</h4>
+                      <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                    </div>
                   </div>
 
                   {/* 주요 지표 카드들 */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gradient-to-br from-blue-600/40 to-blue-700/40 p-5 rounded-xl border border-blue-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-blue-200">매출</span>
-                        <DollarSign className="w-5 h-5 text-blue-300" />
-                      </div>
-                      {isInitialLoad ? (
-                        <CountUpAnimation 
-                          end={client.sales} 
-                          suffix="백만"
-                          className="text-3xl font-bold text-blue-100"
-                        />
-                      ) : (
-                        <div className="text-3xl font-bold text-blue-100">
-                          {client.sales}<span className="text-2xl text-blue-300 ml-1">백만</span>
+                    <div className="bg-gradient-to-br from-blue-600/40 to-blue-700/40 p-5 rounded-xl border border-blue-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-blue-200 tracking-wide">매출</span>
+                        <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-blue-300" />
                         </div>
-                      )}
+                      </div>
+                      <div className="text-center">
+                        {isInitialLoad ? (
+                          <CountUpAnimation 
+                            end={client.sales} 
+                            suffix="백만"
+                            className="text-4xl font-bold text-blue-100 tracking-tight"
+                          />
+                        ) : (
+                          <div className="text-4xl font-bold text-blue-100 tracking-tight">
+                            {client.sales.toLocaleString()}
+                            <span className="text-2xl text-blue-300 ml-2 font-medium">백만</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-green-600/40 to-green-700/40 p-5 rounded-xl border border-green-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-green-200">영업이익</span>
-                        <TrendingUp className="w-5 h-5 text-green-300" />
-                      </div>
-                      {isInitialLoad ? (
-                        <CountUpAnimation 
-                          end={client.profit} 
-                          suffix="백만"
-                          className="text-3xl font-bold text-green-100"
-                        />
-                      ) : (
-                        <div className="text-3xl font-bold text-green-100">
-                          {client.profit}<span className="text-2xl text-green-300 ml-1">백만</span>
+                    <div className="bg-gradient-to-br from-green-600/40 to-green-700/40 p-5 rounded-xl border border-green-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-green-200 tracking-wide">영업이익</span>
+                        <div className="p-2 bg-green-500/20 rounded-lg">
+                          <TrendingUp className="w-5 h-5 text-green-300" />
                         </div>
-                      )}
+                      </div>
+                      <div className="text-center">
+                        {isInitialLoad ? (
+                          <CountUpAnimation 
+                            end={client.profit} 
+                            suffix="백만"
+                            className="text-4xl font-bold text-green-100 tracking-tight"
+                          />
+                        ) : (
+                          <div className="text-4xl font-bold text-green-100 tracking-tight">
+                            {client.profit.toLocaleString()}
+                            <span className="text-2xl text-green-300 ml-2 font-medium">백만</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-amber-600/40 to-amber-700/40 p-5 rounded-xl border border-amber-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-amber-200">진행건수</span>
-                        <Package className="w-5 h-5 text-amber-300" />
+                    <div className="bg-gradient-to-br from-amber-600/40 to-amber-700/40 p-5 rounded-xl border border-amber-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-amber-200 tracking-wide">진행건수</span>
+                        <div className="p-2 bg-amber-500/20 rounded-lg">
+                          <Package className="w-5 h-5 text-amber-300" />
+                        </div>
                       </div>
-                      <div className="text-3xl font-bold text-amber-100">
-                        {client.progressCount.toLocaleString()}<span className="text-2xl text-amber-300 ml-1">건</span>
+                      <div className="text-center mb-2">
+                        <div className="text-4xl font-bold text-amber-100 tracking-tight">
+                          {client.progressCount.toLocaleString()}
+                          <span className="text-2xl text-amber-300 ml-2 font-medium">건</span>
+                        </div>
                       </div>
-                      <GrowthIndicator 
-                        value={calculateGrowth(
-                          client.progressCount, 
-                          client.comparison.prevMonth.progressCount
-                        )} 
-                      />
+                      <div className="flex justify-center">
+                        <GrowthIndicator 
+                          value={calculateGrowth(
+                            client.progressCount, 
+                            client.comparison.prevMonth.progressCount
+                          )} 
+                        />
+                      </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-orange-600/40 to-orange-700/40 p-5 rounded-xl border border-orange-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-orange-200">영업담당자</span>
-                        <BarChart2 className="w-5 h-5 text-orange-300" />
+                    <div className="bg-gradient-to-br from-orange-600/40 to-orange-700/40 p-5 rounded-xl border border-orange-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-orange-200 tracking-wide">영업담당자</span>
+                        <div className="p-2 bg-orange-500/20 rounded-lg">
+                          <Users className="w-5 h-5 text-orange-300" />
+                        </div>
                       </div>
-                      <div className="text-3xl font-bold text-orange-100">
-                        {client.salesManager}
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-orange-100 tracking-wide leading-tight">
+                          {client.salesManager}
+                        </div>
+                        <div className="text-sm text-orange-300 mt-2 font-medium">
+                          담당 영업사원
+                        </div>
                       </div>
-                      <GrowthIndicator 
-                        value={0} 
-                      />
                     </div>
                   </div>
 
                   {/* 월별 차트 */}
                   {showCharts && (
-                    <div className="mt-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <LineChart className="w-5 h-5 text-slate-300" />
-                        <h5 className="text-lg font-semibold text-white">
-                          월별 추이
+                    <div className="mt-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-slate-600/50 rounded-lg">
+                          <LineChart className="w-5 h-5 text-slate-300" />
+                        </div>
+                        <h5 className="text-xl font-bold text-white tracking-wide">
+                          월별 매출 추이
                         </h5>
                       </div>
-                      <div className="h-48 bg-slate-700/50 rounded-xl p-3">
+                      <div className="h-56 bg-gradient-to-br from-slate-700/60 to-slate-800/60 rounded-xl p-4 border border-slate-600/30 backdrop-blur-sm">
                         <Chart
                           type="line"
                           data={chartData}
@@ -234,16 +241,7 @@ export function RightSection() {
                             maintainAspectRatio: false,
                             plugins: {
                               legend: {
-                                display: true,
-                                position: 'top',
-                                labels: {
-                                  usePointStyle: true,
-                                  padding: 20,
-                                  color: '#e2e8f0',
-                                  font: {
-                                    weight: 600
-                                  }
-                                }
+                                display: false,
                               },
                               tooltip: {
                                 backgroundColor: 'rgba(30, 41, 59, 0.95)',
@@ -301,88 +299,107 @@ export function RightSection() {
               return (
                 <>
                   {/* 합계 정보 헤더 */}
-                  <div className="text-center bg-gradient-to-r from-slate-700/80 to-slate-800/80 p-4 rounded-xl border border-slate-600/50">
-                    <h4 className="text-2xl font-bold text-white mb-2">탑 5 거래처 합계</h4>
+                  <div className="text-center bg-gradient-to-r from-slate-700/80 to-slate-800/80 p-6 rounded-xl border border-slate-600/50 backdrop-blur-sm shadow-lg">
+                    <div className="flex items-center justify-center gap-3 mb-3">
+                      <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                      <h4 className="text-3xl font-bold text-white tracking-wide">탑 5 거래처 합계</h4>
+                      <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                    </div>
                   </div>
 
                   {/* 주요 지표 카드들 */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gradient-to-br from-blue-600/40 to-blue-700/40 p-5 rounded-xl border border-blue-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-blue-200">총 매출</span>
-                        <DollarSign className="w-5 h-5 text-blue-300" />
-                      </div>
-                      {isInitialLoad ? (
-                        <CountUpAnimation 
-                          end={totalSales} 
-                          suffix="백만"
-                          className="text-3xl font-bold text-blue-100"
-                        />
-                      ) : (
-                        <div className="text-3xl font-bold text-blue-100">
-                          {totalSales}<span className="text-2xl text-blue-300 ml-1">백만</span>
+                    <div className="bg-gradient-to-br from-blue-600/40 to-blue-700/40 p-5 rounded-xl border border-blue-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-blue-200 tracking-wide">총 매출</span>
+                        <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-blue-300" />
                         </div>
-                      )}
+                      </div>
+                      <div className="text-center">
+                        {isInitialLoad ? (
+                          <CountUpAnimation 
+                            end={totalSales} 
+                            suffix="백만"
+                            className="text-4xl font-bold text-blue-100 tracking-tight"
+                          />
+                        ) : (
+                          <div className="text-4xl font-bold text-blue-100 tracking-tight">
+                            {totalSales.toLocaleString()}
+                            <span className="text-2xl text-blue-300 ml-2 font-medium">백만</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-green-600/40 to-green-700/40 p-5 rounded-xl border border-green-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-green-200">총 영업이익</span>
-                        <TrendingUp className="w-5 h-5 text-green-300" />
-                      </div>
-                      {isInitialLoad ? (
-                        <CountUpAnimation 
-                          end={totalProfit} 
-                          suffix="백만"
-                          className="text-3xl font-bold text-green-100"
-                        />
-                      ) : (
-                        <div className="text-3xl font-bold text-green-100">
-                          {totalProfit}<span className="text-2xl text-green-300 ml-1">백만</span>
+                    <div className="bg-gradient-to-br from-green-600/40 to-green-700/40 p-5 rounded-xl border border-green-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-green-200 tracking-wide">총 영업이익</span>
+                        <div className="p-2 bg-green-500/20 rounded-lg">
+                          <TrendingUp className="w-5 h-5 text-green-300" />
                         </div>
-                      )}
+                      </div>
+                      <div className="text-center">
+                        {isInitialLoad ? (
+                          <CountUpAnimation 
+                            end={totalProfit} 
+                            suffix="백만"
+                            className="text-4xl font-bold text-green-100 tracking-tight"
+                          />
+                        ) : (
+                          <div className="text-4xl font-bold text-green-100 tracking-tight">
+                            {totalProfit.toLocaleString()}
+                            <span className="text-2xl text-green-300 ml-2 font-medium">백만</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-amber-600/40 to-amber-700/40 p-5 rounded-xl border border-amber-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-amber-200">총 진행건수</span>
-                        <Package className="w-5 h-5 text-amber-300" />
-                      </div>
-                      {isInitialLoad ? (
-                        <CountUpAnimation 
-                          end={totalProgressCount} 
-                          suffix="건"
-                          className="text-3xl font-bold text-amber-100"
-                        />
-                      ) : (
-                        <div className="text-3xl font-bold text-amber-100">
-                          {totalProgressCount.toLocaleString()}<span className="text-2xl text-amber-300 ml-1">건</span>
+                    <div className="bg-gradient-to-br from-amber-600/40 to-amber-700/40 p-5 rounded-xl border border-amber-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-amber-200 tracking-wide">총 진행건수</span>
+                        <div className="p-2 bg-amber-500/20 rounded-lg">
+                          <Package className="w-5 h-5 text-amber-300" />
                         </div>
-                      )}
+                      </div>
+                      <div className="text-center mb-2">
+                        <div className="text-4xl font-bold text-amber-100 tracking-tight">
+                          {totalProgressCount.toLocaleString()}
+                          <span className="text-2xl text-amber-300 ml-2 font-medium">건</span>
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-orange-600/40 to-orange-700/40 p-5 rounded-xl border border-orange-500/50 backdrop-blur-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-base font-medium text-orange-200">담당자</span>
-                        <Users className="w-5 h-5 text-orange-300" />
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-full shadow-lg mb-2">
-                          <Users className="w-8 h-8 text-white" />
+                    <div className="bg-gradient-to-br from-orange-600/40 to-orange-700/40 p-5 rounded-xl border border-orange-500/50 backdrop-blur-sm hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-lg font-semibold text-orange-200 tracking-wide">담당자</span>
+                        <div className="p-2 bg-orange-500/20 rounded-lg">
+                          <Users className="w-5 h-5 text-orange-300" />
                         </div>
-                        <span className="text-sm text-orange-300">5개 거래처</span>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-orange-100 tracking-wide leading-tight">
+                          5개 거래처
+                        </div>
+                        <div className="text-sm text-orange-300 mt-2 font-medium">
+                          담당 영업사원
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* 월별 차트 */}
                   {showCharts && (
-                    <div className="mt-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <LineChart className="w-5 h-5 text-slate-300" />
-                        <h5 className="text-lg font-semibold text-white">상위 5개 거래처 월별 추이</h5>
+                    <div className="mt-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-slate-600/50 rounded-lg">
+                          <LineChart className="w-5 h-5 text-slate-300" />
+                        </div>
+                        <h5 className="text-xl font-bold text-white tracking-wide">
+                          상위 5개 거래처 월별 매출 추이
+                        </h5>
                       </div>
-                      <div className="h-48 bg-slate-700/50 rounded-xl p-3">
+                      <div className="h-56 bg-gradient-to-br from-slate-700/60 to-slate-800/60 rounded-xl p-4 border border-slate-600/30 backdrop-blur-sm">
                         <Chart
                           type="line"
                           data={chartData}
@@ -391,16 +408,7 @@ export function RightSection() {
                             maintainAspectRatio: false,
                             plugins: {
                               legend: {
-                                display: true,
-                                position: 'top',
-                                labels: {
-                                  usePointStyle: true,
-                                  padding: 20,
-                                  color: '#e2e8f0',
-                                  font: {
-                                    weight: 600
-                                  }
-                                }
+                                display: false,
                               },
                               tooltip: {
                                 backgroundColor: 'rgba(30, 41, 59, 0.95)',

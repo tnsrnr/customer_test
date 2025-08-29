@@ -28,9 +28,9 @@ export default function TopClientsPage() {
       <div className="relative z-10 p-6">
         {loading && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-700">데이터를 불러오는 중...</p>
+            <div className="bg-slate-800/95 backdrop-blur-md rounded-xl border border-slate-600/50 shadow-2xl p-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+              <p className="text-blue-100 text-lg font-medium text-center">상위거래처 데이터를 불러오는 중...</p>
             </div>
           </div>
         )}

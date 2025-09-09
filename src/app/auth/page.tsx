@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/common/components/ui/card';
 import { Lock, User } from 'lucide-react';
 
 export default function AuthPage() {

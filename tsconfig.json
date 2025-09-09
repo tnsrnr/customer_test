@@ -22,10 +22,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@/global/*": ["./src/global/*"],
       "@/components/*": ["./src/common/components/*"],
-      "@/lib/*": ["./src/common/lib/*"],
-      "@/store/*": ["./src/common/store/*"],
-      "@/styles/*": ["./src/common/styles/*"]
+      "@/common/*": ["./src/common/*"],
+      "@/lib/*": ["./src/global/lib/*"]
     },
     "plugins": [
       {

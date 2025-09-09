@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { menuItems } from '@/app/menu/menu_config';
+import { menuItems } from './menu_config';
 import { 
   DndContext, 
   closestCenter,
@@ -29,8 +29,9 @@ function cn(...classes: Array<string | false | undefined | null>): string {
   return classes.filter(Boolean).join(' ');
 }
 
-import { RefreshCw, ChevronLeft, ChevronRight, Calendar, Settings, X, Check, LogOut, Edit3, Layers } from 'lucide-react';
-import { useGlobalStore } from '@/store/slices/global';
+import { RefreshCw, ChevronLeft, ChevronRight, Calendar, Settings, X, Check, LogOut, Edit3, Layers, ChevronDown } from 'lucide-react';
+import { useGlobalStore } from '@/global/store/slices/global';
+import { clearSession } from '@/app/auth/session';
 
 // 드래그 가능한 메뉴 아이템 컴포넌트
 function SortableMenuItem({ menu, pathname, isEditMode }: { 
@@ -84,8 +85,8 @@ function SettingsDropdown({
   isMenuEditMode, 
   toggleMenuEditMode, 
   resetMenuOrder, 
-  showAllMenus, 
-  toggleMenus, 
+  currentPage, 
+  setCurrentPage,
   canToggle, 
   handleLogout 
 }: {
@@ -95,8 +96,8 @@ function SettingsDropdown({
   isMenuEditMode: boolean;
   toggleMenuEditMode: () => void;
   resetMenuOrder: () => void;
-  showAllMenus: boolean;
-  toggleMenus: () => void;
+  currentPage: 'page1' | 'page2' | 'page3';
+  setCurrentPage: (page: 'page1' | 'page2' | 'page3') => void;
   canToggle: boolean;
   handleLogout: () => void;
 }) {
@@ -169,13 +170,53 @@ function SettingsDropdown({
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
                   페이지 전환
                 </h3>
-                <button
-                  onClick={toggleMenus}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-lg transition-colors"
-                >
-                  <Layers className="w-4 h-4" />
-                  <span>{showAllMenus ? "Page 1로 전환" : "Page 2로 전환"}</span>
-                </button>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => {
+                      setCurrentPage('page1');
+                      onClose();
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
+                      currentPage === 'page1'
+                        ? "bg-blue-600/20 text-blue-200"
+                        : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                    )}
+                  >
+                    <Layers className="w-4 h-4" />
+                    <span>Page 1 - 경영실적</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCurrentPage('page2');
+                      onClose();
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
+                      currentPage === 'page2'
+                        ? "bg-blue-600/20 text-blue-200"
+                        : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                    )}
+                  >
+                    <Layers className="w-4 h-4" />
+                    <span>Page 2 - 실적관리</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCurrentPage('page3');
+                      onClose();
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
+                      currentPage === 'page3'
+                        ? "bg-blue-600/20 text-blue-200"
+                        : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                    )}
+                  >
+                    <Layers className="w-4 h-4" />
+                    <span>Page 3 - 영업실적분석</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -214,18 +255,60 @@ export function Header() {
     setMenuOrder,
     toggleMenuEditMode,
     resetMenuOrder,
-    getOrderedMenus
+    getOrderedMenus,
+    currentPage,
+    setCurrentPage
   } = useGlobalStore();
-  const [showAllMenus, setShowAllMenus] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const initialMenuCount = 6; // 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처 (6개 표시)
+  const page1MenuCount = 6; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처 (6개)
+  const page2MenuCount = 12; // PAGE2: 전체물동량현황 + 기타 실적관리 메뉴들
   const primaryGradient = 'from-blue-900 to-slate-900';
 
   // 클라이언트 사이드 렌더링 보장
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // 현재 경로에 따라 페이지 자동 설정
+  useEffect(() => {
+    if (!pathname) return;
+    
+    // 원본 menuItems 배열에서 현재 경로가 어느 페이지에 속하는지 확인
+    const currentMenuItem = menuItems.find(item => item.path === pathname);
+    if (!currentMenuItem) {
+      console.log('❌ 메뉴를 찾을 수 없음:', pathname);
+      return;
+    }
+    
+    const currentIndex = menuItems.findIndex(item => item.path === pathname);
+    if (currentIndex === -1) {
+      console.log('❌ 메뉴 인덱스를 찾을 수 없음:', pathname);
+      return;
+    }
+    
+    console.log('🔍 현재 경로:', pathname);
+    console.log('🔍 메뉴명:', currentMenuItem.name);
+    console.log('🔍 인덱스:', currentIndex);
+    console.log('🔍 전체 메뉴 개수:', menuItems.length);
+    
+    // 페이지 분할 로직에 따라 현재 페이지 결정 (원본 menuItems 기준)
+    if (currentIndex >= 1 && currentIndex <= 6) {
+      // PAGE1: 경영실적 메뉴들 (인덱스 1-6: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처)
+      console.log('📄 Page 1으로 설정 (인덱스 1-6)');
+      setCurrentPage('page1');
+    } else if (currentIndex >= 7 && currentIndex <= 17) {
+      // PAGE2: 실적관리 메뉴들 (인덱스 7-17: 항공실적, 해상실적, 창고실적, 도급실적, 국내자회사, 해외자회사, 국내, 사업부, 테4, 테5, 테6)
+      console.log('📄 Page 2로 설정 (인덱스 7-17)');
+      setCurrentPage('page2');
+    } else if (currentIndex >= 18) {
+      // PAGE3: 영업실적분석 (인덱스 18-19: 영업실적분석, 영업실적분석 2)
+      console.log('📄 Page 3으로 설정 (인덱스 18+)');
+      setCurrentPage('page3');
+    } else {
+      console.log('❌ 예상치 못한 인덱스:', currentIndex);
+    }
+  }, [pathname, setCurrentPage]);
 
   // 드래그 앤 드롭 센서 설정
   const sensors = useSensors(
@@ -242,7 +325,7 @@ export function Header() {
 
   const handleLogout = () => {
     // localStorage에서 세션 정보 제거
-    localStorage.removeItem('htns-session');
+    clearSession();
     // 로그인 페이지로 리다이렉트
     router.push('/auth');
   };
@@ -274,17 +357,24 @@ export function Header() {
     }
   };
 
-  const toggleMenus = () => {
-    setShowAllMenus(!showAllMenus);
-  };
+
 
   // 정렬된 메뉴 가져오기
   const orderedMenus = getOrderedMenus();
-  const visibleMenus = showAllMenus 
-    ? orderedMenus.slice(1).slice(initialMenuCount) // 처음 6개 제외하고 나머지만
-    : orderedMenus.slice(1, initialMenuCount + 1); // 처음 6개만
+  
+  let visibleMenus: any[] = [];
+  if (currentPage === 'page1') {
+    // PAGE1: 경영실적 메뉴들 (2-7번째: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처)
+    visibleMenus = orderedMenus.slice(1, page1MenuCount + 1);
+  } else if (currentPage === 'page2') {
+    // PAGE2: 실적관리 메뉴들 (8-18번째: 항공실적, 해상실적, 창고실적, 도급실적, 국내자회사, 해외자회사, 국내, 사업부, 테4, 테5, 테6)
+    visibleMenus = orderedMenus.slice(1).slice(page1MenuCount, page1MenuCount + 11);
+  } else {
+    // PAGE3: 영업실적분석 (마지막 2개: 영업실적분석, 영업실적분석 2)
+    visibleMenus = orderedMenus.slice(1).slice(page1MenuCount + 11, page2MenuCount + page1MenuCount + 2);
+  }
 
-  const canToggle = orderedMenus.slice(1).length > initialMenuCount;
+  const canToggle = orderedMenus.slice(1).length > page1MenuCount;
 
   // 드래그 앤 드롭 핸들러
   const handleDragEnd = (event: DragEndEvent) => {
@@ -306,16 +396,18 @@ export function Header() {
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
   // 서버 사이드 렌더링 시 기본 메뉴 순서 사용
-  const serverSideMenus = showAllMenus 
-    ? menuItems.slice(1).slice(initialMenuCount)
-    : menuItems.slice(1, initialMenuCount + 1);
+  const serverSideMenus = currentPage === 'page1' 
+    ? menuItems.slice(1, page1MenuCount + 1)
+    : currentPage === 'page2'
+    ? menuItems.slice(1).slice(page1MenuCount, page1MenuCount + 11)
+    : menuItems.slice(1).slice(-2);
 
   return (
     <header className={cn("bg-gradient-to-br backdrop-blur-md shadow-xl border-none z-50 relative", primaryGradient)}>
       <div className="flex justify-between items-center px-3 py-3">
         <div className="flex items-center space-x-4">
           {/* HTNS 로고 */}
-          <Link href="/menu/performance">
+          <Link href="/menu/performance_management/performance">
             <div className="flex items-center space-x-2">
               <Image 
                 src="/images/htns-logo.png" 
@@ -446,8 +538,8 @@ export function Header() {
               isMenuEditMode={isMenuEditMode}
               toggleMenuEditMode={toggleMenuEditMode}
               resetMenuOrder={resetMenuOrder}
-              showAllMenus={showAllMenus}
-              toggleMenus={toggleMenus}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
               canToggle={canToggle}
               handleLogout={handleLogout}
             />

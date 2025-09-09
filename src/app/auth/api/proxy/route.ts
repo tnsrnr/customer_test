@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { updateCsrfToken } from '@/lib/session/storage';
+import { updateCsrfToken } from '@/app/auth/session';
 
 export async function GET(req: NextRequest) {
   return handleProxyRequest(req, 'GET');

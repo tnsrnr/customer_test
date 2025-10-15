@@ -72,8 +72,8 @@ export function HQPerformanceTable({
   const gridColumns = generateGridColumns(monthLabels);
   const gridHeaders = generateGridHeaders(monthLabels);
 
-  // 고정 컬럼명 배열
-  const fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'];
+  // 고정 컬럼명 배열 (9개월 확장, 성장률 제거)
+  const fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
 
   return (
     <div className="overflow-x-auto flex-1">
@@ -120,8 +120,7 @@ export function HQPerformanceTable({
                 {/* 고정 컬럼명 기반 월별 데이터 셀 */}
                 {fixedColumns.map((columnKey, colIndex) => {
                   const isFirstColumn = columnKey === 'column1';
-                  const isGrowthColumn = columnKey === 'column8';
-                  const isDataColumn = !isFirstColumn && !isGrowthColumn; // column2~column7
+                  const isDataColumn = !isFirstColumn; // column2~column11
                   
                   return (
                     <TableCell 
@@ -138,22 +137,6 @@ export function HQPerformanceTable({
                             {item[columnKey as keyof MonthlyDetailData] as string}
                           </span>
                         </div>
-                      ) : isGrowthColumn ? (
-                        // 성장률 컬럼 - 색상과 아이콘으로 표시
-                        (() => {
-                          const growthValue = item[columnKey as keyof MonthlyDetailData] as string;
-                          const growthStyle = getGrowthStyle(growthValue);
-                          const GrowthIcon = growthStyle.icon;
-                          
-                          return (
-                            <div className="flex items-center justify-center space-x-1">
-                              <GrowthIcon className={`w-4 h-4 ${growthStyle.color}`} />
-                              <span className={`font-semibold ${growthStyle.color}`}>
-                                {growthValue}
-                              </span>
-                            </div>
-                          );
-                        })()
                       ) : (
                         // 월별 데이터 컬럼 - 원래 깔끔한 스타일
                         <span className="text-white">

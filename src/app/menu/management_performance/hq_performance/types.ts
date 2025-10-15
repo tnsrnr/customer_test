@@ -5,16 +5,19 @@ export interface GridColumn {
   colSpan?: number;
 }
 
-// 고정 월별 데이터 인터페이스 (컬럼명은 고정, 라벨만 동적)
+// 고정 월별 데이터 인터페이스 (컬럼명은 고정, 라벨만 동적) - 9개월 확장, 성장률 제거
 export interface MonthlyDetailData {
   column1: string;           // 고정 컬럼명 (COLUMN1) - 구분
-  column2: number;           // 고정 컬럼명 (COLUMN2) - 첫 번째 월 데이터
-  column3: number;           // 고정 컬럼명 (COLUMN3) - 두 번째 월 데이터
-  column4: number;           // 고정 컬럼명 (COLUMN4) - 세 번째 월 데이터
-  column5: number;           // 고정 컬럼명 (COLUMN5) - 네 번째 월 데이터
-  column6: number;           // 고정 컬럼명 (COLUMN6) - 다섯 번째 월 데이터 (선택한 월)
-  column7: number;           // 고정 컬럼명 (COLUMN7) - 합계
-  column8: string;           // 고정 컬럼명 (COLUMN8) - 성장률
+  column2: number;           // 고정 컬럼명 (COLUMN2) - 1월 데이터
+  column3: number;           // 고정 컬럼명 (COLUMN3) - 2월 데이터
+  column4: number;           // 고정 컬럼명 (COLUMN4) - 3월 데이터
+  column5: number;           // 고정 컬럼명 (COLUMN5) - 4월 데이터
+  column6: number;           // 고정 컬럼명 (COLUMN6) - 5월 데이터
+  column7: number;           // 고정 컬럼명 (COLUMN7) - 6월 데이터
+  column8: number;           // 고정 컬럼명 (COLUMN8) - 7월 데이터
+  column9: number;           // 고정 컬럼명 (COLUMN9) - 8월 데이터
+  column10: number;          // 고정 컬럼명 (COLUMN10) - 9월 데이터
+  column11: number;          // 고정 컬럼명 (COLUMN11) - 합계
 }
 
 // HQ Performance 데이터 타입 정의
@@ -56,38 +59,35 @@ export interface ChartData {
   }[];
 }
 
-// 고정 컬럼명 기반 그리드 컬럼 생성 함수
+// 고정 컬럼명 기반 그리드 컬럼 생성 함수 (9개월 확장, 성장률 제거)
 export const generateGridColumns = (monthLabels: string[]): GridColumn[] => {
   const columns: GridColumn[] = [];
   
-  // 고정 컬럼명에 동적 라벨 매핑 (COLUMN1~COLUMN8)
-  const fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8'];
+  // 고정 컬럼명에 동적 라벨 매핑 (COLUMN1~COLUMN11)
+  const fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
   fixedColumns.forEach((columnKey, index) => {
     if (index === 0) {
       columns.push({ key: columnKey, label: '구분' });
-    } else if (index <= 5) {
+    } else if (index <= 9) {
       columns.push({ 
         key: columnKey, 
         label: monthLabels[index - 1] || `${index}월` 
       });
-    } else if (index === 6) {
-      columns.push({ key: columnKey, label: '합계' });
     } else {
-      columns.push({ key: columnKey, label: '성장률' });
+      columns.push({ key: columnKey, label: '합계' });
     }
   });
   
   return columns;
 };
 
-// 동적 그리드 헤더 생성 함수
+// 동적 그리드 헤더 생성 함수 (성장률 제거)
 export const generateGridHeaders = (monthLabels: string[]): { topRow: GridColumn[] } => {
   return {
     topRow: [
       { key: 'category', label: '구분', colSpan: 1 },
       { key: 'monthly', label: '월별', colSpan: monthLabels.length },
-      { key: 'total', label: '합계', colSpan: 1 },
-      { key: 'growth', label: '성장률', colSpan: 1 }
+      { key: 'total', label: '합계', colSpan: 1 }
     ]
   };
 };

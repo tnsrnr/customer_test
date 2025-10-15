@@ -231,9 +231,9 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
       
       set({ currentYear, currentMonth, loading: true, error: null });
       
-      // ⭐ 8월 조건 체크 - 차입금만 하드코딩
-      if (currentMonth === 8) {
-        console.log('🎯 8월 데이터: 차입금 데이터를 하드코딩합니다. (재무현황)');
+      // ⭐ 9월 조건 체크 - 차입금만 하드코딩
+      if (currentMonth === 9) {
+        console.log('🎯 9월 데이터: 차입금 데이터를 하드코딩합니다. (재무현황)');
         
         try {
           const [kpiMetrics, chartData, trendData] = await Promise.all([

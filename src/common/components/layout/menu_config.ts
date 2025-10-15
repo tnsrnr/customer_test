@@ -55,7 +55,8 @@ export const menuItems: MenuItem[] = [
     name: '상위거래처', 
     path: '/menu/management_performance/top_clients', 
     icon: TrendingUp,
-    description: '상위 거래처 현황'
+    description: '상위 거래처 현황',
+    isUnderDevelopment: true
   },
   { 
     name: '부문별실적', 

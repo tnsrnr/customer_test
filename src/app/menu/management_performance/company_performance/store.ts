@@ -333,9 +333,125 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
       // 현재 날짜를 store에 업데이트
       set({ currentYear: year, currentMonth: month });
       
-      // ⭐ 8월 조건 체크 - 템프 데이터 사용
-      if (month === 8) {
-        console.log('🎯 8월 데이터: 템프 데이터를 사용합니다.');
+        // ⭐ 8월 조건 체크 - 템프 데이터 사용
+        if (month === 8) {
+          console.log('🎯 8월 데이터: 템프 데이터를 사용합니다.');
+        
+        const tempData: CompanyPerformanceData = {
+          // 1번째 API: 상단 4개 KPI 카드 (왼쪽 -> 오른쪽)
+          kpiMetrics: {
+            ACTUAL_SALES: 4090,              // 1: 총 매출액
+            ACTUAL_OP_PROFIT: 68,          // 2: 영업이익
+            ACTUAL_OP_MARGIN: 1.7,          // 3: 영업이익률
+            SALES_ACHIEVEMENT: 0,         // 4: 매출 달성률
+            ACTUAL_SALES_CHANGE: -1158,       // 5: 전월대비 매출 증가액
+            ACTUAL_OP_PROFIT_CHANGE: 35,   // 6: 전월대비 영업이익 증가액
+            ACTUAL_OP_MARGIN_CHANGE: 0,   // 7: 전월대비 영업이익률 증가액
+            SALES_ACHIEVEMENT_CHANGE: 0   // 8: 전월대비 매출 달성률 증가액
+          },
+          // 2번째 API: 중간 그리드 테이블 (상단 -> 하단, 왼쪽 -> 오른쪽)
+          gridData: {
+            divisions: [
+              {
+                name: '본사',
+                plannedSales: 1752,            // 9
+                plannedOpProfit: 60,        // 10
+                plannedOpMargin: 3.4,        // 11
+                actualSales: 1479,            // 12
+                actualOpProfit: -2,         // 13
+                actualOpMargin: -0.1,         // 14
+                salesAchievement: 84,       // 15
+                opProfitAchievement: 0     // 16
+              },
+              {
+                name: '국내 자회사',
+                plannedSales: 576,           // 17
+                plannedOpProfit: 18,        // 18
+                plannedOpMargin: 3.4,        // 19
+                actualSales: 468,            // 20
+                actualOpProfit: 13,         // 21
+                actualOpMargin: 2.8,         // 22
+                salesAchievement: 81,       // 23
+                opProfitAchievement: 74     // 24
+              },
+              {
+                name: '해외 자회사',
+                plannedSales: 3410,           // 25
+                plannedOpProfit: 73,        // 26
+                plannedOpMargin: 2.1,        // 27
+                actualSales: 2143,            // 28
+                actualOpProfit: 57,         // 29
+                actualOpMargin: 2.6,         // 30
+                salesAchievement: 63,       // 31
+                opProfitAchievement: 78     // 32
+              },
+              {
+                name: '합계',
+                plannedSales: 5738,           // 33
+                plannedOpProfit: 150,        // 34
+                plannedOpMargin: 2.6,        // 35
+                actualSales: 4090,            // 36
+                actualOpProfit: 68,         // 37
+                actualOpMargin: 1.7,         // 38
+                salesAchievement: 71,       // 39
+                opProfitAchievement: 45     // 40
+              }
+            ]
+          },
+          // 3번째 API: 하단 첫 번째 카드 (달성율 도넛 차트)
+          chartData1: {
+            labels: ['본사'],  // 조건 체크용 더미 데이터
+            datasets: [],
+            PLANNED_SALES: 5738,         // 41
+            ACTUAL_SALES: 4090,          // 42
+            PLANNED_OP_PROFIT: 150,     // 43
+            ACTUAL_OP_PROFIT: 68       // 44
+          },
+          // 4번째 API: 하단 두 번째 카드 (매출액 바 차트)
+          chartData2: {
+            labels: ['본사', '국내자회사', '해외자회사'],
+            datasets: [
+              {
+                label: '계획 매출액',
+                data: [1752, 576, 3410],
+                backgroundColor: 'rgba(156, 163, 175, 0.5)',
+                borderColor: 'rgba(156, 163, 175, 1)'
+              },
+              {
+                label: '실제 매출액',
+                data: [1479, 468, 2143],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)'
+              }
+            ]
+          },
+          // 5번째 API: 하단 세 번째 카드 (영업이익 바 차트)
+          chartData3: {
+            labels: ['본사', '국내자회사', '해외자회사'],
+            datasets: [
+              {
+                label: '계획 영업이익',
+                data: [60, 18, 73],
+                backgroundColor: 'rgba(156, 163, 175, 0.5)',
+                borderColor: 'rgba(156, 163, 175, 1)'
+              },
+              {
+                label: '실제 영업이익',
+                data: [-2, 13, 57],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)'
+              }
+            ]
+          }
+        };
+        
+        set({ data: tempData, loading: false, error: null });
+        return; // API 호출 없이 리턴
+      }
+      
+      // ⭐ 9월 조건 체크 - 템프 데이터 사용 (8월과 동일한 값)
+      if (month === 9) {
+        console.log('🎯 9월 데이터: 템프 데이터를 사용합니다.');
         
         const tempData: CompanyPerformanceData = {
           // 1번째 API: 상단 4개 KPI 카드 (왼쪽 -> 오른쪽)

@@ -151,9 +151,9 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
       // store의 현재 날짜도 업데이트
       set({ currentYear, currentMonth });
       
-      // ⭐ 8월 조건 체크 - 템프 데이터 사용
-      if (currentMonth === 8) {
-        console.log('🎯 8월 데이터: 템프 데이터를 사용합니다. (인사 현황)');
+        // ⭐ 8월 조건 체크 - 템프 데이터 사용
+        if (currentMonth === 8) {
+          console.log('🎯 8월 데이터: 템프 데이터를 사용합니다. (인사 현황)');
         
         const tempData: PersonnelData = {
           // 상단 4개 KPI 카드 (우측 → 좌측 순서)
@@ -223,29 +223,160 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 groupCategory: '국내'
               },
               {
-                company_name: '하나로인터내셔널',
-                q1: 3,
-                q2: 3,
-                q3: 2,
-                q4: 2,
+                company_name: '중국',
+                q1: 370,
+                q2: 371,
+                q3: 377,
+                q4: 365,
+                currentLocal: 348,
+                currentKorean: 11,
+                previousMonth: 359,
+                currentMonth: 359,
+                change: 0,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '유럽',
+                q1: 168,
+                q2: 163,
+                q3: 161,
+                q4: 168,
+                currentLocal: 112,
+                currentKorean: 57,
+                previousMonth: 170,
+                currentMonth: 169,
+                change: -1,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '아시아',
+                q1: 407,
+                q2: 400,
+                q3: 386,
+                q4: 378,
+                currentLocal: 314,
+                currentKorean: 27,
+                previousMonth: 348,
+                currentMonth: 341,
+                change: -7,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '기타(중동+미국)',
+                q1: 28,
+                q2: 27,
+                q3: 26,
+                q4: 26,
+                currentLocal: 2,
+                currentKorean: 22,
+                previousMonth: 23,
+                currentMonth: 24,
+                change: 1,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '소계',
+                q1: 973,
+                q2: 961,
+                q3: 950,
+                q4: 937,
+                currentLocal: 776,
+                currentKorean: 117,
+                previousMonth: 900,
+                currentMonth: 893,
+                change: -7,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '총계',
+                q1: 2025,
+                q2: 2000,
+                q3: 1951,
+                q4: 1933,
+                currentLocal: 776,
+                currentKorean: 1033,
+                previousMonth: 1815,
+                currentMonth: 1809,
+                change: -6,
+                groupCategory: ''
+              }
+            ]
+          }
+        };
+        
+        set({ data: tempData, loading: false, error: null });
+        return; // API 호출 없이 리턴
+      }
+      
+      // ⭐ 9월 조건 체크 - 템프 데이터 사용 (8월과 동일한 값)
+      if (currentMonth === 9) {
+        console.log('🎯 9월 데이터: 템프 데이터를 사용합니다. (인사 현황)');
+        
+        const tempData: PersonnelData = {
+          // 상단 4개 KPI 카드 (우측 → 좌측 순서)
+          kpiMetrics: {
+            headquarters: 158,                    // 7: 본사 (좌측 끝)
+            headquartersChange: 0,              // 8: 본사 변화
+            domesticSubsidiaries: 758,            // 5: 국내 계열사 (우측에서 3번째)
+            domesticSubsidiariesChange: 1,      // 6: 국내 계열사 변화
+            overseasSubsidiaries: 893,            // 3: 해외 계열사 (우측에서 2번째)
+            overseasSubsidiariesChange: -7,      // 4: 해외 계열사 변화
+            total: 1809,                           // 1: 총 인원 (우측 끝)
+            totalChange: -6                      // 2: 총 인원 변화
+          },
+          // 하단 테이블 (좌측 → 우측, 상단 → 하단) - 첫 번째 불필요한 "소계" 행 제거
+          gridData: {
+            divisions: [
+              {
+                company_name: '하나로TNS',
+                q1: 185,
+                q2: 174,
+                q3: 178,
+                q4: 175,
                 currentLocal: 0,
-                currentKorean: 0,
-                previousMonth: 0,
-                currentMonth: 0,
+                currentKorean: 158,
+                previousMonth: 158,
+                currentMonth: 158,
                 change: 0,
                 groupCategory: '국내'
               },
               {
-                company_name: '소계',
-                q1: 1052,
-                q2: 1039,
-                q3: 1001,
-                q4: 996,
+                company_name: '하나로S',
+                q1: 225,
+                q2: 220,
+                q3: 177,
+                q4: 173,
                 currentLocal: 0,
-                currentKorean: 916,
-                previousMonth: 915,
-                currentMonth: 916,
+                currentKorean: 101,
+                previousMonth: 100,
+                currentMonth: 101,
                 change: 1,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '하나로넷',
+                q1: 522,
+                q2: 522,
+                q3: 525,
+                q4: 525,
+                currentLocal: 0,
+                currentKorean: 524,
+                previousMonth: 524,
+                currentMonth: 524,
+                change: 0,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '하나로에이',
+                q1: 117,
+                q2: 120,
+                q3: 119,
+                q4: 121,
+                currentLocal: 0,
+                currentKorean: 133,
+                previousMonth: 113,
+                currentMonth: 133,
+                change: 0,
                 groupCategory: '국내'
               },
               {

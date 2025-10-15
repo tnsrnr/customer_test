@@ -344,8 +344,8 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             ACTUAL_OP_PROFIT: 68,          // 2: 영업이익
             ACTUAL_OP_MARGIN: 1.7,          // 3: 영업이익률
             SALES_ACHIEVEMENT: 0,         // 4: 매출 달성률
-            ACTUAL_SALES_CHANGE: 0,       // 5: 전월대비 매출 증가액
-            ACTUAL_OP_PROFIT_CHANGE: 0,   // 6: 전월대비 영업이익 증가액
+            ACTUAL_SALES_CHANGE: -1158,       // 5: 전월대비 매출 증가액
+            ACTUAL_OP_PROFIT_CHANGE: 35,   // 6: 전월대비 영업이익 증가액
             ACTUAL_OP_MARGIN_CHANGE: 0,   // 7: 전월대비 영업이익률 증가액
             SALES_ACHIEVEMENT_CHANGE: 0   // 8: 전월대비 매출 달성률 증가액
           },

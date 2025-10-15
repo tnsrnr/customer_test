@@ -210,7 +210,6 @@ export default function CompanyPerformancePage() {
                             className="text-white"
                           />
                         </span>
-                        <span className="text-lg font-medium text-purple-200 ml-1">%</span>
                       </div>
                     </div>
                   </div>
@@ -252,7 +251,6 @@ export default function CompanyPerformancePage() {
                             className="text-white"
                           />
                         </span>
-                        <span className="text-lg font-medium text-orange-200 ml-1">%</span>
                       </div>
                     </div>
                   </div>

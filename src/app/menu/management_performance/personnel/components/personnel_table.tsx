@@ -67,7 +67,7 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
               className="text-white font-bold text-lg text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-3"
               colSpan={4}
             >
-              {currentYear}년
+              {currentYear - 1}년
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center bg-red-500/20 backdrop-blur-md border-r border-white/20 py-3"

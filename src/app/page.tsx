@@ -31,12 +31,12 @@ export default function HomePage() {
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const router = useRouter();
 
-  // 성능 최적화: 랜덤 통계 데이터 캐싱
-  const randomStats = useMemo(() => ({
-    sales: Math.floor(Math.random() * 1000000 + 5000000),
-    volume: Math.floor(Math.random() * 5000 + 15000),
-    shipments: Math.floor(Math.random() * 500 + 2500),
-    satisfaction: (Math.random() * 10 + 90).toFixed(1)
+  // 고정 통계 데이터 (글로벌 맵 기본값)
+  const fixedStats = useMemo(() => ({
+    sales: 7500000,
+    volume: 18500,
+    shipments: 2850,
+    satisfaction: 94.2
   }), []);
 
   // 성능 최적화: 글로벌 지점 데이터 캐싱
@@ -101,8 +101,8 @@ export default function HomePage() {
         const parsedSession = JSON.parse(sessionData);
         if (parsedSession.jsessionId && parsedSession.csrfToken) {
           setSession(parsedSession);
-          // 로그인 시 랜덤 탭 선택 (0 또는 1)
-          setSelectedTab(Math.floor(Math.random() * 2));
+          // 로그인 시 글로벌 맵을 기본으로 설정
+          setSelectedTab(0);
         } else {
           router.push('/auth');
         }

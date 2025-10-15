@@ -280,7 +280,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               datasets: [
                 {
                   label: '매출 (올해)',
-                  data: [9, 10, 11, 12, 13, 14, 15, 16, null, null, null, null],
+                  data: [175, 166, 195, 211, 189, 178, 187, 179, null, null, null, null],
                   borderColor: 'rgb(59, 130, 246)',
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   borderWidth: 2,
@@ -288,7 +288,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 },
                 {
                   label: '매출 (1년 전)',
-                  data: [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+                  data: [274, 236, 262, 239, 252, 237, 247, 238, 210, 215, 214, 232],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
                   borderWidth: 2,
@@ -302,7 +302,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               datasets: [
                 {
                   label: '영업이익 (올해)',
-                  data: [29, 30, 31, 32, 33, 34, 35, 36, null, null, null, null],
+                  data: [0, -3, -0, -3, -1, 1, 1, 2, null, null, null, null],
                   borderColor: 'rgb(239, 68, 68)',
                   backgroundColor: 'rgba(239, 68, 68, 0.1)',
                   borderWidth: 2,
@@ -310,7 +310,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 },
                 {
                   label: '영업이익 (1년 전)',
-                  data: [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+                  data: [6, -6, -1, -3, -1, -5, 16, -3, -6, -2, -2, -3],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
                   borderWidth: 2,

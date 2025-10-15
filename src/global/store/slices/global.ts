@@ -36,7 +36,7 @@ export const useGlobalStore = create<GlobalStore>()(
       isRefreshing: false,
       currentPage: 'page1',
       selectedYear: new Date().getFullYear(),
-      selectedMonth: new Date().getMonth() + 1,
+      selectedMonth: 8, // 기본값을 8월로 고정
       menuOrder: menuItems.slice(1).map(item => item.path), // HTNS 로고 제외한 메뉴들의 기본 순서
       isMenuEditMode: false,
       

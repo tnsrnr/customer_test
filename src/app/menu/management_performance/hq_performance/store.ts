@@ -158,7 +158,7 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             spanGaps: false
           },
           {
-            label: '매출 (1년 전)',
+            label: '매출 (직전년도)',
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
               // 1년전 데이터는 전체 12개월 표시
@@ -190,7 +190,7 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             spanGaps: false
           },
           {
-            label: '영업이익 (1년 전)',
+            label: '영업이익 (직전년도)',
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
               // 1년전 데이터는 전체 12개월 표시
@@ -260,14 +260,14 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
         const tempData: HQPerformanceData = {
           // 상단 4개 KPI 카드 (왼쪽 → 오른쪽)
           kpiMetrics: {
-            actualSales: 179,                    // 1: 매출
-            actualSalesChange: -8,              // 2: 매출 변화
-            actualPurchases: 170,                // 3: 매입
-            actualPurchasesChange: -7,          // 4: 매입 변화
-            actualOpProfit: 1.8,                 // 5: 영업이익
-            actualOpProfitChange: 0.9,           // 6: 영업이익 변화
-            actualOpMargin: 0.99,                 // 7: 영업이익율
-            actualOpMarginChange: 0.5            // 8: 영업이익율 변화
+            actualSales: 1670,                    // 1: 매출
+            actualSalesChange: -526,              // 2: 매출 변화
+            actualPurchases: 1622,                // 3: 매입
+            actualPurchasesChange: -504,          // 4: 매입 변화
+            actualOpProfit: 3,                 // 5: 영업이익
+            actualOpProfitChange: 5,           // 6: 영업이익 변화
+            actualOpMargin: 0.2,                 // 7: 영업이익율
+            actualOpMarginChange: 0.3            // 8: 영업이익율 변화
           },
           // 차트 데이터
           chartData: {
@@ -276,14 +276,14 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               datasets: [
                 {
                   label: '매출 (올해)',
-                  data: [175, 166, 195, 211, 189, 178, 187, 179, null, null, null, null],
+                  data: [175, 166, 195, 211, 189, 178, 187, 181, 189, null, null, null],
                   borderColor: 'rgb(59, 130, 246)',
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   borderWidth: 2,
                   spanGaps: false
                 },
                 {
-                  label: '매출 (1년 전)',
+                  label: '매출 (직전년도)',
                   data: [274, 236, 262, 239, 252, 237, 247, 238, 210, 215, 214, 232],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
@@ -298,14 +298,14 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               datasets: [
                 {
                   label: '영업이익 (올해)',
-                  data: [0, -3, -0, -3, -1, 1, 1, 2, null, null, null, null],
+                  data: [1, -3, -0, -2, -0, 2, 1, 2, 3, null, null, null],
                   borderColor: 'rgb(239, 68, 68)',
                   backgroundColor: 'rgba(239, 68, 68, 0.1)',
                   borderWidth: 2,
                   spanGaps: false
                 },
                 {
-                  label: '영업이익 (1년 전)',
+                  label: '영업이익 (직전년도)',
                   data: [6, -6, -1, -3, -1, -5, 16, -3, -6, -2, -2, -3],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
@@ -329,73 +329,73 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 column6: 189,               // 5월
                 column7: 178,               // 6월
                 column8: 187,               // 7월
-                column9: 179,               // 8월
-                column10: 0,              // 9월
-                column11: 0                // 합계
+                column9: 181,               // 8월
+                column10: 189,              // 9월
+                column11: 1670                // 합계
               },
               {
                 column1: '매출원가',           // 57
                 column2: 169,               // 1월
-                column3: 159,               // 2월
-                column4: 187,               // 3월
-                column5: 205,               // 4월
-                column6: 181,               // 5월
-                column7: 169,               // 6월
-                column8: 177,               // 7월
-                column9: 170,               // 8월
-                column10: 0,              // 9월
-                column11: 0                // 합계
+                column3: 163,               // 2월
+                column4: 190,               // 3월
+                column5: 208,               // 4월
+                column6: 184,               // 5월
+                column7: 172,               // 6월
+                column8: 181,               // 7월
+                column9: 173,               // 8월
+                column10: 181,              // 9월
+                column11: 1622                // 합계
               },
               {
                 column1: '매출총이익',       // 65
-                column2: 5.6,               // 1월
-                column3: 6.1,               // 2월
-                column4: 7.8,               // 3월
-                column5: 5.7,               // 4월
-                column6: 8.1,               // 5월
-                column7: 8.8,               // 6월
-                column8: 9.3,               // 7월
-                column9: 9.2,               // 8월
-                column10: 0,              // 9월
-                column11: 0                // 합계
+                column2: 6,               // 1월
+                column3: 2,               // 2월
+                column4: 5,               // 3월
+                column5: 3,               // 4월
+                column6: 5,               // 5월
+                column7: 7,               // 6월
+                column8: 6,               // 7월
+                column9: 7,               // 8월
+                column10: 8,              // 9월
+                column11: 48                // 합계
               },
               {
                 column1: '판관비',         // 73
                 column2: 5,               // 1월
-                column3: 9,               // 2월
-                column4: 8,               // 3월
-                column5: 8,               // 4월
-                column6: 9,               // 5월
-                column7: 8,               // 6월
-                column8: 8,               // 7월
-                column9: 7,               // 8월
-                column10: 0,              // 9월
-                column11: 0               // 합계
+                column3: 5,               // 2월
+                column4: 5,               // 3월
+                column5: 5,               // 4월
+                column6: 5,               // 5월
+                column7: 5,               // 6월
+                column8: 5,               // 7월
+                column9: 5,               // 8월
+                column10: 5,              // 9월
+                column11: 45               // 합계
               },
               {
                 column1: '영업이익',       // 81
-                column2: 0.5,               // 1월
-                column3: -2.9,               // 2월
-                column4: -0.3,               // 3월
-                column5: -2.7,               // 4월
-                column6: -0.5,               // 5월
-                column7: 1.2,               // 6월
-                column8: 0.9,               // 7월
-                column9: 1.8,               // 8월
-                column10: 0,              // 9월
-                column11: 0                // 합계
+                column2: 1,               // 1월
+                column3: -3,               // 2월
+                column4: -0,               // 3월
+                column5: -2,               // 4월
+                column6: -0,               // 5월
+                column7: 2,               // 6월
+                column8: 1,               // 7월
+                column9: 2,               // 8월
+                column10: 3,              // 9월
+                column11: 3                // 합계
               },
               {
                 column1: '영업이익율',     // 89
-                column2: 0.29,               // 1월
-                column3: -1.77,               // 2월
-                column4: -0.14,               // 3월
-                column5: -1.27,               // 4월
-                column6: -0.28,               // 5월
-                column7: 0.68,               // 6월
-                column8: 0.49,               // 7월
-                column9: 0.99,               // 8월
-                column10: 0,              // 9월
+                column2: 0,               // 1월
+                column3: -2,               // 2월
+                column4: -0,               // 3월
+                column5: -1,               // 4월
+                column6: -0,               // 5월
+                column7: 1,               // 6월
+                column8: 1,               // 7월
+                column9: 1,               // 8월
+                column10: 2,              // 9월
                 column11: 0                // 합계
               }
             ]

@@ -334,10 +334,10 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q3: 178,
                 q4: 175,
                 currentLocal: 0,
-                currentKorean: 158,
+                currentKorean: 154,
                 previousMonth: 158,
-                currentMonth: 158,
-                change: 0,
+                currentMonth: 154,
+                change: -4,
                 groupCategory: '국내'
               },
               {
@@ -347,10 +347,10 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q3: 177,
                 q4: 173,
                 currentLocal: 0,
-                currentKorean: 101,
-                previousMonth: 100,
-                currentMonth: 101,
-                change: 1,
+                currentKorean: 103,
+                previousMonth: 101,
+                currentMonth: 103,
+                change: 2,
                 groupCategory: '국내'
               },
               {
@@ -360,10 +360,10 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q3: 525,
                 q4: 525,
                 currentLocal: 0,
-                currentKorean: 524,
+                currentKorean: 525,
                 previousMonth: 524,
-                currentMonth: 524,
-                change: 0,
+                currentMonth: 525,
+                change: 1,
                 groupCategory: '국내'
               },
               {
@@ -373,10 +373,10 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q3: 119,
                 q4: 121,
                 currentLocal: 0,
-                currentKorean: 133,
-                previousMonth: 113,
-                currentMonth: 133,
-                change: 0,
+                currentKorean: 132,
+                previousMonth: 133,
+                currentMonth: 132,
+                change: -1,
                 groupCategory: '국내'
               },
               {
@@ -386,10 +386,10 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q3: 377,
                 q4: 365,
                 currentLocal: 348,
-                currentKorean: 11,
+                currentKorean: 12,
                 previousMonth: 359,
-                currentMonth: 359,
-                change: 0,
+                currentMonth: 360,
+                change: 1,
                 groupCategory: '해외'
               },
               {
@@ -398,11 +398,11 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q2: 163,
                 q3: 161,
                 q4: 168,
-                currentLocal: 112,
+                currentLocal: 113,
                 currentKorean: 57,
-                previousMonth: 170,
-                currentMonth: 169,
-                change: -1,
+                previousMonth: 169,
+                currentMonth: 170,
+                change: 1,
                 groupCategory: '해외'
               },
               {
@@ -411,11 +411,11 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q2: 400,
                 q3: 386,
                 q4: 378,
-                currentLocal: 314,
+                currentLocal: 316,
                 currentKorean: 27,
-                previousMonth: 348,
-                currentMonth: 341,
-                change: -7,
+                previousMonth: 341,
+                currentMonth: 343,
+                change: 2,
                 groupCategory: '해외'
               },
               {
@@ -426,9 +426,9 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q4: 26,
                 currentLocal: 2,
                 currentKorean: 22,
-                previousMonth: 23,
+                previousMonth: 24,
                 currentMonth: 24,
-                change: 1,
+                change: 0,
                 groupCategory: '해외'
               },
               {
@@ -437,11 +437,11 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q2: 961,
                 q3: 950,
                 q4: 937,
-                currentLocal: 776,
-                currentKorean: 117,
-                previousMonth: 900,
-                currentMonth: 893,
-                change: -7,
+                currentLocal: 779,
+                currentKorean: 118,
+                previousMonth: 893,
+                currentMonth: 897,
+                change: 4,
                 groupCategory: '해외'
               },
               {
@@ -450,11 +450,11 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 q2: 2000,
                 q3: 1951,
                 q4: 1933,
-                currentLocal: 776,
-                currentKorean: 1033,
-                previousMonth: 1815,
-                currentMonth: 1809,
-                change: -6,
+                currentLocal: 779,
+                currentKorean: 1032,
+                previousMonth: 1809,
+                currentMonth: 1811,
+                change: 2,
                 groupCategory: ''
               }
             ]

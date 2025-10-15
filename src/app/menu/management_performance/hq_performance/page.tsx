@@ -97,7 +97,7 @@ export default function HQPerformancePage() {
               </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
-                      <span className="text-sm font-medium text-emerald-200 mb-1 block">매출</span>
+                      <span className="text-sm font-medium text-emerald-200 mb-1 block">매출 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
@@ -138,7 +138,7 @@ export default function HQPerformancePage() {
                   </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
-                      <span className="text-sm font-medium text-blue-200 mb-1 block">매입</span>
+                      <span className="text-sm font-medium text-blue-200 mb-1 block">매입 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
@@ -179,7 +179,7 @@ export default function HQPerformancePage() {
                   </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
-                      <span className="text-sm font-medium text-orange-200 mb-1 block">영업이익</span>
+                      <span className="text-sm font-medium text-orange-200 mb-1 block">영업이익 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 
@@ -221,7 +221,7 @@ export default function HQPerformancePage() {
                   </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
-                      <span className="text-sm font-medium text-purple-200 mb-1 block">영업이익율</span>
+                      <span className="text-sm font-medium text-purple-200 mb-1 block">영업이익율 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
                           <CountUp 

@@ -257,6 +257,141 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
       // 현재 날짜를 store에 업데이트
       set({ currentYear, currentMonth });
       
+      // ⭐ 8월 조건 체크 - 템프 데이터 사용
+      if (currentMonth === 8) {
+        console.log('🎯 8월 데이터: 템프 데이터를 사용합니다. (본사 성과)');
+        
+        const tempData: HQPerformanceData = {
+          // 상단 4개 KPI 카드 (왼쪽 → 오른쪽)
+          kpiMetrics: {
+            actualSales: 179,                    // 1: 매출
+            actualSalesChange: -8,              // 2: 매출 변화
+            actualPurchases: 170,                // 3: 매입
+            actualPurchasesChange: -7,          // 4: 매입 변화
+            actualOpProfit: 1.8,                 // 5: 영업이익
+            actualOpProfitChange: 0.9,           // 6: 영업이익 변화
+            actualOpMargin: 0.99,                 // 7: 영업이익율
+            actualOpMarginChange: 0.5            // 8: 영업이익율 변화
+          },
+          // 차트 데이터
+          chartData: {
+            revenueChart: {
+              labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+              datasets: [
+                {
+                  label: '매출 (올해)',
+                  data: [9, 10, 11, 12, 13, 14, 15, 16, null, null, null, null],
+                  borderColor: 'rgb(59, 130, 246)',
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  borderWidth: 2,
+                  spanGaps: false
+                },
+                {
+                  label: '매출 (1년 전)',
+                  data: [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+                  borderColor: 'rgb(156, 163, 175)',
+                  backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  spanGaps: false
+                }
+              ]
+            },
+            profitChart: {
+              labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+              datasets: [
+                {
+                  label: '영업이익 (올해)',
+                  data: [29, 30, 31, 32, 33, 34, 35, 36, null, null, null, null],
+                  borderColor: 'rgb(239, 68, 68)',
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  borderWidth: 2,
+                  spanGaps: false
+                },
+                {
+                  label: '영업이익 (1년 전)',
+                  data: [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+                  borderColor: 'rgb(156, 163, 175)',
+                  backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  spanGaps: false
+                }
+              ]
+            }
+          },
+          // 그리드 테이블 데이터 (좌측 → 우측, 상단 → 하단)
+          gridData: {
+            monthLabels: ['4월', '5월', '6월', '7월', '8월'],
+            monthlyDetails: [
+              {
+                column1: '매출',           // 49
+                column2: 211,               // 4월
+                column3: 189,               // 5월
+                column4: 178,               // 6월
+                column5: 187,               // 7월
+                column6: 179,               // 8월
+                column7: 0,               // 합계
+                column8: '56%'             // 성장률
+              },
+              {
+                column1: '매출원가',           // 57
+                column2: 205,               // 4월
+                column3: 181,               // 5월
+                column4: 169,               // 6월
+                column5: 177,               // 7월
+                column6: 170,               // 8월
+                column7: 0,               // 합계
+                column8: '64%'             // 성장률
+              },
+              {
+                column1: '매출총이익',       // 65
+                column2: 5.7,               // 4월
+                column3: 8.1,               // 5월
+                column4: 8.8,               // 6월
+                column5: 9.3,               // 7월
+                column6: 9.2,               // 8월
+                column7: 0,               // 합계
+                column8: '72%'             // 성장률
+              },
+              {
+                column1: '판관비',         // 73
+                column2: 8,               // 4월
+                column3: 9,               // 5월
+                column4: 8,               // 6월
+                column5: 8,               // 7월
+                column6: 7,               // 8월
+                column7: 0,               // 합계
+                column8: '80%'             // 성장률
+              },
+              {
+                column1: '영업이익',       // 81
+                column2: -2.7,               // 4월
+                column3: -0.5,               // 5월
+                column4: 1.2,               // 6월
+                column5: 0.9,               // 7월
+                column6: 1.8,               // 8월
+                column7: 0,               // 합계
+                column8: '88%'             // 성장률
+              },
+              {
+                column1: '영업이익율',     // 89
+                column2: -1.27,               // 4월
+                column3: -0.28,               // 5월
+                column4: 0.68,               // 6월
+                column5: 0.49,               // 7월
+                column6: 0.99,               // 8월
+                column7: 0,               // 합계
+                column8: '96%'             // 성장률
+              }
+            ]
+          }
+        };
+        
+        set({ data: tempData, loading: false, error: null });
+        return; // API 호출 없이 리턴
+      }
+      
       set({ loading: true, error: null });
       
       try {

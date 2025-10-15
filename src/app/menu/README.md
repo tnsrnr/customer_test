@@ -6,26 +6,30 @@
 
 ```
 src/app/menu/
-├── README.md                    # 이 파일
-├── menu-config.ts              # 메뉴 구조 설정
-├── company-performance/         # 전사실적
-├── personnel/                  # 인원현황
-├── hq-performance/             # 본사실적
-├── finance/                    # 재무현황
-├── division/                   # 부문별실적
-├── top-clients/                # 상위거래처
-├── air/                        # 항공실적
-├── sea/                        # 해상실적
-├── warehouse/                  # 창고실적
-├── outsourcing/                # 도급실적
-├── domestic-subsidiaries/      # 국내자회사
-├── overseas-subsidiaries/      # 해외자회사
-├── domestic/                   # 회사
-├── test3/                      # 사업부
-├── test4/                      # 테스트4
-├── test5/                      # 해외권역1
-├── test6/                      # 해외권역2
-└── performance/                # 성과관리
+├── README.md                           # 이 파일
+├── management_performance/             # 경영실적 카테고리
+│   ├── company_performance/            # 전사실적
+│   ├── personnel/                      # 인원현황
+│   ├── hq_performance/                 # 본사실적
+│   ├── finance/                        # 재무현황
+│   ├── division/                       # 부문별실적
+│   ├── top_clients/                    # 상위거래처
+│   └── domestic_subsidiaries/          # 국내자회사
+├── performance_management/             # 실적관리 카테고리
+│   ├── air/                           # 항공실적
+│   ├── sea/                           # 해상실적
+│   ├── warehouse/                     # 창고실적
+│   ├── outsourcing/                   # 도급실적
+│   ├── overseas_subsidiaries/         # 해외자회사
+│   ├── domestic/                      # 국내
+│   ├── test3/                         # 사업부
+│   ├── test4/                         # 테4
+│   ├── test5/                         # 테5
+│   ├── test6/                         # 테6
+│   └── performance/                   # 테7 (전체물동량현황)
+└── sales_analysis_group/               # 영업실적분석 카테고리
+    ├── company_visit_analysis/         # 업체방문분석
+    └── company_visit_calendar/         # 업체방문캘린더
 ```
 
 ## 🎯 주요 기능
@@ -37,13 +41,9 @@ src/app/menu/
 - 경로 매핑 및 리다이렉트 설정
 
 ### 2. **카테고리별 구조화**
-- **실적 관리**: 전사실적, 본사실적, 부문별실적
-- **경영 관리**: 인원현황, 재무현황
-- **운송 실적**: 항공실적, 해상실적, 창고실적
-- **사업 관리**: 상위거래처, 도급실적
-- **자회사 관리**: 국내자회사, 해외자회사
-- **회사 정보**: 회사, 사업부
-- **해외 권역**: 해외권역1, 해외권역2
+- **경영실적 (management_performance)**: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처, 국내자회사
+- **실적관리 (performance_management)**: 항공실적, 해상실적, 창고실적, 도급실적, 해외자회사, 국내, 사업부, 테4, 테5, 테6, 테7
+- **영업실적분석 (sales_analysis_group)**: 업체방문분석, 업체방문캘린더
 
 ### 3. **자동 리다이렉트**
 - 기존 경로(`/a01-company-performance`)에서 새 경로(`/menu/company-performance`)로 자동 리다이렉트
@@ -119,24 +119,31 @@ export function NavigationMenu() {
 
 ### 기존 구조 → 새 구조
 ```
-/a01-company-performance → /menu/company-performance
-/a02-personnel → /menu/personnel
-/a03-hq-performance → /menu/hq-performance
-/a04-finance → /menu/finance
-/a05-division → /menu/division
-/a06-top-clients → /menu/top-clients
-/a07-air → /menu/air
-/a08-sea → /menu/sea
-/a09-warehouse → /menu/warehouse
-/a10-outsourcing → /menu/outsourcing
-/a11-domestic-subsidiaries → /menu/domestic-subsidiaries
-/a12-overseas-subsidiaries → /menu/overseas-subsidiaries
-/a13-performance → /menu/performance
-/a15-domestic → /menu/domestic
-/a18-test3 → /menu/test3
-/a19-test4 → /menu/test4
-/a20-test5 → /menu/test5
-/a21-test6 → /menu/test6
+# 경영실적 카테고리
+/a01-company-performance → /menu/management_performance/company_performance
+/a02-personnel → /menu/management_performance/personnel
+/a03-hq-performance → /menu/management_performance/hq_performance
+/a04-finance → /menu/management_performance/finance
+/a05-division → /menu/management_performance/division
+/a06-top-clients → /menu/management_performance/top_clients
+/a11-domestic-subsidiaries → /menu/management_performance/domestic_subsidiaries
+
+# 실적관리 카테고리
+/a07-air → /menu/performance_management/air
+/a08-sea → /menu/performance_management/sea
+/a09-warehouse → /menu/performance_management/warehouse
+/a10-outsourcing → /menu/performance_management/outsourcing
+/a12-overseas-subsidiaries → /menu/performance_management/overseas_subsidiaries
+/a15-domestic → /menu/performance_management/domestic
+/a18-test3 → /menu/performance_management/test3
+/a19-test4 → /menu/performance_management/test4
+/a20-test5 → /menu/performance_management/test5
+/a21-test6 → /menu/performance_management/test6
+/a13-performance → /menu/performance_management/performance
+
+# 영업실적분석 카테고리
+/sales-analysis → /menu/sales_analysis_group/company_visit_analysis
+/sales-calendar → /menu/sales_analysis_group/company_visit_calendar
 ```
 
 ## 📊 장점

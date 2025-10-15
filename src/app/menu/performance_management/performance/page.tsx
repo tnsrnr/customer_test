@@ -1,5 +1,26 @@
 'use client';
 
+import { useEffect, useState, useMemo } from 'react';
+import { 
+  DollarSign,
+  BarChart3,
+  TrendingUp,
+  Target,
+  PieChart,
+  LineChart,
+  Calendar,
+  Building2,
+  Globe,
+  MapPin,
+  Users,
+  Activity,
+  Zap,
+  Brain,
+  Eye,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus
+} from 'lucide-react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,14 +30,10 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-  ChartOptions
+  PointElement,
+  LineElement
 } from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
-import { Truck, Ship, Plane, Package, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import annotationPlugin from 'chartjs-plugin-annotation';
-import { Card } from "@/common/components/ui/card";
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -26,776 +43,734 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  annotationPlugin
+  PointElement,
+  LineElement
 );
 
-const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+// 매출 개요 컴포넌트
+const RevenueOverview = ({ randomStats, analysisType }: { randomStats: any; analysisType: string }) => {
+    const totalRevenue = randomStats.hqRevenue + randomStats.domesticRevenue + randomStats.overseasRevenue;
+    const totalProfit = (randomStats.hqRevenue - randomStats.hqCost) + (randomStats.domesticRevenue - randomStats.domesticCost) + (randomStats.overseasRevenue - randomStats.overseasCost);
+  
+  const isRevenue = analysisType === 'revenue';
+  const totalValue = isRevenue ? totalRevenue : totalProfit;
+  const title = isRevenue ? '매출' : '영업이익';
+    
+  const pieData = useMemo(() => ({
+      labels: ['본사', '국내', '해외'],
+      datasets: [{
+      data: isRevenue 
+        ? [randomStats.hqRevenue, randomStats.domesticRevenue, randomStats.overseasRevenue]
+        : [randomStats.hqRevenue - randomStats.hqCost, randomStats.domesticRevenue - randomStats.domesticCost, randomStats.overseasRevenue - randomStats.overseasCost],
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+        borderWidth: 0,
+      cutout: '60%'
+    }]
+  }), [randomStats, isRevenue]);
 
-export default function OverseasPage() {
+  const pieOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 0 },
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: {
+          color: '#e2e8f0',
+          font: { size: 16, weight: 'bold' as const }
+        }
+      }
+    }
+  }), []);
+
+  // 12개월 추이 데이터 생성
+  const monthlyTrendData = useMemo(() => {
+    const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+    
+    // 각 지역별 12개월 데이터 생성 (현재 데이터를 기준으로 변동)
+    const hqData = months.map((_, index) => {
+      const baseValue = isRevenue ? randomStats.hqRevenue : (randomStats.hqRevenue - randomStats.hqCost);
+      const variation = (Math.random() - 0.5) * 0.3; // ±15% 변동
+      return Math.round(baseValue * (1 + variation));
+    });
+    
+    const domesticData = months.map((_, index) => {
+      const baseValue = isRevenue ? randomStats.domesticRevenue : (randomStats.domesticRevenue - randomStats.domesticCost);
+      const variation = (Math.random() - 0.5) * 0.3;
+      return Math.round(baseValue * (1 + variation));
+    });
+    
+    const overseasData = months.map((_, index) => {
+      const baseValue = isRevenue ? randomStats.overseasRevenue : (randomStats.overseasRevenue - randomStats.overseasCost);
+      const variation = (Math.random() - 0.5) * 0.3;
+      return Math.round(baseValue * (1 + variation));
+    });
+
+    return {
+      labels: months,
+      datasets: [
+        {
+          label: '본사',
+          data: hqData,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        },
+        {
+          label: '국내',
+          data: domesticData,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        },
+        {
+          label: '해외',
+          data: overseasData,
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }
+      ]
+    };
+  }, [randomStats, isRevenue]);
+
+  const lineOptions = useMemo(() => ({
+      responsive: true,
+      maintainAspectRatio: false,
+    animation: { duration: 0 },
+      plugins: {
+        legend: {
+        position: 'top' as const,
+        labels: {
+          color: '#e2e8f0',
+          font: { size: 14, weight: 'bold' as const },
+          usePointStyle: true,
+          pointStyle: 'circle'
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#e2e8f0',
+          font: { size: 12, weight: 'normal' as const }
+        },
+        grid: { color: '#374151', drawBorder: false }
+      },
+      y: {
+        ticks: {
+          color: '#e2e8f0',
+          font: { size: 12, weight: 'normal' as const },
+          callback: function(value: any) {
+            return value + '억';
+          }
+        },
+        grid: { color: '#374151', drawBorder: false }
+      }
+    }
+  }), []);
+
+    return (
+    <div className="space-y-6">
+      {/* 요약 카드 */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-white mb-1">{totalValue.toLocaleString()}억</div>
+            <div className="text-slate-300 text-sm">총 {title}</div>
+              </div>
+            </div>
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-white mb-1">
+              {isRevenue ? randomStats.hqRevenue.toLocaleString() : (randomStats.hqRevenue - randomStats.hqCost).toLocaleString()}억
+            </div>
+            <div className="text-slate-300 text-sm">본사 {title}</div>
+          </div>
+              </div>
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-white mb-1">
+              {isRevenue ? randomStats.domesticRevenue.toLocaleString() : (randomStats.domesticRevenue - randomStats.domesticCost).toLocaleString()}억
+            </div>
+            <div className="text-slate-300 text-sm">국내 {title}</div>
+          </div>
+        </div>
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-white mb-1">
+              {isRevenue ? randomStats.overseasRevenue.toLocaleString() : (randomStats.overseasRevenue - randomStats.overseasCost).toLocaleString()}억
+            </div>
+            <div className="text-slate-300 text-sm">해외 {title}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 비중 차트 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="bg-slate-800 rounded-lg p-2 border border-slate-600">
+          <div className="h-56">
+            <Doughnut data={pieData} options={pieOptions} />
+          </div>
+        </div>
+        <div className="bg-slate-800 rounded-lg p-6 border border-slate-600">
+          <h3 className="text-xl font-bold text-white mb-4 text-center">지역별 {title} 12개월 추이</h3>
+          <div className="h-64">
+            <Line data={monthlyTrendData} options={lineOptions} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 매출 대시보드 컴포넌트 (3열 그리드 + 하단 세부 정보)
+const RevenueDashboard = ({ randomStats }: { randomStats: any }) => {
+  const totalRevenue = randomStats.hqRevenue + randomStats.domesticRevenue + randomStats.overseasRevenue;
+  
+  return (
+    <div className="space-y-6">
+      {/* 핵심 KPI 카드 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 rounded-lg p-4 border border-blue-500/50">
+          <div className="mb-3">
+            <p className="text-blue-300 text-sm font-medium mb-1">총 매출</p>
+            <p className="text-2xl font-bold text-white">{totalRevenue.toLocaleString()}억</p>
+          </div>
+          <div className="grid grid-cols-3 gap-1 text-xs">
+            <div className="text-center">
+              <p className="text-blue-200 mb-1">본사</p>
+              <p className="text-white font-semibold">{randomStats.hqRevenue.toLocaleString()}억</p>
+              </div>
+            <div className="text-center">
+              <p className="text-blue-200 mb-1">국내</p>
+              <p className="text-white font-semibold">{randomStats.domesticRevenue.toLocaleString()}억</p>
+            </div>
+            <div className="text-center">
+              <p className="text-blue-200 mb-1">해외</p>
+              <p className="text-white font-semibold">{randomStats.overseasRevenue.toLocaleString()}억</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 rounded-lg p-4 border border-green-500/50">
+          <div className="mb-3">
+            <p className="text-green-300 text-sm font-medium mb-1">전년대비</p>
+            <p className="text-2xl font-bold text-white">+{randomStats.yearOverYearGrowth}%</p>
+          </div>
+          <div className="grid grid-cols-3 gap-1 text-xs">
+            <div className="text-center">
+              <p className="text-green-200 mb-1">본사</p>
+              <p className="text-white font-semibold">+{(randomStats.yearOverYearGrowth + (Math.random() - 0.5) * 5).toFixed(1)}%</p>
+            </div>
+                  <div className="text-center">
+              <p className="text-green-200 mb-1">국내</p>
+              <p className="text-white font-semibold">+{(randomStats.yearOverYearGrowth + (Math.random() - 0.5) * 5).toFixed(1)}%</p>
+                  </div>
+            <div className="text-center">
+              <p className="text-green-200 mb-1">해외</p>
+              <p className="text-white font-semibold">+{(randomStats.yearOverYearGrowth + (Math.random() - 0.5) * 5).toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+
+        <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 rounded-lg p-4 border border-purple-500/50">
+          <div className="mb-3">
+            <p className="text-purple-300 text-sm font-medium mb-1">전월대비</p>
+            <p className="text-2xl font-bold text-white">+{randomStats.monthOverMonthGrowth}%</p>
+          </div>
+          <div className="grid grid-cols-3 gap-1 text-xs">
+            <div className="text-center">
+              <p className="text-purple-200 mb-1">본사</p>
+              <p className="text-white font-semibold">+{(randomStats.monthOverMonthGrowth + (Math.random() - 0.5) * 3).toFixed(1)}%</p>
+            </div>
+            <div className="text-center">
+              <p className="text-purple-200 mb-1">국내</p>
+              <p className="text-white font-semibold">+{(randomStats.monthOverMonthGrowth + (Math.random() - 0.5) * 3).toFixed(1)}%</p>
+                  </div>
+            <div className="text-center">
+              <p className="text-purple-200 mb-1">해외</p>
+              <p className="text-white font-semibold">+{(randomStats.monthOverMonthGrowth + (Math.random() - 0.5) * 3).toFixed(1)}%</p>
+                  </div>
+                </div>
+                </div>
+              </div>
+
+      {/* 매출 구성 및 추이 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+          <h3 className="text-lg font-bold text-white mb-3">매출 구성 비율</h3>
+          <div className="h-56">
+            <Doughnut data={{
+              labels: ['본사', '국내', '해외'],
+              datasets: [{
+                data: [randomStats.hqRevenue, randomStats.domesticRevenue, randomStats.overseasRevenue],
+                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                borderWidth: 0,
+                cutout: '60%'
+              }]
+            }} options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: { duration: 0 },
+              plugins: {
+                legend: {
+                  position: 'bottom' as const,
+                  labels: {
+                    color: '#e2e8f0',
+                    font: { size: 14, weight: 'bold' as const }
+                  }
+                }
+              }
+            }} />
+                </div>
+              </div>
+
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+          <h3 className="text-lg font-bold text-white mb-3">월별 매출 추이</h3>
+          <div className="h-56">
+            <Line data={{
+              labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+              datasets: [{
+                label: '총 매출',
+                data: [totalRevenue * 0.8, totalRevenue * 0.9, totalRevenue * 1.1, totalRevenue * 0.95, totalRevenue * 1.05, totalRevenue],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+              }]
+            }} options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: { duration: 0 },
+              plugins: {
+                legend: {
+                  labels: {
+                    color: '#e2e8f0',
+                    font: { size: 12, weight: 'bold' as const }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  ticks: { color: '#e2e8f0', font: { size: 12 } },
+                  grid: { color: '#374151' }
+                },
+                y: {
+                  ticks: { 
+                    color: '#e2e8f0', 
+                    font: { size: 12 },
+                    callback: function(value: any) { return value + '억'; }
+                  },
+                  grid: { color: '#374151' }
+                }
+              }
+            }} />
+          </div>
+        </div>
+      </div>
+
+      {/* 12개월 상세 추이 - 추가 섹션 */}
+      <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+        <h3 className="text-lg font-bold text-white mb-3">12개월 상세 추이 분석</h3>
+        <div className="h-40">
+          <Line data={{
+            labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+      datasets: [
+        {
+          label: '본사',
+                data: [randomStats.hqRevenue * 0.8, randomStats.hqRevenue * 0.9, randomStats.hqRevenue * 1.1, randomStats.hqRevenue * 0.95, randomStats.hqRevenue * 1.05, randomStats.hqRevenue, randomStats.hqRevenue * 1.1, randomStats.hqRevenue * 0.9, randomStats.hqRevenue * 1.2, randomStats.hqRevenue * 0.85, randomStats.hqRevenue * 1.15, randomStats.hqRevenue],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4
+        },
+        {
+          label: '국내',
+                data: [randomStats.domesticRevenue * 0.9, randomStats.domesticRevenue * 1.1, randomStats.domesticRevenue * 0.8, randomStats.domesticRevenue * 1.2, randomStats.domesticRevenue * 0.95, randomStats.domesticRevenue, randomStats.domesticRevenue * 1.05, randomStats.domesticRevenue * 0.85, randomStats.domesticRevenue * 1.1, randomStats.domesticRevenue * 0.9, randomStats.domesticRevenue * 1.2, randomStats.domesticRevenue],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4
+        },
+        {
+          label: '해외',
+                data: [randomStats.overseasRevenue * 1.1, randomStats.overseasRevenue * 0.8, randomStats.overseasRevenue * 1.2, randomStats.overseasRevenue * 0.9, randomStats.overseasRevenue * 1.1, randomStats.overseasRevenue, randomStats.overseasRevenue * 0.95, randomStats.overseasRevenue * 1.15, randomStats.overseasRevenue * 0.85, randomStats.overseasRevenue * 1.2, randomStats.overseasRevenue * 0.9, randomStats.overseasRevenue],
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                tension: 0.4
+              }
+            ]
+          }} options={{
+      responsive: true,
+      maintainAspectRatio: false,
+            animation: { duration: 0 },
+      plugins: {
+        legend: {
+                position: 'top' as const,
+          labels: {
+            color: '#e2e8f0',
+                  font: { size: 14, weight: 'bold' as const },
+                  usePointStyle: true
+          }
+        }
+      },
+      scales: {
+        x: {
+                ticks: { color: '#e2e8f0', font: { size: 12 } },
+                grid: { color: '#374151' }
+        },
+        y: {
+          ticks: {
+            color: '#e2e8f0',
+                  font: { size: 12 },
+                  callback: function(value: any) { return value + '억'; }
+                },
+                grid: { color: '#374151' }
+              }
+            }
+          }} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 매출 추이 분석 컴포넌트
+const RevenueTrendsAnalysis = ({ randomStats }: { randomStats: any }) => {
+    return (
+    <div className="text-center text-slate-400 py-20">
+      추후 구현 예정
+            </div>
+  );
+};
+
+// 지역별 분석 컴포넌트
+const RegionalAnalysis = ({ randomStats }: { randomStats: any }) => {
+  return (
+    <div className="text-center text-slate-400 py-20">
+      추후 구현 예정
+          </div>
+  );
+};
+
+// 비교 분석 컴포넌트
+const ComparisonAnalysis = ({ randomStats }: { randomStats: any }) => {
+  return (
+    <div className="text-center text-slate-400 py-20">
+      추후 구현 예정
+            </div>
+  );
+};
+
+// 매출 예측 컴포넌트
+const RevenueForecast = ({ randomStats }: { randomStats: any }) => {
+  return (
+    <div className="text-center text-slate-400 py-20">
+      추후 구현 예정
+          </div>
+  );
+};
+
+// 인사이트 컴포넌트
+const RevenueInsights = ({ randomStats }: { randomStats: any }) => {
+  return (
+    <div className="text-center text-slate-400 py-20">
+      추후 구현 예정
+          </div>
+  );
+};
+
+// 라디오 버튼 컴포넌트
+const RadioButtonGroup = ({ 
+  options, 
+  selectedValue, 
+  onChange, 
+  label 
+}: { 
+  options: { value: string; label: string }[]; 
+  selectedValue: string; 
+  onChange: (value: string) => void; 
+  label: string; 
+}) => {
+  return (
+    <div className="flex items-center gap-6">
+      <span className="text-white font-medium text-lg">{label}:</span>
+      <div className="flex gap-4">
+        {options.map((option) => (
+          <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name={label}
+              value={option.value}
+              checked={selectedValue === option.value}
+              onChange={(e) => onChange(e.target.value)}
+              className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-500 focus:ring-blue-500 focus:ring-2"
+            />
+            <span className="text-slate-300 text-base">{option.label}</span>
+          </label>
+        ))}
+            </div>
+          </div>
+  );
+};
+
+// 매출 추이 컴포넌트
+const RevenueTrend = ({ analysisType }: { analysisType: string }) => {
+
+  const revenueData = useMemo(() => ({
+    labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+    datasets: [
+      {
+        label: '본사',
+        data: [2400, 2600, 2500, 2800, 2700, 2850],
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: '국내',
+        data: [1800, 1900, 1850, 2000, 1950, 1980],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: '해외',
+        data: [1100, 1200, 1150, 1300, 1250, 1250],
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        tension: 0.4
+      }
+    ]
+  }), []);
+
+  const profitData = useMemo(() => ({
+    labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+    datasets: [
+      {
+        label: '본사',
+        data: [1200, 1300, 1250, 1400, 1350, 1430],
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: '국내',
+        data: [680, 780, 730, 880, 830, 860],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: '해외',
+        data: [420, 480, 470, 620, 570, 570],
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        tension: 0.4
+      }
+    ]
+  }), []);
+
+  const lineOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 0 },
+    plugins: {
+      legend: {
+        labels: {
+          color: '#e2e8f0',
+          font: { size: 14, weight: 'bold' as const }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#e2e8f0',
+          font: { size: 14, weight: 'normal' as const }
+        },
+        grid: { color: '#374151', drawBorder: false }
+      },
+      y: {
+        ticks: {
+          color: '#e2e8f0',
+          font: { size: 14, weight: 'normal' as const }
+        },
+        grid: { color: '#374151', drawBorder: false }
+      }
+    }
+  }), []);
+
+  const currentData = analysisType === 'revenue' ? revenueData : profitData;
+  const chartTitle = analysisType === 'revenue' ? '월별 매출 추이' : '월별 영업이익 추이';
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-slate-800 rounded-lg p-6 border border-slate-600">
+        <h3 className="text-xl font-bold text-white mb-6 text-center">{chartTitle}</h3>
+        <div className="h-80">
+          <Line data={currentData} options={lineOptions} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+// 매출 비교 컴포넌트
+const RevenueComparison = ({ randomStats, analysisType }: { randomStats: any; analysisType: string }) => {
+
+  const revenueData = useMemo(() => ({
+    labels: ['본사', '국내', '해외'],
+    datasets: [
+      {
+        label: '매출',
+        data: [randomStats.hqRevenue, randomStats.domesticRevenue, randomStats.overseasRevenue],
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+        borderRadius: 8
+      }
+    ]
+  }), [randomStats]);
+
+  const profitData = useMemo(() => ({
+    labels: ['본사', '국내', '해외'],
+    datasets: [
+      {
+        label: '영업이익',
+        data: [
+          randomStats.hqRevenue - randomStats.hqCost,
+          randomStats.domesticRevenue - randomStats.domesticCost,
+          randomStats.overseasRevenue - randomStats.overseasCost
+        ],
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+        borderRadius: 8
+      }
+    ]
+  }), [randomStats]);
+
+  const comparisonOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 0 },
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#e2e8f0',
+          font: { size: 16, weight: 'bold' as const }
+        },
+        grid: { display: false }
+      },
+      y: {
+        ticks: {
+          color: '#e2e8f0',
+          font: { size: 14, weight: 'normal' as const }
+        },
+        grid: { color: '#374151', drawBorder: false }
+      }
+    }
+  }), []);
+};
+
+
+export default function PerformanceDashboard() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [showCharts, setShowCharts] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedAnalysisType, setSelectedAnalysisType] = useState('revenue');
+
+  const randomStats = useMemo(() => ({
+    hqRevenue: 2850,
+    domesticRevenue: 1980,
+    overseasRevenue: 1250,
+    hqCost: 1420,
+    domesticCost: 1120,
+    overseasCost: 680,
+    // 전년대비 증감률 데이터
+    yearOverYearGrowth: 12.5,
+    monthOverMonthGrowth: 3.2,
+    quarterlyGrowth: 8.7,
+  }), []);
 
   useEffect(() => {
     setIsLoaded(true);
-    const timer = setTimeout(() => {
-      setShowCharts(true);
-    }, 600);
-
-    return () => clearTimeout(timer);
   }, []);
 
-  const commonOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          padding: 20,
-          font: {
-            size: 12,
-            family: "'Pretendard', sans-serif",
-            weight: 600 as const,
-          },
-          usePointStyle: true,
-          pointStyle: 'rectRounded',
-        },
-      },
-      tooltip: {
-        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-        padding: 12,
-        titleFont: {
-          size: 13,
-          family: "'Pretendard', sans-serif",
-          weight: 600 as const,
-        },
-        bodyFont: {
-          size: 12,
-          family: "'Pretendard', sans-serif",
-        },
-        boxPadding: 6,
-        usePointStyle: true,
-      }
-    }
-  };
+  const tabs = [
+    { id: 'overview', name: '📊 매출 대시보드', icon: BarChart3, component: () => <RevenueDashboard randomStats={randomStats} /> },
+    { id: 'trends', name: '📈 매출 추이 분석', icon: LineChart, component: () => <RevenueTrendsAnalysis randomStats={randomStats} /> },
+    { id: 'regional', name: '🌍 지역별 분석', icon: MapPin, component: () => <RegionalAnalysis randomStats={randomStats} /> },
+    { id: 'comparison', name: '⚖️ 비교 분석', icon: Building2, component: () => <ComparisonAnalysis randomStats={randomStats} /> },
+    { id: 'forecast', name: '🔮 매출 예측', icon: Brain, component: () => <RevenueForecast randomStats={randomStats} /> },
+    { id: 'insights', name: '💡 인사이트', icon: Eye, component: () => <RevenueInsights randomStats={randomStats} /> }
+  ];
 
-  const baseBarOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          font: {
-            family: "'Pretendard', sans-serif",
-            weight: 'bold',
-          },
-        },
-      },
-    },
-    scales: {
-      y: {
-        type: 'linear' as const,
-        beginAtZero: true,
-        grid: {
-          color: '#e2e8f0',
-        },
-        ticks: {
-          font: {
-            size: 11,
-            family: "'Pretendard', sans-serif",
-            weight: 'normal',
-          },
-          color: '#475569',
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          font: {
-            size: 11,
-            family: "'Pretendard', sans-serif",
-            weight: 'normal',
-          },
-          color: '#475569',
-        },
-      },
-    },
-  };
-
-  const barOptions: ChartOptions<'bar'> = {
-    ...baseBarOptions,
-    plugins: {
-      ...baseBarOptions.plugins,
-      annotation: {
-        annotations: {
-          line1: {
-            type: 'line',
-            yMin: 1860,
-            yMax: 1860,
-            borderColor: 'rgba(75, 85, 99, 0.5)',
-            borderWidth: 1,
-            borderDash: [5, 5],
-            label: {
-              display: true,
-              content: '평균: 1,860억',
-              position: 'end',
-              backgroundColor: 'rgba(75, 85, 99, 0.8)',
-              font: {
-                family: "'Pretendard', sans-serif",
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-
-  const barOptionsOverseas: ChartOptions<'bar'> = {
-    ...baseBarOptions,
-    plugins: {
-      ...baseBarOptions.plugins,
-      annotation: {
-        annotations: {
-          line1: {
-            type: 'line',
-            yMin: 1260,
-            yMax: 1260,
-            borderColor: 'rgba(75, 85, 99, 0.5)',
-            borderWidth: 1,
-            borderDash: [5, 5],
-            label: {
-              display: true,
-              content: '평균: 1,260억',
-              position: 'end',
-              backgroundColor: 'rgba(75, 85, 99, 0.8)',
-              font: {
-                family: "'Pretendard', sans-serif",
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-
-  const barOptionsEmployee: ChartOptions<'bar'> = {
-    ...baseBarOptions,
-    plugins: {
-      ...baseBarOptions.plugins,
-      annotation: {
-        annotations: {
-          line1: {
-            type: 'line',
-            yMin: 396,
-            yMax: 396,
-            borderColor: 'rgba(75, 85, 99, 0.5)',
-            borderWidth: 1,
-            borderDash: [5, 5],
-            label: {
-              display: true,
-              content: '평균: 396명',
-              position: 'end',
-              backgroundColor: 'rgba(75, 85, 99, 0.8)',
-              font: {
-                family: "'Pretendard', sans-serif",
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-
-  const barOptionsBranch: ChartOptions<'bar'> = {
-    ...baseBarOptions,
-    plugins: {
-      ...baseBarOptions.plugins,
-      annotation: {
-        annotations: {
-          line1: {
-            type: 'line',
-            yMin: 52,
-            yMax: 52,
-            borderColor: 'rgba(75, 85, 99, 0.5)',
-            borderWidth: 1,
-            borderDash: [5, 5],
-            label: {
-              display: true,
-              content: '평균: 52개',
-              position: 'end',
-              backgroundColor: 'rgba(75, 85, 99, 0.8)',
-              font: {
-                family: "'Pretendard', sans-serif",
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-
-  const doughnutOptions: ChartOptions<'doughnut'> = {
-    ...commonOptions,
-    cutout: '70%',
-    radius: '90%'
-  };
-
-  // 국내 매출 데이터
-  const domesticData = {
-    labels: months,
-    datasets: [
-      {
-        label: '매출액',
-        data: [100, 120, 150, 130, 160, 180, 140, 170, 190, 200, 180, 220],
-        backgroundColor: 'rgba(2, 132, 199, 0.85)',
-        borderRadius: 8,
-        barThickness: 12,
-      },
-      {
-        label: '매입액',
-        data: [70, 85, 105, 90, 115, 125, 95, 120, 135, 140, 125, 155],
-        backgroundColor: 'rgba(56, 189, 248, 0.6)',
-        borderRadius: 8,
-        barThickness: 12,
-      },
-    ],
-  };
-
-  // 해외 매출 데이터
-  const overseasData = {
-    labels: months,
-    datasets: [
-      {
-        label: '매출액',
-        data: [50, 60, 70, 65, 80, 90, 70, 85, 95, 100, 90, 110],
-        backgroundColor: 'rgba(20, 184, 166, 0.85)',
-        borderRadius: 8,
-        barThickness: 12,
-      },
-      {
-        label: '매입액',
-        data: [35, 42, 50, 45, 55, 65, 50, 60, 70, 75, 65, 80],
-        backgroundColor: 'rgba(45, 212, 191, 0.6)',
-        borderRadius: 8,
-        barThickness: 12,
-      },
-    ],
-  };
-
-  // 법인인원현황 데이터
-  const employeeData = {
-    labels: months,
-    datasets: [
-      {
-        label: '국내법인',
-        data: Array(12).fill(220),
-        backgroundColor: 'rgba(79, 70, 229, 0.85)',
-        stack: 'stack',
-        barThickness: 20,
-      },
-      {
-        label: '해외법인',
-        data: Array(12).fill(500),
-        backgroundColor: 'rgba(129, 140, 248, 0.6)',
-        stack: 'stack',
-        barThickness: 20,
-      },
-    ],
-  };
-
-  // 권역별 지점현황 데이터
-  const branchData = {
-    labels: ['국내1팀', '동남아', '중국', '미주', '유럽'],
-    datasets: [
-      {
-        data: [22, 32, 54, 32, 12],
-        backgroundColor: [
-          'rgba(2, 132, 199, 0.85)',
-          'rgba(20, 184, 166, 0.85)',
-          'rgba(79, 70, 229, 0.85)',
-          'rgba(245, 158, 11, 0.85)',
-          'rgba(190, 18, 60, 0.85)',
-        ],
-        borderWidth: 0,
-      },
-    ],
-  };
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="rounded-full h-16 w-16 border-b-2 border-white mx-auto"></div>
+          <p className="mt-4 text-white">로딩 중...</p>
+                    </div>
+                  </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
-      <div className="relative z-10 h-[calc(100vh-64px)] p-4 overflow-hidden">
-        {/* 차트 그리드 */}
-        <div className="grid grid-cols-4 gap-4">
-          {/* 그룹사현황 카드 */}
-          <Card className="col-span-2 pt-2 pb-4 px-4 h-[calc(100vh-7.5rem)] bg-gradient-to-br from-blue-900/90 via-slate-800/80 to-slate-700/90 backdrop-blur-md border border-blue-800/40 shadow-2xl">
-            <div className="mb-0.5 text-center">
-              <div className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-800/60 to-blue-700/60 backdrop-blur-md px-4 py-2 rounded-xl border border-blue-600/50 shadow-lg w-full">
-                <div className="w-5 h-5 bg-gradient-to-r from-blue-700 to-blue-600 rounded-lg flex items-center justify-center shadow-md border border-blue-500/50">
-                  <svg className="w-3 h-3 text-blue-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <h2 className="text-xl font-bold text-blue-100 drop-shadow-lg tracking-wide">그룹사현황</h2>
-              </div>
+    <div className="min-h-screen bg-slate-900">
+      <div className="p-6">
+        {/* 헤더 */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-slate-800 rounded-lg p-3 border border-slate-600">
+              <BarChart3 className="w-6 h-6 text-blue-400" />
             </div>
-            <div className="grid grid-rows-5 gap-3 h-[calc(100%-4rem)]">
-              {/* 상단 2개 컴포넌트 (3/5 비율) */}
-              <div className="row-span-3 grid grid-cols-2 gap-3">
-                {/* 국내 매출 현황 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.7 }}
-                  className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl p-3 border border-sky-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">국내 매출 현황</h3>
-                      <p className="text-xs text-slate-500">Monthly Revenue</p>
-                    </div>
-                    <div className="text-xs text-sky-600">+15%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar options={baseBarOptions} data={domesticData} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 0.9 }}
-                      className="bg-gradient-to-r from-sky-500 to-sky-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-sky-100">총매출</div>
-                      <div className="text-xs font-bold">1000억</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.0 }}
-                      className="bg-gradient-to-r from-sky-500 to-sky-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-sky-100">총매입</div>
-                      <div className="text-xs font-bold">200억</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.1 }}
-                      className="bg-gradient-to-r from-sky-500 to-sky-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-sky-100">영업이익</div>
-                      <div className="text-xs font-bold">800억</div>
-                    </motion.div>
-                  </div>
-                </motion.div>
-
-                {/* 해외 매출 현황 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
-                  className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">해외 매출 현황</h3>
-                      <p className="text-xs text-slate-500">Global Revenue</p>
-                    </div>
-                    <div className="text-xs text-teal-600">+22%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar options={baseBarOptions} data={overseasData} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 0.9 }}
-                      className="bg-teal-500 to-teal-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-teal-100">총매출</div>
-                      <div className="text-xs font-bold">200억</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.0 }}
-                      className="bg-teal-500 to-teal-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-teal-100">총매입</div>
-                      <div className="text-xs font-bold">100억</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.1 }}
-                      className="bg-teal-500 to-teal-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-teal-100">영업이익</div>
-                      <div className="text-xs font-bold">100억</div>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* 하단 2개 컴포넌트 (2/5 비율) */}
-              <div className="row-span-2 grid grid-cols-2 gap-3">
-                {/* 법인인원현황 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.7 }}
-                  className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">법인인원현황</h3>
-                      <p className="text-xs text-slate-500">Employee Distribution</p>
-                    </div>
-                    <div className="text-xs text-indigo-600">+2%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar options={baseBarOptions} data={employeeData} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 0.9 }}
-                      className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-indigo-100">국내법인</div>
-                      <div className="text-xs font-bold">220명</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.0 }}
-                      className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-indigo-100">해외법인</div>
-                      <div className="text-xs font-bold">500명</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.1 }}
-                      className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-indigo-100">총인원</div>
-                      <div className="text-xs font-bold">720명</div>
-                    </motion.div>
-                  </div>
-                </motion.div>
-
-                {/* 권역별 지점현황 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
-                  className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">권역별 지점현황</h3>
-                      <p className="text-xs text-slate-500">Regional Branch</p>
-                    </div>
-                    <div className="text-xs text-amber-600">+2</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)] flex items-center justify-center">
-                    <div className="w-full h-full">
-                      {showCharts && <Doughnut data={branchData} options={{
-                        ...doughnutOptions,
-                        maintainAspectRatio: false,
-                        cutout: '75%',
-                        plugins: {
-                          ...doughnutOptions.plugins,
-                          legend: {
-                            position: 'right' as const,
-                            labels: {
-                              padding: 20,
-                              font: {
-                                size: 12,
-                                family: "'Pretendard', sans-serif",
-                                weight: 600 as const,
-                              },
-                              usePointStyle: true,
-                              pointStyle: 'rectRounded',
-                            },
-                          }
-                        }
-                      }} />}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 0.9 }}
-                      className="bg-amber-500 to-amber-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-amber-100">국내지점</div>
-                      <div className="text-xs font-bold">22개</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.0 }}
-                      className="bg-amber-500 to-amber-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-amber-100">해외지점</div>
-                      <div className="text-xs font-bold">32개</div>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 1.1 }}
-                      className="bg-amber-500 to-amber-600 text-white p-1 rounded text-center"
-                    >
-                      <div className="text-xs text-amber-100">총지점</div>
-                      <div className="text-xs font-bold">54개</div>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              </div>
+            <div>
+              <h1 className="text-white text-3xl font-bold">매출 분석 대시보드</h1>
+              <p className="text-slate-300 text-base">종합적인 매출 분석 및 인사이트</p>
             </div>
-          </Card>
-
-          {/* 그룹사추이 카드 */}
-          <Card className="col-span-2 pt-2 pb-4 px-4 h-[calc(100vh-7.5rem)] bg-gradient-to-br from-blue-900/90 via-slate-800/80 to-slate-700/90 backdrop-blur-md border border-blue-800/40 shadow-2xl">
-            <div className="mb-0.5 text-center">
-              <div className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-800/60 to-blue-700/60 backdrop-blur-md px-4 py-2 rounded-xl border border-blue-600/50 shadow-lg w-full">
-                <div className="w-5 h-5 bg-gradient-to-r from-blue-700 to-blue-600 rounded-lg flex items-center justify-center shadow-md border border-blue-500/50">
-                  <svg className="w-3 h-3 text-blue-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <h2 className="text-xl font-bold text-blue-100 drop-shadow-lg tracking-wide">그룹사추이</h2>
-              </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="text-slate-300 text-sm">
+              실시간 매출 분석
             </div>
-            <div className="grid grid-rows-5 gap-3 h-[calc(100%-4rem)]">
-              {/* 상단 2개 컴포넌트 (3/5 비율) */}
-              <div className="row-span-3 grid grid-cols-2 gap-3">
-                {/* 국내 매출 추이 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
-                  className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl p-3 border border-sky-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">국내 매출 추이</h3>
-                      <p className="text-xs text-slate-500">Domestic Revenue Trend</p>
-                    </div>
-                    <div className="text-xs text-sky-600">+13.6%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar 
-                      options={barOptions}
-                      data={{
-                        labels: ['2019', '2020', '2021', '2022', '2023'],
-                        datasets: [
-                          {
-                            label: '매출액',
-                            data: [1500, 1300, 1800, 2200, 2500],
-                            backgroundColor: 'rgb(14, 165, 233)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                          {
-                            label: '매입액',
-                            data: [1200, 1000, 1500, 1800, 2000],
-                            backgroundColor: 'rgb(186, 230, 253)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                        ],
-                      }} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <div className="bg-sky-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-sky-600 font-medium">최고 매출</div>
-                      <div className="text-xs font-bold text-sky-700">2,500억</div>
-                    </div>
-                    <div className="bg-sky-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-sky-600 font-medium">최저 매출</div>
-                      <div className="text-xs font-bold text-sky-700">1,300억</div>
-                    </div>
-                    <div className="bg-sky-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-sky-600 font-medium">평균</div>
-                      <div className="text-xs font-bold text-sky-700">1,860억</div>
-                    </div>
-                  </div>
-                </motion.div>
+          </div>
+        </div>
 
-                {/* 해외 매출 추이 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
-                  className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100"
+        {/* 탭 네비게이션 */}
+        <div className="max-w-7xl mx-auto mb-4">
+          <div className="flex gap-2 justify-center">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-3 px-6 py-3 rounded-lg font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">해외 매출 추이</h3>
-                      <p className="text-xs text-slate-500">Overseas Revenue Trend</p>
-                    </div>
-                    <div className="text-xs text-teal-600">+22.5%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar 
-                      options={barOptionsOverseas}
-                      data={{
-                        labels: ['2019', '2020', '2021', '2022', '2023'],
-                        datasets: [
-                          {
-                            label: '매출액',
-                            data: [800, 1000, 1200, 1500, 1800],
-                            backgroundColor: 'rgb(20, 184, 166)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                          {
-                            label: '매입액',
-                            data: [600, 800, 1000, 1200, 1500],
-                            backgroundColor: 'rgb(153, 246, 228)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                        ],
-                      }} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <div className="bg-teal-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-teal-600 font-medium">최고 매출</div>
-                      <div className="text-xs font-bold text-teal-700">1,800억</div>
-                    </div>
-                    <div className="bg-teal-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-teal-600 font-medium">최저 매출</div>
-                      <div className="text-xs font-bold text-teal-700">800억</div>
-                    </div>
-                    <div className="bg-teal-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-teal-600 font-medium">평균</div>
-                      <div className="text-xs font-bold text-teal-700">1,260억</div>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
+                  <Icon className="w-5 h-5" />
+                  <span className="text-base">{tab.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-              {/* 하단 2개 컴포넌트 (2/5 비율) */}
-              <div className="row-span-2 grid grid-cols-2 gap-3">
-                {/* 법인인원 추이 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
-                  className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">법인인원 추이</h3>
-                      <p className="text-xs text-slate-500">Employee Trend</p>
-                    </div>
-                    <div className="text-xs text-purple-600">+15.2%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar 
-                      options={barOptionsEmployee}
-                      data={{
-                        labels: ['2019', '2020', '2021', '2022', '2023'],
-                        datasets: [
-                          {
-                            label: '정규직',
-                            data: [250, 280, 320, 380, 450],
-                            backgroundColor: 'rgb(147, 51, 234)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                          {
-                            label: '계약직',
-                            data: [50, 60, 80, 90, 100],
-                            backgroundColor: 'rgb(233, 213, 255)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                        ],
-                      }} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <div className="bg-purple-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-purple-600 font-medium">최대 인원</div>
-                      <div className="text-xs font-bold text-purple-700">550명</div>
-                    </div>
-                    <div className="bg-purple-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-purple-600 font-medium">최소 인원</div>
-                      <div className="text-xs font-bold text-purple-700">300명</div>
-                    </div>
-                    <div className="bg-purple-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-purple-600 font-medium">평균</div>
-                      <div className="text-xs font-bold text-purple-700">396명</div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* 권역별 지점 추이 */}
-                <motion.div 
-                  initial={{ scale: 0.98, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 }}
-                  className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-100"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">권역별 지점 추이</h3>
-                      <p className="text-xs text-slate-500">Branch Trend</p>
-                    </div>
-                    <div className="text-xs text-amber-600">+8.5%</div>
-                  </div>
-                  <div className="h-[calc(100%-100px)]">
-                    {showCharts && <Bar 
-                      options={barOptionsBranch}
-                      data={{
-                        labels: ['2019', '2020', '2021', '2022', '2023'],
-                        datasets: [
-                          {
-                            label: '국내지점',
-                            data: [15, 18, 20, 22, 25],
-                            backgroundColor: 'rgb(245, 158, 11)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                          {
-                            label: '해외지점',
-                            data: [20, 25, 28, 30, 35],
-                            backgroundColor: 'rgb(251, 191, 36)',
-                            borderRadius: 4,
-                            barThickness: 12,
-                          },
-                        ],
-                      }} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 mt-2">
-                    <div className="bg-rose-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-rose-600 font-medium">최대 지점</div>
-                      <div className="text-xs font-bold text-rose-700">74개</div>
-                    </div>
-                    <div className="bg-rose-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-rose-600 font-medium">최소 지점</div>
-                      <div className="text-xs font-bold text-rose-700">35개</div>
-                    </div>
-                    <div className="bg-rose-50 px-2 py-1 rounded text-center">
-                      <div className="text-xs text-rose-600 font-medium">평균</div>
-                      <div className="text-xs font-bold text-rose-700">52개</div>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </Card>
+        {/* 탭 콘텐츠 */}
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-slate-800 rounded-lg p-6 border border-slate-600">
+            {tabs.find(tab => tab.id === activeTab)?.component()}
+          </div>
         </div>
       </div>
     </div>

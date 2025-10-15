@@ -34,7 +34,6 @@ export default function AuthPage() {
     setIsLoading(true);
 
     try {
-      console.log('🔍 Spring 서버 로그인 시도:', { username });
       
       const response = await fetch('/auth/api/login', {
         method: 'POST',
@@ -45,7 +44,6 @@ export default function AuthPage() {
       });
 
       const data = await response.json();
-      console.log('🔍 로그인 응답:', data);
 
       if (data.success) {
         // 세션 정보 저장
@@ -66,10 +64,11 @@ export default function AuthPage() {
         document.cookie = `JSESSIONID=${data.user.jsessionId}; path=/; SameSite=Strict`;
         document.cookie = `X-CSRF-TOKEN=${data.user.csrfToken}; path=/; SameSite=Strict`;
         
-        console.log('✅ 세션 저장 완료:', {
+        // 세션 저장 완료
+        localStorage.setItem('htns-session', JSON.stringify({
           jsessionId: data.user.jsessionId,
           csrfToken: data.user.csrfToken
-        });
+        }));
         
         // 로그인 성공 시 메인 페이지로 이동
         setTimeout(() => {

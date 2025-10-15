@@ -28,11 +28,8 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose, onEdit,
   // 모달이 열릴 때 방문 상세 데이터 가져오기
   useEffect(() => {
     if (isOpen && event) {
-      console.log('Event data:', event);
-      console.log('Extended props:', event.extendedProps);
       
       if (event.extendedProps && event.extendedProps.seqNo) {
-        console.log('Fetching visit detail for seqNo:', event.extendedProps.seqNo);
         
         // 추가 파라미터들 준비 (올바른 매핑 적용)
         const additionalParams = {
@@ -48,12 +45,9 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose, onEdit,
           endDate: event.extendedProps.endDate,          // VISIT_DATE_TO로 매핑
         };
         
-        console.log('Additional params for API call:', additionalParams);
         
         // seqNo와 추가 파라미터들을 함께 전달하여 방문 상세 데이터 조회
         fetchVisitDetail(event.extendedProps.seqNo.toString(), additionalParams);
-      } else {
-        console.warn('seqNo not found in event.extendedProps');
       }
     }
     

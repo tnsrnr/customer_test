@@ -43,15 +43,12 @@ export const useGlobalStore = create<GlobalStore>()(
       // 상태 설정
       setRefreshing: (refreshing) => set({ isRefreshing: refreshing }),
       setCurrentPage: (page) => {
-        console.log('📄 currentPage 변경:', page);
         set({ currentPage: page });
       },
       setSelectedYear: (year) => {
-        console.log('📅 selectedYear 변경:', year);
         set({ selectedYear: year });
       },
       setSelectedMonth: (month) => {
-        console.log('📅 selectedMonth 변경:', month);
         set({ selectedMonth: month });
       },
       
@@ -61,7 +58,6 @@ export const useGlobalStore = create<GlobalStore>()(
         
         // 현재 페이지에 따라 다른 조회 로직 실행
         const currentPage = get().currentPage;
-        console.log('🔍 전역 조회 트리거:', currentPage);
         
         // 1초 후 상태 초기화
         setTimeout(() => {

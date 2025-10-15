@@ -29,7 +29,7 @@ function cn(...classes: Array<string | false | undefined | null>): string {
   return classes.filter(Boolean).join(' ');
 }
 
-import { RefreshCw, ChevronLeft, ChevronRight, Calendar, Settings, X, Check, LogOut, Edit3, Layers, ChevronDown } from 'lucide-react';
+import { RefreshCw, ChevronLeft, ChevronRight, Calendar, Settings, X, Check, LogOut, Edit3, Layers, ChevronDown, Construction, Lock } from 'lucide-react';
 import { useGlobalStore } from '@/global/store/slices/global';
 import { clearSession } from '@/app/auth/session';
 
@@ -261,8 +261,8 @@ export function Header() {
   } = useGlobalStore();
   const [isClient, setIsClient] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const page1MenuCount = 6; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처 (6개)
-  const page2MenuCount = 12; // PAGE2: 전체물동량현황 + 기타 실적관리 메뉴들
+  const page1MenuCount = 8; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처, 국내자회사, 해외자회사 (8개)
+  const page2MenuCount = 12; // PAGE2: 항공실적~테8까지 (12개)
   const primaryGradient = 'from-blue-900 to-slate-900';
 
   // 클라이언트 사이드 렌더링 보장
@@ -277,36 +277,22 @@ export function Header() {
     // 원본 menuItems 배열에서 현재 경로가 어느 페이지에 속하는지 확인
     const currentMenuItem = menuItems.find(item => item.path === pathname);
     if (!currentMenuItem) {
-      console.log('❌ 메뉴를 찾을 수 없음:', pathname);
       return;
     }
     
     const currentIndex = menuItems.findIndex(item => item.path === pathname);
     if (currentIndex === -1) {
-      console.log('❌ 메뉴 인덱스를 찾을 수 없음:', pathname);
       return;
     }
     
-    console.log('🔍 현재 경로:', pathname);
-    console.log('🔍 메뉴명:', currentMenuItem.name);
-    console.log('🔍 인덱스:', currentIndex);
-    console.log('🔍 전체 메뉴 개수:', menuItems.length);
-    
     // 페이지 분할 로직에 따라 현재 페이지 결정 (원본 menuItems 기준)
-    if (currentIndex >= 1 && currentIndex <= 6) {
-      // PAGE1: 경영실적 메뉴들 (인덱스 1-6: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처)
-      console.log('📄 Page 1으로 설정 (인덱스 1-6)');
+    if (currentIndex >= 0 && currentIndex <= 7) {
       setCurrentPage('page1');
-    } else if (currentIndex >= 7 && currentIndex <= 17) {
-      // PAGE2: 실적관리 메뉴들 (인덱스 7-17: 항공실적, 해상실적, 창고실적, 도급실적, 국내자회사, 해외자회사, 국내, 사업부, 테4, 테5, 테6)
-      console.log('📄 Page 2로 설정 (인덱스 7-17)');
+    } else if (currentIndex >= 8 && currentIndex <= 19) {
       setCurrentPage('page2');
-    } else if (currentIndex >= 18) {
-      // PAGE3: 영업실적분석 (인덱스 18-19: 영업실적분석, 영업실적분석 2)
-      console.log('📄 Page 3으로 설정 (인덱스 18+)');
+    } else if (currentIndex >= 20) {
       setCurrentPage('page3');
     } else {
-      console.log('❌ 예상치 못한 인덱스:', currentIndex);
     }
   }, [pathname, setCurrentPage]);
 
@@ -332,27 +318,20 @@ export function Header() {
 
   const handleGlobalRefresh = () => {
     const currentPage = pathname || '';
-    console.log('🔍 조회 버튼 클릭 - 현재 페이지:', currentPage);
-    
     // 현재 페이지에 따라 다른 조회 로직 실행
     if (currentPage.includes('/menu/company-performance')) {
-      console.log('📊 company-performance 페이지 조회 실행');
-      // company-performance 페이지의 경우 kpiMetrics API 호출
       triggerGlobalRefresh();
     } else if (currentPage.includes('/menu/personnel')) {
-      console.log('👥 personnel 페이지 조회 실행');
       triggerGlobalRefresh();
     } else if (currentPage.includes('/menu/hq-performance')) {
-      console.log('🏢 hq-performance 페이지 조회 실행');
       triggerGlobalRefresh();
     } else if (currentPage.includes('/menu/finance')) {
-      console.log('💰 finance 페이지 조회 실행');
       triggerGlobalRefresh();
     } else if (currentPage.includes('/menu/division')) {
-      console.log('📈 division 페이지 조회 실행');
+      triggerGlobalRefresh();
+    } else if (currentPage.includes('/menu/management_performance/domestic_subsidiaries')) {
       triggerGlobalRefresh();
     } else {
-      console.log('🔄 일반 페이지 조회 실행');
       triggerGlobalRefresh();
     }
   };
@@ -364,17 +343,19 @@ export function Header() {
   
   let visibleMenus: any[] = [];
   if (currentPage === 'page1') {
-    // PAGE1: 경영실적 메뉴들 (2-7번째: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처)
-    visibleMenus = orderedMenus.slice(1, page1MenuCount + 1);
+    // PAGE1: 경영실적 메뉴들 (1-8번째: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처, 국내자회사, 해외자회사)
+    visibleMenus = orderedMenus.slice(0, page1MenuCount);
   } else if (currentPage === 'page2') {
-    // PAGE2: 실적관리 메뉴들 (8-18번째: 항공실적, 해상실적, 창고실적, 도급실적, 국내자회사, 해외자회사, 국내, 사업부, 테4, 테5, 테6)
-    visibleMenus = orderedMenus.slice(1).slice(page1MenuCount, page1MenuCount + 11);
+    // PAGE2: 실적관리 메뉴들 (9-20번째: 항공실적, 해상실적, 창고실적, 도급실적, 국내, 사업부, 테4, 테5, 테6, 테7, 테8)
+    visibleMenus = orderedMenus.slice(page1MenuCount, page1MenuCount + page2MenuCount);
   } else {
-    // PAGE3: 영업실적분석 (마지막 2개: 영업실적분석, 영업실적분석 2)
-    visibleMenus = orderedMenus.slice(1).slice(page1MenuCount + 11, page2MenuCount + page1MenuCount + 2);
+    // PAGE3: 영업실적분석 (마지막 2개: 업체방문분석, 업체방문캘린더)
+    visibleMenus = orderedMenus.slice(page1MenuCount + page2MenuCount);
   }
 
-  const canToggle = orderedMenus.slice(1).length > page1MenuCount;
+  // 디버그 로그 제거
+
+  const canToggle = orderedMenus.length > page1MenuCount;
 
   // 드래그 앤 드롭 핸들러
   const handleDragEnd = (event: DragEndEvent) => {
@@ -397,17 +378,17 @@ export function Header() {
 
   // 서버 사이드 렌더링 시 기본 메뉴 순서 사용
   const serverSideMenus = currentPage === 'page1' 
-    ? menuItems.slice(1, page1MenuCount + 1)
+    ? menuItems.slice(0, page1MenuCount)
     : currentPage === 'page2'
-    ? menuItems.slice(1).slice(page1MenuCount, page1MenuCount + 11)
-    : menuItems.slice(1).slice(-2);
+    ? menuItems.slice(page1MenuCount, page1MenuCount + page2MenuCount)
+    : menuItems.slice(page1MenuCount + page2MenuCount);
 
   return (
     <header className={cn("bg-gradient-to-br backdrop-blur-md shadow-xl border-none z-50 relative", primaryGradient)}>
       <div className="flex justify-between items-center px-3 py-3">
         <div className="flex items-center space-x-4">
           {/* HTNS 로고 */}
-          <Link href="/menu/performance_management/performance">
+          <Link href="/">
             <div className="flex items-center space-x-2">
               <Image 
                 src="/images/htns-logo.png" 
@@ -441,19 +422,28 @@ export function Header() {
                           isEditMode={isMenuEditMode}
                         />
                       ) : (
-                        <Link
-                          key={menu.path}
-                          href={menu.path}
-                          className={cn(
-                            "flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm",
-                            pathname === menu.path
-                              ? "bg-white/20 text-white shadow-lg border border-white/20"
-                              : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20"
+                        <div key={menu.path} className="relative">
+                          {menu.isUnderDevelopment ? (
+                            <div className="flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm bg-red-500/20 text-red-200 border border-red-500/30 cursor-not-allowed opacity-60">
+                              <Lock className="w-4 h-4" />
+                              <span className="whitespace-nowrap">{menu.name}</span>
+                              <Construction className="w-3 h-3 text-orange-400" />
+                            </div>
+                          ) : (
+                            <Link
+                              href={menu.path}
+                              className={cn(
+                                "flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm",
+                                pathname === menu.path
+                                  ? "bg-white/20 text-white shadow-lg border border-white/20"
+                                  : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20"
+                              )}
+                            >
+                              {menu.icon && <menu.icon className="w-5 h-5" />}
+                              <span className="whitespace-nowrap">{menu.name}</span>
+                            </Link>
                           )}
-                        >
-                          {menu.icon && <menu.icon className="w-5 h-5" />}
-                          <span className="whitespace-nowrap">{menu.name}</span>
-                        </Link>
+                        </div>
                       )
                     ))}
                   </nav>
@@ -462,19 +452,28 @@ export function Header() {
             ) : (
               <nav className="flex space-x-2">
                 {serverSideMenus.map((menu) => (
-                  <Link
-                    key={menu.path}
-                    href={menu.path}
-                    className={cn(
-                      "flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm",
-                      pathname === menu.path
-                        ? "bg-white/20 text-white shadow-lg border border-white/20"
-                        : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20"
+                  <div key={menu.path} className="relative">
+                    {menu.isUnderDevelopment ? (
+                      <div className="flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm bg-red-500/20 text-red-200 border border-red-500/30 cursor-not-allowed opacity-60">
+                        <Lock className="w-4 h-4" />
+                        <span className="whitespace-nowrap">{menu.name}</span>
+                        <Construction className="w-3 h-3 text-orange-400" />
+                      </div>
+                    ) : (
+                      <Link
+                        href={menu.path}
+                        className={cn(
+                          "flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm",
+                          pathname === menu.path
+                            ? "bg-white/20 text-white shadow-lg border border-white/20"
+                            : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20"
+                        )}
+                      >
+                        {menu.icon && <menu.icon className="w-5 h-5" />}
+                        <span className="whitespace-nowrap">{menu.name}</span>
+                      </Link>
                     )}
-                  >
-                    {menu.icon && <menu.icon className="w-5 h-5" />}
-                    <span className="whitespace-nowrap">{menu.name}</span>
-                  </Link>
+                  </div>
                 ))}
               </nav>
             )}

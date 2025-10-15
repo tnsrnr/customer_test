@@ -36,9 +36,6 @@ const SalesAnalysis2Page = memo(() => {
 
   // 이벤트 클릭 핸들러 - useMemo로 최적화
   const handleEventClick = useMemo(() => (event: CalendarEvent) => {
-    console.log('이벤트 클릭됨:', event);
-    console.log('이벤트 extendedProps:', event?.extendedProps);
-    console.log('seqNo:', event?.extendedProps?.seqNo);
     setSelectedEvent(event);
     setShowEventModal(true);
   }, [setSelectedEvent, setShowEventModal]);
@@ -51,13 +48,11 @@ const SalesAnalysis2Page = memo(() => {
 
   // 이벤트 수정 핸들러 - useMemo로 최적화
   const handleEditEvent = useMemo(() => (event: any) => {
-    console.log('이벤트 수정:', event);
     // 여기에 이벤트 수정 로직을 추가할 수 있습니다
   }, []);
 
   // 이벤트 삭제 핸들러 - useMemo로 최적화
   const handleDeleteEvent = useMemo(() => (eventId: string) => {
-    console.log('이벤트 삭제:', eventId);
     // 여기에 이벤트 삭제 로직을 추가할 수 있습니다
   }, []);
 

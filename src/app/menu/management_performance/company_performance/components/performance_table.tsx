@@ -26,16 +26,11 @@ interface PerformanceTableProps {
 
 export function PerformanceTable({ data, loading, periodType, currentYear, currentMonth }: PerformanceTableProps) {
   useEffect(() => {
-    console.log('PerformanceTable mounted');
+    // PerformanceTable mounted
   }, []);
 
   useEffect(() => {
-    console.log('🔍 PerformanceTable 데이터:', data);
-    console.log('🔍 PerformanceTable 로딩 상태:', loading);
-    if (data) {
-      console.log('🔍 PerformanceTable 데이터 개수:', data.length);
-      console.log('🔍 PerformanceTable 첫 번째 항목:', data[0]);
-    }
+    // PerformanceTable data and loading state
   }, [data, loading]);
 
   if (loading) {

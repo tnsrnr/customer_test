@@ -127,13 +127,9 @@ export const useSalesAnalysis2Store = create<SalesAnalysis2Store>((set, get) => 
       const apiData: ApiResponse = await response.json();
       
       if (apiData.MSG === "정상적으로 처리되었습니다." && apiData.MIS030306G1) {
-        console.log('API 응답 데이터:', apiData.MIS030306G1);
-        console.log('첫 번째 아이템:', apiData.MIS030306G1[0]);
         const transformedEvents = get().transformApiDataToEvents(apiData.MIS030306G1);
-        console.log('변환된 이벤트들:', transformedEvents);
         set({ events: transformedEvents });
       } else {
-        console.log('API 응답 오류 또는 데이터 없음:', apiData);
         set({ events: [] });
       }
     } catch (error) {
@@ -147,14 +143,9 @@ export const useSalesAnalysis2Store = create<SalesAnalysis2Store>((set, get) => 
   transformApiDataToEvents: (apiData: CalendarEventRaw[]): CalendarEvent[] => {
     return apiData.map((item, index) => {
       try {
-        console.log(`이벤트 ${index} 변환 중:`, item);
-        console.log(`SEQ_NO 값:`, item.SEQ_NO, typeof item.SEQ_NO);
-        console.log(`CUSTOMER_CODE 값:`, item.CUSTOMER_CODE);
-        console.log(`COMPANY_CODE 값:`, item.COMPANY_CODE);
         
         // SEQ_NO 유효성 검사
         if (item.SEQ_NO === undefined || item.SEQ_NO === null || item.SEQ_NO === '') {
-          console.warn(`이벤트 ${index}에 SEQ_NO가 없습니다:`, item);
           return null;
         }
         
@@ -200,10 +191,8 @@ export const useSalesAnalysis2Store = create<SalesAnalysis2Store>((set, get) => 
           }
         };
         
-        console.log(`변환된 이벤트 ${index}:`, event);
         return event;
       } catch (error) {
-        console.error('이벤트 변환 오류:', error, item);
         return null;
       }
     }).filter(Boolean) as CalendarEvent[];
@@ -222,8 +211,6 @@ export const useSalesAnalysis2Store = create<SalesAnalysis2Store>((set, get) => 
     startDate?: string;    // VISIT_DATE_FROM으로 매핑
     endDate?: string;      // VISIT_DATE_TO로 매핑
   }) => {
-    console.log('방문 상세 정보 요청:', visitSeqNo);
-    console.log('추가 파라미터:', additionalParams);
     set({ visitDetailLoading: true, visitDetailError: null });
     try {
       const requestBody = {
@@ -250,7 +237,6 @@ export const useSalesAnalysis2Store = create<SalesAnalysis2Store>((set, get) => 
         limit: "100",
         pageId: "SLS050102T"
       };
-      console.log('요청 데이터:', requestBody);
       
       const response = await fetch(`/auth/api/proxy?path=/api/SLS050102SVC/get`, {
         method: 'POST',
@@ -260,24 +246,19 @@ export const useSalesAnalysis2Store = create<SalesAnalysis2Store>((set, get) => 
         body: JSON.stringify(requestBody)
       });
 
-      console.log('응답 상태:', response.status, response.statusText);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const apiData: VisitDetailApiResponse = await response.json();
-      console.log('방문 상세 API 응답:', apiData);
       
       if (apiData.MSG === "정상적으로 처리되었습니다." && apiData.SLS050102G1 && apiData.SLS050102G1.length > 0) {
-        console.log('방문 상세 데이터 설정:', apiData.SLS050102G1[0]);
         set({ visitDetail: apiData.SLS050102G1[0] });
       } else {
-        console.log('방문 상세 데이터 없음 또는 오류:', apiData);
         set({ visitDetail: null });
       }
     } catch (error) {
-      console.error('방문 상세 데이터 조회 오류:', error);
       set({ visitDetailError: error instanceof Error ? error.message : '알 수 없는 오류' });
     } finally {
       set({ visitDetailLoading: false });

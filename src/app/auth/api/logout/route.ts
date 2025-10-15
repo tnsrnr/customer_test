@@ -3,7 +3,6 @@ import { clearSession } from '@/app/auth/session';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🚪 로그아웃 요청 처리');
     
     // 세션 삭제
     clearSession();

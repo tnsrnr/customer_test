@@ -154,20 +154,13 @@ const generateDivisionCardsFromBackend = (backendData: any[]) => {
   const cards = Object.keys(divisionGroups).map((parentType, index) => {
     const items = divisionGroups[parentType];
     
-    console.log('🔍 부문별 데이터 처리:', { parentType, itemsCount: items.length });
     
     // 매출 데이터 찾기
     const revenueItem = items.find((item: any) => item.DIVISION_TYPE === '매출');
     // 영업이익 데이터 찾기
     const profitItem = items.find((item: any) => item.DIVISION_TYPE === '영업이익');
     
-    console.log('📊 매출/영업이익 데이터:', { 
-      revenueItem: revenueItem ? '찾음' : '없음', 
-      profitItem: profitItem ? '찾음' : '없음' 
-    });
-    
     if (!revenueItem) {
-      console.warn('⚠️ 매출 데이터가 없음:', parentType);
       return null;
     }
     
@@ -196,12 +189,10 @@ const generateDivisionCardsFromBackend = (backendData: any[]) => {
       icon: config.icon
     };
     
-    console.log('✅ 생성된 카드 데이터:', result);
     return result;
   }).filter(Boolean);
   
   // 백엔드에 실제 데이터가 있는 부문만 반환
-  console.log('✅ 실제 데이터가 있는 부문들:', cards.map(card => card.name));
   
   return cards;
 };

@@ -38,20 +38,12 @@ async function handleProxyRequest(req: NextRequest, method: string) {
     // 환경변수에서 Spring 서버 URL 가져오기
     const springServerUrl = process.env.SPRING_SERVER_URL || 'https://qa-lv1.htns.com';
     targetUrl = `${springServerUrl}${targetPath}`;
-    console.log(`🚀 Spring 서버 프록시 요청: ${method} ${targetUrl}`);
     
     // Spring 서버용 세션 처리
     const cookie = req.headers.get('cookie');
-    console.log('🍪 원본 쿠키:', cookie);
-    console.log('🔍 요청 URL:', targetUrl);
     
     const clientJsessionId = req.headers.get('X-Session-JSESSIONID');
     const clientCsrfToken = req.headers.get('X-Session-CSRF-TOKEN');
-    
-    console.log('🔑 클라이언트 세션 헤더:', { 
-      jsessionId: clientJsessionId, 
-      csrfToken: clientCsrfToken 
-    });
     
     let jsessionId: string | null = null;
     let csrfToken: string | null = null;
@@ -59,9 +51,7 @@ async function handleProxyRequest(req: NextRequest, method: string) {
     if (clientJsessionId && clientCsrfToken) {
       jsessionId = clientJsessionId;
       csrfToken = clientCsrfToken;
-      console.log('🔑 클라이언트 세션 사용:', { jsessionId, csrfToken });
     } else {
-      console.log('⚠️ 클라이언트 세션 없음, 브라우저 쿠키 사용');
       
       if (cookie) {
         // 쿠키 파싱 개선
@@ -70,11 +60,9 @@ async function handleProxyRequest(req: NextRequest, method: string) {
         for (const cookieItem of cookies) {
           if (cookieItem.startsWith('JSESSIONID=')) {
             jsessionId = cookieItem.substring('JSESSIONID='.length);
-            console.log('🔑 JSESSIONID 추출:', jsessionId);
           }
           if (cookieItem.startsWith('X-CSRF-TOKEN=')) {
             csrfToken = cookieItem.substring('X-CSRF-TOKEN='.length);
-            console.log('🔑 CSRF 토큰 추출:', csrfToken);
           }
         }
       }
@@ -92,14 +80,7 @@ async function handleProxyRequest(req: NextRequest, method: string) {
       headers.set('ajax', 'true');
       headers.set('X-Requested-With', 'XMLHttpRequest');
       
-      console.log('🍪 최종 쿠키 설정:', finalCookie);
-      console.log('🔑 추가 헤더:', {
-        'X-CSRF-TOKEN': csrfToken,
-        'ajax': 'true',
-        'X-Requested-With': 'XMLHttpRequest'
-      });
     } else {
-      console.log('⚠️ 세션 정보를 찾을 수 없음');
       return new Response(JSON.stringify({
         success: false,
         message: '세션이 없습니다. 다시 로그인해주세요.',
@@ -161,7 +142,6 @@ async function handleProxyRequest(req: NextRequest, method: string) {
     });
 
   } catch (error) {
-    console.error('❌ 프록시 요청 실패:', error);
     return new Response(JSON.stringify({
       success: false,
       message: '프록시 요청에 실패했습니다.',

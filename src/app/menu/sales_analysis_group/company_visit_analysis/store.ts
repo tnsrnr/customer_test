@@ -65,7 +65,6 @@ export const useCompanyVisitAnalysisStore = create<CompanyVisitAnalysisStore>((s
         pageId: "MIS030306T"
       };
 
-      console.log('📡 업체방문분석 API 요청:', requestData);
 
       const response = await fetch('/auth/api/proxy?path=/api/MIS030306SVC/getDivision', {
         method: 'POST',
@@ -80,15 +79,12 @@ export const useCompanyVisitAnalysisStore = create<CompanyVisitAnalysisStore>((s
       }
 
       const apiData: ApiResponse = await response.json();
-      console.log('📡 업체방문분석 API 응답:', apiData);
 
       if (apiData.MSG === "정상적으로 처리되었습니다." && apiData.MIS030306G1) {
         const transformedData = get().transformApiDataToTableRows(apiData.MIS030306G1);
         const stats = get().calculateStats(transformedData);
         const monthlyStats = get().calculateMonthlyStats(transformedData);
         
-        console.log('🔄 변환된 테이블 데이터:', transformedData);
-        console.log('📊 계산된 통계:', stats);
         
         set({ 
           tableData: transformedData,
@@ -110,10 +106,8 @@ export const useCompanyVisitAnalysisStore = create<CompanyVisitAnalysisStore>((s
 
   // 데이터 변환
   transformApiDataToTableRows: (apiData: CompanyVisitAnalysisRaw[]): TableRow[] => {
-    console.log('🔄 테이블 데이터 변환 시작 - 총 데이터:', apiData.length);
 
     if (!apiData || !Array.isArray(apiData)) {
-      console.warn('⚠️ API 데이터가 없거나 배열이 아님:', apiData);
       return [];
     }
 

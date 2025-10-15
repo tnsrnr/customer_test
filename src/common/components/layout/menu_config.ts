@@ -21,18 +21,12 @@ export interface MenuItem {
   path: string;
   icon?: LucideIcon;
   description?: string;
+  isUnderDevelopment?: boolean; // 개발 중인 메뉴 표시
 }
 
-// 원래 메뉴 구조 (HTNS 로고 + 순서대로 메뉴들)
+// 메뉴 구조 (HTNS 로고 + 순서대로 메뉴들)
 export const menuItems: MenuItem[] = [
-  // HTNS 로고 (홈)
-  { 
-    name: '전체물동량현황', 
-    path: '/menu/performance_management/performance', 
-    icon: Home,
-    description: '전체 물동량 현황'
-  },
-  // 경영실적 카테고리
+  // ===== 경영실적 관리 카테고리 =====
   { 
     name: '전사실적', 
     path: '/menu/management_performance/company_performance', 
@@ -58,18 +52,33 @@ export const menuItems: MenuItem[] = [
     description: '재무 현황 - 탭 기반 대시보드'
   },
   { 
-    name: '부문별실적', 
-    path: '/menu/management_performance/division', 
-    icon: PieChart,
-    description: '부문별 실적 현황'
-  },
-  { 
     name: '상위거래처', 
     path: '/menu/management_performance/top_clients', 
     icon: TrendingUp,
     description: '상위 거래처 현황'
   },
-  // 실적관리 카테고리
+  { 
+    name: '부문별실적', 
+    path: '/menu/management_performance/division', 
+    icon: PieChart,
+    description: '부문별 실적 현황',
+    isUnderDevelopment: true
+  },
+  { 
+    name: '국내자회사', 
+    path: '/menu/management_performance/domestic_subsidiaries', 
+    icon: Building,
+    description: '국내 자회사 현황',
+    isUnderDevelopment: true
+  },
+  { 
+    name: '해외자회사', 
+    path: '/menu/management_performance/overseas_subsidiaries', 
+    icon: Globe,
+    description: '해외 자회사 현황',
+    isUnderDevelopment: true
+  },
+  // ===== 물동량 실적 관리 카테고리 =====
   { 
     name: '항공실적', 
     path: '/menu/performance_management/air', 
@@ -93,18 +102,6 @@ export const menuItems: MenuItem[] = [
     path: '/menu/performance_management/outsourcing', 
     icon: HardHat,
     description: '도급 업무 실적'
-  },
-  { 
-    name: '국내자회사', 
-    path: '/menu/performance_management/domestic_subsidiaries', 
-    icon: Building,
-    description: '국내 자회사 현황'
-  },
-  { 
-    name: '해외자회사', 
-    path: '/menu/performance_management/overseas_subsidiaries', 
-    icon: Globe,
-    description: '해외 자회사 현황'
   },
   { 
     name: '국내', 
@@ -131,7 +128,19 @@ export const menuItems: MenuItem[] = [
     path: '/menu/performance_management/test6',
     description: '테 6'
   },
-  // 영업실적분석 카테고리
+  { 
+    name: '테7', 
+    path: '/menu/performance_management/performance',
+    icon: Home,
+    description: '전체 물동량 현황'
+  },
+  { 
+    name: '테8', 
+    path: '/menu/performance_management/performance2',
+    icon: Home,
+    description: '전체 물동량 현황2'
+  },
+  // ===== 영업실적 분석 카테고리 =====
   { 
     name: '업체방문분석', 
     path: '/menu/sales_analysis_group/company_visit_analysis',

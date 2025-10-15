@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
-  User, Calendar, Clock, Building2, Globe, BarChart3, Package, Truck, Ship, Plane, Warehouse, DollarSign
+  Clock, Building2, Globe, BarChart3, Package, Truck, Ship, Plane, DollarSign, TrendingUp, PieChart, LineChart
 } from 'lucide-react';
 
 // 전역 Chart.js 설정 import
@@ -27,7 +27,7 @@ export default function HomePage() {
   const [session, setSession] = useState<SessionData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [selectedTab, setSelectedTab] = useState(2);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const router = useRouter();
 
@@ -101,8 +101,8 @@ export default function HomePage() {
         const parsedSession = JSON.parse(sessionData);
         if (parsedSession.jsessionId && parsedSession.csrfToken) {
           setSession(parsedSession);
-          // 로그인 시 랜덤 탭 선택
-          setSelectedTab(Math.floor(Math.random() * 5));
+          // 로그인 시 랜덤 탭 선택 (0 또는 1)
+          setSelectedTab(Math.floor(Math.random() * 2));
         } else {
           router.push('/auth');
         }
@@ -125,10 +125,7 @@ export default function HomePage() {
 
   const tabs = [
     { id: 0, name: '글로벌 맵', icon: Globe, color: 'from-blue-500 to-blue-600' },
-    { id: 1, name: '3D 네트워크', icon: Package, color: 'from-purple-500 to-purple-600' },
-    { id: 2, name: '실시간 통계', icon: BarChart3, color: 'from-green-500 to-green-600' },
-    { id: 3, name: '미니어처 센터', icon: Warehouse, color: 'from-orange-500 to-orange-600' },
-    { id: 4, name: '파티클 시스템', icon: Truck, color: 'from-red-500 to-red-600' }
+    { id: 1, name: '매출대시보드', icon: TrendingUp, color: 'from-purple-500 to-purple-600' }
   ];
 
   if (isLoading || !session) {
@@ -144,23 +141,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
-      {/* 배경 효과 */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg className="absolute bottom-0 right-0 w-[32rem] h-[32rem] opacity-50 animate-pulse-slow" viewBox="0 0 512 512" fill="none">
-          <text
-            x="256"
-            y="480"
-            textAnchor="middle"
-            fontSize="110"
-            fontWeight="900"
-            fill="#3b82f6"
-            opacity="0.5"
-            style={{ letterSpacing: 32 }}
-          >
-            HTNS
-          </text>
-        </svg>
-      </div>
 
       <div className="relative z-10 p-6">
         {/* 헤더 */}
@@ -171,9 +151,6 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             className="flex items-center gap-6"
           >
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30">
-              <Globe className="w-8 h-8 text-white" />
-            </div>
             <div className="text-center">
               <p className="text-blue-200 text-3xl font-bold mb-1">HTNS 그룹사</p>
               <p className="text-blue-200 text-2xl font-semibold">경영실적 대시보드</p>
@@ -199,7 +176,7 @@ export default function HomePage() {
         </div>
 
         {/* 메인 콘텐츠 */}
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* 탭 UI */}
           <div className="flex justify-center gap-2 mb-8">
             {tabs.map(tab => (
@@ -430,749 +407,181 @@ export default function HomePage() {
             </motion.div>
           )}
           {selectedTab === 1 && (
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl overflow-hidden"
-            >
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <Package className="w-8 h-8 text-purple-300" />
-                <h2 className="text-2xl font-bold text-white">3D 물류 네트워크 시각화</h2>
+            <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-xl overflow-hidden">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <TrendingUp className="w-6 h-6 text-purple-300" />
+                <h2 className="text-xl font-bold text-white">매출대시보드</h2>
               </div>
               
-              {/* 3D 네트워크 애니메이션 */}
-              <div className="relative w-full h-96 bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-2xl overflow-hidden">
-                {/* 3D 그리드 배경 */}
-                <div className="absolute inset-0 opacity-20">
-                  <svg viewBox="0 0 1000 500" className="w-full h-full">
-                    <defs>
-                      <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#8b5cf6" strokeWidth="1"/>
-                      </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
-                  </svg>
+              {/* 매출 현황 카드들 */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                {/* 월간 매출 */}
+                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-md rounded-xl p-4 border border-purple-400/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <DollarSign className="w-6 h-6 text-purple-400" />
+                    <div className="text-purple-400 text-xs font-semibold">
+                      월간
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-1">
+                    ₩9,500,000
+                  </div>
+                  <div className="text-purple-300 text-xs">월간 매출액</div>
                 </div>
 
-                {/* 움직이는 항공기 */}
-                <motion.div
-                  className="absolute"
-                  initial={{ x: -50, y: 100 }}
-                  animate={{ 
-                    x: [50, 200, 400, 600, 800, 950],
-                    y: [100, 50, 150, 80, 120, 100]
-                  }}
-                  transition={{ 
-                    duration: 15, 
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                >
-                  <Plane className="w-8 h-8 text-blue-400 drop-shadow-lg" />
-                </motion.div>
-
-                {/* 움직이는 배 */}
-                <motion.div
-                  className="absolute"
-                  initial={{ x: -50, y: 300 }}
-                  animate={{ 
-                    x: [50, 150, 300, 500, 700, 900, 950],
-                    y: [300, 280, 320, 290, 310, 300, 300]
-                  }}
-                  transition={{ 
-                    duration: 20, 
-                    repeat: Infinity,
-                    ease: "linear",
-                    delay: 3
-                  }}
-                >
-                  <Ship className="w-10 h-10 text-cyan-400 drop-shadow-lg" />
-                </motion.div>
-
-                {/* 움직이는 트럭 */}
-                <motion.div
-                  className="absolute"
-                  initial={{ x: -50, y: 400 }}
-                  animate={{ 
-                    x: [50, 200, 350, 500, 650, 800, 950],
-                    y: [400, 380, 420, 390, 410, 400, 400]
-                  }}
-                  transition={{ 
-                    duration: 12, 
-                    repeat: Infinity,
-                    ease: "linear",
-                    delay: 6
-                  }}
-                >
-                  <Truck className="w-8 h-8 text-green-400 drop-shadow-lg" />
-                </motion.div>
-
-                {/* 연결선들 */}
-                <svg className="absolute inset-0 w-full h-full">
-                  <motion.path
-                    d="M 100 150 Q 300 100 500 150 Q 700 200 900 150"
-                    stroke="#8b5cf6"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,5"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
-                  <motion.path
-                    d="M 100 350 Q 300 300 500 350 Q 700 400 900 350"
-                    stroke="#06b6d4"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,5"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                  />
-                </svg>
-
-                {/* 3D 효과를 위한 그림자 */}
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
-
-              {/* 범례 */}
-              <div className="flex justify-center gap-8 mt-6">
-                <div className="flex items-center gap-2">
-                  <Plane className="w-5 h-5 text-blue-400" />
-                  <span className="text-white text-sm">항공 운송</span>
+                {/* 분기별 매출 */}
+                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-md rounded-xl p-4 border border-blue-400/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <BarChart3 className="w-6 h-6 text-blue-400" />
+                    <div className="text-blue-400 text-xs font-semibold">
+                      분기별
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-1">
+                    ₩22,500,000
+                  </div>
+                  <div className="text-blue-300 text-xs">분기별 매출액</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Ship className="w-5 h-5 text-cyan-400" />
-                  <span className="text-white text-sm">해상 운송</span>
+
+                {/* 연간 매출 */}
+                <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-md rounded-xl p-4 border border-green-400/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <LineChart className="w-6 h-6 text-green-400" />
+                    <div className="text-green-400 text-xs font-semibold">
+                      연간
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-1">
+                    ₩85,000,000
+                  </div>
+                  <div className="text-green-300 text-xs">연간 매출액</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-green-400" />
-                  <span className="text-white text-sm">육상 운송</span>
+
+                {/* 매출 성장률 */}
+                <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-md rounded-xl p-4 border border-orange-400/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <TrendingUp className="w-6 h-6 text-orange-400" />
+                    <div className="text-orange-400 text-xs font-semibold">
+                      성장률
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-1">
+                    +12.5%
+                  </div>
+                  <div className="text-orange-300 text-xs">전년 대비 성장률</div>
                 </div>
               </div>
-            </motion.div>
-          )}
-          {selectedTab === 2 && (
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl overflow-hidden"
-            >
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <BarChart3 className="w-8 h-8 text-green-300" />
-                <h2 className="text-2xl font-bold text-white">실시간 통계 대시보드</h2>
-              </div>
-              
-              {/* 실시간 통계 카드들 */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {/* 총 매출 */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-md rounded-2xl p-6 border border-green-400/30"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <DollarSign className="w-8 h-8 text-green-400" />
-                    <motion.div
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="text-green-400 text-sm font-semibold"
-                    >
-                      실시간
-                    </motion.div>
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-2">
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                      ₩{randomStats.sales.toLocaleString()}
-                    </motion.span>
-                  </div>
-                  <div className="text-green-300 text-sm">총 매출액</div>
-                </motion.div>
 
-                {/* 물동량 */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-md rounded-2xl p-6 border border-blue-400/30"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <Package className="w-8 h-8 text-blue-400" />
-                    <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="text-blue-400 text-sm font-semibold"
-                    >
-                      실시간
-                    </motion.div>
+              {/* 매출 차트 섹션 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                {/* 월별 매출 추이 */}
+                <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-base font-semibold text-white">월별 매출 추이</h3>
+                    <LineChart className="w-4 h-4 text-purple-400" />
                   </div>
-                  <div className="text-3xl font-bold text-white mb-2">
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.4 }}
-                    >
-                      {randomStats.volume.toLocaleString()}톤
-                    </motion.span>
+                  
+                  {/* 월별 매출 바 차트 */}
+                  <div className="flex items-end justify-between h-32 gap-2">
+                    {[
+                      { month: '1월', height: 45 },
+                      { month: '2월', height: 52 },
+                      { month: '3월', height: 38 },
+                      { month: '4월', height: 65 },
+                      { month: '5월', height: 58 },
+                      { month: '6월', height: 72 },
+                      { month: '7월', height: 48 },
+                      { month: '8월', height: 55 },
+                      { month: '9월', height: 68 },
+                      { month: '10월', height: 75 },
+                      { month: '11월', height: 62 },
+                      { month: '12월', height: 80 }
+                    ].map((item, i) => (
+                      <div
+                        key={item.month}
+                        className="bg-gradient-to-t from-purple-400 to-purple-600 rounded-t-lg flex-1"
+                        style={{ height: `${item.height}%` }}
+                      />
+                    ))}
                   </div>
-                  <div className="text-blue-300 text-sm">월간 물동량</div>
-                </motion.div>
+                  
+                  <div className="flex justify-between text-xs text-gray-300 mt-2">
+                    <span>1월</span>
+                    <span>3월</span>
+                    <span>6월</span>
+                    <span>9월</span>
+                    <span>12월</span>
+                  </div>
+                </div>
 
-                {/* 운송 건수 */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-md rounded-2xl p-6 border border-purple-400/30"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <Truck className="w-8 h-8 text-purple-400" />
-                    <motion.div
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                      className="text-purple-400 text-sm font-semibold"
-                    >
-                      실시간
-                    </motion.div>
+                {/* 부문별 매출 비율 */}
+                <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-base font-semibold text-white">부문별 매출 비율</h3>
+                    <PieChart className="w-4 h-4 text-blue-400" />
                   </div>
-                  <div className="text-3xl font-bold text-white mb-2">
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.5 }}
-                    >
-                      {randomStats.shipments.toLocaleString()}건
-                    </motion.span>
+                  
+                  {/* 부문별 매출 비율 */}
+                  <div className="space-y-3">
+                    {[
+                      { name: '본사', percentage: 45, color: 'from-red-400 to-red-600' },
+                      { name: '국내', percentage: 35, color: 'from-blue-400 to-blue-600' },
+                      { name: '해외', percentage: 20, color: 'from-green-400 to-green-600' }
+                    ].map((item, i) => (
+                      <div
+                        key={item.name}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 bg-gradient-to-r ${item.color} rounded-full`}></div>
+                          <span className="text-white text-sm">{item.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 h-2 bg-gray-600 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full bg-gradient-to-r ${item.color}`}
+                              style={{ width: `${item.percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-white text-sm font-semibold">{item.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="text-purple-300 text-sm">월간 운송 건수</div>
-                </motion.div>
+                </div>
 
-                {/* 고객 만족도 */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-md rounded-2xl p-6 border border-orange-400/30"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <BarChart3 className="w-8 h-8 text-orange-400" />
-                    <motion.div
-                      animate={{ opacity: [1, 0.5, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="text-orange-400 text-sm font-semibold"
-                    >
-                      실시간
-                    </motion.div>
-                  </div>
-                  <div className="text-3xl font-bold text-white mb-2">
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.6 }}
-                    >
-                      {randomStats.satisfaction}%
-                    </motion.span>
-                  </div>
-                  <div className="text-orange-300 text-sm">고객 만족도</div>
-                </motion.div>
               </div>
 
-              {/* 실시간 차트 */}
-              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+              {/* 주요 거래처 매출 현황 */}
+              <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">실시간 물류 현황</h3>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  >
-                    <BarChart3 className="w-5 h-5 text-green-400" />
-                  </motion.div>
+                  <h3 className="text-base font-semibold text-white">주요 거래처 매출 현황</h3>
+                  <TrendingUp className="w-4 h-4 text-green-400" />
                 </div>
                 
-                {/* 실시간 바 차트 */}
-                <div className="flex items-end justify-between h-32 gap-2">
-                  {[...Array(8)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ height: 0 }}
-                      animate={{ height: Math.random() * 100 + 20 }}
-                      transition={{ duration: 0.8, delay: i * 0.1 }}
-                      className="bg-gradient-to-t from-green-400 to-green-600 rounded-t-lg flex-1"
-                      style={{ height: `${Math.random() * 80 + 20}%` }}
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { name: '삼성전자', amount: 12500000, growth: '+12.5%' },
+                    { name: 'LG전자', amount: 9800000, growth: '+8.3%' },
+                    { name: '현대자동차', amount: 8700000, growth: '+15.2%' }
+                  ].map((client, i) => (
+                    <div
+                      key={client.name}
+                      className="bg-white/10 rounded-xl p-4 border border-white/20"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-white font-semibold">{client.name}</h4>
+                        <span className="text-green-400 text-sm font-medium">{client.growth}</span>
+                      </div>
+                      <div className="text-2xl font-bold text-white">
+                        ₩{client.amount.toLocaleString()}
+                      </div>
+                      <div className="text-gray-300 text-sm">월간 매출</div>
+                    </div>
                   ))}
                 </div>
-                
-                <div className="flex justify-between text-xs text-gray-300 mt-2">
-                  <span>00:00</span>
-                  <span>03:00</span>
-                  <span>06:00</span>
-                  <span>09:00</span>
-                  <span>12:00</span>
-                  <span>15:00</span>
-                  <span>18:00</span>
-                  <span>21:00</span>
-                </div>
               </div>
-            </motion.div>
-          )}
-          {selectedTab === 3 && (
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl overflow-hidden"
-            >
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <Warehouse className="w-8 h-8 text-orange-300" />
-                <h2 className="text-2xl font-bold text-white">미니어처 물류 센터</h2>
-              </div>
-              
-              {/* 미니어처 센터 레이아웃 */}
-              <div className="relative w-full h-96 bg-gradient-to-br from-orange-900/20 to-yellow-900/20 rounded-2xl overflow-hidden">
-                {/* 배경 그라데이션 */}
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/30 via-transparent to-green-900/30"></div>
-                
-                {/* 공항 영역 */}
-                <div className="absolute top-4 left-4 w-32 h-24 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-                  <div className="flex items-center justify-center gap-2 p-2">
-                    <Plane className="w-4 h-4 text-blue-400" />
-                    <span className="text-white text-xs font-semibold">공항</span>
-                  </div>
-                  
-                  {/* 움직이는 비행기들 */}
-                  <motion.div
-                    className="absolute top-8 left-2"
-                    animate={{ 
-                      x: [0, 100, 0],
-                      y: [0, -10, 0]
-                    }}
-                    transition={{ 
-                      duration: 4, 
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Plane className="w-6 h-6 text-blue-400" />
-                  </motion.div>
-                  
-                  <motion.div
-                    className="absolute top-12 right-2"
-                    animate={{ 
-                      x: [0, -80, 0],
-                      y: [0, -5, 0]
-                    }}
-                    transition={{ 
-                      duration: 3, 
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 1
-                    }}
-                  >
-                    <Plane className="w-5 h-5 text-blue-300" />
-                  </motion.div>
-                </div>
-
-                {/* 항구 영역 */}
-                <div className="absolute top-4 right-4 w-32 h-24 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-                  <div className="flex items-center justify-center gap-2 p-2">
-                    <Ship className="w-4 h-4 text-cyan-400" />
-                    <span className="text-white text-xs font-semibold">항구</span>
-                  </div>
-                  
-                  {/* 움직이는 배들 */}
-                  <motion.div
-                    className="absolute bottom-2 left-4"
-                    animate={{ 
-                      x: [0, 60, 0],
-                      y: [0, -5, 0]
-                    }}
-                    transition={{ 
-                      duration: 5, 
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Ship className="w-6 h-6 text-cyan-400" />
-                  </motion.div>
-                  
-                  <motion.div
-                    className="absolute bottom-4 right-4"
-                    animate={{ 
-                      x: [0, -40, 0],
-                      y: [0, -3, 0]
-                    }}
-                    transition={{ 
-                      duration: 4, 
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 2
-                    }}
-                  >
-                    <Ship className="w-5 h-5 text-cyan-300" />
-                  </motion.div>
-                </div>
-
-                {/* 창고 영역 */}
-                <div className="absolute bottom-4 left-4 w-32 h-24 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-                  <div className="flex items-center justify-center gap-2 p-2">
-                    <Warehouse className="w-4 h-4 text-orange-400" />
-                    <span className="text-white text-xs font-semibold">창고</span>
-                  </div>
-                  
-                  {/* 움직이는 트럭들 */}
-                  <motion.div
-                    className="absolute bottom-2 left-2"
-                    animate={{ 
-                      x: [0, 80, 0],
-                      y: [0, -2, 0]
-                    }}
-                    transition={{ 
-                      duration: 3, 
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Truck className="w-5 h-5 text-orange-400" />
-                  </motion.div>
-                  
-                  <motion.div
-                    className="absolute bottom-4 right-2"
-                    animate={{ 
-                      x: [0, -60, 0],
-                      y: [0, -1, 0]
-                    }}
-                    transition={{ 
-                      duration: 4, 
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 1.5
-                    }}
-                  >
-                    <Truck className="w-4 h-4 text-orange-300" />
-                  </motion.div>
-                </div>
-
-                {/* 중앙 물류 허브 */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-32 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30">
-                  <div className="flex items-center justify-center gap-2 p-2">
-                    <Package className="w-5 h-5 text-yellow-400" />
-                    <span className="text-white text-sm font-semibold">물류 허브</span>
-                  </div>
-                  
-                  {/* 중앙에서 움직이는 패키지들 */}
-                  <motion.div
-                    className="absolute top-8 left-4"
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      rotate: [0, 360]
-                    }}
-                    transition={{ 
-                      duration: 2, 
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Package className="w-6 h-6 text-yellow-400" />
-                  </motion.div>
-                  
-                  <motion.div
-                    className="absolute bottom-8 right-4"
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                      rotate: [0, -360]
-                    }}
-                    transition={{ 
-                      duration: 2.5, 
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 1
-                    }}
-                  >
-                    <Package className="w-5 h-5 text-yellow-300" />
-                  </motion.div>
-                </div>
-
-                {/* 연결선들 */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                  <motion.path
-                    d="M 80 80 Q 200 60 300 80"
-                    stroke="#f59e0b"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,5"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
-                  <motion.path
-                    d="M 300 80 Q 400 100 500 80"
-                    stroke="#06b6d4"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,5"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                  />
-                  <motion.path
-                    d="M 80 300 Q 200 280 300 300"
-                    stroke="#f97316"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,5"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 2 }}
-                  />
-                </svg>
-
-                {/* 미니어처 효과를 위한 그림자 */}
-                <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/30 to-transparent"></div>
-              </div>
-
-              {/* 범례 */}
-              <div className="flex justify-center gap-6 mt-6">
-                <div className="flex items-center gap-2">
-                  <Plane className="w-4 h-4 text-blue-400" />
-                  <span className="text-white text-sm">공항</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Ship className="w-4 h-4 text-cyan-400" />
-                  <span className="text-white text-sm">항구</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Warehouse className="w-4 h-4 text-orange-400" />
-                  <span className="text-white text-sm">창고</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-yellow-400" />
-                  <span className="text-white text-sm">물류 허브</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-          {selectedTab === 4 && (
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl overflow-hidden"
-            >
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <Truck className="w-8 h-8 text-red-300" />
-                <h2 className="text-2xl font-bold text-white">파티클 시스템</h2>
-              </div>
-              
-              {/* 파티클 시스템 컨테이너 */}
-              <div className="relative w-full h-96 bg-gradient-to-br from-red-900/20 to-pink-900/20 rounded-2xl overflow-hidden">
-                {/* 중앙 HTNS 로고 */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                  <motion.div
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{ 
-                      duration: 4, 
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="bg-gradient-to-br from-red-500 to-pink-500 rounded-full p-6 shadow-2xl"
-                  >
-                    <div className="text-white font-bold text-xl">HTNS</div>
-                  </motion.div>
-                </div>
-
-                {/* 파티클 아이콘들 - 최적화된 개수 */}
-                {/* 비행기 파티클 */}
-                {[...Array(4)].map((_, i) => (
-                  <motion.div
-                    key={`plane-${i}`}
-                    className="absolute"
-                    initial={{ 
-                      x: Math.random() * 800 + 100,
-                      y: Math.random() * 400 + 50
-                    }}
-                    animate={{ 
-                      x: [Math.random() * 800 + 100, Math.random() * 800 + 100],
-                      y: [Math.random() * 400 + 50, Math.random() * 400 + 50],
-                      rotate: [0, 360]
-                    }}
-                    transition={{ 
-                      duration: Math.random() * 8 + 8, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: i * 0.5
-                    }}
-                  >
-                    <Plane className="w-4 h-4 text-blue-400 opacity-60" />
-                  </motion.div>
-                ))}
-
-                {/* 배 파티클 */}
-                {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={`ship-${i}`}
-                    className="absolute"
-                    initial={{ 
-                      x: Math.random() * 800 + 100,
-                      y: Math.random() * 400 + 50
-                    }}
-                    animate={{ 
-                      x: [Math.random() * 800 + 100, Math.random() * 800 + 100],
-                      y: [Math.random() * 400 + 50, Math.random() * 400 + 50],
-                      rotate: [0, -360]
-                    }}
-                    transition={{ 
-                      duration: Math.random() * 10 + 10, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: i * 0.7
-                    }}
-                  >
-                    <Ship className="w-5 h-5 text-cyan-400 opacity-60" />
-                  </motion.div>
-                ))}
-
-                {/* 트럭 파티클 */}
-                {[...Array(4)].map((_, i) => (
-                  <motion.div
-                    key={`truck-${i}`}
-                    className="absolute"
-                    initial={{ 
-                      x: Math.random() * 800 + 100,
-                      y: Math.random() * 400 + 50
-                    }}
-                    animate={{ 
-                      x: [Math.random() * 800 + 100, Math.random() * 800 + 100],
-                      y: [Math.random() * 400 + 50, Math.random() * 400 + 50],
-                      scale: [1, 1.2, 1]
-                    }}
-                    transition={{ 
-                      duration: Math.random() * 6 + 6, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: i * 0.3
-                    }}
-                  >
-                    <Truck className="w-4 h-4 text-green-400 opacity-60" />
-                  </motion.div>
-                ))}
-
-                {/* 패키지 파티클 */}
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={`package-${i}`}
-                    className="absolute"
-                    initial={{ 
-                      x: Math.random() * 800 + 100,
-                      y: Math.random() * 400 + 50
-                    }}
-                    animate={{ 
-                      x: [Math.random() * 800 + 100, Math.random() * 800 + 100],
-                      y: [Math.random() * 400 + 50, Math.random() * 400 + 50],
-                      rotate: [0, 720]
-                    }}
-                    transition={{ 
-                      duration: Math.random() * 12 + 12, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: i * 0.2
-                    }}
-                  >
-                    <Package className="w-3 h-3 text-yellow-400 opacity-70" />
-                  </motion.div>
-                ))}
-
-                {/* 창고 파티클 */}
-                {[...Array(2)].map((_, i) => (
-                  <motion.div
-                    key={`warehouse-${i}`}
-                    className="absolute"
-                    initial={{ 
-                      x: Math.random() * 800 + 100,
-                      y: Math.random() * 400 + 50
-                    }}
-                    animate={{ 
-                      x: [Math.random() * 800 + 100, Math.random() * 800 + 100],
-                      y: [Math.random() * 400 + 50, Math.random() * 400 + 50],
-                      scale: [1, 1.3, 1]
-                    }}
-                    transition={{ 
-                      duration: Math.random() * 15 + 15, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: i * 1
-                    }}
-                  >
-                    <Warehouse className="w-6 h-6 text-orange-400 opacity-50" />
-                  </motion.div>
-                ))}
-
-                {/* 중앙으로 향하는 파티클 흐름 - 최적화된 개수 */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                  {[...Array(6)].map((_, i) => (
-                    <motion.circle
-                      key={`flow-${i}`}
-                      cx={Math.random() * 800 + 100}
-                      cy={Math.random() * 400 + 50}
-                      r="2"
-                      fill="#ef4444"
-                      opacity="0.6"
-                      initial={{ 
-                        cx: Math.random() * 800 + 100,
-                        cy: Math.random() * 400 + 50
-                      }}
-                      animate={{ 
-                        cx: [Math.random() * 800 + 100, 400, Math.random() * 800 + 100],
-                        cy: [Math.random() * 400 + 50, 200, Math.random() * 400 + 50]
-                      }}
-                      transition={{ 
-                        duration: Math.random() * 6 + 6, 
-                        repeat: Infinity,
-                        ease: "linear",
-                        delay: i * 0.4
-                      }}
-                    />
-                  ))}
-                </svg>
-
-                {/* 파티클 효과를 위한 그라데이션 오버레이 */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 via-transparent to-pink-500/10"></div>
-              </div>
-
-              {/* 범례 */}
-              <div className="flex justify-center gap-6 mt-6">
-                <div className="flex items-center gap-2">
-                  <Plane className="w-4 h-4 text-blue-400" />
-                  <span className="text-white text-sm">항공 운송</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Ship className="w-4 h-4 text-cyan-400" />
-                  <span className="text-white text-sm">해상 운송</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-green-400" />
-                  <span className="text-white text-sm">육상 운송</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-yellow-400" />
-                  <span className="text-white text-sm">화물</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Warehouse className="w-4 h-4 text-orange-400" />
-                  <span className="text-white text-sm">창고</span>
-                </div>
-              </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </div>

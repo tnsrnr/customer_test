@@ -12,7 +12,6 @@ interface DivisionTableProps {
 }
 
 export function DivisionTable({ data, loading, selectedYear, selectedMonth }: DivisionTableProps) {
-  console.log('🔄 DivisionTable 렌더링:', { selectedYear, selectedMonth });
   
   if (loading) {
     return (

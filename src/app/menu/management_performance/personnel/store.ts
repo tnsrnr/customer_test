@@ -80,7 +80,16 @@ const personnel_grid = async (year: number, month: number): Promise<PersonnelDat
         groupCategory: item.GROUPCATEGORY || ''
       }));
       
-      return { divisions };
+      // 첫 번째 행이 "소계"인 경우 제거 (실제 API 응답에서 불필요한 첫 번째 소계 행 제거)
+      const filteredDivisions = divisions.filter((item, index) => {
+        // 첫 번째 행이 "소계"이고 그룹 카테고리가 비어있거나 "국내"인 경우 제거
+        if (index === 0 && item.company_name === '소계' && (!item.groupCategory || item.groupCategory === '국내')) {
+          return false;
+        }
+        return true;
+      });
+      
+      return { divisions: filteredDivisions };
     }
     
     throw new Error('데이터 형식이 올바르지 않습니다.');
@@ -141,6 +150,189 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
       
       // store의 현재 날짜도 업데이트
       set({ currentYear, currentMonth });
+      
+      // ⭐ 8월 조건 체크 - 템프 데이터 사용
+      if (currentMonth === 8) {
+        console.log('🎯 8월 데이터: 템프 데이터를 사용합니다. (인사 현황)');
+        
+        const tempData: PersonnelData = {
+          // 상단 4개 KPI 카드 (우측 → 좌측 순서)
+          kpiMetrics: {
+            headquarters: 158,                    // 7: 본사 (좌측 끝)
+            headquartersChange: 0,              // 8: 본사 변화
+            domesticSubsidiaries: 758,            // 5: 국내 계열사 (우측에서 3번째)
+            domesticSubsidiariesChange: 1,      // 6: 국내 계열사 변화
+            overseasSubsidiaries: 893,            // 3: 해외 계열사 (우측에서 2번째)
+            overseasSubsidiariesChange: -7,      // 4: 해외 계열사 변화
+            total: 1809,                           // 1: 총 인원 (우측 끝)
+            totalChange: -6                      // 2: 총 인원 변화
+          },
+          // 하단 테이블 (좌측 → 우측, 상단 → 하단) - 첫 번째 불필요한 "소계" 행 제거
+          gridData: {
+            divisions: [
+              {
+                company_name: '하나로TNS',
+                q1: 9,
+                q2: 10,
+                q3: 11,
+                q4: 12,
+                currentLocal: 13,
+                currentKorean: 14,
+                previousMonth: 15,
+                currentMonth: 16,
+                change: 17,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '하나로S',
+                q1: 18,
+                q2: 19,
+                q3: 20,
+                q4: 21,
+                currentLocal: 22,
+                currentKorean: 23,
+                previousMonth: 24,
+                currentMonth: 25,
+                change: 26,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '하나로넷',
+                q1: 27,
+                q2: 28,
+                q3: 29,
+                q4: 30,
+                currentLocal: 31,
+                currentKorean: 32,
+                previousMonth: 33,
+                currentMonth: 34,
+                change: 35,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '하나로에이',
+                q1: 36,
+                q2: 37,
+                q3: 38,
+                q4: 39,
+                currentLocal: 40,
+                currentKorean: 41,
+                previousMonth: 42,
+                currentMonth: 43,
+                change: 44,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '하나로인터내셔널',
+                q1: 45,
+                q2: 46,
+                q3: 47,
+                q4: 48,
+                currentLocal: 49,
+                currentKorean: 50,
+                previousMonth: 51,
+                currentMonth: 52,
+                change: 53,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '소계',
+                q1: 54,
+                q2: 55,
+                q3: 56,
+                q4: 57,
+                currentLocal: 58,
+                currentKorean: 59,
+                previousMonth: 60,
+                currentMonth: 61,
+                change: 62,
+                groupCategory: '국내'
+              },
+              {
+                company_name: '중국',
+                q1: 63,
+                q2: 64,
+                q3: 65,
+                q4: 66,
+                currentLocal: 67,
+                currentKorean: 68,
+                previousMonth: 69,
+                currentMonth: 70,
+                change: 71,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '유럽',
+                q1: 72,
+                q2: 73,
+                q3: 74,
+                q4: 75,
+                currentLocal: 76,
+                currentKorean: 77,
+                previousMonth: 78,
+                currentMonth: 79,
+                change: 80,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '아시아',
+                q1: 81,
+                q2: 82,
+                q3: 83,
+                q4: 84,
+                currentLocal: 85,
+                currentKorean: 86,
+                previousMonth: 87,
+                currentMonth: 88,
+                change: 89,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '기타(중국+미국)',
+                q1: 90,
+                q2: 91,
+                q3: 92,
+                q4: 93,
+                currentLocal: 94,
+                currentKorean: 95,
+                previousMonth: 96,
+                currentMonth: 97,
+                change: 98,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '소계',
+                q1: 99,
+                q2: 100,
+                q3: 101,
+                q4: 102,
+                currentLocal: 103,
+                currentKorean: 104,
+                previousMonth: 105,
+                currentMonth: 106,
+                change: 107,
+                groupCategory: '해외'
+              },
+              {
+                company_name: '총계',
+                q1: 108,
+                q2: 109,
+                q3: 110,
+                q4: 111,
+                currentLocal: 112,
+                currentKorean: 113,
+                previousMonth: 114,
+                currentMonth: 115,
+                change: 116,
+                groupCategory: ''
+              }
+            ]
+          }
+        };
+        
+        set({ data: tempData, loading: false, error: null });
+        return; // API 호출 없이 리턴
+      }
       
       set({ loading: true, error: null });
       

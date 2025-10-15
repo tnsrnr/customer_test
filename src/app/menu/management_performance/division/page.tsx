@@ -127,7 +127,6 @@ export default function DivisionPage() {
   const totalRevenue = data?.divisionCards.reduce((sum, item) => sum + item.revenue, 0) || 0;
 
   function DivisionPageContent() {
-    console.log('🔄 DivisionPageContent 렌더링:', { displayYear, displayMonth });
     
     return (
       <div className="h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden flex items-center justify-center">

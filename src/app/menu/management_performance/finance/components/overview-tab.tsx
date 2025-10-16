@@ -118,7 +118,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 <span className="text-sm font-medium text-emerald-200 mb-1 block">총자산</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
-                    {kpiMetrics.totalAssets.toLocaleString()}
+                    {Math.round(kpiMetrics.totalAssets).toLocaleString()}
                   </span>
                   <span className="text-lg font-medium text-emerald-200 ml-1">억원</span>
                 </div>
@@ -129,7 +129,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 ? 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30' 
                 : 'text-red-300 bg-red-600/30 border-red-400/30'
             }`}>
-              {kpiMetrics.totalAssetsChange >= 0 ? '▲' : '▼'} {Math.abs(kpiMetrics.totalAssetsChange)}%
+              {kpiMetrics.totalAssetsChange >= 0 ? '▲' : '▼'} {Math.round(Math.abs(kpiMetrics.totalAssetsChange))}%
             </span>
           </div>
           
@@ -154,7 +154,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 <span className="text-sm font-medium text-red-200 mb-1 block">총부채</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
-                    {kpiMetrics.totalLiabilities.toLocaleString()}
+                    {Math.round(kpiMetrics.totalLiabilities).toLocaleString()}
                   </span>
                   <span className="text-lg font-medium text-red-200 ml-1">억원</span>
                 </div>
@@ -165,7 +165,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 ? 'text-red-300 bg-red-600/30 border-red-400/30' 
                 : 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30'
             }`}>
-              {kpiMetrics.totalLiabilitiesChange >= 0 ? '▲' : '▼'} {Math.abs(kpiMetrics.totalLiabilitiesChange)}%
+              {kpiMetrics.totalLiabilitiesChange >= 0 ? '▲' : '▼'} {Math.round(Math.abs(kpiMetrics.totalLiabilitiesChange))}%
             </span>
           </div>
           
@@ -190,7 +190,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 <span className="text-sm font-medium text-blue-200 mb-1 block">자본총계</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
-                    {kpiMetrics.totalEquity.toLocaleString()}
+                    {Math.round(kpiMetrics.totalEquity).toLocaleString()}
                   </span>
                   <span className="text-lg font-medium text-blue-200 ml-1">억원</span>
                 </div>
@@ -201,7 +201,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 ? 'text-blue-300 bg-blue-600/30 border-blue-400/30' 
                 : 'text-red-300 bg-red-600/30 border-red-400/30'
             }`}>
-              {kpiMetrics.totalEquityChange >= 0 ? '▲' : '▼'} {Math.abs(kpiMetrics.totalEquityChange)}%
+              {kpiMetrics.totalEquityChange >= 0 ? '▲' : '▼'} {Math.round(Math.abs(kpiMetrics.totalEquityChange))}%
             </span>
           </div>
           
@@ -226,7 +226,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 <span className="text-sm font-medium text-purple-200 mb-1 block">부채비중</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
-                    {kpiMetrics.debtWeight.toFixed(1)}
+                    {Math.round(kpiMetrics.debtWeight)}
                   </span>
                   <span className="text-lg font-medium text-purple-200 ml-1">%</span>
                 </div>
@@ -237,7 +237,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' 
                 : 'text-red-300 bg-red-600/30 border-red-400/30'
             }`}>
-              {kpiMetrics.debtWeightChange <= 0 ? '▼' : '▲'} {Math.abs(kpiMetrics.debtWeightChange)}%
+              {kpiMetrics.debtWeightChange <= 0 ? '▼' : '▲'} {Math.round(Math.abs(kpiMetrics.debtWeightChange))}%
             </span>
           </div>
           

@@ -231,9 +231,9 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
       
       set({ currentYear, currentMonth, loading: true, error: null });
       
-      // ⭐ 9월 조건 체크 - 차입금만 하드코딩
+      // ⭐ 9월 조건 체크 - 총차입금/부채비율 하드코딩
       if (currentMonth === 9) {
-        console.log('🎯 9월 데이터: 차입금 데이터를 하드코딩합니다. (재무현황)');
+        console.log('🎯 9월 데이터: 총차입금/부채비율 데이터를 하드코딩합니다. (재무현황)');
         
         try {
           const [kpiMetrics, chartData, trendData] = await Promise.all([
@@ -242,10 +242,11 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
             finance_overview_trends(currentYear, currentMonth)
           ]);
 
-          // 차입금 데이터만 하드코딩으로 교체
+          // 총차입금과 부채비율 하드코딩으로 교체 (1부터 10까지 증가)
           const modifiedTrendData = {
             ...trendData,
-            totalDebt: [344, 382, 171, 188, 392, 586, 453, 391, 861, 813] // 10년간 총 차입금 하드코딩
+            totalLoan: [344, 382, 171, 188, 392, 586, 453, 391, 861, 804], // 10년간 총 차입금 (실제 데이터로 교체 예정)
+            debtRatio: [195, 195, 86, 88, 154, 169, 111, 66, 80, 69]  // 10년간 부채비율 (실제 데이터로 교체 예정)
           };
 
           const combinedData: FinanceData = {

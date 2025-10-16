@@ -111,7 +111,7 @@ export function CapitalTab({ data }: CapitalTabProps) {
         borderRadius: 4,
       },
       {
-        label: '총자산',
+        label: '자산',
         data: chartData.capitalStructure.assets,
         backgroundColor: 'rgba(37, 99, 235, 0.4)',
         borderColor: 'rgba(96, 165, 250, 0.6)',

@@ -19,7 +19,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
     labels: chartData.capitalStructure.labels,
     datasets: [
       {
-        label: '총자산',
+        label: '자산',
         data: chartData.capitalStructure.assets,
         backgroundColor: 'rgba(37, 99, 235, 0.4)',
         borderColor: 'rgba(96, 165, 250, 0.6)',
@@ -71,7 +71,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
     labels: trendData.labels,
     datasets: [
       {
-        label: '총 차입금',
+        label: '차입금',
         data: trendData.totalLoan,
         backgroundColor: 'rgba(37, 99, 235, 0.4)',
         borderColor: 'rgba(96, 165, 250, 0.6)',
@@ -115,7 +115,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
             </div>
             <div className="flex-1 flex items-center justify-center ml-4">
               <div className="text-center">
-                <span className="text-sm font-medium text-emerald-200 mb-1 block">총자산</span>
+                <span className="text-sm font-medium text-emerald-200 mb-1 block">자산</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
                     {Math.round(kpiMetrics.totalAssets).toLocaleString()}
@@ -151,7 +151,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
             </div>
             <div className="flex-1 flex items-center justify-center ml-4">
               <div className="text-center">
-                <span className="text-sm font-medium text-red-200 mb-1 block">총부채</span>
+                <span className="text-sm font-medium text-red-200 mb-1 block">부채</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
                     {Math.round(kpiMetrics.totalLiabilities).toLocaleString()}
@@ -187,7 +187,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
             </div>
             <div className="flex-1 flex items-center justify-center ml-4">
               <div className="text-center">
-                <span className="text-sm font-medium text-blue-200 mb-1 block">자본총계</span>
+                <span className="text-sm font-medium text-blue-200 mb-1 block">자본</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
                     {Math.round(kpiMetrics.totalEquity).toLocaleString()}
@@ -360,7 +360,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
 
       {/* 10년 트렌드 차트 */}
       <Card className="p-6 bg-white/10 backdrop-blur-md border border-white/20">
-        <h3 className="text-white font-semibold text-lg mb-4">10년간 총 차입금 및 부채비율 트렌드</h3>
+        <h3 className="text-white font-semibold text-lg mb-4">10년간 차입금 및 부채비율 트렌드</h3>
         <div className="h-[230px]">
           <Bar
             data={trendChartData}

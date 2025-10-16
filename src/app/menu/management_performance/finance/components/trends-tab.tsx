@@ -28,7 +28,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
       case 'totalLoan_debtRatio':
         baseData.datasets = [
           {
-            label: '총 차입금',
+            label: '차입금',
             data: trendData.totalLoan,
             backgroundColor: 'rgba(37, 99, 235, 0.4)',
             borderColor: 'rgba(96, 165, 250, 0.6)',
@@ -102,7 +102,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
         
         baseData.datasets = [
           {
-            label: '총자산',
+            label: '자산',
             data: totalAssets,
             backgroundColor: 'rgba(220, 38, 38, 0.4)',
             borderColor: 'rgba(248, 113, 113, 0.6)',
@@ -144,7 +144,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
       case 'totalLoan_debtRatio':
         return {
           primary: {
-            label: '현재 총 차입금',
+            label: '현재 차입금',
             value: currentTotalLoan,
             unit: '억원',
             change: ((currentTotalLoan - previousTotalLoan) / previousTotalLoan * 100).toFixed(1),
@@ -192,12 +192,12 @@ export function TrendsTab({ data }: TrendsTabProps) {
         
         return {
           primary: {
-            label: '현재 총자산',
+            label: '현재 자산',
             value: Math.round(currentTotalAssets * 10) / 10,
             unit: '억원',
             change: ((currentTotalAssets - previousTotalAssets) / previousTotalAssets * 100).toFixed(1),
             maxValue: Math.max(...trendData.totalLoan.map(loan => loan * 4)),
-            maxLabel: '최대 총자산'
+            maxLabel: '최대 자산'
           },
           secondary: {
             label: '현재 부채비중',
@@ -358,9 +358,9 @@ export function TrendsTab({ data }: TrendsTabProps) {
       <Card className="p-6 bg-white/10 backdrop-blur-md border border-white/20 mt-8">
         <div className="flex justify-between items-start mb-8">
           <h3 className="text-white font-semibold text-2xl">
-            {selectedTrend === 'totalLoan_debtRatio' && '10년간 총 차입금 및 부채비율 트렌드'}
+            {selectedTrend === 'totalLoan_debtRatio' && '10년간 차입금 및 부채비율 트렌드'}
             {selectedTrend === 'debtAmount_loanRatio' && '10년간 부채금액 및 차입금비율 트렌드'}
-            {selectedTrend === 'totalAssets_debtWeight' && '10년간 총자산 및 부채비중 트렌드'}
+            {selectedTrend === 'totalAssets_debtWeight' && '10년간 자산 및 부채비중 트렌드'}
           </h3>
           
           {/* 라디오 버튼 선택 */}
@@ -376,7 +376,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
                   onChange={(e) => setSelectedTrend(e.target.value as TrendOption)}
                   className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
-                <span className="text-white text-xs">총차입금/부채비율</span>
+                <span className="text-white text-xs">차입금/부채비율</span>
               </label>
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
@@ -398,7 +398,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
                   onChange={(e) => setSelectedTrend(e.target.value as TrendOption)}
                   className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
-                <span className="text-white text-xs">총자산/부채비중</span>
+                <span className="text-white text-xs">자산/부채비중</span>
               </label>
             </div>
           </div>

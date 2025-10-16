@@ -57,7 +57,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
           {/* 상위 헤더 행 */}
           <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
             <TableHead 
-              className="text-white font-bold text-2xl text-center align-middle border-r border-white/20 py-4"
+              className="text-white font-bold text-2xl text-center align-middle border-r-2 border-white/40 py-4"
               style={{ 
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: 'blur(12px)'
@@ -66,51 +66,66 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
               구분
             </TableHead>
             <TableHead 
-              className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
+              className="text-white font-bold text-2xl text-center backdrop-blur-md border-r-4 border-blue-400/50 py-4"
               colSpan={3}
+              style={{ 
+                backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                backdropFilter: 'blur(12px)'
+              }}
             >
               계획 ('{currentYear}년 {periodType === 'cumulative' ? `1~${currentMonth}월 누적` : `${currentMonth}월`})
             </TableHead>
             <TableHead 
-              className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md border-r border-white/20 py-4"
+              className="text-white font-bold text-2xl text-center backdrop-blur-md border-r-4 border-emerald-400/50 py-4"
               colSpan={3}
+              style={{ 
+                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                backdropFilter: 'blur(12px)'
+              }}
             >
               실적 ('{currentYear}년 {periodType === 'cumulative' ? `1~${currentMonth}월 누적` : `${currentMonth}월`})
             </TableHead>
             <TableHead 
-              className="text-white font-bold text-2xl text-center bg-white/5 backdrop-blur-md py-4"
+              className="text-white font-bold text-2xl text-center backdrop-blur-md py-4"
               colSpan={2}
+              style={{ 
+                backgroundColor: 'rgba(251, 146, 60, 0.15)',
+                backdropFilter: 'blur(12px)'
+              }}
             >
               달성율 (계획 比)
             </TableHead>
           </TableRow>
           {/* 하위 헤더 행 */}
           <TableRow className="bg-white/5 backdrop-blur-md border-b-2 border-white/30">
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            <TableHead className="text-white font-bold text-xl text-center border-r-2 border-white/40 py-4">
               구분
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            {/* 계획 섹션 */}
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-blue-500/10">
               매출액
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-blue-500/10">
               영업이익
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            <TableHead className="text-white font-bold text-xl text-center border-r-4 border-blue-400/50 py-4 bg-blue-500/10">
               영업이익율
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            {/* 실적 섹션 */}
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-emerald-500/10">
               매출액
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-emerald-500/10">
               영업이익
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            <TableHead className="text-white font-bold text-xl text-center border-r-4 border-emerald-400/50 py-4 bg-emerald-500/10">
               영업이익율
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4">
+            {/* 달성률 섹션 */}
+            <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-orange-500/10">
               매출액
             </TableHead>
-            <TableHead className="text-white font-bold text-xl text-center py-4">
+            <TableHead className="text-white font-bold text-xl text-center py-4 bg-orange-500/10">
               영업이익
             </TableHead>
           </TableRow>
@@ -123,11 +138,11 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                 division.name === '합계' ? 'bg-white/10 font-bold' : ''
               }`}
             >
-              <TableCell className="text-white font-semibold text-xl text-center border-r border-white/20 py-4">
+              <TableCell className="text-white font-semibold text-xl text-center border-r-2 border-white/40 py-4">
                 {division.name}
               </TableCell>
               {/* 계획 데이터 */}
-              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-blue-500/5">
                 <CountUp 
                   end={division.plannedSales} 
                   duration={1.5}
@@ -136,7 +151,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                   className="text-white"
                 />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-blue-500/5 ${
                 division.plannedOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
                 <CountUp 
@@ -148,13 +163,14 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                   className={division.plannedOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}
                 />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
+              <TableCell className={`text-xl text-center border-r-4 border-blue-400/50 py-4 bg-blue-500/5 ${
                 division.plannedOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
                 <CountUp 
                   end={division.plannedOpMargin} 
                   duration={1.5}
                   separator=","
+                  decimals={1}
                   decimal="."
                   prefix={division.plannedOpMargin >= 0 ? '+' : ''}
                   suffix="%"
@@ -162,7 +178,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                 />
               </TableCell>
               {/* 실적 데이터 */}
-              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-emerald-500/5">
                 <CountUp 
                   end={division.actualSales} 
                   duration={1.5}
@@ -171,7 +187,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                   className="text-white"
                 />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-emerald-500/5 ${
                 division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
                 <CountUp 
@@ -183,13 +199,14 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                   className={division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}
                 />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 ${
+              <TableCell className={`text-xl text-center border-r-4 border-emerald-400/50 py-4 bg-emerald-500/5 ${
                 division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
                 <CountUp 
                   end={division.actualOpMargin} 
                   duration={1.5}
                   separator=","
+                  decimals={1}
                   decimal="."
                   prefix={division.actualOpMargin >= 0 ? '+' : ''}
                   suffix="%"
@@ -197,7 +214,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                 />
               </TableCell>
               {/* 달성율 데이터 */}
-              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4">
+              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-orange-500/5">
                 <CountUp 
                   end={division.salesAchievement} 
                   duration={1.5}
@@ -207,7 +224,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                   className="text-white"
                 />
               </TableCell>
-              <TableCell className="text-white text-xl text-center py-4">
+              <TableCell className="text-white text-xl text-center py-4 bg-orange-500/5">
                 <CountUp 
                   end={division.opProfitAchievement} 
                   duration={1.5}

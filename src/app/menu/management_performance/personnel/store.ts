@@ -380,6 +380,19 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
                 groupCategory: '국내'
               },
               {
+                company_name: '소계',
+                q1: 1049,
+                q2: 1036,
+                q3: 999,
+                q4: 994,
+                currentLocal: 0,
+                currentKorean: 914,
+                previousMonth: 916,
+                currentMonth: 914,
+                change: -2,
+                groupCategory: '국내'
+              },
+              {
                 company_name: '중국',
                 q1: 370,
                 q2: 371,

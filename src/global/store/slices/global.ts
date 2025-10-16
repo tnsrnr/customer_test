@@ -98,7 +98,7 @@ export const useGlobalStore = create<GlobalStore>()(
       name: 'htns-global-store',
       partialize: (state) => ({
         selectedYear: state.selectedYear,
-        selectedMonth: state.selectedMonth,
+        // selectedMonth는 persist에서 제외 - 항상 기본값(9월)으로 시작
         menuOrder: state.menuOrder,
         currentPage: state.currentPage,
       }),

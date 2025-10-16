@@ -205,6 +205,7 @@ export default function CompanyPerformancePage() {
                             end={data.kpiMetrics.ACTUAL_OP_MARGIN || 0} 
                             duration={2}
                             separator=","
+                            decimals={1}
                             decimal="."
                             suffix="%"
                             className="text-white"
@@ -222,7 +223,7 @@ export default function CompanyPerformancePage() {
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-600 opacity-60"></div>
               </motion.div>
 
-              {/* 매출 달성률 카드 */}
+              {/* 매출증감률 카드 */}
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -235,28 +236,35 @@ export default function CompanyPerformancePage() {
                 
                 <div className="relative flex items-center h-full">
                   <div className="p-3 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl shadow-lg group-hover:shadow-orange-400/25 transition-all duration-300">
-                    <BarChart3 className="w-8 h-8 text-white drop-shadow-lg" />
+                    <TrendingUp className="w-8 h-8 text-white drop-shadow-lg" />
                   </div>
                   <div className="flex-1 flex items-center justify-center ml-4">
                     <div className="text-center">
-                      <span className="text-sm font-medium text-orange-200 mb-1 block">매출 달성률</span>
+                      <span className="text-sm font-medium text-orange-200 mb-1 block">매출증감률</span>
                       <div className="flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white drop-shadow-sm">
+                        <span className={`text-3xl font-bold drop-shadow-sm ${
+                          (() => {
+                            const previousYearSales = data.kpiMetrics.ACTUAL_SALES - data.kpiMetrics.ACTUAL_SALES_CHANGE;
+                            const growthRate = previousYearSales !== 0 ? (data.kpiMetrics.ACTUAL_SALES_CHANGE / previousYearSales) * 100 : 0;
+                            return growthRate >= 0 ? 'text-emerald-400' : 'text-red-400';
+                          })()
+                        }`}>
                           <CountUp 
-                            end={data.kpiMetrics.SALES_ACHIEVEMENT || 0} 
+                            end={(() => {
+                              const previousYearSales = data.kpiMetrics.ACTUAL_SALES - data.kpiMetrics.ACTUAL_SALES_CHANGE;
+                              return previousYearSales !== 0 ? (data.kpiMetrics.ACTUAL_SALES_CHANGE / previousYearSales) * 100 : 0;
+                            })()} 
                             duration={2}
                             separator=","
+                            decimals={1}
                             decimal="."
+                            prefix={data.kpiMetrics.ACTUAL_SALES_CHANGE >= 0 ? '+' : ''}
                             suffix="%"
-                            className="text-white"
                           />
                         </span>
                       </div>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm ${data.kpiMetrics.SALES_ACHIEVEMENT_CHANGE >= 0 ? 'text-orange-300 bg-orange-600/30 border-orange-400/30' : 'text-red-300 bg-red-600/30 border-red-400/30'}`}>
-                    {data.kpiMetrics.SALES_ACHIEVEMENT_CHANGE >= 0 ? '+' : ''}{data.kpiMetrics.SALES_ACHIEVEMENT_CHANGE.toFixed(2)}%
-                  </span>
                 </div>
                 
                 {/* 하단 장식선 */}

@@ -236,9 +236,9 @@ export function PersonnelTable({ data, loading, currentYear, currentMonth }: Per
                   division.company_name === '총계' || division.company_name === 'ALL' ? 'text-sm' : 'text-xs'
                 } ${
                   division.change > 0 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
                     : division.change < 0 
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                     : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                 }`}>
                   {division.change > 0 ? '▲' : division.change < 0 ? '▼' : ''} {Math.abs(division.change)}

@@ -459,7 +459,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             ACTUAL_SALES: 4633,              // 1: 총 매출액
             ACTUAL_OP_PROFIT: 76,          // 2: 영업이익
             ACTUAL_OP_MARGIN: 1.6,          // 3: 영업이익률
-            SALES_ACHIEVEMENT: 0,         // 4: 매출 달성률
+            SALES_ACHIEVEMENT: -21,         // 4: 매출 달성률
             ACTUAL_SALES_CHANGE: -1210,       // 5: 전월대비 매출 증가액
             ACTUAL_OP_PROFIT_CHANGE: 42,   // 6: 전월대비 영업이익 증가액
             ACTUAL_OP_MARGIN_CHANGE: 0,   // 7: 전월대비 영업이익률 증가액
@@ -547,7 +547,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             datasets: [
               {
                 label: '계획 영업이익',
-                data: [67, 20, 83],
+                data: [67, 20, 82],
                 backgroundColor: 'rgba(156, 163, 175, 0.5)',
                 borderColor: 'rgba(156, 163, 175, 1)'
               },

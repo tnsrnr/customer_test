@@ -19,7 +19,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
     labels: chartData.capitalStructure.labels,
     datasets: [
       {
-        label: '자본금',
+        label: '자본',
         data: chartData.capitalStructure.capital,
         backgroundColor: 'rgba(16, 185, 129, 0.4)',
         borderColor: 'rgba(52, 211, 153, 0.6)',

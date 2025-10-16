@@ -19,10 +19,10 @@ export function OverviewTab({ data }: OverviewTabProps) {
     labels: chartData.capitalStructure.labels,
     datasets: [
       {
-        label: '자본',
-        data: chartData.capitalStructure.capital,
-        backgroundColor: 'rgba(16, 185, 129, 0.4)',
-        borderColor: 'rgba(52, 211, 153, 0.6)',
+        label: '총자산',
+        data: chartData.capitalStructure.assets,
+        backgroundColor: 'rgba(37, 99, 235, 0.4)',
+        borderColor: 'rgba(96, 165, 250, 0.6)',
         borderWidth: 2,
         borderRadius: 4,
       },
@@ -35,10 +35,10 @@ export function OverviewTab({ data }: OverviewTabProps) {
         borderRadius: 4,
       },
       {
-        label: '총자산',
-        data: chartData.capitalStructure.assets,
-        backgroundColor: 'rgba(37, 99, 235, 0.4)',
-        borderColor: 'rgba(96, 165, 250, 0.6)',
+        label: '자본',
+        data: chartData.capitalStructure.capital,
+        backgroundColor: 'rgba(16, 185, 129, 0.4)',
+        borderColor: 'rgba(52, 211, 153, 0.6)',
         borderWidth: 2,
         borderRadius: 4,
       }
@@ -248,7 +248,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
       {/* 요약 차트 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Card className="p-6 bg-white/10 backdrop-blur-md border border-white/20">
-          <h3 className="text-white font-semibold text-lg mb-4">자본/부채/자산 비교</h3>
+          <h3 className="text-white font-semibold text-lg mb-4">자산/부채/자본 비교</h3>
           <div className="h-[230px]">
             <Bar
               data={capitalStructureChartData}

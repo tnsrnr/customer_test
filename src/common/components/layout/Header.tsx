@@ -261,8 +261,8 @@ export function Header() {
   } = useGlobalStore();
   const [isClient, setIsClient] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const page1MenuCount = 8; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처, 국내자회사, 해외자회사 (8개)
-  const page2MenuCount = 12; // PAGE2: 항공실적~테8까지 (12개)
+  const page1MenuCount = 10; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 상위거래처, 부문별실적, 국내자회사, 해외자회사, 사업부실적, 권역실적 (10개)
+  const page2MenuCount = 10; // PAGE2: 항공실적~테8까지 (10개)
   const primaryGradient = 'from-blue-900 to-slate-900';
 
   // 클라이언트 사이드 렌더링 보장
@@ -286,9 +286,9 @@ export function Header() {
     }
     
     // 페이지 분할 로직에 따라 현재 페이지 결정 (원본 menuItems 기준)
-    if (currentIndex >= 0 && currentIndex <= 7) {
+    if (currentIndex >= 0 && currentIndex <= 9) {
       setCurrentPage('page1');
-    } else if (currentIndex >= 8 && currentIndex <= 19) {
+    } else if (currentIndex >= 10 && currentIndex <= 19) {
       setCurrentPage('page2');
     } else if (currentIndex >= 20) {
       setCurrentPage('page3');
@@ -343,10 +343,10 @@ export function Header() {
   
   let visibleMenus: any[] = [];
   if (currentPage === 'page1') {
-    // PAGE1: 경영실적 메뉴들 (1-8번째: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 상위거래처, 국내자회사, 해외자회사)
+    // PAGE1: 경영실적 메뉴들 (1-10번째: 전사실적, 인원현황, 본사실적, 재무현황, 상위거래처, 부문별실적, 국내자회사, 해외자회사, 사업부실적, 권역실적)
     visibleMenus = orderedMenus.slice(0, page1MenuCount);
   } else if (currentPage === 'page2') {
-    // PAGE2: 실적관리 메뉴들 (9-20번째: 항공실적, 해상실적, 창고실적, 도급실적, 국내, 사업부, 테4, 테5, 테6, 테7, 테8)
+    // PAGE2: 실적관리 메뉴들 (11-20번째: 항공실적, 해상실적, 창고실적, 도급실적, 국내, 테4, 테5, 테7, 테8)
     visibleMenus = orderedMenus.slice(page1MenuCount, page1MenuCount + page2MenuCount);
   } else {
     // PAGE3: 영업실적분석 (마지막 2개: 업체방문분석, 업체방문캘린더)

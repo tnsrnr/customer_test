@@ -55,29 +55,39 @@ export const menuItems: MenuItem[] = [
     name: '상위거래처', 
     path: '/menu/management_performance/top_clients', 
     icon: TrendingUp,
-    description: '상위 거래처 현황',
-    isUnderDevelopment: true
+    description: '상위 거래처 현황'
   },
   { 
     name: '부문별실적', 
     path: '/menu/management_performance/division', 
     icon: PieChart,
-    description: '부문별 실적 현황',
-    isUnderDevelopment: true
+    // isUnderDevelopment: true,
+    description: '부문별 실적 현황'
+
   },
   { 
     name: '국내자회사', 
     path: '/menu/management_performance/domestic_subsidiaries', 
     icon: Building,
-    description: '국내 자회사 현황',
-    isUnderDevelopment: true
+    description: '국내 자회사 현황'
   },
   { 
     name: '해외자회사', 
     path: '/menu/management_performance/overseas_subsidiaries', 
     icon: Globe,
-    description: '해외 자회사 현황',
-    isUnderDevelopment: true
+    description: '해외 자회사 현황'
+  },
+  { 
+    name: '사업부실적', 
+    path: '/menu/management_performance/business_division', 
+    icon: Building2,
+    description: '사업부별 실적 현황'
+  },
+  { 
+    name: '권역실적', 
+    path: '/menu/management_performance/regional_performance', 
+    icon: Globe,
+    description: '해외 권역별 실적 현황'
   },
   // ===== 물동량 실적 관리 카테고리 =====
   { 
@@ -110,11 +120,6 @@ export const menuItems: MenuItem[] = [
     description: '국내 정보'
   },
   { 
-    name: '사업부', 
-    path: '/menu/performance_management/test3',
-    description: '사업부 정보'
-  },
-  { 
     name: '테4', 
     path: '/menu/performance_management/test4',
     description: '테 4'
@@ -123,11 +128,6 @@ export const menuItems: MenuItem[] = [
     name: '테5', 
     path: '/menu/performance_management/test5',
     description: '테 5'
-  },
-  { 
-    name: '테6', 
-    path: '/menu/performance_management/test6',
-    description: '테 6'
   },
   { 
     name: '테7', 

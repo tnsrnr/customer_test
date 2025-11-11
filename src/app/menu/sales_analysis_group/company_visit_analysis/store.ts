@@ -1,260 +1,185 @@
 import { create } from 'zustand';
-import { 
-  CompanyVisitAnalysisRaw, 
-  ApiResponse, 
-  TableRow, 
-  FilterState, 
-  AnalysisStats, 
-  MonthlyStats 
-} from './types';
+import { TreemapNode, SampleData, PivotConfig, TreemapStore, TreeLabelConfig } from './types';
 
-interface CompanyVisitAnalysisStore {
-  // 상태
-  tableData: TableRow[];
-  loading: boolean;
-  error: string | null;
-  filters: FilterState;
-  stats: AnalysisStats;
-  monthlyStats: MonthlyStats[];
+// 초기 피벗 설정
+const initialPivotConfig: PivotConfig = {
+  values: ['Value (Sum)'],
+  treeLabels: [
+    { name: 'Year', direction: '↑', order: 1, selected: true },
+    { name: 'Company', direction: '↑', order: 2, selected: true },
+    { name: 'Country', direction: '↑', order: 3, selected: false },
+    { name: 'Person', direction: '↑', order: 4, selected: false },
+    { name: 'Month', direction: '↑', order: 5, selected: false }
+  ],
+  selectedValue: 'value'
+};
 
-  // 액션
-  fetchAnalysisData: (year: number) => Promise<void>;
-  transformApiDataToTableRows: (apiData: CompanyVisitAnalysisRaw[]) => TableRow[];
-  calculateStats: (tableData: TableRow[]) => AnalysisStats;
-  calculateMonthlyStats: (tableData: TableRow[]) => MonthlyStats[];
-  setYear: (year: number) => void;
-  setBusinessUnitFilter: (businessUnit: string) => void;
-  setCategoryFilter: (category: string) => void;
-  resetFilters: () => void;
-}
-
-export const useCompanyVisitAnalysisStore = create<CompanyVisitAnalysisStore>((set, get) => ({
+export const useTreemapStore = create<TreemapStore>((set, get) => ({
   // 초기 상태
-  tableData: [],
+  data: [],
+  rawData: [],
   loading: false,
   error: null,
-  filters: {
-    year: 2025,
-    businessUnitFilter: [],
-    teamFilter: [],
-    salesPersonFilter: [],
-    categoryFilter: [],
-  },
-  stats: {
-    totalVisits: 0,
-    totalQuotations: 0,
-    totalContracts: 0,
-    totalSalesPersons: 0,
-    totalTeams: 0,
-    totalBusinessUnits: 0,
-  },
-  monthlyStats: [],
+  pivotConfig: initialPivotConfig,
+  selectedNode: null,
 
-  // API 호출
-  fetchAnalysisData: async (year: number) => {
-    set({ loading: true, error: null });
+  // 액션들
+  setData: (data) => set({ data }),
+  setLoading: (loading) => set({ loading }),
+  setError: (error) => set({ error }),
+  setPivotConfig: (config) => set((state) => ({
+    pivotConfig: { ...state.pivotConfig, ...config }
+  })),
+  setSelectedNode: (selectedNode) => set({ selectedNode }),
 
-    try {
-      const requestData = {
-        MIS030306F1: {
-          BASE_YEAR: year.toString(),
-        },
-        page: 1,
-        start: 0,
-        limit: 25,
-        pageId: "MIS030306T"
-      };
-
-
-      const response = await fetch('/auth/api/proxy?path=/api/MIS030306SVC/getDivision', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData)
+  // 샘플 데이터 생성 (Sencha Ext JS SalesData 구조 참고)
+  generateSampleData: () => {
+    set({ loading: true });
+    
+    const companies = ['Google', 'Apple', 'Dell', 'Microsoft', 'Adobe'];
+    const countries = ['Belgium', 'Netherlands', 'United Kingdom', 'Canada', 'United States', 'Australia'];
+    const persons = ['John', 'Michael', 'Mary', 'Anne', 'Robert'];
+    const years = ['2012', '2013', '2014', '2015', '2016'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const sampleData: SampleData[] = [];
+    let rand = 37; // Sencha와 동일한 시드값
+    
+    // Sencha의 randomItem 함수와 유사한 로직
+    const randomItem = (data: string[]) => {
+      const k = rand % data.length;
+      rand = rand * 1664525 + 1013904223;
+      rand &= 0x7FFFFFFF;
+      return data[k];
+    };
+    
+    // 500개 아이템 생성 (Sencha와 동일)
+    for (let i = 0; i < 500; i++) {
+      const year = randomItem(years);
+      const company = randomItem(companies);
+      const country = randomItem(countries);
+      const person = randomItem(persons);
+      const month = randomItem(months);
+      
+      // Sencha와 유사한 값 범위
+      const qty = Math.floor(Math.random() * 30 + 1);
+      const value = Math.random() * 1000 + 1;
+      
+      sampleData.push({
+        year,
+        company,
+        country,
+        person,
+        month,
+        qty,
+        value: Math.round(value * 100) / 100 // 소수점 2자리
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const apiData: ApiResponse = await response.json();
-
-      if (apiData.MSG === "정상적으로 처리되었습니다." && apiData.MIS030306G1) {
-        const transformedData = get().transformApiDataToTableRows(apiData.MIS030306G1);
-        const stats = get().calculateStats(transformedData);
-        const monthlyStats = get().calculateMonthlyStats(transformedData);
-        
-        
-        set({ 
-          tableData: transformedData,
-          stats,
-          monthlyStats,
-          filters: { ...get().filters, year }
-        });
-      } else {
-        console.warn('⚠️ API 응답이 예상과 다름:', apiData);
-        set({ tableData: [] });
-      }
-    } catch (error) {
-      console.error('❌ API 호출 오류:', error);
-      set({ error: error instanceof Error ? error.message : '알 수 없는 오류' });
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  // 데이터 변환
-  transformApiDataToTableRows: (apiData: CompanyVisitAnalysisRaw[]): TableRow[] => {
-
-    if (!apiData || !Array.isArray(apiData)) {
-      return [];
     }
 
-    const rows: TableRow[] = [];
-    const businessUnitTotals = new Map<string, Map<string, number[]>>(); // 사업부별 합계
-
-    // 원본 데이터를 행으로 변환
-    apiData.forEach((item) => {
-      const monthlyData = [
-        item.AMT_01, item.AMT_02, item.AMT_03, item.AMT_04, item.AMT_05, item.AMT_06,
-        item.AMT_07, item.AMT_08, item.AMT_09, item.AMT_10, item.AMT_11, item.AMT_12
-      ];
-
-      const row: TableRow = {
-        businessUnit: item.PARENTS_DEPT_NAME,  // 상위 부서명 (사업부)
-        team: item.DEPT_NAME,                  // 부서명 (팀)
-        salesPerson: item.USER_NAME_LOC,       // 사용자명 (담당자)
-        category: item.SALES_TYPE_NAME,        // 영업 타입명 (분류)
-        monthlyData,
-        total: item.AMT_SUM,                   // 합계
-        isTotalRow: false,
-        isBusinessUnitTotal: false,
-      };
-
-      rows.push(row);
-
-      // 사업부별 합계 계산
-      if (!businessUnitTotals.has(item.PARENTS_DEPT_NAME)) {
-        businessUnitTotals.set(item.PARENTS_DEPT_NAME, new Map());
-      }
-      const businessUnitMap = businessUnitTotals.get(item.PARENTS_DEPT_NAME)!;
-      
-      if (!businessUnitMap.has(item.SALES_TYPE_NAME)) {
-        businessUnitMap.set(item.SALES_TYPE_NAME, new Array(12).fill(0));
-      }
-      const categoryTotals = businessUnitMap.get(item.SALES_TYPE_NAME)!;
-      
-      monthlyData.forEach((value, index) => {
-        categoryTotals[index] += value;
-      });
-    });
-
-
-    return rows;
+    console.log('Generated sample data:', sampleData.length, 'items');
+    console.log('Sample items:', sampleData.slice(0, 5));
+    
+    set({ rawData: sampleData, loading: false });
+    get().transformToTreemapData();
   },
 
-  // 통계 계산
-  calculateStats: (tableData: TableRow[]): AnalysisStats => {
-    const stats: AnalysisStats = {
-      totalVisits: 0,
-      totalQuotations: 0,
-      totalContracts: 0,
-      totalSalesPersons: 0,
-      totalTeams: 0,
-      totalBusinessUnits: 0,
+  // 트리맵 데이터로 변환
+  transformToTreemapData: () => {
+    const { rawData, pivotConfig } = get();
+    
+    if (rawData.length === 0) return;
+
+    // 선택된 트리 레이블 순서대로 계층 구조 생성
+    const selectedLabels = pivotConfig.treeLabels
+      .sort((a, b) => a.order - b.order)
+      .map(label => label.name);
+
+    const hierarchicalData = buildHierarchy(rawData, selectedLabels);
+    set({ data: hierarchicalData });
+  },
+
+  // 트리 레이블 순서 변경
+  reorderTreeLabels: (labels) => {
+    set((state) => ({
+      pivotConfig: {
+        ...state.pivotConfig,
+        treeLabels: labels
+      }
+    }));
+    get().transformToTreemapData();
+  },
+
+  // 값 필드 변경
+  setValueField: (value) => {
+    set((state) => ({
+      pivotConfig: {
+        ...state.pivotConfig,
+        selectedValue: value
+      }
+    }));
+    get().transformToTreemapData();
+  }
+}));
+
+// 계층적 데이터 구조 생성 함수
+function buildHierarchy(rawData: SampleData[], labels: string[]): TreemapNode[] {
+  if (labels.length === 0) return [];
+
+  const currentLabel = labels[0];
+  const remainingLabels = labels.slice(1);
+  
+  // 현재 레벨에서 그룹화
+  const groups = new Map<string, SampleData[]>();
+  
+  rawData.forEach(item => {
+    let groupKey = '';
+    
+    switch (currentLabel) {
+      case 'Year':
+        groupKey = item.year;
+        break;
+      case 'Company':
+        groupKey = item.company;
+        break;
+      case 'Country':
+        groupKey = item.country;
+              break;
+      case 'Person':
+        groupKey = item.person;
+              break;
+      case 'Month':
+        groupKey = item.month;
+              break;
+      default:
+        groupKey = 'Unknown';
+    }
+
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, []);
+    }
+    groups.get(groupKey)!.push(item);
+  });
+
+  // 각 그룹을 트리맵 노드로 변환
+  return Array.from(groups.entries()).map(([groupName, items]) => {
+    const totalValue = items.reduce((sum, item) => sum + item.value, 0);
+    const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
+    
+    const node: TreemapNode = {
+      name: groupName,
+      value: totalValue,
+      qty: totalQty,
     };
 
-    const uniqueSalesPersons = new Set<string>();
-    const uniqueTeams = new Set<string>();
-    const uniqueBusinessUnits = new Set<string>();
-
-    tableData.forEach((row) => {
-      if (!row.isTotalRow) {
-        uniqueSalesPersons.add(row.salesPerson);
-        uniqueTeams.add(`${row.businessUnit}_${row.team}`);
-        uniqueBusinessUnits.add(row.businessUnit);
-
-        switch (row.category) {
-          case '방문이력':
-            stats.totalVisits += row.total;
-            break;
-          case '견적':
-            stats.totalQuotations += row.total;
-            break;
-          case '계약':
-            stats.totalContracts += row.total;
-            break;
-        }
-      }
-    });
-
-    stats.totalSalesPersons = uniqueSalesPersons.size;
-    stats.totalTeams = uniqueTeams.size;
-    stats.totalBusinessUnits = uniqueBusinessUnits.size;
-
-    return stats;
-  },
-
-  // 월별 통계 계산
-  calculateMonthlyStats: (tableData: TableRow[]): MonthlyStats[] => {
-    const monthlyStats: MonthlyStats[] = [];
-    const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
-                       '7월', '8월', '9월', '10월', '11월', '12월'];
-
-    for (let month = 0; month < 12; month++) {
-      const monthStat: MonthlyStats = {
-        month: monthNames[month],
-        visits: 0,
-        quotations: 0,
-        contracts: 0,
-        total: 0,
-      };
-
-      tableData.forEach((row) => {
-        if (!row.isTotalRow) {
-          const value = row.monthlyData[month];
-          switch (row.category) {
-            case '방문이력':
-              monthStat.visits += value;
-              break;
-            case '견적':
-              monthStat.quotations += value;
-              break;
-            case '계약':
-              monthStat.contracts += value;
-              break;
-          }
-          monthStat.total += value;
-        }
-      });
-
-      monthlyStats.push(monthStat);
+    // 하위 레벨이 있으면 재귀적으로 처리
+    if (remainingLabels.length > 0) {
+      node.children = buildHierarchy(items, remainingLabels);
+      
+      // 부모 노드의 값을 자식들의 합계로 설정하지 않고 원래 값 유지
+      // 이렇게 하면 D3에서 올바른 비율로 표시됨
+      console.log(`Parent node ${groupName}: original value=${totalValue}`);
     }
 
-    return monthlyStats;
-  },
-
-  // 필터 액션들
-  setYear: (year: number) => set(state => ({
-    filters: { ...state.filters, year }
-  })),
-
-  setBusinessUnitFilter: (businessUnit: string) => set(state => ({
-    filters: { ...state.filters, businessUnitFilter: businessUnit ? [businessUnit] : [] }
-  })),
-
-  setCategoryFilter: (category: string) => set(state => ({
-    filters: { ...state.filters, categoryFilter: category ? [category] : [] }
-  })),
-
-  resetFilters: () => set(state => ({
-    filters: {
-      year: state.filters.year,
-      businessUnitFilter: [],
-      teamFilter: [],
-      salesPersonFilter: [],
-      categoryFilter: [],
-    }
-  })),
-}));
+    return node;
+  });
+}

@@ -1,182 +1,209 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Loader2, Search, Calendar, Building2, Target } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useTreemapStore } from './store';
+import { Card } from '@/common/components/ui/card';
 import { Button } from '@/common/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/common/components/ui/select';
+import D3Treemap from './components/d3-treemap';
+import { DraggableTreeLabels } from './components/draggable-tree-labels';
 
-// Store & Types
-import { useCompanyVisitAnalysisStore } from './store';
-
-// Components
-import AnalysisTable from './components/analysis_table';
-
-export default function CompanyVisitAnalysisPage() {
-  // Store에서 상태와 액션 가져오기
+const CompanyVisitAnalysisPage = () => {
   const {
-    tableData,
+    data,
     loading,
     error,
-    filters,
-    stats,
-    monthlyStats,
-    fetchAnalysisData,
-    setYear,
-    setBusinessUnitFilter,
-    setCategoryFilter,
-  } = useCompanyVisitAnalysisStore();
-
-  // 로컬 상태
-  const [selectedYear, setSelectedYear] = useState<number>(filters.year);
-  const [selectedBusinessUnit, setSelectedBusinessUnit] = useState<string>(filters.businessUnit || '');
-  const [selectedCategory, setSelectedCategory] = useState<string>(filters.category || '');
-
-  // 옵션 생성
-  const yearOptions = Array.from({ length: 11 }, (_, i) => 2020 + i);
-  const businessUnitOptions = ['전체', '글로벌영업1사업부', '글로벌영업2사업부', '글로벌영업3사업부'];
-  const categoryOptions = ['전체', '방문이력', '견적', '계약'];
-
-  // 조회 버튼 클릭 핸들러
-  const handleSearch = () => {
-    fetchAnalysisData(selectedYear);
-  };
-
-  // 필터 변경 핸들러들
-  const handleYearChange = (year: string) => {
-    const yearNum = parseInt(year);
-    setSelectedYear(yearNum);
-    setYear(yearNum);
-  };
-
-  const handleBusinessUnitChange = (businessUnit: string) => {
-    setSelectedBusinessUnit(businessUnit);
-    setBusinessUnitFilter(businessUnit === '전체' ? '' : businessUnit);
-  };
-
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    setCategoryFilter(category === '전체' ? '' : category);
-  };
+    pivotConfig,
+    selectedNode,
+    generateSampleData,
+    setSelectedNode,
+    reorderTreeLabels,
+    setPivotConfig,
+    setValueField
+  } = useTreemapStore();
 
   // 초기 데이터 로드
   useEffect(() => {
-    fetchAnalysisData(selectedYear);
-  }, []);
+    generateSampleData();
+  }, [generateSampleData]);
 
-  // 로딩 상태일 때만 로딩 화면 표시
-  if (loading && tableData.length === 0) {
-    return (
-      <div className="h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center space-x-3">
-          <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-          <p className="text-lg text-gray-600">업체방문분석 데이터를 불러오는 중입니다...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleNodeClick = (node: any) => {
+    console.log('Clicked node:', node);
+    setSelectedNode(node);
+  };
 
-  // 에러 상태일 때만 에러 화면 표시
   if (error) {
     return (
-      <div className="h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-red-600 mb-4">{error}</p>
-          <Button onClick={handleSearch} className="flex items-center space-x-2">
-            <Search className="h-4 w-4" />
-            <span>다시 시도</span>
-          </Button>
-        </div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <Card className="p-6 max-w-md">
+          <div className="text-center">
+            <div className="text-red-600 text-6xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">데이터 로드 오류</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <Button onClick={() => generateSampleData()}>
+              다시 시도
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 상단 컨트롤 영역 - 강화된 UI */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-700 border-b-2 border-gray-600 px-6 py-4 shadow-lg">
-        <div className="flex items-center justify-between">
-          {/* 좌측: 검색 조건들 */}
-          <div className="flex items-center space-x-6">
-            {/* 기준년도 */}
-            <div className="flex items-center space-x-3">
-              <Calendar className="h-5 w-5 text-white" />
-              <span className="text-sm font-bold text-white whitespace-nowrap">기준년도</span>
-              <Select value={selectedYear.toString()} onValueChange={handleYearChange}>
-                <SelectTrigger className="w-32 h-8 text-sm bg-white border-gray-300">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {yearOptions.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+    <div className="h-screen bg-gray-100 p-4 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto bg-white rounded-lg shadow-lg overflow-hidden" style={{ height: 'calc(100vh - 2rem)' }}>
+        {/* Header Bar - Blue */}
+        <div className="bg-blue-600 text-white px-6 py-3 flex items-center justify-between">
+          <h1 className="text-lg font-semibold">회사 방문 분석 - 트리맵 및 피벗 매트릭스</h1>
+          <div className="flex items-center gap-4">
+            <select className="bg-white text-gray-800 px-3 py-1 rounded text-sm">
+              <option>도킹</option>
+              <option>분리</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Controls Bar */}
+        <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* View Mode Selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">표시 값:</label>
+              <div className="flex gap-1">
+                {[
+                  { value: 'value', label: '매출액', fieldName: 'value' },
+                  { value: 'qty', label: '수량', fieldName: 'qty' },
+                ].map((mode) => (
+                  <button
+                    key={mode.value}
+                    className={`px-3 py-1 text-sm rounded border ${
+                      pivotConfig.selectedValue === mode.value
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                    onClick={() => {
+                      setValueField(mode.value);
+                    }}
+                  >
+                    {mode.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* 사업부 필터 */}
-            <div className="flex items-center space-x-3">
-              <Building2 className="h-5 w-5 text-white" />
-              <span className="text-sm font-bold text-white whitespace-nowrap">사업부</span>
-              <Select value={selectedBusinessUnit} onValueChange={handleBusinessUnitChange}>
-                <SelectTrigger className="w-40 h-8 text-sm bg-white border-gray-300">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {businessUnitOptions.map((unit) => (
-                    <SelectItem key={unit} value={unit}>
-                      {unit}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Company Filter */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">회사:</label>
+              <select
+                className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="all">전체</option>
+                <option value="Google">Google</option>
+                <option value="Apple">Apple</option>
+                <option value="Dell">Dell</option>
+                <option value="Microsoft">Microsoft</option>
+                <option value="Adobe">Adobe</option>
+              </select>
             </div>
 
-            {/* 분류 필터 */}
-            <div className="flex items-center space-x-3">
-              <Target className="h-5 w-5 text-white" />
-              <span className="text-sm font-bold text-white whitespace-nowrap">분류</span>
-              <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="w-32 h-8 text-sm bg-white border-gray-300">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Year Filter */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">연도:</label>
+              <select
+                className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="all">전체</option>
+                <option value="2012">2012</option>
+                <option value="2013">2013</option>
+                <option value="2014">2014</option>
+                <option value="2015">2015</option>
+                <option value="2016">2016</option>
+              </select>
             </div>
           </div>
-
-          {/* 우측: 조회 버튼 */}
-          <Button 
-            onClick={handleSearch}
-            disabled={loading}
-            className="flex items-center space-x-2 h-9 px-6 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Search className="h-4 w-4" />
-            )}
-            <span>조회</span>
-          </Button>
         </div>
-      </div>
+        
+        {/* Main Content Area - Fixed Height */}
+        <div className="flex" style={{ height: '600px' }}>
+          {/* Left Side - Treemap Area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Treemap Content Area - Fixed Height */}
+            {loading && (
+              <div className="bg-white flex items-center justify-center h-full">
+                <div className="flex flex-col items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                  <p className="text-gray-600 text-sm">데이터를 불러오는 중...</p>
+                </div>
+              </div>
+            )}
 
-      {/* 메인 컨텐츠 영역 - 그리드만 표시 */}
-      <div className="p-4">
-        <AnalysisTable 
-          tableData={tableData}
-          stats={stats}
-          monthlyStats={monthlyStats}
-          loading={loading}
-        />
+            {!loading && data && data.length > 0 && (
+              <div className="bg-white h-full">
+                <D3Treemap data={data} onNodeClick={handleNodeClick} />
+              </div>
+            )}
+
+            {!loading && (!data || data.length === 0) && (
+              <div className="bg-white flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="text-gray-400 text-4xl mb-3">📊</div>
+                  <h3 className="text-lg font-bold text-gray-700 mb-1">데이터가 없습니다</h3>
+                  <p className="text-gray-600 text-sm">조회 조건을 변경해보세요</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Sidebar - Tree Labels Only */}
+          <div className="w-72 bg-gray-50 border-l border-gray-200 flex flex-col" style={{ height: '600px' }}>
+            {/* Tree Labels Section */}
+            <div className="bg-blue-600 text-white px-4 py-2">
+              <span className="font-medium">트리 레이블 (계층 구조)</span>
+            </div>
+            
+            <div className="p-4">
+              <p className="text-xs text-gray-600 mb-3">
+                드래그하여 순서를 변경하세요
+              </p>
+              <DraggableTreeLabels
+                labels={pivotConfig.treeLabels}
+                onReorder={reorderTreeLabels}
+                onToggle={(labelName) => {
+                  const updatedLabels = pivotConfig.treeLabels.map(label => 
+                    label.name === labelName 
+                      ? { ...label, selected: !label.selected }
+                      : label
+                  );
+                  setPivotConfig({ ...pivotConfig, treeLabels: updatedLabels });
+                }}
+              />
+            </div>
+
+            {/* Current Value Display */}
+            <div className="mt-auto border-t border-gray-200 p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                <div className="text-xs text-gray-600 mb-1">현재 표시 값</div>
+                <div className="text-sm text-blue-800 font-medium">
+                  {pivotConfig.selectedValue === 'value' ? '매출액' : '수량'}
+                </div>
+              </div>
+              
+              {selectedNode && (
+                <div className="mt-3 bg-gray-50 border border-gray-200 rounded p-3">
+                  <div className="text-xs text-gray-600 mb-1">선택된 노드</div>
+                  <div className="text-sm text-gray-800 font-medium">
+                    {selectedNode.name}
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    값: {selectedNode.value?.toLocaleString()}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default CompanyVisitAnalysisPage;

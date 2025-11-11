@@ -71,22 +71,42 @@ export const useGlobalStore = create<GlobalStore>()(
       resetMenuOrder: () => set({ menuOrder: menuItems.slice(1).map(item => item.path) }),
       getOrderedMenus: () => {
         const { menuOrder } = get();
+        
+        // menuOrder에 없는 새로운 메뉴들을 찾아서 원래 위치에 추가
+        const newMenuPaths = menuItems.slice(1).filter(menu => !menuOrder.includes(menu.path));
+        
+        if (newMenuPaths.length > 0) {
+          // 새로운 메뉴가 있으면 menuOrder를 업데이트
+          const updatedMenuOrder = [...menuOrder];
+          
+          newMenuPaths.forEach(newMenu => {
+            const originalIndex = menuItems.findIndex(item => item.path === newMenu.path);
+            // 원래 위치를 찾아서 삽입
+            let insertIndex = 0;
+            for (let i = 0; i < updatedMenuOrder.length; i++) {
+              const currentPath = updatedMenuOrder[i];
+              const currentOriginalIndex = menuItems.findIndex(item => item.path === currentPath);
+              if (currentOriginalIndex < originalIndex) {
+                insertIndex = i + 1;
+              }
+            }
+            updatedMenuOrder.splice(insertIndex, 0, newMenu.path);
+          });
+          
+          // menuOrder 업데이트
+          set({ menuOrder: updatedMenuOrder });
+        }
+        
+        const finalMenuOrder = get().menuOrder;
         const orderedMenus: MenuItem[] = [];
         
         // HTNS 로고는 항상 첫 번째
         orderedMenus.push(menuItems[0]);
         
         // menuOrder에 따라 메뉴들을 정렬
-        menuOrder.forEach(path => {
+        finalMenuOrder.forEach(path => {
           const menu = menuItems.find(item => item.path === path);
           if (menu) {
-            orderedMenus.push(menu);
-          }
-        });
-        
-        // menuOrder에 없는 메뉴들도 추가
-        menuItems.slice(1).forEach(menu => {
-          if (!menuOrder.includes(menu.path)) {
             orderedMenus.push(menu);
           }
         });
@@ -96,6 +116,7 @@ export const useGlobalStore = create<GlobalStore>()(
     }),
     {
       name: 'htns-global-store',
+      version: 2, // 버전 업데이트하여 localStorage 초기화 (권역실적 추가)
       partialize: (state) => ({
         selectedYear: state.selectedYear,
         // selectedMonth는 persist에서 제외 - 항상 기본값(9월)으로 시작

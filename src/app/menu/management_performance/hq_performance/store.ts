@@ -406,6 +406,165 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
         return; // API 호출 없이 리턴
       }
       
+      // ⭐ 10월 조건 체크 - 템프 데이터 사용 (1부터 시작해서 순차적으로 증가)
+      if (currentMonth === 10) {
+        console.log('🎯 10월 데이터: 템프 데이터를 사용합니다. (본사 성과)');
+        
+        const tempData: HQPerformanceData = {
+          // 상단 4개 KPI 카드 (왼쪽 → 오른쪽)
+          kpiMetrics: {
+            actualSales: 1,                    // 1: 매출
+            actualSalesChange: 2,              // 2: 매출 변화
+            actualPurchases: 3,                // 3: 매입
+            actualPurchasesChange: 4,          // 4: 매입 변화
+            actualOpProfit: 5,                 // 5: 영업이익
+            actualOpProfitChange: 6,           // 6: 영업이익 변화
+            actualOpMargin: 7,                 // 7: 영업이익율
+            actualOpMarginChange: 8            // 8: 영업이익율 변화
+          },
+          // 차트 데이터
+          chartData: {
+            revenueChart: {
+              labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+              datasets: [
+                {
+                  label: '매출 (올해)',
+                  data: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, null, null],
+                  borderColor: 'rgb(59, 130, 246)',
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  borderWidth: 2,
+                  spanGaps: false
+                },
+                {
+                  label: '매출 (직전년도)',
+                  data: [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+                  borderColor: 'rgb(156, 163, 175)',
+                  backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  spanGaps: false
+                }
+              ]
+            },
+            profitChart: {
+              labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+              datasets: [
+                {
+                  label: '영업이익 (올해)',
+                  data: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, null, null],
+                  borderColor: 'rgb(239, 68, 68)',
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  borderWidth: 2,
+                  spanGaps: false
+                },
+                {
+                  label: '영업이익 (직전년도)',
+                  data: [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
+                  borderColor: 'rgb(156, 163, 175)',
+                  backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  spanGaps: false
+                }
+              ]
+            }
+          },
+          // 그리드 테이블 데이터 (좌측 → 우측, 상단 → 하단)
+          gridData: {
+            monthLabels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월'],
+            monthlyDetails: [
+              {
+                column1: '매출',           // 49
+                column2: 53,               // 1월
+                column3: 54,               // 2월
+                column4: 55,               // 3월
+                column5: 56,               // 4월
+                column6: 57,               // 5월
+                column7: 58,               // 6월
+                column8: 59,               // 7월
+                column9: 60,               // 8월
+                column10: 61,              // 9월
+                column11: 62,              // 10월
+                column12: 63                // 합계
+              },
+              {
+                column1: '매출원가',           // 57
+                column2: 64,               // 1월
+                column3: 65,               // 2월
+                column4: 66,               // 3월
+                column5: 67,               // 4월
+                column6: 68,               // 5월
+                column7: 69,               // 6월
+                column8: 70,               // 7월
+                column9: 71,               // 8월
+                column10: 72,              // 9월
+                column11: 73,              // 10월
+                column12: 74                // 합계
+              },
+              {
+                column1: '매출총이익',       // 65
+                column2: 75,               // 1월
+                column3: 76,               // 2월
+                column4: 77,               // 3월
+                column5: 78,               // 4월
+                column6: 79,               // 5월
+                column7: 80,               // 6월
+                column8: 81,               // 7월
+                column9: 82,               // 8월
+                column10: 83,              // 9월
+                column11: 84,              // 10월
+                column12: 85                // 합계
+              },
+              {
+                column1: '판관비',         // 73
+                column2: 86,               // 1월
+                column3: 87,               // 2월
+                column4: 88,               // 3월
+                column5: 89,               // 4월
+                column6: 90,               // 5월
+                column7: 91,               // 6월
+                column8: 92,               // 7월
+                column9: 93,               // 8월
+                column10: 94,              // 9월
+                column11: 95,              // 10월
+                column12: 96               // 합계
+              },
+              {
+                column1: '영업이익',       // 81
+                column2: 97,               // 1월
+                column3: 98,               // 2월
+                column4: 99,               // 3월
+                column5: 100,               // 4월
+                column6: 101,               // 5월
+                column7: 102,               // 6월
+                column8: 103,               // 7월
+                column9: 104,               // 8월
+                column10: 105,              // 9월
+                column11: 106,              // 10월
+                column12: 107                // 합계
+              },
+              {
+                column1: '영업이익율',     // 89
+                column2: 108,               // 1월
+                column3: 109,               // 2월
+                column4: 110,               // 3월
+                column5: 111,               // 4월
+                column6: 112,               // 5월
+                column7: 113,               // 6월
+                column8: 114,               // 7월
+                column9: 115,               // 8월
+                column10: 116,              // 9월
+                column11: 117,              // 10월
+                column12: 118                // 합계
+              }
+            ]
+          }
+        };
+        
+        set({ data: tempData, loading: false, error: null });
+        return; // API 호출 없이 리턴
+      }
+      
       set({ loading: true, error: null });
       
       try {

@@ -66,30 +66,18 @@ export const menuItems: MenuItem[] = [
 
   },
   { 
-    name: '국내자회사', 
-    path: '/menu/management_performance/domestic_subsidiaries', 
-    icon: Building,
-    description: '국내 자회사 현황'
-  },
-  { 
-    name: '해외자회사', 
-    path: '/menu/management_performance/overseas_subsidiaries', 
-    icon: Globe,
-    description: '해외 자회사 현황'
-  },
-  { 
-    name: '사업부실적', 
-    path: '/menu/management_performance/business_division', 
-    icon: Building2,
-    description: '사업부별 실적 현황'
-  },
-  { 
     name: '권역실적', 
     path: '/menu/management_performance/regional_performance', 
     icon: Globe,
     description: '해외 권역별 실적 현황'
   },
   // ===== 물동량 실적 관리 카테고리 =====
+  { 
+    name: '국내자회사', 
+    path: '/menu/management_performance/domestic_subsidiaries', 
+    icon: Building,
+    description: '국내 자회사 현황'
+  },
   { 
     name: '항공실적', 
     path: '/menu/performance_management/air', 
@@ -113,6 +101,18 @@ export const menuItems: MenuItem[] = [
     path: '/menu/performance_management/outsourcing', 
     icon: HardHat,
     description: '도급 업무 실적'
+  },
+  { 
+    name: '해외자회사', 
+    path: '/menu/management_performance/overseas_subsidiaries', 
+    icon: Globe,
+    description: '해외 자회사 현황'
+  },
+  { 
+    name: '사업부실적', 
+    path: '/menu/management_performance/business_division', 
+    icon: Building2,
+    description: '사업부별 실적 현황'
   },
   { 
     name: '국내', 

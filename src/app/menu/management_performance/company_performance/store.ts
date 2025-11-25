@@ -565,6 +565,122 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
         return; // API 호출 없이 리턴
       }
       
+      // ⭐ 10월 조건 체크 - 템프 데이터 사용 (1부터 시작해서 순차적으로 증가)
+      if (month === 10) {
+        console.log('🎯 10월 데이터: 템프 데이터를 사용합니다.');
+        
+        const tempData: CompanyPerformanceData = {
+          // 1번째 API: 상단 4개 KPI 카드 (왼쪽 -> 오른쪽)
+          kpiMetrics: {
+            ACTUAL_SALES: 1,              // 1: 총 매출액
+            ACTUAL_OP_PROFIT: 2,          // 2: 영업이익
+            ACTUAL_OP_MARGIN: 3,          // 3: 영업이익률
+            SALES_ACHIEVEMENT: 4,         // 4: 매출 달성률
+            ACTUAL_SALES_CHANGE: 5,       // 5: 전월대비 매출 증가액
+            ACTUAL_OP_PROFIT_CHANGE: 6,   // 6: 전월대비 영업이익 증가액
+            ACTUAL_OP_MARGIN_CHANGE: 7,   // 7: 전월대비 영업이익률 증가액
+            SALES_ACHIEVEMENT_CHANGE: 8   // 8: 전월대비 매출 달성률 증가액
+          },
+          // 2번째 API: 중간 그리드 테이블 (상단 -> 하단, 왼쪽 -> 오른쪽)
+          gridData: {
+            divisions: [
+              {
+                name: '본사',
+                plannedSales: 9,            // 9
+                plannedOpProfit: 10,        // 10
+                plannedOpMargin: 11,        // 11
+                actualSales: 12,            // 12
+                actualOpProfit: 13,         // 13
+                actualOpMargin: 14,         // 14
+                salesAchievement: 15,       // 15
+                opProfitAchievement: 16     // 16
+              },
+              {
+                name: '국내 자회사',
+                plannedSales: 17,           // 17
+                plannedOpProfit: 18,        // 18
+                plannedOpMargin: 19,        // 19
+                actualSales: 20,            // 20
+                actualOpProfit: 21,         // 21
+                actualOpMargin: 22,         // 22
+                salesAchievement: 23,       // 23
+                opProfitAchievement: 24     // 24
+              },
+              {
+                name: '해외 자회사',
+                plannedSales: 25,           // 25
+                plannedOpProfit: 26,        // 26
+                plannedOpMargin: 27,        // 27
+                actualSales: 28,            // 28
+                actualOpProfit: 29,         // 29
+                actualOpMargin: 30,         // 30
+                salesAchievement: 31,       // 31
+                opProfitAchievement: 32     // 32
+              },
+              {
+                name: '합계',
+                plannedSales: 33,           // 33
+                plannedOpProfit: 34,        // 34
+                plannedOpMargin: 35,        // 35
+                actualSales: 36,            // 36
+                actualOpProfit: 37,         // 37
+                actualOpMargin: 38,         // 38
+                salesAchievement: 39,       // 39
+                opProfitAchievement: 40     // 40
+              }
+            ]
+          },
+          // 3번째 API: 하단 첫 번째 카드 (달성율 도넛 차트)
+          chartData1: {
+            labels: ['본사'],  // 조건 체크용 더미 데이터
+            datasets: [],
+            PLANNED_SALES: 41,         // 41
+            ACTUAL_SALES: 42,          // 42
+            PLANNED_OP_PROFIT: 43,     // 43
+            ACTUAL_OP_PROFIT: 44       // 44
+          },
+          // 4번째 API: 하단 두 번째 카드 (매출액 바 차트)
+          chartData2: {
+            labels: ['본사', '국내자회사', '해외자회사'],
+            datasets: [
+              {
+                label: '계획 매출액',
+                data: [45, 46, 47],
+                backgroundColor: 'rgba(156, 163, 175, 0.5)',
+                borderColor: 'rgba(156, 163, 175, 1)'
+              },
+              {
+                label: '실제 매출액',
+                data: [48, 49, 50],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)'
+              }
+            ]
+          },
+          // 5번째 API: 하단 세 번째 카드 (영업이익 바 차트)
+          chartData3: {
+            labels: ['본사', '국내자회사', '해외자회사'],
+            datasets: [
+              {
+                label: '계획 영업이익',
+                data: [51, 52, 53],
+                backgroundColor: 'rgba(156, 163, 175, 0.5)',
+                borderColor: 'rgba(156, 163, 175, 1)'
+              },
+              {
+                label: '실제 영업이익',
+                data: [54, 55, 56],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)'
+              }
+            ]
+          }
+        };
+        
+        set({ data: tempData, loading: false, error: null });
+        return; // API 호출 없이 리턴
+      }
+      
       // 기존 데이터가 있으면 로딩 상태를 true로 설정하지 않음 (부드러운 갱신)
       const currentData = get().data;
       if (!currentData) {

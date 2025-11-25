@@ -262,6 +262,37 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
         return;
       }
       
+      // ⭐ 10월 조건 체크 - 차입금/부채비율 하드코딩 (1부터 시작해서 순차적으로 증가)
+      if (currentMonth === 10) {
+        console.log('🎯 10월 데이터: 차입금/부채비율 데이터를 하드코딩합니다. (재무현황)');
+        
+        try {
+          const [kpiMetrics, chartData, trendData] = await Promise.all([
+            finance_overview_kpi(currentYear, currentMonth),
+            finance_overview_charts(currentYear, currentMonth),
+            finance_overview_trends(currentYear, currentMonth)
+          ]);
+
+          // 차입금과 부채비율 하드코딩으로 교체
+          const modifiedTrendData = {
+            ...trendData,
+            totalLoan: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], // 10년간 차입금 (템프 데이터)
+            debtRatio: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]  // 10년간 부채비율 (템프 데이터)
+          };
+
+          const combinedData: FinanceData = {
+            kpiMetrics,
+            chartData,
+            trendData: modifiedTrendData
+          };
+
+          set({ data: combinedData, loading: false });
+        } catch (error) {
+          set({ loading: false, error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.' });
+        }
+        return;
+      }
+      
       try {
         const [kpiMetrics, chartData, trendData] = await Promise.all([
           finance_overview_kpi(currentYear, currentMonth),

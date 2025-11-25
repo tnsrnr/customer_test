@@ -37,7 +37,7 @@ export const useGlobalStore = create<GlobalStore>()(
       currentPage: 'page1',
       selectedYear: new Date().getFullYear(),
       selectedMonth: 9, // 기본값을 9월로 고정
-      menuOrder: menuItems.slice(1).map(item => item.path), // HTNS 로고 제외한 메뉴들의 기본 순서
+      menuOrder: menuItems.map(item => item.path), // 모든 메뉴들의 기본 순서
       isMenuEditMode: false,
       
       // 상태 설정
@@ -68,12 +68,12 @@ export const useGlobalStore = create<GlobalStore>()(
       // 메뉴 순서 관리 액션
       setMenuOrder: (order) => set({ menuOrder: order }),
       toggleMenuEditMode: () => set((state) => ({ isMenuEditMode: !state.isMenuEditMode })),
-      resetMenuOrder: () => set({ menuOrder: menuItems.slice(1).map(item => item.path) }),
+      resetMenuOrder: () => set({ menuOrder: menuItems.map(item => item.path) }),
       getOrderedMenus: () => {
         const { menuOrder } = get();
         
         // menuOrder에 없는 새로운 메뉴들을 찾아서 원래 위치에 추가
-        const newMenuPaths = menuItems.slice(1).filter(menu => !menuOrder.includes(menu.path));
+        const newMenuPaths = menuItems.filter(menu => !menuOrder.includes(menu.path));
         
         if (newMenuPaths.length > 0) {
           // 새로운 메뉴가 있으면 menuOrder를 업데이트
@@ -99,9 +99,6 @@ export const useGlobalStore = create<GlobalStore>()(
         
         const finalMenuOrder = get().menuOrder;
         const orderedMenus: MenuItem[] = [];
-        
-        // HTNS 로고는 항상 첫 번째
-        orderedMenus.push(menuItems[0]);
         
         // menuOrder에 따라 메뉴들을 정렬
         finalMenuOrder.forEach(path => {

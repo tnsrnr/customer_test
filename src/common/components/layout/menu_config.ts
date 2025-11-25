@@ -52,12 +52,6 @@ export const menuItems: MenuItem[] = [
     description: '재무 현황 - 탭 기반 대시보드'
   },
   { 
-    name: '상위거래처', 
-    path: '/menu/management_performance/top_clients', 
-    icon: TrendingUp,
-    description: '상위 거래처 현황'
-  },
-  { 
     name: '부문별실적', 
     path: '/menu/management_performance/division', 
     icon: PieChart,
@@ -72,6 +66,12 @@ export const menuItems: MenuItem[] = [
     description: '해외 권역별 실적 현황'
   },
   // ===== 물동량 실적 관리 카테고리 =====
+  { 
+    name: '상위거래처', 
+    path: '/menu/management_performance/top_clients', 
+    icon: TrendingUp,
+    description: '상위 거래처 현황'
+  },
   { 
     name: '국내자회사', 
     path: '/menu/management_performance/domestic_subsidiaries', 

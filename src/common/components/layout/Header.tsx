@@ -63,7 +63,7 @@ function SortableMenuItem({ menu, pathname, isEditMode }: {
       className={cn(
         "flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm cursor-move",
         pathname === menu.path
-          ? "bg-white/20 text-white shadow-lg border border-white/20"
+          ? "bg-white/30 shadow-lg border border-yellow-400/50"
           : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20",
         isEditMode && "ring-2 ring-blue-400 ring-opacity-50"
       )}
@@ -71,8 +71,20 @@ function SortableMenuItem({ menu, pathname, isEditMode }: {
       {isEditMode && (
         <div className="w-2 h-2 bg-blue-400 rounded-full mr-1"></div>
       )}
-      {menu.icon && <menu.icon className="w-5 h-5" />}
-      <span className="whitespace-nowrap">{menu.name}</span>
+      {menu.icon && (
+        <menu.icon 
+          className={cn(
+            "w-5 h-5",
+            pathname === menu.path ? "text-yellow-300" : ""
+          )} 
+        />
+      )}
+      <span className={cn(
+        "whitespace-nowrap",
+        pathname === menu.path ? "text-yellow-100 font-semibold" : ""
+      )}>
+        {menu.name}
+      </span>
     </div>
   );
 }
@@ -261,8 +273,8 @@ export function Header() {
   } = useGlobalStore();
   const [isClient, setIsClient] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const page1MenuCount = 7; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 상위거래처, 부문별실적, 권역실적 (7개)
-  const page2MenuCount = 12; // PAGE2: 국내자회사, 항공실적, 해상실적, 창고실적, 도급실적, 해외자회사, 사업부실적, 국내, 테4, 테5, 테7, 테8 (12개)
+  const page1MenuCount = 6; // PAGE1: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 권역실적 (6개)
+  const page2MenuCount = 13; // PAGE2: 상위거래처, 국내자회사, 항공실적, 해상실적, 창고실적, 도급실적, 해외자회사, 사업부실적, 국내, 테4, 테5, 테7, 테8 (13개)
   const primaryGradient = 'from-blue-900 to-slate-900';
 
   // 클라이언트 사이드 렌더링 보장
@@ -286,9 +298,9 @@ export function Header() {
     }
     
     // 페이지 분할 로직에 따라 현재 페이지 결정 (원본 menuItems 기준)
-    if (currentIndex >= 0 && currentIndex < 7) {
+    if (currentIndex >= 0 && currentIndex < 6) {
       setCurrentPage('page1');
-    } else if (currentIndex >= 7 && currentIndex < 19) {
+    } else if (currentIndex >= 6 && currentIndex < 19) {
       setCurrentPage('page2');
     } else if (currentIndex >= 19) {
       setCurrentPage('page3');
@@ -343,10 +355,10 @@ export function Header() {
   
   let visibleMenus: any[] = [];
   if (currentPage === 'page1') {
-    // PAGE1: 경영실적 메뉴들 (0-6번째: 전사실적, 인원현황, 본사실적, 재무현황, 상위거래처, 부문별실적, 권역실적)
+    // PAGE1: 경영실적 메뉴들 (0-5번째: 전사실적, 인원현황, 본사실적, 재무현황, 부문별실적, 권역실적)
     visibleMenus = orderedMenus.slice(0, page1MenuCount);
   } else if (currentPage === 'page2') {
-    // PAGE2: 실적관리 메뉴들 (7-18번째: 국내자회사, 항공실적, 해상실적, 창고실적, 도급실적, 해외자회사, 사업부실적, 국내, 테4, 테5, 테7, 테8)
+    // PAGE2: 실적관리 메뉴들 (6-18번째: 상위거래처, 국내자회사, 항공실적, 해상실적, 창고실적, 도급실적, 해외자회사, 사업부실적, 국내, 테4, 테5, 테7, 테8)
     visibleMenus = orderedMenus.slice(page1MenuCount, page1MenuCount + page2MenuCount);
   } else {
     // PAGE3: 영업실적분석 (19번째부터: 업체방문분석, 업체방문캘린더)
@@ -435,12 +447,24 @@ export function Header() {
                               className={cn(
                                 "flex flex-row items-center gap-x-2 px-2 py-2 rounded-lg transition-all duration-200 font-medium text-base backdrop-blur-sm",
                                 pathname === menu.path
-                                  ? "bg-white/20 text-white shadow-lg border border-white/20"
+                                  ? "bg-white/30 shadow-lg border border-yellow-400/50"
                                   : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20"
                               )}
                             >
-                              {menu.icon && <menu.icon className="w-5 h-5" />}
-                              <span className="whitespace-nowrap">{menu.name}</span>
+                              {menu.icon && (
+                                <menu.icon 
+                                  className={cn(
+                                    "w-5 h-5",
+                                    pathname === menu.path ? "text-yellow-300" : ""
+                                  )} 
+                                />
+                              )}
+                              <span className={cn(
+                                "whitespace-nowrap",
+                                pathname === menu.path ? "text-yellow-100 font-semibold" : ""
+                              )}>
+                                {menu.name}
+                              </span>
                             </Link>
                           )}
                         </div>
@@ -469,8 +493,20 @@ export function Header() {
                             : "bg-white/10 text-blue-100 hover:bg-white/20 hover:text-white hover:shadow-md border border-transparent hover:border-white/20"
                         )}
                       >
-                        {menu.icon && <menu.icon className="w-5 h-5" />}
-                        <span className="whitespace-nowrap">{menu.name}</span>
+                        {menu.icon && (
+                          <menu.icon 
+                            className={cn(
+                              "w-5 h-5",
+                              pathname === menu.path ? "text-yellow-300" : ""
+                            )} 
+                          />
+                        )}
+                        <span className={cn(
+                          "whitespace-nowrap",
+                          pathname === menu.path ? "text-yellow-100 font-semibold" : ""
+                        )}>
+                          {menu.name}
+                        </span>
                       </Link>
                     )}
                   </div>

@@ -72,8 +72,11 @@ export function HQPerformanceTable({
   const gridColumns = generateGridColumns(monthLabels);
   const gridHeaders = generateGridHeaders(monthLabels);
 
-  // 고정 컬럼명 배열 (9개월 확장, 성장률 제거)
-  const fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
+  // 고정 컬럼명 배열 (10월 조회 시 column12까지, 9월 조회 시 column11까지)
+  const isOctober = monthLabels.length === 10;
+  const fixedColumns = isOctober 
+    ? ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12']
+    : ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
 
   return (
     <div className="overflow-x-auto flex-1">

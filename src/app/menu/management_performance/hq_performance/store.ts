@@ -82,22 +82,41 @@ const hq_performance_grid = async (year: number, month: number): Promise<HQPerfo
     
     // 데이터 처리
     if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
-      const monthlyDetails = responseData.MIS030231.map((item: any) => ({
-        column1: item.COLUMN1 || '', // 구분 - 문자열
-        column2: item.COLUMN2 || 0, // 1월 데이터
-        column3: item.COLUMN3 || 0, // 2월 데이터
-        column4: item.COLUMN4 || 0, // 3월 데이터
-        column5: item.COLUMN5 || 0, // 4월 데이터
-        column6: item.COLUMN6 || 0, // 5월 데이터
-        column7: item.COLUMN7 || 0, // 6월 데이터
-        column8: item.COLUMN8 || 0, // 7월 데이터
-        column9: item.COLUMN9 || 0, // 8월 데이터
-        column10: item.COLUMN10 || 0, // 9월 데이터
-        column11: item.COLUMN11 || 0 // 합계
-      }));
+      // 10월 조회 시 column12까지 사용, 9월 조회 시 column11까지 사용
+      const isOctober = month === 10;
+      const monthlyDetails = responseData.MIS030231.map((item: any) => {
+        const baseData = {
+          column1: item.COLUMN1 || '', // 구분 - 문자열
+          column2: item.COLUMN2 || 0, // 1월 데이터
+          column3: item.COLUMN3 || 0, // 2월 데이터
+          column4: item.COLUMN4 || 0, // 3월 데이터
+          column5: item.COLUMN5 || 0, // 4월 데이터
+          column6: item.COLUMN6 || 0, // 5월 데이터
+          column7: item.COLUMN7 || 0, // 6월 데이터
+          column8: item.COLUMN8 || 0, // 7월 데이터
+          column9: item.COLUMN9 || 0, // 8월 데이터
+        };
+        
+        if (isOctober) {
+          return {
+            ...baseData,
+            column10: item.COLUMN10 || 0, // 9월 데이터
+            column11: item.COLUMN11 || 0, // 10월 데이터
+            column12: item.COLUMN12 || 0 // 합계
+          };
+        } else {
+          return {
+            ...baseData,
+            column10: item.COLUMN10 || 0, // 9월 데이터
+            column11: item.COLUMN11 || 0 // 합계
+          };
+        }
+      });
       
-      // 월 라벨 생성 (1월부터 9월까지)
-      const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월'];
+      // 월 라벨 생성
+      const monthLabels = isOctober 
+        ? ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월']
+        : ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월'];
       
       return { 
         monthlyDetails,
@@ -131,9 +150,13 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
       throw new Error(`API 호출 실패: ${response.status}`);
     }
     
-    // 데이터 처리
-    if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
-      const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월'];
+      // 데이터 처리
+      if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
+        // 10월 조회 시 10월까지 표시
+        const isOctober = month === 10;
+        const monthLabels = isOctober 
+          ? ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월']
+          : ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월'];
       
       // 데이터 분리
       const revenueCurrent = responseData.MIS030231.find((item: any) => item.DIVISION_TYPE === '매출_현재');

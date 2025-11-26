@@ -572,61 +572,61 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
         const tempData: CompanyPerformanceData = {
           // 1번째 API: 상단 4개 KPI 카드 (왼쪽 -> 오른쪽)
           kpiMetrics: {
-            ACTUAL_SALES: 1,              // 1: 총 매출액
-            ACTUAL_OP_PROFIT: 2,          // 2: 영업이익
-            ACTUAL_OP_MARGIN: 3,          // 3: 영업이익률
-            SALES_ACHIEVEMENT: 4,         // 4: 매출 달성률
-            ACTUAL_SALES_CHANGE: 5,       // 5: 전월대비 매출 증가액
-            ACTUAL_OP_PROFIT_CHANGE: 6,   // 6: 전월대비 영업이익 증가액
-            ACTUAL_OP_MARGIN_CHANGE: 7,   // 7: 전월대비 영업이익률 증가액
-            SALES_ACHIEVEMENT_CHANGE: 8   // 8: 전월대비 매출 달성률 증가액
+            ACTUAL_SALES: 5070,              // 1: 총 매출액
+            ACTUAL_OP_PROFIT: 60,          // 2: 영업이익
+            ACTUAL_OP_MARGIN: 1.2,          // 3: 영업이익률
+            SALES_ACHIEVEMENT: -21,         // 4: 매출 달성률
+            ACTUAL_SALES_CHANGE: -1323,       // 5: 전월대비 매출 증가액
+            ACTUAL_OP_PROFIT_CHANGE: 47,   // 6: 전월대비 영업이익 증가액
+            ACTUAL_OP_MARGIN_CHANGE: 1,   // 7: 전월대비 영업이익률 증가액
+            SALES_ACHIEVEMENT_CHANGE: 0   // 8: 전월대비 매출 달성률 증가액
           },
           // 2번째 API: 중간 그리드 테이블 (상단 -> 하단, 왼쪽 -> 오른쪽)
           gridData: {
             divisions: [
               {
                 name: '본사',
-                plannedSales: 9,            // 9
-                plannedOpProfit: 10,        // 10
-                plannedOpMargin: 11,        // 11
-                actualSales: 12,            // 12
-                actualOpProfit: 13,         // 13
-                actualOpMargin: 14,         // 14
-                salesAchievement: 15,       // 15
-                opProfitAchievement: 16     // 16
+                plannedSales: 2190,            // 9
+                plannedOpProfit: 75,        // 10
+                plannedOpMargin: 3.4,        // 11
+                actualSales: 1804,            // 12
+                actualOpProfit: -21,         // 13
+                actualOpMargin: -1.2,         // 14
+                salesAchievement: 82,       // 15
+                opProfitAchievement: 0     // 16
               },
               {
                 name: '국내 자회사',
-                plannedSales: 17,           // 17
-                plannedOpProfit: 18,        // 18
-                plannedOpMargin: 19,        // 19
-                actualSales: 20,            // 20
-                actualOpProfit: 21,         // 21
-                actualOpMargin: 22,         // 22
-                salesAchievement: 23,       // 23
-                opProfitAchievement: 24     // 24
+                plannedSales: 720,           // 17
+                plannedOpProfit: 22,        // 18
+                plannedOpMargin: 3.1,        // 19
+                actualSales: 585,            // 20
+                actualOpProfit: 11,         // 21
+                actualOpMargin: 1.9,         // 22
+                salesAchievement: 81,       // 23
+                opProfitAchievement: 51     // 24
               },
               {
                 name: '해외 자회사',
-                plannedSales: 25,           // 25
-                plannedOpProfit: 26,        // 26
-                plannedOpMargin: 27,        // 27
-                actualSales: 28,            // 28
-                actualOpProfit: 29,         // 29
-                actualOpMargin: 30,         // 30
-                salesAchievement: 31,       // 31
-                opProfitAchievement: 32     // 32
+                plannedSales: 4263,           // 25
+                plannedOpProfit: 91,        // 26
+                plannedOpMargin: 2.1,        // 27
+                actualSales: 2682,            // 28
+                actualOpProfit: 70,         // 29
+                actualOpMargin: 2.6,         // 30
+                salesAchievement: 63,       // 31
+                opProfitAchievement: 77     // 32
               },
               {
                 name: '합계',
-                plannedSales: 33,           // 33
-                plannedOpProfit: 34,        // 34
-                plannedOpMargin: 35,        // 35
-                actualSales: 36,            // 36
-                actualOpProfit: 37,         // 37
-                actualOpMargin: 38,         // 38
-                salesAchievement: 39,       // 39
-                opProfitAchievement: 40     // 40
+                plannedSales: 7172,           // 33
+                plannedOpProfit: 188,        // 34
+                plannedOpMargin: 2.6,        // 35
+                actualSales: 5070,            // 36
+                actualOpProfit: 60,         // 37
+                actualOpMargin: 1.2,         // 38
+                salesAchievement: 71,       // 39
+                opProfitAchievement: 32     // 40
               }
             ]
           },
@@ -634,10 +634,10 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           chartData1: {
             labels: ['본사'],  // 조건 체크용 더미 데이터
             datasets: [],
-            PLANNED_SALES: 41,         // 41
-            ACTUAL_SALES: 42,          // 42
-            PLANNED_OP_PROFIT: 43,     // 43
-            ACTUAL_OP_PROFIT: 44       // 44
+            PLANNED_SALES: 7172,         // 41
+            ACTUAL_SALES: 5070,          // 42
+            PLANNED_OP_PROFIT: 188,     // 43
+            ACTUAL_OP_PROFIT: 60       // 44
           },
           // 4번째 API: 하단 두 번째 카드 (매출액 바 차트)
           chartData2: {
@@ -645,13 +645,13 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             datasets: [
               {
                 label: '계획 매출액',
-                data: [45, 46, 47],
+                data: [2190, 720, 4263],
                 backgroundColor: 'rgba(156, 163, 175, 0.5)',
                 borderColor: 'rgba(156, 163, 175, 1)'
               },
               {
                 label: '실제 매출액',
-                data: [48, 49, 50],
+                data: [1804, 585, 2682],
                 backgroundColor: 'rgba(59, 130, 246, 0.5)',
                 borderColor: 'rgba(59, 130, 246, 1)'
               }
@@ -663,13 +663,13 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             datasets: [
               {
                 label: '계획 영업이익',
-                data: [51, 52, 53],
+                data: [75, 22, 91],
                 backgroundColor: 'rgba(156, 163, 175, 0.5)',
                 borderColor: 'rgba(156, 163, 175, 1)'
               },
               {
                 label: '실제 영업이익',
-                data: [54, 55, 56],
+                data: [-21, 11, 70],
                 backgroundColor: 'rgba(59, 130, 246, 0.5)',
                 borderColor: 'rgba(59, 130, 246, 1)'
               }

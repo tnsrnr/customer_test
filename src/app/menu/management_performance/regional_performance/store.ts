@@ -155,9 +155,9 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
         const tempData: RegionalPerformanceData = {
           kpiMetrics: {
             totalSales: 2682,        // 1
-            totalProfit: 0,      // 2
+            totalProfit: 534,      // 2
             totalOpProfit: 70,     // 3
-            totalOpMargin: 0      // 4
+            totalOpMargin: 3      // 4
           },
           regions: [
             {
@@ -169,8 +169,8 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
                 profit: 0         // 6
               },
               achievement: {
-                sales: 0,         // 7
-                profit: 0         // 8
+                sales: 42,         // 7
+                profit: 166         // 8
               },
               totalData: {
                 sales: 678,         // 9
@@ -186,7 +186,7 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
                 profit: -1        // 12
               },
               achievement: {
-                sales: 0,        // 13
+                sales: 69,        // 13
                 profit: 0        // 14
               },
               totalData: {
@@ -203,8 +203,8 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
                 profit: 3        // 18
               },
               achievement: {
-                sales: 0,        // 19
-                profit: 0        // 20
+                sales: 81,        // 19
+                profit: 91        // 20
               },
               totalData: {
                 sales: 1127,        // 21
@@ -220,8 +220,8 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
                 profit: 2        // 24
               },
               achievement: {
-                sales: 0,        // 25
-                profit: 0        // 26
+                sales: 60,        // 25
+                profit: 163        // 26
               },
               totalData: {
                 sales: 197,        // 27

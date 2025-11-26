@@ -437,13 +437,13 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
           // 상단 4개 KPI 카드 (왼쪽 → 오른쪽)
           kpiMetrics: {
             actualSales: 1804,                    // 1: 매출
-            actualSalesChange: 0,              // 2: 매출 변화
+            actualSalesChange: -564,              // 2: 매출 변화
             actualPurchases: 1747,                // 3: 매입
-            actualPurchasesChange: 0,          // 4: 매입 변화
+            actualPurchasesChange: 4270,          // 4: 매입 변화
             actualOpProfit: -25.1,                 // 5: 영업이익
-            actualOpProfitChange: 0,           // 6: 영업이익 변화
+            actualOpProfitChange: -7,           // 6: 영업이익 변화
             actualOpMargin: -1.39,                 // 7: 영업이익율
-            actualOpMarginChange: 0            // 8: 영업이익율 변화
+            actualOpMarginChange: -0.6            // 8: 영업이익율 변화
           },
           // 차트 데이터
           chartData: {
@@ -460,7 +460,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 },
                 {
                   label: '매출 (직전년도)',
-                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  data: [270,232,258,234,248,233,243,233,206,211,209,228],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
                   borderWidth: 2,
@@ -482,7 +482,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 },
                 {
                   label: '영업이익 (직전년도)',
-                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  data: [5,-6,1,-1,1,-4,4,-6,-8,-4,-4,-6],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
                   borderWidth: 2,

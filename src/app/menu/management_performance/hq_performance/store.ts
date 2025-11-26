@@ -436,14 +436,14 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
         const tempData: HQPerformanceData = {
           // 상단 4개 KPI 카드 (왼쪽 → 오른쪽)
           kpiMetrics: {
-            actualSales: 1,                    // 1: 매출
-            actualSalesChange: 2,              // 2: 매출 변화
-            actualPurchases: 3,                // 3: 매입
-            actualPurchasesChange: 4,          // 4: 매입 변화
-            actualOpProfit: 5,                 // 5: 영업이익
-            actualOpProfitChange: 6,           // 6: 영업이익 변화
-            actualOpMargin: 7,                 // 7: 영업이익율
-            actualOpMarginChange: 8            // 8: 영업이익율 변화
+            actualSales: 1804,                    // 1: 매출
+            actualSalesChange: 0,              // 2: 매출 변화
+            actualPurchases: 1747,                // 3: 매입
+            actualPurchasesChange: 0,          // 4: 매입 변화
+            actualOpProfit: -25.1,                 // 5: 영업이익
+            actualOpProfitChange: 0,           // 6: 영업이익 변화
+            actualOpMargin: -1.39,                 // 7: 영업이익율
+            actualOpMarginChange: 0            // 8: 영업이익율 변화
           },
           // 차트 데이터
           chartData: {
@@ -452,7 +452,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               datasets: [
                 {
                   label: '매출 (올해)',
-                  data: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, null, null],
+                  data: [170, 161, 191, 207, 185, 174, 183, 178, 186, 167, null, null],
                   borderColor: 'rgb(59, 130, 246)',
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   borderWidth: 2,
@@ -460,7 +460,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 },
                 {
                   label: '매출 (직전년도)',
-                  data: [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
                   borderWidth: 2,
@@ -474,7 +474,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               datasets: [
                 {
                   label: '영업이익 (올해)',
-                  data: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, null, null],
+                  data: [-5.5, -5.3, -2.2, -4.6, -2.3, -0.4, -0.9, 0.2, -1.7, -2.4, null, null],
                   borderColor: 'rgb(239, 68, 68)',
                   backgroundColor: 'rgba(239, 68, 68, 0.1)',
                   borderWidth: 2,
@@ -482,7 +482,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 },
                 {
                   label: '영업이익 (직전년도)',
-                  data: [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
+                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                   borderColor: 'rgb(156, 163, 175)',
                   backgroundColor: 'rgba(156, 163, 175, 0.1)',
                   borderWidth: 2,

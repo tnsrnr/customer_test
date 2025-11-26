@@ -94,7 +94,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
         break;
       
       case 'totalAssets_debtWeight':
-        // 총자산과 부채비중 (부채/총자산 * 100)
+        // 총자산과 부채비율 (부채/총자산 * 100)
         const totalAssets = trendData.totalLoan.map((loan, index) => {
           return Math.round(loan * 4 * 10) / 10; // 차입금의 4배가 총자산
         });
@@ -111,7 +111,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
             yAxisID: 'y',
           },
           {
-            label: '부채비중',
+            label: '부채비율',
             data: debtWeight,
             borderColor: 'rgba(251, 146, 60, 0.6)',
             backgroundColor: 'rgba(251, 146, 60, 0.2)',
@@ -200,12 +200,12 @@ export function TrendsTab({ data }: TrendsTabProps) {
             maxLabel: '최대 자산'
           },
           secondary: {
-            label: '현재 부채비중',
+            label: '현재 부채비율',
             value: currentDebtRatio,
             unit: '%',
             change: ((currentDebtRatio - previousDebtRatio) / previousDebtRatio * 100).toFixed(1),
             maxValue: Math.max(...trendData.debtRatio),
-            maxLabel: '최대 부채비중'
+            maxLabel: '최대 부채비율'
           }
         };
     }
@@ -360,7 +360,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
           <h3 className="text-white font-semibold text-2xl">
             {selectedTrend === 'totalLoan_debtRatio' && '10년간 차입금 및 부채비율 트렌드'}
             {selectedTrend === 'debtAmount_loanRatio' && '10년간 부채금액 및 차입금비율 트렌드'}
-            {selectedTrend === 'totalAssets_debtWeight' && '10년간 자산 및 부채비중 트렌드'}
+            {selectedTrend === 'totalAssets_debtWeight' && '10년간 자산 및 부채비율 트렌드'}
           </h3>
           
           {/* 라디오 버튼 선택 */}
@@ -398,7 +398,7 @@ export function TrendsTab({ data }: TrendsTabProps) {
                   onChange={(e) => setSelectedTrend(e.target.value as TrendOption)}
                   className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
-                <span className="text-white text-xs">자산/부채비중</span>
+                <span className="text-white text-xs">자산/부채비율</span>
               </label>
             </div>
           </div>

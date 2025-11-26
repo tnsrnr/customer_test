@@ -271,11 +271,11 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
           totalAssets: 2677,
           totalLiabilities: 1101,
           totalEquity: 1575,
-          debtWeight: 41,
-          totalAssetsChange: -136,
+          debtWeight: 70,
+          totalAssetsChange: -4.8,
           totalLiabilitiesChange: -146,
-          totalEquityChange: 1575,
-          debtWeightChange: 0
+          totalEquityChange: 0.7,
+          debtWeightChange: -10
         };
 
         // 차트 데이터 하드코딩

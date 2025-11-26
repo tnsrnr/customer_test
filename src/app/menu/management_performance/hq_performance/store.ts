@@ -439,7 +439,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
             actualSales: 1804,                    // 1: 매출
             actualSalesChange: -564,              // 2: 매출 변화
             actualPurchases: 1747,                // 3: 매입
-            actualPurchasesChange: 4270,          // 4: 매입 변화
+            actualPurchasesChange: -548,          // 4: 매입 변화
             actualOpProfit: -25.1,                 // 5: 영업이익
             actualOpProfitChange: -7,           // 6: 영업이익 변화
             actualOpMargin: -1.39,                 // 7: 영업이익율

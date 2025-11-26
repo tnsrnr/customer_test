@@ -223,7 +223,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
             </div>
             <div className="flex-1 flex items-center justify-center ml-4">
               <div className="text-center">
-                <span className="text-sm font-medium text-purple-200 mb-1 block">부채비중</span>
+                <span className="text-sm font-medium text-purple-200 mb-1 block">부채비율</span>
                 <div className="flex items-center justify-center">
                   <span className="text-3xl font-bold text-white drop-shadow-sm">
                     {Math.round(kpiMetrics.debtWeight)}

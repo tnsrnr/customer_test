@@ -130,6 +130,13 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
     return values.reduce((sum, value) => sum + value, 0);
   };
 
+  const formatNumber = (value: number) => {
+    if (Number.isInteger(value)) {
+      return value.toLocaleString();
+    }
+    return value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  };
+
   // 부문별 색상 매핑
   const getDivisionColor = (parentDivisionType: string) => {
     const colorMap: { [key: string]: string } = {
@@ -160,10 +167,10 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
       );
       
       const profitData = profitItem ? [
-        Math.round(profitItem.COLUMN1 || 0), Math.round(profitItem.COLUMN2 || 0), Math.round(profitItem.COLUMN3 || 0), 
-        Math.round(profitItem.COLUMN4 || 0), Math.round(profitItem.COLUMN5 || 0), Math.round(profitItem.COLUMN6 || 0),
-        Math.round(profitItem.COLUMN7 || 0), Math.round(profitItem.COLUMN8 || 0), Math.round(profitItem.COLUMN9 || 0), 
-        Math.round(profitItem.COLUMN10 || 0), Math.round(profitItem.COLUMN11 || 0), Math.round(profitItem.COLUMN12 || 0)
+        profitItem.COLUMN1 || 0, profitItem.COLUMN2 || 0, profitItem.COLUMN3 || 0, 
+        profitItem.COLUMN4 || 0, profitItem.COLUMN5 || 0, profitItem.COLUMN6 || 0,
+        profitItem.COLUMN7 || 0, profitItem.COLUMN8 || 0, profitItem.COLUMN9 || 0, 
+        profitItem.COLUMN10 || 0, profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
       ] : Array(12).fill(0); // 영업이익 데이터가 없으면 0으로 설정
       
       return {
@@ -238,16 +245,16 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                     className={`py-2 px-2 text-center text-white border-r border-white/30 ${getColorClasses(division.color, 'bg')}`}
                   >
                     <span className="text-white">
-                      {value.toLocaleString()}
+                      {formatNumber(value)}
                     </span>
                   </TableCell>
                 ))}
                 
                 {/* 누계 매출 */}
                 <TableCell className={`py-2 px-2 text-center font-bold text-white border-r border-white/30 ${getColorClasses(division.color, 'bg')}`}>
-                  <span className="text-white">
-                    {calculateTotal(division.revenue).toLocaleString()}
-                  </span>
+                    <span className="text-white">
+                      {formatNumber(calculateTotal(division.revenue))}
+                    </span>
                 </TableCell>
               </TableRow>
               
@@ -272,7 +279,7 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                     }`}
                   >
                     <span className={value >= 0 ? 'text-white' : 'text-red-300'}>
-                      {Math.round(value)}
+                      {formatNumber(value)}
                     </span>
                   </TableCell>
                 ))}
@@ -282,7 +289,7 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                   calculateTotal(division.profit) >= 0 ? 'text-white' : 'text-red-300'
                 }`}>
                   <span className={calculateTotal(division.profit) >= 0 ? 'text-white' : 'text-red-300'}>
-                    {Math.round(calculateTotal(division.profit))}
+                    {formatNumber(calculateTotal(division.profit))}
                   </span>
                 </TableCell>
               </TableRow>
@@ -292,14 +299,22 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
           {/* 합계 행 */}
           {(() => {
             // 월별 매출 합계 계산
-            const monthlyRevenueTotals = monthLabels?.map((_, monthIndex) => 
-              sortedDivisions.reduce((sum, division) => sum + division.revenue[monthIndex], 0)
-            ) || [];
+            const monthlyRevenueTotals = monthLabels?.map((_, monthIndex) => {
+              const sum = sortedDivisions.reduce((acc, division) => {
+                const value = division.revenue[monthIndex] || 0;
+                return acc + Number(value);
+              }, 0);
+              return sum;
+            }) || [];
             
             // 월별 영업이익 합계 계산
-            const monthlyProfitTotals = monthLabels?.map((_, monthIndex) => 
-              sortedDivisions.reduce((sum, division) => sum + division.profit[monthIndex], 0)
-            ) || [];
+            const monthlyProfitTotals = monthLabels?.map((_, monthIndex) => {
+              const sum = sortedDivisions.reduce((acc, division) => {
+                const value = division.profit[monthIndex] || 0;
+                return acc + Number(value);
+              }, 0);
+              return sum;
+            }) || [];
             
             // 전체 매출 합계
             const totalRevenue = calculateTotal(monthlyRevenueTotals);
@@ -331,7 +346,7 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                       className="py-2 px-2 text-center font-bold text-white border-r border-white/30 bg-white/20"
                     >
                       <span className="text-white">
-                        {value.toLocaleString()}
+                        {formatNumber(value)}
                       </span>
                     </TableCell>
                   ))}
@@ -339,7 +354,7 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                   {/* 전체 매출 합계 */}
                   <TableCell className="py-2 px-2 text-center font-bold text-white border-r border-white/30 bg-white/20">
                     <span className="text-white">
-                      {totalRevenue.toLocaleString()}
+                      {formatNumber(totalRevenue)}
                     </span>
                   </TableCell>
                 </TableRow>
@@ -362,7 +377,7 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                       }`}
                     >
                       <span className={value >= 0 ? 'text-white' : 'text-red-300'}>
-                        {Math.round(value)}
+                        {formatNumber(value)}
                       </span>
                     </TableCell>
                   ))}
@@ -372,7 +387,7 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                     totalProfit >= 0 ? 'text-white' : 'text-red-300'
                   }`}>
                     <span className={totalProfit >= 0 ? 'text-white' : 'text-red-300'}>
-                      {Math.round(totalProfit)}
+                      {formatNumber(totalProfit)}
                     </span>
                   </TableCell>
                 </TableRow>

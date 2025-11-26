@@ -6,8 +6,8 @@ import { Card } from '@/common/components/ui/card';
 import { Lock, User } from 'lucide-react';
 
 export default function AuthPage() {
-  const [username, setUsername] = useState('tnsrnr');
-  const [password, setPassword] = useState('tnsrnr');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -196,11 +196,6 @@ export default function AuthPage() {
             🧹 세션 초기화
           </button>
         </form>
-        <div className="mt-8 text-center text-xs text-slate-500 select-none">
-          <p>인증서버: <span className="font-semibold text-blue-600">qa-lv1.htns.com</span></p>
-          <p>테스트 계정: <span className="font-semibold text-blue-600">tnsrnr</span></p>
-          <p>비밀번호: <span className="font-semibold text-blue-600">tnsrnr</span></p>
-        </div>
       </Card>
     </div>
   );

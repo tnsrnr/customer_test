@@ -22,6 +22,13 @@ const iconMap: { [key: string]: any } = {
 };
 
 // 부문 카드 컴포넌트
+const formatNumber = (value: number, maxDecimals = 2) => {
+  if (Number.isInteger(value)) {
+    return value.toLocaleString();
+  }
+  return value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: maxDecimals });
+};
+
 const DivisionCard = ({ 
   division, 
   isSelected, 
@@ -56,7 +63,7 @@ const DivisionCard = ({
           <div className="col-span-3 text-center">
             <div className="flex items-center justify-center gap-1">
               <span className={`text-3xl font-bold ${division.textColor}`}>
-                {division.revenue.toLocaleString()}
+                {formatNumber(division.revenue, 1)}
               </span>
               <span className="text-sm text-slate-300">억원</span>
             </div>
@@ -69,7 +76,7 @@ const DivisionCard = ({
                 {division.growth >= 0 ? '▲' : '▼'}
               </span>
               <span className={`text-lg font-semibold ${division.growth >= 0 ? 'text-emerald-400' : 'text-blue-400'} truncate`}>
-                {Math.abs(division.growth)}%
+                {formatNumber(Math.abs(division.growth), 1)}%
               </span>
             </div>
           </div>
@@ -78,8 +85,8 @@ const DivisionCard = ({
           <div className="col-span-3 text-center">
             <div className="flex items-center justify-center gap-1">
               <span className={`text-lg font-semibold ${division.profit >= 0 ? 'text-white' : 'text-red-400'}`}>
-                {division.profit > 0 ? '+' : ''}
-                {Math.round(division.profit)}
+                {division.profit > 0 ? '+' : division.profit < 0 ? '-' : ''}
+                {formatNumber(Math.abs(division.profit), 2)}
               </span>
               <span className="text-sm text-slate-300">억원</span>
             </div>
@@ -125,6 +132,7 @@ export default function DivisionPage() {
 
 
   const totalRevenue = data?.divisionCards.reduce((sum, item) => sum + item.revenue, 0) || 0;
+  const totalProfit = data?.divisionCards.reduce((sum, item) => sum + item.profit, 0) || 0;
 
   function DivisionPageContent() {
     
@@ -205,7 +213,14 @@ export default function DivisionPage() {
                           </div>
                           <div className="col-span-3 text-center">
                             <div className="flex items-center justify-center gap-1">
-                              <span className="text-base font-semibold">0.0</span>
+                              <span
+                                className={`text-base font-semibold ${
+                                  totalProfit >= 0 ? 'text-white' : 'text-red-300'
+                                }`}
+                              >
+                                {totalProfit > 0 ? '+' : ''}
+                                {formatNumber(totalProfit, 2)}
+                              </span>
                               <span className="text-sm">억원</span>
                             </div>
                           </div>

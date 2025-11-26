@@ -168,21 +168,21 @@ const generateDivisionCardsFromBackend = (backendData: any[]) => {
     const config = divisionConfig[parentType] || Object.values(divisionConfig)[index % Object.keys(divisionConfig).length];
     
     // 현재월과 전월 데이터 추출 (COLUMN12가 현재월, COLUMN11이 전월)
-    const currentMonth = revenueItem.COLUMN12 || 0;
-    const previousMonth = revenueItem.COLUMN11 || 0;
+    const currentMonth = Number(revenueItem.COLUMN12 ?? 0);
+    const previousMonth = Number(revenueItem.COLUMN11 ?? 0);
     
     // 매출 전월 比 계산
     const growth = previousMonth > 0 ? ((currentMonth - previousMonth) / previousMonth) * 100 : 0;
     
     // 영업이익 (실제 데이터 사용 - COLUMN12 사용, 소수점 반올림)
-    const profit = profitItem ? Math.round(profitItem.COLUMN12 || 0) : 0;
+    const profit = Number(profitItem?.COLUMN12 ?? 0);
 
     const result = {
       id: config.id,
       name: parentType, // PARENT_DIVISION_TYPE 사용
-      revenue: Math.round(currentMonth),
-      growth: Math.round(growth),
-      profit: Math.round(profit * 10) / 10, // 소수점 1자리
+      revenue: currentMonth,
+      growth,
+      profit,
       color: config.color,
       borderColor: config.borderColor,
       textColor: config.textColor,
@@ -190,7 +190,7 @@ const generateDivisionCardsFromBackend = (backendData: any[]) => {
     };
     
     return result;
-  }).filter(Boolean);
+  }).filter((card): card is NonNullable<typeof card> => Boolean(card));
   
   // 백엔드에 실제 데이터가 있는 부문만 반환
   

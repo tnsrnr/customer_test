@@ -182,16 +182,16 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
               icon: '🌏',
               variant: 'asia',
               monthlyData: {
-                sales: 17,        // 11
-                profit: -1        // 12
+                sales: 65,        // 11
+                profit: -0.1        // 12
               },
               achievement: {
                 sales: 69,        // 13
                 profit: 0        // 14
               },
               totalData: {
-                sales: 199,        // 15
-                profit: -4        // 16
+                sales: 730,        // 15
+                profit: -7.9        // 16
               }
             },
             {
@@ -199,8 +199,8 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
               icon: '🇪🇺',
               variant: 'europe',
               monthlyData: {
-                sales: 118,        // 17
-                profit: 3        // 18
+                sales: 127,        // 17
+                profit: 1.3        // 18
               },
               achievement: {
                 sales: 81,        // 19

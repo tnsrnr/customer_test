@@ -593,7 +593,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
                 actualOpProfit: -25,         // 13
                 actualOpMargin: -1.4,         // 14
                 salesAchievement: 82,       // 15
-                opProfitAchievement: 0     // 16
+                opProfitAchievement: -34     // 16
               },
               {
                 name: '국내 자회사',
@@ -669,7 +669,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
               },
               {
                 label: '실제 영업이익',
-                data: [-21, 11, 70],
+                data: [-25, 11, 70],
                 backgroundColor: 'rgba(59, 130, 246, 0.5)',
                 borderColor: 'rgba(59, 130, 246, 1)'
               }

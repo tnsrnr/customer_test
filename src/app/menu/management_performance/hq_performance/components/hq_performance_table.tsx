@@ -43,6 +43,15 @@ const getGrowthStyle = (value: string) => {
   return { color: 'text-gray-400', icon: Minus };
 };
 
+// 소수점 이하가 0이면 정수로, 아니면 소수점 표시하는 포맷팅 함수
+const formatNumber = (value: number, decimals: number = 1): string => {
+  const rounded = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+  if (rounded % 1 === 0) {
+    return rounded.toString();
+  }
+  return rounded.toFixed(decimals);
+};
+
 export function HQPerformanceTable({ 
   data, 
   monthLabels = [], 
@@ -143,14 +152,12 @@ export function HQPerformanceTable({
                       ) : (
                         // 월별 데이터 컬럼 - 소수점이 있는 값들 표현
                         <span className="text-white">
-                          <CountUp 
-                            end={item[columnKey as keyof MonthlyDetailData] as number || 0} 
-                            duration={1.5} 
-                            separator=","
-                            decimals={item.column1 === '영업이익율' ? 2 : 1}
-                            decimal="."
-                            className="text-white"
-                          />
+                          {(() => {
+                            const value = item[columnKey as keyof MonthlyDetailData] as number || 0;
+                            const decimals = item.column1 === '영업이익율' ? 2 : 1;
+                            const formatted = formatNumber(value, decimals);
+                            return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                          })()}
                           {item.column1 === '영업이익율' && '%'}
                         </span>
                       )}

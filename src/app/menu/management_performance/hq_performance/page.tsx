@@ -52,6 +52,15 @@ export default function HQPerformancePage() {
   //   }
   // }, [isRefreshing, selectedYear, selectedMonth, setCurrentDate]);
 
+  // 소수점 이하가 0이면 정수로, 아니면 소수점 표시하는 포맷팅 함수
+  const formatNumber = (value: number, decimals: number = 1): string => {
+    const rounded = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    if (rounded % 1 === 0) {
+      return rounded.toString();
+    }
+    return rounded.toFixed(decimals);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
       {/* 고급스러운 배경 효과 */}
@@ -100,14 +109,7 @@ export default function HQPerformancePage() {
                       <span className="text-sm font-medium text-emerald-200 mb-1 block">매출 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
-                          <CountUp 
-                            end={data.kpiMetrics.actualSales} 
-                            duration={2}
-                            separator=","
-                            decimals={1}
-                            decimal="."
-                            className="text-white"
-                          />
+                          {formatNumber(data.kpiMetrics.actualSales, 1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         </span>
                         <span className="text-lg font-medium text-emerald-200 ml-1">억원</span>
                     </div>
@@ -118,7 +120,7 @@ export default function HQPerformancePage() {
                       ? 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualSalesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualSalesChange).toFixed(1)}억원
+                    {data.kpiMetrics.actualSalesChange > 0 ? '▲' : '▼'} {formatNumber(Math.abs(data.kpiMetrics.actualSalesChange), 1)}억원
                   </span>
                 </div>
                 
@@ -143,14 +145,7 @@ export default function HQPerformancePage() {
                       <span className="text-sm font-medium text-blue-200 mb-1 block">매입 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
-                          <CountUp 
-                            end={data.kpiMetrics.actualPurchases} 
-                            duration={2}
-                            separator=","
-                            decimals={1}
-                            decimal="."
-                            className="text-white"
-                          />
+                          {formatNumber(data.kpiMetrics.actualPurchases, 1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         </span>
                         <span className="text-lg font-medium text-blue-200 ml-1">억원</span>
                       </div>
@@ -161,7 +156,7 @@ export default function HQPerformancePage() {
                       ? 'text-blue-300 bg-blue-600/30 border-blue-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualPurchasesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualPurchasesChange).toFixed(1)}억원
+                    {data.kpiMetrics.actualPurchasesChange > 0 ? '▲' : '▼'} {formatNumber(Math.abs(data.kpiMetrics.actualPurchasesChange), 1)}억원
                   </span>
                 </div>
                 
@@ -186,13 +181,7 @@ export default function HQPerformancePage() {
                       <span className="text-sm font-medium text-orange-200 mb-1 block">영업이익 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
-                          <CountUp 
-                            end={data.kpiMetrics.actualOpProfit} 
-                            duration={2}
-                            separator=","
-                            decimals={1}
-                            className="text-white"
-                          />
+                          {formatNumber(data.kpiMetrics.actualOpProfit, 1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         </span>
                         <span className="text-lg font-medium text-orange-200 ml-1">억원</span>
                       </div>
@@ -203,7 +192,7 @@ export default function HQPerformancePage() {
                       ? 'text-orange-300 bg-orange-600/30 border-orange-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualOpProfitChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpProfitChange).toFixed(1)}억원
+                    {data.kpiMetrics.actualOpProfitChange > 0 ? '▲' : '▼'} {formatNumber(Math.abs(data.kpiMetrics.actualOpProfitChange), 1)}억원
                   </span>
                 </div>
                 
@@ -228,13 +217,7 @@ export default function HQPerformancePage() {
                       <span className="text-sm font-medium text-purple-200 mb-1 block">영업이익율 (누적)</span>
                       <div className="flex items-center justify-center">
                         <span className="text-3xl font-bold text-white drop-shadow-sm">
-                          <CountUp 
-                            end={data.kpiMetrics.actualOpMargin} 
-                            duration={2}
-                            separator=","
-                            decimals={2}
-                            className="text-white"
-                          />
+                          {formatNumber(data.kpiMetrics.actualOpMargin, 2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         </span>
                         <span className="text-lg font-medium text-purple-200 ml-1">%</span>
                 </div>
@@ -245,7 +228,7 @@ export default function HQPerformancePage() {
                       ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualOpMarginChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpMarginChange).toFixed(2)}%
+                    {data.kpiMetrics.actualOpMarginChange > 0 ? '▲' : '▼'} {formatNumber(Math.abs(data.kpiMetrics.actualOpMarginChange), 2)}%
                   </span>
                 </div>
                 
@@ -297,7 +280,11 @@ export default function HQPerformancePage() {
                               size: 10
                             },
                             callback: function(value: any) {
-                              return typeof value === 'number' ? value.toFixed(1) + '억' : value;
+                              if (typeof value === 'number') {
+                                const formatted = value % 1 === 0 ? value.toString() : value.toFixed(1);
+                                return formatted + '억';
+                              }
+                              return value;
                             }
                           },
                           grid: {

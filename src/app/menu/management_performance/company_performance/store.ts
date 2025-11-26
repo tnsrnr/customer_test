@@ -573,12 +573,12 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           // 1번째 API: 상단 4개 KPI 카드 (왼쪽 -> 오른쪽)
           kpiMetrics: {
             ACTUAL_SALES: 5070,              // 1: 총 매출액
-            ACTUAL_OP_PROFIT: 60,          // 2: 영업이익
-            ACTUAL_OP_MARGIN: 1.2,          // 3: 영업이익률
+            ACTUAL_OP_PROFIT: 56,          // 2: 영업이익
+            ACTUAL_OP_MARGIN: 1.1,          // 3: 영업이익률
             SALES_ACHIEVEMENT: -21,         // 4: 매출 달성률
             ACTUAL_SALES_CHANGE: -1323,       // 5: 전월대비 매출 증가액
-            ACTUAL_OP_PROFIT_CHANGE: 47,   // 6: 전월대비 영업이익 증가액
-            ACTUAL_OP_MARGIN_CHANGE: 1,   // 7: 전월대비 영업이익률 증가액
+            ACTUAL_OP_PROFIT_CHANGE: 32,   // 6: 전월대비 영업이익 증가액
+            ACTUAL_OP_MARGIN_CHANGE: 1.1,   // 7: 전월대비 영업이익률 증가액
             SALES_ACHIEVEMENT_CHANGE: 0   // 8: 전월대비 매출 달성률 증가액
           },
           // 2번째 API: 중간 그리드 테이블 (상단 -> 하단, 왼쪽 -> 오른쪽)
@@ -590,8 +590,8 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
                 plannedOpProfit: 75,        // 10
                 plannedOpMargin: 3.4,        // 11
                 actualSales: 1804,            // 12
-                actualOpProfit: -21,         // 13
-                actualOpMargin: -1.2,         // 14
+                actualOpProfit: -25,         // 13
+                actualOpMargin: -1.4,         // 14
                 salesAchievement: 82,       // 15
                 opProfitAchievement: 0     // 16
               },
@@ -623,8 +623,8 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
                 plannedOpProfit: 188,        // 34
                 plannedOpMargin: 2.6,        // 35
                 actualSales: 5070,            // 36
-                actualOpProfit: 60,         // 37
-                actualOpMargin: 1.2,         // 38
+                actualOpProfit: 56,         // 37
+                actualOpMargin: 1.1,         // 38
                 salesAchievement: 71,       // 39
                 opProfitAchievement: 32     // 40
               }

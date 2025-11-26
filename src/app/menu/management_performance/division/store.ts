@@ -379,7 +379,7 @@ const generateChartDataFromBackend = (backendData: any[], selectedYear?: number,
       name: parentType,
       color: color,
       revenue: revenueItem ? [
-        revenueItem.COLUMN1 || 0,
+        revenueItem.COLUMN1 || 0,  // 억원 단위 그대로
         revenueItem.COLUMN2 || 0,
         revenueItem.COLUMN3 || 0,
         revenueItem.COLUMN4 || 0,
@@ -393,7 +393,7 @@ const generateChartDataFromBackend = (backendData: any[], selectedYear?: number,
         revenueItem.COLUMN12 || 0
       ] : Array(12).fill(0),
       profit: profitItem ? [
-        profitItem.COLUMN1 || 0,
+        profitItem.COLUMN1 || 0,  // 억원 단위 그대로
         profitItem.COLUMN2 || 0,
         profitItem.COLUMN3 || 0,
         profitItem.COLUMN4 || 0,
@@ -440,218 +440,219 @@ export const useDivisionStore = create<DivisionState>((set, get) => ({
     if (currentMonth === 10) {
       console.log('🎯 10월 데이터: 템프 데이터를 사용합니다. (부문별 실적)');
       
-      // 소수점 이하 2자리에서 반올림하여 소수점 이하 1자리로 변환하는 헬퍼 함수
+      // 소수점 이하 1자리로 반올림하는 헬퍼 함수
       const roundTo1Decimal = (value: number): number => {
         return Math.round(value * 10) / 10;
       };
       
-      // 제공된 데이터를 백엔드 구조에 맞게 변환 (억 단위로 변환 후 소수점 이하 1자리로 반올림)
+      // 제공된 데이터를 백엔드 구조에 맞게 변환 (억원 단위 그대로 저장)
       // 10월 조회 시: COLUMN1=11월(전년), COLUMN2=12월(전년), COLUMN3=1월, ..., COLUMN11=9월, COLUMN12=10월
+      // 작년 11월, 12월은 원 단위를 억원 단위로 변환, 1~10월은 이미지 값 그대로 사용
       const tempBackendData: any[] = [
         // 매출 데이터
         {
           PARENT_DIVISION_TYPE: '항공',
           DIVISION_TYPE: '매출',
-          COLUMN1: roundTo1Decimal(7080720762 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(7738149976 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(6405650775 / 100000000),   // 1월
-          COLUMN4: roundTo1Decimal(5558123863 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(6795793582 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(10453766405 / 100000000),  // 4월
-          COLUMN7: roundTo1Decimal(7481924260 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(7075842327 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(8431690256 / 100000000),   // 7월
-          COLUMN10: roundTo1Decimal(8240481410 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(8827518027 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(8232629592 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((7080720762 + 7738149976 + 6405650775 + 5558123863 + 6795793582 + 10453766405 + 7481924260 + 7075842327 + 8431690256 + 8240481410 + 8827518027 + 8232629592) / 100000000)  // 누계
+          COLUMN1: 71,   // 11월 (전년) - 원 -> 억원
+          COLUMN2: 77,   // 12월 (전년) - 원 -> 억원
+          COLUMN3: 64,   // 1월 (억원 단위 그대로)
+          COLUMN4: 56,   // 2월
+          COLUMN5: 68,   // 3월
+          COLUMN6: 104,  // 4월
+          COLUMN7: 75,   // 5월
+          COLUMN8: 70,   // 6월
+          COLUMN9: 83,   // 7월
+          COLUMN10: 80,   // 8월
+          COLUMN11: 87,   // 9월
+          COLUMN12: 81,  // 10월
+          COLUMN13: (71+77+64 + 56 + 68 + 104 + 75 + 70 + 83 + 80 + 87 + 81)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '항공',
           DIVISION_TYPE: '영업이익',
-          COLUMN1: roundTo1Decimal(-71724410 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(-272678904 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(-193249868 / 100000000),   // 1월
-          COLUMN4: roundTo1Decimal(-307162183 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(-212086513 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(-277826988 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(-238764496 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(-215845327 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(-33261348 / 100000000),    // 7월
-          COLUMN10: roundTo1Decimal(189139046 / 100000000),    // 8월
-          COLUMN11: roundTo1Decimal(-65177584 / 100000000),    // 9월 (전월)
-          COLUMN12: roundTo1Decimal(-153441426 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((-71724410 + -272678904 + -193249868 + -307162183 + -212086513 + -277826988 + -238764496 + -215845327 + -33261348 + 189139046 + -65177584 + -153441426) / 100000000)  // 누계
+          COLUMN1: -1,   // 11월 (전년) - 원 -> 억원
+          COLUMN2: -3,   // 12월 (전년) - 원 -> 억원
+          COLUMN3: -1.9,   // 1월 (억원 단위 그대로)
+          COLUMN4: -3.1,   // 2월
+          COLUMN5: -2.1,   // 3월
+          COLUMN6: -2.9,   // 4월
+          COLUMN7: -2.6,   // 5월
+          COLUMN8: -2.7,   // 6월
+          COLUMN9: -1.9,    // 7월
+          COLUMN10: -0.2,    // 8월
+          COLUMN11: -1.7,    // 9월
+          COLUMN12: -2.6,  // 10월
+          COLUMN13: (-1 + -3 +-1.9 + -3.1 + -2.1 + -2.9 + -2.6 + -2.7 + -1.9 + -0.2 + -1.7 + -2.6)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '해상',
           DIVISION_TYPE: '매출',
-          COLUMN1: roundTo1Decimal(4532228864 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(5578657004 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(4138480749 / 100000000),   // 1월
-          COLUMN4: roundTo1Decimal(3958149638 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(5597611608 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(3337956008 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(3403994121 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(3424240926 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(2808882042 / 100000000),   // 7월
-          COLUMN10: roundTo1Decimal(2845357806 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(3159246954 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(2279144027 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((4532228864 + 5578657004 + 4138480749 + 3958149638 + 5597611608 + 3337956008 + 3403994121 + 3424240926 + 2808882042 + 2845357806 + 3159246954 + 2279144027) / 100000000)  // 누계
+          COLUMN1: 45,   // 11월 (전년)
+          COLUMN2: 56,   // 12월 (전년)
+          COLUMN3: 41,   // 1월 (억원 단위 그대로)
+          COLUMN4: 40,   // 2월
+          COLUMN5: 56,   // 3월
+          COLUMN6: 33,   // 4월
+          COLUMN7: 34,   // 5월
+          COLUMN8: 34,   // 6월
+          COLUMN9: 28,   // 7월
+          COLUMN10: 28,   // 8월
+          COLUMN11: 32,   // 9월
+          COLUMN12: 23,  // 10월
+          COLUMN13: (45 + 56 + 41 + 40 + 56 + 33 + 34 + 34 + 28 + 28 + 32 + 23)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '해상',
           DIVISION_TYPE: '영업이익',
-          COLUMN1: roundTo1Decimal(-41474949 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(-88200944 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(25051356 / 100000000),      // 1월
-          COLUMN4: roundTo1Decimal(-110360761 / 100000000),    // 2월
-          COLUMN5: roundTo1Decimal(73737949 / 100000000),      // 3월
-          COLUMN6: roundTo1Decimal(19284746 / 100000000),      // 4월
-          COLUMN7: roundTo1Decimal(6720828 / 100000000),       // 5월
-          COLUMN8: roundTo1Decimal(155212928 / 100000000),     // 6월
-          COLUMN9: roundTo1Decimal(3328297 / 100000000),       // 7월
-          COLUMN10: roundTo1Decimal(2683006 / 100000000),       // 8월
-          COLUMN11: roundTo1Decimal(-3414188 / 100000000),      // 9월 (전월)
-          COLUMN12: roundTo1Decimal(-14133501 / 100000000),    // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((-41474949 + -88200944 + 25051356 + -110360761 + 73737949 + 19284746 + 6720828 + 155212928 + 3328297 + 2683006 + -3414188 + -14133501) / 100000000)  // 누계
+          COLUMN1: 0,   // 11월 (전년)
+          COLUMN2: -1,   // 12월 (전년)
+          COLUMN3: 0.3,      // 1월 (억원 단위 그대로)
+          COLUMN4: -0.7,    // 2월
+          COLUMN5: 0.9,      // 3월
+          COLUMN6: 0.2,      // 4월
+          COLUMN7: -0.1,       // 5월
+          COLUMN8: 1.1,     // 6월
+          COLUMN9: 0.0,       // 7월
+          COLUMN10: 0.0,       // 8월
+          COLUMN11: -0.0,      // 9월
+          COLUMN12: -0.1,    // 10월
+          COLUMN13: (0 + -1 + 0.3 + -0.7 + 0.9 + 0.2 + -0.1 + 1.1 + 0.0 + 0.0 + -0.0 + -0.1)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '운송',
           DIVISION_TYPE: '매출',
-          COLUMN1: roundTo1Decimal(2717716178 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(2688705680 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(2627198608 / 100000000),   // 1월
-          COLUMN4: roundTo1Decimal(2726255228 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(2693744356 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(2772637834 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(2719346184 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(2646147304 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(2820342645 / 100000000),   // 7월
-          COLUMN10: roundTo1Decimal(2751375407 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(2745067485 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(2332396390 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((2717716178 + 2688705680 + 2627198608 + 2726255228 + 2693744356 + 2772637834 + 2719346184 + 2646147304 + 2820342645 + 2751375407 + 2745067485 + 2332396390) / 100000000)  // 누계
+          COLUMN1: 27,   // 11월 (전년)
+          COLUMN2: 27,   // 12월 (전년)
+          COLUMN3: 26,   // 1월 (억원 단위 그대로)
+          COLUMN4: 27,   // 2월
+          COLUMN5: 27,   // 3월
+          COLUMN6: 28,   // 4월
+          COLUMN7: 27,   // 5월
+          COLUMN8: 26,   // 6월
+          COLUMN9: 28,   // 7월
+          COLUMN10: 28,   // 8월
+          COLUMN11: 27,   // 9월
+          COLUMN12: 23,  // 10월
+          COLUMN13: (27 + 27 + 26 + 27 + 27 + 28 + 27 + 26 + 28 + 28 + 27 + 23)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '운송',
           DIVISION_TYPE: '영업이익',
-          COLUMN1: roundTo1Decimal(35827726 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(36135510 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(120402096 / 100000000),     // 1월
-          COLUMN4: roundTo1Decimal(45959476 / 100000000),     // 2월
-          COLUMN5: roundTo1Decimal(84848653 / 100000000),     // 3월
-          COLUMN6: roundTo1Decimal(74424648 / 100000000),     // 4월
-          COLUMN7: roundTo1Decimal(48965385 / 100000000),     // 5월
-          COLUMN8: roundTo1Decimal(56548149 / 100000000),     // 6월
-          COLUMN9: roundTo1Decimal(96693121 / 100000000),     // 7월
-          COLUMN10: roundTo1Decimal(57953254 / 100000000),     // 8월
-          COLUMN11: roundTo1Decimal(32189970 / 100000000),     // 9월 (전월)
-          COLUMN12: roundTo1Decimal(58891253 / 100000000),    // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((35827726 + 36135510 + 120402096 + 45959476 + 84848653 + 74424648 + 48965385 + 56548149 + 96693121 + 57953254 + 32189970 + 58891253) / 100000000)  // 누계
+          COLUMN1: 0,   // 11월 (전년)
+          COLUMN2: 0,   // 12월 (전년)
+          COLUMN3: 1.2,     // 1월 (억원 단위 그대로)
+          COLUMN4: 0.5,     // 2월
+          COLUMN5: 0.8,     // 3월
+          COLUMN6: 0.7,     // 4월
+          COLUMN7: 0.5,     // 5월
+          COLUMN8: 0.6,     // 6월
+          COLUMN9: 1.0,     // 7월
+          COLUMN10: 0.6,     // 8월
+          COLUMN11: 0.3,     // 9월
+          COLUMN12: 0.5,    // 10월
+          COLUMN13: (0 + 0 + 1.2 + 0.5 + 0.8 + 0.7 + 0.5 + 0.6 + 1.0 + 0.6 + 0.3 + 0.5)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '창고',
           DIVISION_TYPE: '매출',
-          COLUMN1: roundTo1Decimal(4759313105 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(4922233046 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(1996662245 / 100000000),   // 1월
-          COLUMN4: roundTo1Decimal(1914489988 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(1988150476 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(1571588383 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(1628848805 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(1716837858 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(1741112086 / 100000000),   // 7월
-          COLUMN10: roundTo1Decimal(1700900985 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(1853582809 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(1766009461 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((4759313105 + 4922233046 + 1996662245 + 1914489988 + 1988150476 + 1571588383 + 1628848805 + 1716837858 + 1741112086 + 1700900985 + 1853582809 + 1766009461) / 100000000)  // 누계
+          COLUMN1: 48,   // 11월 (전년)
+          COLUMN2: 49,   // 12월 (전년)
+          COLUMN3: 16,   // 1월 (억원 단위 그대로)
+          COLUMN4: 16,   // 2월
+          COLUMN5: 16,   // 3월
+          COLUMN6: 16,   // 4월
+          COLUMN7: 16,   // 5월
+          COLUMN8: 17,   // 6월
+          COLUMN9: 17,   // 7월
+          COLUMN10: 17,   // 8월
+          COLUMN11: 19,   // 9월
+          COLUMN12: 18,  // 10월
+          COLUMN13: (48 + 49 + 16 + 16 + 16 + 16 + 16 + 17 + 17 + 17 + 19 + 18)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '창고',
           DIVISION_TYPE: '영업이익',
-          COLUMN1: roundTo1Decimal(-225033071 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(-113382873 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(-312830033 / 100000000),    // 1월
-          COLUMN4: roundTo1Decimal(-341370901 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(-353321741 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(-448834312 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(-186123283 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(-132056165 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(-175057896 / 100000000),   // 7월
-          COLUMN10: roundTo1Decimal(-156246345 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(-160254438 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(-124368594 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((-225033071 + -113382873 + -312830033 + -341370901 + -353321741 + -448834312 + -186123283 + -132056165 + -175057896 + -156246345 + -160254438 + -124368594) / 100000000)  // 누계
+          COLUMN1: -2,   // 11월 (전년)
+          COLUMN2: -1,   // 12월 (전년)
+          COLUMN3: -1.4,    // 1월 (억원 단위 그대로)
+          COLUMN4: -1.6,   // 2월
+          COLUMN5: -1.8,   // 3월
+          COLUMN6: -2.8,   // 4월
+          COLUMN7: -0.1,   // 5월
+          COLUMN8: 0.4,   // 6월
+          COLUMN9: -0.0,   // 7월
+          COLUMN10: 0.2,   // 8월
+          COLUMN11: 0.1,   // 9월
+          COLUMN12: 0.5,  // 10월
+          COLUMN13: (-2 + -1 + -1.4 + -1.6 + -1.8 + -2.8 + -0.1 + 0.4 + -0.0 + 0.2 + 0.1 + 0.5)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '도급',
           DIVISION_TYPE: '매출',
-          COLUMN1: roundTo1Decimal(1918653188 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(1874889631 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(1768401002 / 100000000),   // 1월
-          COLUMN4: roundTo1Decimal(1701715781 / 100000000),   // 2월
-          COLUMN5: roundTo1Decimal(1901236975 / 100000000),   // 3월
-          COLUMN6: roundTo1Decimal(1913673842 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(2012944497 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(2027517589 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(2217113780 / 100000000),   // 7월
-          COLUMN10: roundTo1Decimal(1873014828 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(1800888802 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(1763009997 / 100000000),  // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((1918653188 + 1874889631 + 1768401002 + 1701715781 + 1901236975 + 1913673842 + 2012944497 + 2027517589 + 2217113780 + 1873014828 + 1800888802 + 1763009997) / 100000000)  // 누계
+          COLUMN1: 19,   // 11월 (전년)
+          COLUMN2: 19,   // 12월 (전년)
+          COLUMN3: 18,   // 1월 (억원 단위 그대로)
+          COLUMN4: 17,   // 2월
+          COLUMN5: 19,   // 3월
+          COLUMN6: 19,   // 4월
+          COLUMN7: 20,   // 5월
+          COLUMN8: 20,   // 6월
+          COLUMN9: 22,   // 7월
+          COLUMN10: 19,   // 8월
+          COLUMN11: 18,   // 9월
+          COLUMN12: 18,  // 10월
+          COLUMN13: (19 + 19 + 18 + 17 + 19 + 19 + 20 + 20 + 22 + 19 + 18 + 18)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '도급',
           DIVISION_TYPE: '영업이익',
-          COLUMN1: roundTo1Decimal(84023259 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(73171721 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(65003551 / 100000000),      // 1월
-          COLUMN4: roundTo1Decimal(56942561 / 100000000),     // 2월
-          COLUMN5: roundTo1Decimal(62648299 / 100000000),     // 3월
-          COLUMN6: roundTo1Decimal(72510033 / 100000000),     // 4월
-          COLUMN7: roundTo1Decimal(58080483 / 100000000),     // 5월
-          COLUMN8: roundTo1Decimal(79010673 / 100000000),     // 6월
-          COLUMN9: roundTo1Decimal(125444589 / 100000000),    // 7월
-          COLUMN10: roundTo1Decimal(85781416 / 100000000),     // 8월
-          COLUMN11: roundTo1Decimal(105119004 / 100000000),    // 9월 (전월)
-          COLUMN12: roundTo1Decimal(64191425 / 100000000),    // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((84023259 + 73171721 + 65003551 + 56942561 + 62648299 + 72510033 + 58080483 + 79010673 + 125444589 + 85781416 + 105119004 + 64191425) / 100000000)  // 누계
+          COLUMN1: 1,   // 11월 (전년)
+          COLUMN2: 1,   // 12월 (전년)
+          COLUMN3: 0.7,      // 1월 (억원 단위 그대로)
+          COLUMN4: 0.6,     // 2월
+          COLUMN5: 0.6,     // 3월
+          COLUMN6: 0.7,     // 4월
+          COLUMN7: 0.6,     // 5월
+          COLUMN8: 0.8,     // 6월
+          COLUMN9: 1.3,    // 7월
+          COLUMN10: 0.9,     // 8월
+          COLUMN11: 1.1,    // 9월
+          COLUMN12: 0.6,    // 10월
+          COLUMN13: (1 + 1 + 0.7 + 0.6 + 0.6 + 0.7 + 0.6 + 0.8 + 1.3 + 0.9 + 1.1 + 0.6)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '기타',
           DIVISION_TYPE: '매출',
-          COLUMN1: roundTo1Decimal(716836848 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(767820299 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(734721898 / 100000000),    // 1월
-          COLUMN4: roundTo1Decimal(900635792 / 100000000),    // 2월
-          COLUMN5: roundTo1Decimal(778015122 / 100000000),    // 3월
-          COLUMN6: roundTo1Decimal(1112544535 / 100000000),   // 4월
-          COLUMN7: roundTo1Decimal(1719585726 / 100000000),   // 5월
-          COLUMN8: roundTo1Decimal(1019605543 / 100000000),   // 6월
-          COLUMN9: roundTo1Decimal(891367400 / 100000000),    // 7월
-          COLUMN10: roundTo1Decimal(1434526920 / 100000000),   // 8월
-          COLUMN11: roundTo1Decimal(1289253021 / 100000000),   // 9월 (전월)
-          COLUMN12: roundTo1Decimal(842338899 / 100000000),   // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((716836848 + 767820299 + 734721898 + 900635792 + 778015122 + 1112544535 + 1719585726 + 1019605543 + 891367400 + 1434526920 + 1289253021 + 842338899) / 100000000)  // 누계
+          COLUMN1: 7,   // 11월 (전년)
+          COLUMN2: 8,   // 12월 (전년)
+          COLUMN3: 4,    // 1월 (억원 단위 그대로)
+          COLUMN4: 6,    // 2월
+          COLUMN5: 5,    // 3월
+          COLUMN6: 7,   // 4월
+          COLUMN7: 13,   // 5월
+          COLUMN8: 6,   // 6월
+          COLUMN9: 5,    // 7월
+          COLUMN10: 6,   // 8월
+          COLUMN11: 4,   // 9월
+          COLUMN12: 4,   // 10월
+          COLUMN13: (7 + 8 + 4 + 6 + 5 + 7 + 13 + 6 + 5 + 6 + 4 + 4)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '기타',
           DIVISION_TYPE: '영업이익',
-          COLUMN1: roundTo1Decimal(385020320 / 100000000),   // 11월 (전년)
-          COLUMN2: roundTo1Decimal(395836419 / 100000000),   // 12월 (전년)
-          COLUMN3: roundTo1Decimal(374286108 / 100000000),      // 1월
-          COLUMN4: roundTo1Decimal(353903327 / 100000000),    // 2월
-          COLUMN5: roundTo1Decimal(348375816 / 100000000),    // 3월
-          COLUMN6: roundTo1Decimal(356704938 / 100000000),    // 4월
-          COLUMN7: roundTo1Decimal(352814009 / 100000000),    // 5월
-          COLUMN8: roundTo1Decimal(336761948 / 100000000),    // 6월
-          COLUMN9: roundTo1Decimal(285679505 / 100000000),    // 7월
-          COLUMN10: roundTo1Decimal(695498946 / 100000000),    // 8월
-          COLUMN11: roundTo1Decimal(752104260 / 100000000),    // 9월 (전월)
-          COLUMN12: roundTo1Decimal(283421203 / 100000000),   // 10월 (현재월)
-          COLUMN13: roundTo1Decimal((385020320 + 395836419 + 374286108 + 353903327 + 348375816 + 356704938 + 352814009 + 336761948 + 285679505 + 695498946 + 752104260 + 283421203) / 100000000)  // 누계
+          COLUMN1: 4,   // 11월 (전년)
+          COLUMN2: 4,   // 12월 (전년)
+          COLUMN3: -4.3,      // 1월 (억원 단위 그대로)
+          COLUMN4: -0.9,    // 2월
+          COLUMN5: -0.7,    // 3월
+          COLUMN6: -0.6,    // 4월
+          COLUMN7: -0.5,    // 5월
+          COLUMN8: -0.6,    // 6월
+          COLUMN9: -1.2,    // 7월
+          COLUMN10: -1.2,    // 8월
+          COLUMN11: -1.5,    // 9월
+          COLUMN12: -1.3,   // 10월
+          COLUMN13: (4 + 4 + -4.3 + -0.9 + -0.7 + -0.6 + -0.5 + -0.6 + -1.2 + -1.2 + -1.5 + -1.3)  // 누계
         }
       ];
       

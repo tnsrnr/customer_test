@@ -540,7 +540,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
               },
               {
                 column1: '판관비',         // 73
-                column2: 4.9,               // 1월
+                column2: 8.6,               // 1월
                 column3: 9.0,               // 2월
                 column4: 8.1,               // 3월
                 column5: 8.3,               // 4월
@@ -550,11 +550,11 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 column9: 7.4,               // 8월
                 column10: 8.5,              // 9월
                 column11: 7.2,              // 10월
-                column12: 78               // 합계
+                column12: 82               // 합계
               },
               {
                 column1: '영업이익',       // 81
-                column2: -1.9,               // 1월
+                column2: -5.5,               // 1월
                 column3: -5.3,               // 2월
                 column4: -2.2,               // 3월
                 column5: -4.6,               // 4월
@@ -564,11 +564,11 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 column9: 0.2,               // 8월
                 column10: -1.7,              // 9월
                 column11: -2.4,              // 10월
-                column12: -21.5                // 합계
+                column12: -25.1                // 합계
               },
               {
                 column1: '영업이익율',     // 89
-                column2: -1.10,               // 1월
+                column2: -3.24,               // 1월
                 column3: -3.29,               // 2월
                 column4: -1.17,               // 3월
                 column5: -2.23,               // 4월
@@ -578,7 +578,7 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 column9: 0.13,               // 8월
                 column10: -0.89,              // 9월
                 column11: -1.45,              // 10월
-                column12: -1.19                // 합계
+                column12: -1.39                // 합계
               }
             ]
           }

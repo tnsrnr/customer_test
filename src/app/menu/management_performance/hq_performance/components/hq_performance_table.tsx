@@ -141,13 +141,14 @@ export function HQPerformanceTable({
                           </span>
                         </div>
                       ) : (
-                        // 월별 데이터 컬럼 - 원래 깔끔한 스타일
+                        // 월별 데이터 컬럼 - 소수점이 있는 값들 표현
                         <span className="text-white">
                           <CountUp 
                             end={item[columnKey as keyof MonthlyDetailData] as number || 0} 
                             duration={1.5} 
                             separator=","
-                            decimals={item.column1 === '영업이익율' ? 2 : 0}
+                            decimals={item.column1 === '영업이익율' ? 2 : 1}
+                            decimal="."
                             className="text-white"
                           />
                           {item.column1 === '영업이익율' && '%'}

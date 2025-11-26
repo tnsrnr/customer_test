@@ -41,14 +41,14 @@ const hq_performance_header = async (year: number, month: number): Promise<HQPer
     if (responseData.MIS030231 && responseData.MIS030231.length > 0) {
       const kpiData = responseData.MIS030231[0];
       
-      // 백엔드에서 받은 데이터를 억원 단위로 변환 (company_performance와 동일한 방식)
+      // 백엔드에서 받은 데이터를 억원 단위로 변환 (소수점 유지)
       return {
-        actualSales: Math.round(kpiData.ACTUAL_SALES / 100000000),
-        actualSalesChange: Math.round(kpiData.ACTUAL_SALES_CHANGE / 100000000) || 0,
-        actualPurchases: Math.round(kpiData.ACTUAL_PURCHASES / 100000000),
-        actualPurchasesChange: Math.round(kpiData.ACTUAL_PURCHASES_CHANGE / 100000000) || 0,
-        actualOpProfit: Math.round(kpiData.ACTUAL_OP_PROFIT / 100000000),
-        actualOpProfitChange: Math.round(kpiData.ACTUAL_OP_PROFIT_CHANGE / 100000000) || 0,
+        actualSales: kpiData.ACTUAL_SALES / 100000000,
+        actualSalesChange: (kpiData.ACTUAL_SALES_CHANGE || 0) / 100000000,
+        actualPurchases: kpiData.ACTUAL_PURCHASES / 100000000,
+        actualPurchasesChange: (kpiData.ACTUAL_PURCHASES_CHANGE || 0) / 100000000,
+        actualOpProfit: kpiData.ACTUAL_OP_PROFIT / 100000000,
+        actualOpProfitChange: (kpiData.ACTUAL_OP_PROFIT_CHANGE || 0) / 100000000,
         actualOpMargin: kpiData.ACTUAL_OP_MARGIN || 0,
         actualOpMarginChange: kpiData.ACTUAL_OP_MARGIN_CHANGE || 0
       };
@@ -172,8 +172,8 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             label: '매출 (올해)',
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
-              // 현재 월까지만 데이터 표시, 나머지는 null
-              return index < month ? Math.round((revenueCurrent?.[monthKey] || 0) / 100000000) : null;
+              // 현재 월까지만 데이터 표시, 나머지는 null (소수점 유지)
+              return index < month ? (revenueCurrent?.[monthKey] || 0) / 100000000 : null;
             }),
             borderColor: 'rgb(59, 130, 246)',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -184,8 +184,8 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             label: '매출 (직전년도)',
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
-              // 1년전 데이터는 전체 12개월 표시
-              return Math.round((revenueLastYear?.[monthKey] || 0) / 100000000);
+              // 1년전 데이터는 전체 12개월 표시 (소수점 유지)
+              return (revenueLastYear?.[monthKey] || 0) / 100000000;
             }),
             borderColor: 'rgb(156, 163, 175)',
             backgroundColor: 'rgba(156, 163, 175, 0.1)',
@@ -204,8 +204,8 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             label: '영업이익 (올해)',
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
-              // 현재 월까지만 데이터 표시, 나머지는 null
-              return index < month ? Math.round((profitCurrent?.[monthKey] || 0) / 100000000) : null;
+              // 현재 월까지만 데이터 표시, 나머지는 null (소수점 유지)
+              return index < month ? (profitCurrent?.[monthKey] || 0) / 100000000 : null;
             }),
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -216,8 +216,8 @@ const hq_performance_chart = async (year: number, month: number): Promise<{ reve
             label: '영업이익 (직전년도)',
             data: Array.from({ length: 12 }, (_, index) => {
               const monthKey = `MONTH${index + 1}`;
-              // 1년전 데이터는 전체 12개월 표시
-              return Math.round((profitLastYear?.[monthKey] || 0) / 100000000);
+              // 1년전 데이터는 전체 12개월 표시 (소수점 유지)
+              return (profitLastYear?.[monthKey] || 0) / 100000000;
             }),
             borderColor: 'rgb(156, 163, 175)',
             backgroundColor: 'rgba(156, 163, 175, 0.1)',
@@ -498,87 +498,87 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
             monthlyDetails: [
               {
                 column1: '매출',           // 49
-                column2: 53,               // 1월
-                column3: 54,               // 2월
-                column4: 55,               // 3월
-                column5: 56,               // 4월
-                column6: 57,               // 5월
-                column7: 58,               // 6월
-                column8: 59,               // 7월
-                column9: 60,               // 8월
-                column10: 61,              // 9월
-                column11: 62,              // 10월
-                column12: 63                // 합계
+                column2: 170,               // 1월
+                column3: 161,               // 2월
+                column4: 191,               // 3월
+                column5: 207,               // 4월
+                column6: 185,               // 5월
+                column7: 174,               // 6월
+                column8: 183,               // 7월
+                column9: 178,               // 8월
+                column10: 186,              // 9월
+                column11: 167,              // 10월
+                column12: 1804                // 합계
               },
               {
                 column1: '매출원가',           // 57
-                column2: 64,               // 1월
-                column3: 65,               // 2월
-                column4: 66,               // 3월
-                column5: 67,               // 4월
-                column6: 68,               // 5월
-                column7: 69,               // 6월
-                column8: 70,               // 7월
-                column9: 71,               // 8월
-                column10: 72,              // 9월
-                column11: 73,              // 10월
-                column12: 74                // 합계
+                column2: 167,               // 1월
+                column3: 157,               // 2월
+                column4: 185,               // 3월
+                column5: 203,               // 4월
+                column6: 179,               // 5월
+                column7: 167,               // 6월
+                column8: 176,               // 7월
+                column9: 170,               // 8월
+                column10: 180,              // 9월
+                column11: 162,              // 10월
+                column12: 1747                // 합계
               },
               {
                 column1: '매출총이익',       // 65
-                column2: 75,               // 1월
-                column3: 76,               // 2월
-                column4: 77,               // 3월
-                column5: 78,               // 4월
-                column6: 79,               // 5월
-                column7: 80,               // 6월
-                column8: 81,               // 7월
-                column9: 82,               // 8월
-                column10: 83,              // 9월
-                column11: 84,              // 10월
-                column12: 85                // 합계
+                column2: 3.1,               // 1월
+                column3: 3.7,               // 2월
+                column4: 5.9,               // 3월
+                column5: 3.7,               // 4월
+                column6: 6.3,               // 5월
+                column7: 7.2,               // 6월
+                column8: 7.5,               // 7월
+                column9: 7.7,               // 8월
+                column10: 6.8,              // 9월
+                column11: 4.8,              // 10월
+                column12: 56.6                // 합계
               },
               {
                 column1: '판관비',         // 73
-                column2: 86,               // 1월
-                column3: 87,               // 2월
-                column4: 88,               // 3월
-                column5: 89,               // 4월
-                column6: 90,               // 5월
-                column7: 91,               // 6월
-                column8: 92,               // 7월
-                column9: 93,               // 8월
-                column10: 94,              // 9월
-                column11: 95,              // 10월
-                column12: 96               // 합계
+                column2: 4.9,               // 1월
+                column3: 9.0,               // 2월
+                column4: 8.1,               // 3월
+                column5: 8.3,               // 4월
+                column6: 8.6,               // 5월
+                column7: 7.6,               // 6월
+                column8: 8.3,               // 7월
+                column9: 7.4,               // 8월
+                column10: 8.5,              // 9월
+                column11: 7.2,              // 10월
+                column12: 78               // 합계
               },
               {
                 column1: '영업이익',       // 81
-                column2: 97,               // 1월
-                column3: 98,               // 2월
-                column4: 99,               // 3월
-                column5: 100,               // 4월
-                column6: 101,               // 5월
-                column7: 102,               // 6월
-                column8: 103,               // 7월
-                column9: 104,               // 8월
-                column10: 105,              // 9월
-                column11: 106,              // 10월
-                column12: 107                // 합계
+                column2: -1.9,               // 1월
+                column3: -5.3,               // 2월
+                column4: -2.2,               // 3월
+                column5: -4.6,               // 4월
+                column6: -2.3,               // 5월
+                column7: -0.4,               // 6월
+                column8: -0.9,               // 7월
+                column9: 0.2,               // 8월
+                column10: -1.7,              // 9월
+                column11: -2.4,              // 10월
+                column12: -21.5                // 합계
               },
               {
                 column1: '영업이익율',     // 89
-                column2: 108,               // 1월
-                column3: 109,               // 2월
-                column4: 110,               // 3월
-                column5: 111,               // 4월
-                column6: 112,               // 5월
-                column7: 113,               // 6월
-                column8: 114,               // 7월
-                column9: 115,               // 8월
-                column10: 116,              // 9월
-                column11: 117,              // 10월
-                column12: 118                // 합계
+                column2: -1.10,               // 1월
+                column3: -3.29,               // 2월
+                column4: -1.17,               // 3월
+                column5: -2.23,               // 4월
+                column6: -1.25,               // 5월
+                column7: -0.26,               // 6월
+                column8: -0.47,               // 7월
+                column9: 0.13,               // 8월
+                column10: -0.89,              // 9월
+                column11: -1.45,              // 10월
+                column12: -1.19                // 합계
               }
             ]
           }

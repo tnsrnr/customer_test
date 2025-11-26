@@ -104,6 +104,8 @@ export default function HQPerformancePage() {
                             end={data.kpiMetrics.actualSales} 
                             duration={2}
                             separator=","
+                            decimals={1}
+                            decimal="."
                             className="text-white"
                           />
                         </span>
@@ -116,7 +118,7 @@ export default function HQPerformancePage() {
                       ? 'text-emerald-300 bg-emerald-600/30 border-emerald-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualSalesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualSalesChange)}억원
+                    {data.kpiMetrics.actualSalesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualSalesChange).toFixed(1)}억원
                   </span>
                 </div>
                 
@@ -145,6 +147,8 @@ export default function HQPerformancePage() {
                             end={data.kpiMetrics.actualPurchases} 
                             duration={2}
                             separator=","
+                            decimals={1}
+                            decimal="."
                             className="text-white"
                           />
                         </span>
@@ -157,7 +161,7 @@ export default function HQPerformancePage() {
                       ? 'text-blue-300 bg-blue-600/30 border-blue-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualPurchasesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualPurchasesChange)}억원
+                    {data.kpiMetrics.actualPurchasesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualPurchasesChange).toFixed(1)}억원
                   </span>
                 </div>
                 
@@ -199,7 +203,7 @@ export default function HQPerformancePage() {
                       ? 'text-orange-300 bg-orange-600/30 border-orange-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualOpProfitChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpProfitChange)}억원
+                    {data.kpiMetrics.actualOpProfitChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpProfitChange).toFixed(1)}억원
                   </span>
                 </div>
                 
@@ -241,7 +245,7 @@ export default function HQPerformancePage() {
                       ? 'text-purple-300 bg-purple-600/30 border-purple-400/30' 
                       : 'text-red-300 bg-red-600/30 border-red-400/30'
                   }`}>
-                    {data.kpiMetrics.actualOpMarginChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpMarginChange)}%
+                    {data.kpiMetrics.actualOpMarginChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.actualOpMarginChange).toFixed(2)}%
                   </span>
                 </div>
                 
@@ -291,6 +295,9 @@ export default function HQPerformancePage() {
                             color: 'white',
                             font: {
                               size: 10
+                            },
+                            callback: function(value: any) {
+                              return typeof value === 'number' ? value.toFixed(1) + '억' : value;
                             }
                           },
                           grid: {

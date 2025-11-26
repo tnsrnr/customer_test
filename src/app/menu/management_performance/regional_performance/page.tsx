@@ -32,9 +32,9 @@ export default function RegionalPerformancePage() {
     }
   }, [isRefreshing, fetchAllData]);
 
-  // 숫자 포맷팅 함수 (원 단위)
+  // 숫자 포맷팅 함수 (억원 단위)
   const formatCurrency = (num: number): string => {
-    return num.toLocaleString('ko-KR') + ' 원';
+    return num.toLocaleString('ko-KR') + ' 억원';
   };
 
   // 퍼센트 포맷팅 함수
@@ -73,29 +73,29 @@ export default function RegionalPerformancePage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <AnimatedCard delay={200} direction="left">
                 <MetricCard
-                  title="매출액"
-                      value={formatCurrency(data.kpiMetrics.totalSales * 1000000)}
+                  title="매출액(누적)"
+                      value={formatCurrency(data.kpiMetrics.totalSales)}
                   bgColorClass="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700"
                 />
               </AnimatedCard>
               <AnimatedCard delay={400} direction="left">
                 <MetricCard
-                  title="매출이익"
-                      value={formatCurrency(data.kpiMetrics.totalProfit * 1000000)}
+                  title="매출이익(누적)"
+                      value={formatCurrency(data.kpiMetrics.totalProfit)}
                   bgColorClass="bg-gradient-to-br from-cyan-700 via-cyan-600 to-cyan-500"
                   textColorClass="text-cyan-50"
                 />
               </AnimatedCard>
               <AnimatedCard delay={600} direction="right">
                 <MetricCard
-                  title="영업이익"
-                      value={formatCurrency(data.kpiMetrics.totalOpProfit * 1000000)}
+                  title="영업이익(누적)"
+                      value={formatCurrency(data.kpiMetrics.totalOpProfit)}
                   bgColorClass="bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600"
                 />
               </AnimatedCard>
               <AnimatedCard delay={800} direction="right">
                 <MetricCard
-                  title="영업이익률"
+                  title="영업이익률(누적)"
                       value={formatPercent(data.kpiMetrics.totalOpMargin)}
                   bgColorClass="bg-gradient-to-br from-slate-700 via-slate-600 to-slate-500"
                   textColorClass="text-slate-50"

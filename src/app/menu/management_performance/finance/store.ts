@@ -262,34 +262,55 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
         return;
       }
       
-      // ⭐ 10월 조건 체크 - 차입금/부채비율 하드코딩 (1부터 시작해서 순차적으로 증가)
+      // ⭐ 10월 조건 체크 - 모든 데이터 하드코딩 (1부터 시작해서 순차적으로 증가)
       if (currentMonth === 10) {
-        console.log('🎯 10월 데이터: 차입금/부채비율 데이터를 하드코딩합니다. (재무현황)');
+        console.log('🎯 10월 데이터: 모든 데이터를 하드코딩합니다. (재무현황)');
         
-        try {
-          const [kpiMetrics, chartData, trendData] = await Promise.all([
-            finance_overview_kpi(currentYear, currentMonth),
-            finance_overview_charts(currentYear, currentMonth),
-            finance_overview_trends(currentYear, currentMonth)
-          ]);
+        // KPI 메트릭스 하드코딩 (1부터 시작해서 순차적으로 증가)
+        const tempKpiMetrics = {
+          totalAssets: 1,
+          totalLiabilities: 2,
+          totalEquity: 3,
+          debtWeight: 4,
+          totalAssetsChange: 5,
+          totalLiabilitiesChange: 6,
+          totalEquityChange: 7,
+          debtWeightChange: 8
+        };
 
-          // 차입금과 부채비율 하드코딩으로 교체
-          const modifiedTrendData = {
-            ...trendData,
-            totalLoan: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], // 10년간 차입금 (템프 데이터)
-            debtRatio: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]  // 10년간 부채비율 (템프 데이터)
-          };
+        // 차트 데이터 하드코딩
+        const tempChartData = {
+          capitalStructure: {
+            labels: [`${currentYear - 1}`, `${currentYear}`],
+            capital: [9, 10], // 자본
+            debt: [11, 12], // 부채
+            assets: [13, 14] // 자산
+          },
+          loanStructure: {
+            labels: [`${currentYear - 1}`, `${currentYear}`],
+            shortTermLoan: [15, 16], // 단기차입금
+            longTermLoan: [17, 18], // 장기차입금
+            totalLoan: [19, 20] // 총차입금
+          }
+        };
 
-          const combinedData: FinanceData = {
-            kpiMetrics,
-            chartData,
-            trendData: modifiedTrendData
-          };
+        // 트렌드 데이터 하드코딩 (10년간 데이터)
+        const tempTrendData = {
+          labels: Array.from({ length: 10 }, (_, i) => (currentYear - 9 + i).toString()),
+          totalLoan: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30], // 10년간 차입금
+          debtRatio: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40], // 10년간 부채비율
+          equityRatio: [41, 42, 43, 44, 45, 46, 47, 48, 49, 50], // 10년간 자본비율
+          returnOnEquity: [51, 52, 53, 54, 55, 56, 57, 58, 59, 60], // 10년간 자기자본이익률
+          returnOnAssets: [61, 62, 63, 64, 65, 66, 67, 68, 69, 70] // 10년간 총자산이익률
+        };
 
-          set({ data: combinedData, loading: false });
-        } catch (error) {
-          set({ loading: false, error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.' });
-        }
+        const combinedData: FinanceData = {
+          kpiMetrics: tempKpiMetrics,
+          chartData: tempChartData,
+          trendData: tempTrendData
+        };
+
+        set({ data: combinedData, loading: false });
         return;
       }
       

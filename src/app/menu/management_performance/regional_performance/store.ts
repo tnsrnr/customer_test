@@ -154,10 +154,10 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
         // 1부터 시작해서 1씩 순서대로 증감하는 값
         const tempData: RegionalPerformanceData = {
           kpiMetrics: {
-            totalSales: 1,        // 1
-            totalProfit: 2,      // 2
-            totalOpProfit: 3,     // 3
-            totalOpMargin: 4      // 4
+            totalSales: 2682,        // 1
+            totalProfit: 0,      // 2
+            totalOpProfit: 70,     // 3
+            totalOpMargin: 0      // 4
           },
           regions: [
             {
@@ -165,16 +165,16 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
               icon: '🇨🇳',
               variant: 'china',
               monthlyData: {
-                sales: 5,         // 5
-                profit: 6         // 6
+                sales: 47,         // 5
+                profit: 0         // 6
               },
               achievement: {
-                sales: 7,         // 7
-                profit: 8         // 8
+                sales: 0,         // 7
+                profit: 0         // 8
               },
               totalData: {
-                sales: 9,         // 9
-                profit: 10        // 10
+                sales: 678,         // 9
+                profit: 44        // 10
               }
             },
             {
@@ -182,16 +182,16 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
               icon: '🌏',
               variant: 'asia',
               monthlyData: {
-                sales: 11,        // 11
-                profit: 12        // 12
+                sales: 17,        // 11
+                profit: -1        // 12
               },
               achievement: {
-                sales: 13,        // 13
-                profit: 14        // 14
+                sales: 0,        // 13
+                profit: 0        // 14
               },
               totalData: {
-                sales: 15,        // 15
-                profit: 16        // 16
+                sales: 199,        // 15
+                profit: -4        // 16
               }
             },
             {
@@ -199,16 +199,16 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
               icon: '🇪🇺',
               variant: 'europe',
               monthlyData: {
-                sales: 17,        // 17
-                profit: 18        // 18
+                sales: 118,        // 17
+                profit: 3        // 18
               },
               achievement: {
-                sales: 19,        // 19
-                profit: 20        // 20
+                sales: 0,        // 19
+                profit: 0        // 20
               },
               totalData: {
-                sales: 21,        // 21
-                profit: 22        // 22
+                sales: 1127,        // 21
+                profit: 28        // 22
               }
             },
             {
@@ -216,16 +216,16 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
               icon: '🇺🇸',
               variant: 'usa',
               monthlyData: {
-                sales: 23,        // 23
-                profit: 24        // 24
+                sales: 22,        // 23
+                profit: 2        // 24
               },
               achievement: {
-                sales: 25,        // 25
-                profit: 26        // 26
+                sales: 0,        // 25
+                profit: 0        // 26
               },
               totalData: {
-                sales: 27,        // 27
-                profit: 28        // 28
+                sales: 197,        // 27
+                profit: 6        // 28
               }
             }
           ]

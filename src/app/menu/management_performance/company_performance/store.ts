@@ -293,7 +293,7 @@ interface CompanyPerformanceStore {
   data: CompanyPerformanceData | null;
   loading: boolean;
   error: string | null;
-  periodType: 'monthly' | 'cumulative';
+  yearType: 'planned' | 'previous';  // 계획년도/직전년도
   currentYear: number;
   currentMonth: number;
   
@@ -301,7 +301,7 @@ interface CompanyPerformanceStore {
   setData: (data: CompanyPerformanceData) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setPeriodType: (type: 'monthly' | 'cumulative') => void;
+  setYearType: (type: 'planned' | 'previous') => void;
   setCurrentDate: (year: number, month: number) => void;
   reset: () => void;
 }
@@ -321,14 +321,17 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
     data: null,
     loading: false,
     error: null,
-    periodType: 'cumulative',  // 기본값을 누적조회로 변경
+    yearType: 'planned',  // 기본값: 계획년도
     currentYear: new Date().getFullYear(),
     currentMonth: new Date().getMonth() + 1,
 
     // 모든 데이터 조회
     fetchAllData: async () => {
       const { year, month } = getCurrentDate();
-      const { periodType } = get();
+      const { yearType } = get();
+      
+      // periodType은 항상 'cumulative'로 고정
+      const periodType: 'cumulative' = 'cumulative';
       
       // 현재 날짜를 store에 업데이트
       set({ currentYear: year, currentMonth: month });
@@ -444,6 +447,24 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             ]
           }
         };
+        
+        // 직전년도일 때 계획 필드만 직접 숫자로 설정
+        if (yearType === 'previous' && tempData.gridData.divisions) {
+          // 각 division별 계획 필드 값 (직접 수정 가능)
+          const previousYearPlannedValues = [
+            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 },  // 본사
+            { plannedSales: 4, plannedOpProfit: 5, plannedOpMargin: 6 },  // 국내 자회사
+            { plannedSales: 7, plannedOpProfit: 8, plannedOpMargin: 9 },  // 해외 자회사
+            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 }   // 합계
+          ];
+          
+          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => ({
+            ...division,
+            plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
+            plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
+            plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
+          }));
+        }
         
         set({ data: tempData, loading: false, error: null });
         return; // API 호출 없이 리턴
@@ -561,6 +582,24 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           }
         };
         
+        // 직전년도일 때 계획 필드만 직접 숫자로 설정
+        if (yearType === 'previous' && tempData.gridData.divisions) {
+          // 각 division별 계획 필드 값 (직접 수정 가능)
+          const previousYearPlannedValues = [
+            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 },  // 본사
+            { plannedSales: 4, plannedOpProfit: 5, plannedOpMargin: 6 },  // 국내 자회사
+            { plannedSales: 7, plannedOpProfit: 8, plannedOpMargin: 9 },  // 해외 자회사
+            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 }   // 합계
+          ];
+          
+          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => ({
+            ...division,
+            plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
+            plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
+            plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
+          }));
+        }
+        
         set({ data: tempData, loading: false, error: null });
         return; // API 호출 없이 리턴
       }
@@ -677,6 +716,24 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           }
         };
         
+        // 직전년도일 때 계획 필드만 직접 숫자로 설정
+        if (yearType === 'previous' && tempData.gridData.divisions) {
+          // 각 division별 계획 필드 값 (직접 수정 가능)
+          const previousYearPlannedValues = [
+            { plannedSales: 2368, plannedOpProfit: -17.1, plannedOpMargin: -0.7 },  // 본사
+            { plannedSales: 848, plannedOpProfit: 8, plannedOpMargin: 0.9 },  // 국내 자회사
+            { plannedSales: 3176, plannedOpProfit: 34, plannedOpMargin: 1.1 },  // 해외 자회사
+            { plannedSales: 6393, plannedOpProfit: 24, plannedOpMargin: 0.4 }   // 합계
+          ];
+          
+          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => ({
+            ...division,
+            plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
+            plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
+            plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
+          }));
+        }
+        
         set({ data: tempData, loading: false, error: null });
         return; // API 호출 없이 리턴
       }
@@ -717,6 +774,27 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
         
         // 데이터가 하나라도 성공적으로 로드된 경우에만 상태 업데이트
         if (successCount > 0) {
+          // gridData 처리: 직전년도일 때 계획 필드만 직접 숫자로 설정
+          let processedGridData = gridData || { divisions: [] };
+          if (yearType === 'previous' && processedGridData.divisions) {
+            // 각 division별 계획 필드 값 (직접 수정 가능)
+            const previousYearPlannedValues = [
+              { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 },  // 본사
+              { plannedSales: 4, plannedOpProfit: 5, plannedOpMargin: 6 },  // 국내 자회사
+              { plannedSales: 7, plannedOpProfit: 8, plannedOpMargin: 9 },  // 해외 자회사
+              { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 }   // 합계
+            ];
+            
+            processedGridData = {
+              divisions: processedGridData.divisions.map((division, index) => ({
+                ...division,
+                plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
+                plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
+                plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
+              }))
+            };
+          }
+          
           const combinedData: CompanyPerformanceData = {
             kpiMetrics: kpiData || {
               ACTUAL_SALES: 0,
@@ -728,7 +806,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
               ACTUAL_OP_MARGIN_CHANGE: 0,
               SALES_ACHIEVEMENT_CHANGE: 0
             },
-            gridData: gridData || { divisions: [] },
+            gridData: processedGridData,
             chartData1: chartData1 || { 
               labels: [], 
               datasets: [],
@@ -767,7 +845,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
     setData: (data) => set({ data }),
     setLoading: (loading) => set({ loading }),
     setError: (error) => set({ error }),
-    setPeriodType: (periodType) => set({ periodType }),
+    setYearType: (yearType) => set({ yearType }),
     setCurrentDate: (year: number, month: number) => set({ currentYear: year, currentMonth: month }),
     reset: () => set({ 
       data: null, 

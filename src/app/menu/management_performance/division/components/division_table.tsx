@@ -44,8 +44,12 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
     const currentMonth = selectedMonth ? selectedMonth - 1 : new Date().getMonth(); // 0-11
     const currentYear = selectedYear || new Date().getFullYear();
     
-    // 선택된 월부터 12개월 전까지 역순으로 생성
-    for (let i = 11; i >= 0; i--) {
+    // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
+    const isOctober = selectedMonth === 10;
+    const startIndex = isOctober ? 9 : 11; // 10월이면 9부터 시작 (작년 11월, 12월 제외)
+    
+    // 선택된 월부터 역순으로 생성
+    for (let i = startIndex; i >= 0; i--) {
       const targetDate = new Date(currentYear, currentMonth - i, 1);
       const month = targetDate.getMonth();
       months.push(monthNames[month]);
@@ -151,14 +155,22 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
   };
 
   // 백엔드 데이터를 기존 구조로 변환 (매출과 영업이익 데이터 모두 사용)
+  const isOctober = selectedMonth === 10;
   const convertedData = data
     .filter(item => item.DIVISION_TYPE === '매출') // 매출 데이터만 사용
     .map(item => {
       const color = getDivisionColor(item.PARENT_DIVISION_TYPE);
-      const revenueData = [
-        item.COLUMN1, item.COLUMN2, item.COLUMN3, item.COLUMN4, item.COLUMN5, item.COLUMN6,
-        item.COLUMN7, item.COLUMN8, item.COLUMN9, item.COLUMN10, item.COLUMN11, item.COLUMN12
-      ];
+      
+      // 10월일 때는 COLUMN1, COLUMN2(작년 11월, 12월)를 제외하고 COLUMN3부터 시작
+      const revenueData = isOctober
+        ? [
+            item.COLUMN3, item.COLUMN4, item.COLUMN5, item.COLUMN6,
+            item.COLUMN7, item.COLUMN8, item.COLUMN9, item.COLUMN10, item.COLUMN11, item.COLUMN12
+          ]
+        : [
+            item.COLUMN1, item.COLUMN2, item.COLUMN3, item.COLUMN4, item.COLUMN5, item.COLUMN6,
+            item.COLUMN7, item.COLUMN8, item.COLUMN9, item.COLUMN10, item.COLUMN11, item.COLUMN12
+          ];
       
       // 해당 부문의 영업이익 데이터 찾기
       const profitItem = data.find(profitData => 
@@ -166,12 +178,21 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
         profitData.DIVISION_TYPE === '영업이익'
       );
       
-      const profitData = profitItem ? [
-        profitItem.COLUMN1 || 0, profitItem.COLUMN2 || 0, profitItem.COLUMN3 || 0, 
-        profitItem.COLUMN4 || 0, profitItem.COLUMN5 || 0, profitItem.COLUMN6 || 0,
-        profitItem.COLUMN7 || 0, profitItem.COLUMN8 || 0, profitItem.COLUMN9 || 0, 
-        profitItem.COLUMN10 || 0, profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
-      ] : Array(12).fill(0); // 영업이익 데이터가 없으면 0으로 설정
+      // 10월일 때는 COLUMN1, COLUMN2(작년 11월, 12월)를 제외하고 COLUMN3부터 시작
+      const profitData = profitItem 
+        ? (isOctober
+            ? [
+                profitItem.COLUMN3 || 0, profitItem.COLUMN4 || 0, profitItem.COLUMN5 || 0, 
+                profitItem.COLUMN6 || 0, profitItem.COLUMN7 || 0, profitItem.COLUMN8 || 0,
+                profitItem.COLUMN9 || 0, profitItem.COLUMN10 || 0, profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
+              ]
+            : [
+                profitItem.COLUMN1 || 0, profitItem.COLUMN2 || 0, profitItem.COLUMN3 || 0, 
+                profitItem.COLUMN4 || 0, profitItem.COLUMN5 || 0, profitItem.COLUMN6 || 0,
+                profitItem.COLUMN7 || 0, profitItem.COLUMN8 || 0, profitItem.COLUMN9 || 0, 
+                profitItem.COLUMN10 || 0, profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
+              ])
+        : Array(isOctober ? 10 : 12).fill(0); // 영업이익 데이터가 없으면 0으로 설정
       
       return {
         name: item.PARENT_DIVISION_TYPE, // 부문명만 표시

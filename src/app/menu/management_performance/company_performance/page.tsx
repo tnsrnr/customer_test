@@ -18,8 +18,8 @@ export default function CompanyPerformancePage() {
     data, 
     loading, 
     error, 
-    periodType, 
-    setPeriodType, 
+    yearType, 
+    setYearType, 
     fetchAllData,
     currentYear,
     currentMonth
@@ -39,13 +39,13 @@ export default function CompanyPerformancePage() {
     }
   }, [isRefreshing, fetchAllData]);
 
-  // 기간 변경 시 데이터 재로드 (부드러운 전환)
+  // 년도 타입 변경 시 데이터 재로드 (부드러운 전환)
   useEffect(() => {
     if (data) {
       // 기존 데이터를 유지하면서 새 데이터 로드
       fetchAllData();
     }
-  }, [periodType]);
+  }, [yearType]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -55,28 +55,28 @@ export default function CompanyPerformancePage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(15,23,42,0.2),transparent_50%)]"></div>
       
       <div className="relative z-10 h-[calc(100vh-64px)] p-4 space-y-4 overflow-hidden">
-        {/* 기간 선택 버튼 */}
+        {/* 년도 선택 버튼 */}
         <div className="flex justify-end mb-2">
           <div className="flex space-x-1 p-0.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
             <button
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                periodType === 'monthly' 
+                yearType === 'planned' 
                   ? 'bg-white/20 text-white shadow-md border border-white/30' 
                   : 'text-blue-100 hover:bg-white/10 hover:text-white'
               }`}
-              onClick={() => setPeriodType('monthly')}
+              onClick={() => setYearType('planned')}
             >
-              월별조회
+              계획대비
             </button>
             <button
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                periodType === 'cumulative' 
+                yearType === 'previous' 
                   ? 'bg-white/20 text-white shadow-md border border-white/30' 
                   : 'text-blue-100 hover:bg-white/10 hover:text-white'
               }`}
-              onClick={() => setPeriodType('cumulative')}
+              onClick={() => setYearType('previous')}
             >
-              누적조회
+              직전년도
             </button>
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function CompanyPerformancePage() {
               <PerformanceTable 
                 data={data.gridData.divisions} 
                 loading={loading} 
-                periodType={periodType}
+                yearType={yearType}
                 currentYear={currentYear}
                 currentMonth={currentMonth}
               />

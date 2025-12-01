@@ -122,8 +122,12 @@ export const generateMonthHeaders = (selectedYear?: number, selectedMonth?: numb
     { key: 'type', label: '구분', colSpan: 1 }
   ];
   
-  // 선택된 월부터 12개월 전까지 역순으로 생성
-  for (let i = 11; i >= 0; i--) {
+  // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
+  const isOctober = selectedMonth === 10;
+  const startIndex = isOctober ? 9 : 11; // 10월이면 9부터 시작 (작년 11월, 12월 제외)
+  
+  // 선택된 월부터 역순으로 생성
+  for (let i = startIndex; i >= 0; i--) {
     const targetDate = new Date(currentYear, currentMonth - i, 1);
     const month = targetDate.getMonth();
     const year = targetDate.getFullYear();

@@ -30,8 +30,12 @@ const generateCurrentMonths = (selectedYear?: number, selectedMonth?: number): s
   
   const months = [];
   
-  // 선택된 월부터 12개월 전까지 역순으로 생성
-  for (let i = 11; i >= 0; i--) {
+  // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
+  const isOctober = selectedMonth === 10;
+  const startIndex = isOctober ? 9 : 11; // 10월이면 9부터 시작 (작년 11월, 12월 제외)
+  
+  // 선택된 월부터 역순으로 생성
+  for (let i = startIndex; i >= 0; i--) {
     const targetDate = new Date(currentYear, currentMonth - i, 1);
     const month = targetDate.getMonth();
     months.push(monthNames[month]);
@@ -249,44 +253,53 @@ const generateMockDivisionMonthlyDetails = (selectedYear?: number, selectedMonth
 
 // 차트용 기존 데이터 구조 생성 함수
 const generateMockDivisionTable = (selectedYear?: number, selectedMonth?: number) => {
+  const isOctober = selectedMonth === 10;
+  const months = generateCurrentMonths(selectedYear, selectedMonth);
+  
+  // 10월일 때는 10개월 데이터만 생성
+  const generateMonthlyData = (baseValue: number, variance: number) => {
+    const data = generateRandomMonthlyData(baseValue, variance);
+    return isOctober ? data.slice(2) : data; // 10월이면 처음 2개(작년 11월, 12월) 제외
+  };
+  
   return {
-    months: generateCurrentMonths(selectedYear, selectedMonth),
+    months: months,
     divisions: [
       {
         name: '항공',
         color: 'blue',
-        revenue: generateRandomMonthlyData(615, 0.05),
-        profit: generateRandomMonthlyData(-3.3, 0.4)
+        revenue: generateMonthlyData(615, 0.05),
+        profit: generateMonthlyData(-3.3, 0.4)
       },
       {
         name: '해상',
         color: 'emerald',
-        revenue: generateRandomMonthlyData(203, 0.08),
-        profit: generateRandomMonthlyData(0.5, 0.3)
+        revenue: generateMonthlyData(203, 0.08),
+        profit: generateMonthlyData(0.5, 0.3)
       },
       {
         name: '운송',
         color: 'purple',
-        revenue: generateRandomMonthlyData(156, 0.06),
-        profit: generateRandomMonthlyData(2.1, 0.2)
+        revenue: generateMonthlyData(156, 0.06),
+        profit: generateMonthlyData(2.1, 0.2)
       },
       {
         name: '창고',
         color: 'orange',
-        revenue: generateRandomMonthlyData(89, 0.07),
-        profit: generateRandomMonthlyData(1.2, 0.3)
+        revenue: generateMonthlyData(89, 0.07),
+        profit: generateMonthlyData(1.2, 0.3)
       },
       {
         name: '도급',
         color: 'pink',
-        revenue: generateRandomMonthlyData(67, 0.08),
-        profit: generateRandomMonthlyData(0.8, 0.4)
+        revenue: generateMonthlyData(67, 0.08),
+        profit: generateMonthlyData(0.8, 0.4)
       },
       {
         name: '기타',
         color: 'cyan',
-        revenue: generateRandomMonthlyData(52, 0.09),
-        profit: generateRandomMonthlyData(0.3, 0.5)
+        revenue: generateMonthlyData(52, 0.09),
+        profit: generateMonthlyData(0.3, 0.5)
       }
     ]
   };
@@ -344,6 +357,7 @@ const parseDivisionData = (backendData: any, selectedYear?: number, selectedMont
 // 백엔드 데이터로부터 차트용 데이터 생성 함수
 const generateChartDataFromBackend = (backendData: any[], selectedYear?: number, selectedMonth?: number) => {
   const months = generateCurrentMonths(selectedYear, selectedMonth);
+  const isOctober = selectedMonth === 10;
   
   // PARENT_DIVISION_TYPE별로 데이터 그룹화
   const divisionGroups = backendData.reduce((acc: any, item: any) => {
@@ -375,37 +389,72 @@ const generateChartDataFromBackend = (backendData: any[], selectedYear?: number,
     };
     const color = divisionConfig[parentType] || 'blue';
     
+    // 10월일 때는 COLUMN1, COLUMN2(작년 11월, 12월)를 제외하고 COLUMN3부터 시작
+    const revenue = revenueItem 
+      ? (isOctober
+          ? [
+              revenueItem.COLUMN3 || 0,
+              revenueItem.COLUMN4 || 0,
+              revenueItem.COLUMN5 || 0,
+              revenueItem.COLUMN6 || 0,
+              revenueItem.COLUMN7 || 0,
+              revenueItem.COLUMN8 || 0,
+              revenueItem.COLUMN9 || 0,
+              revenueItem.COLUMN10 || 0,
+              revenueItem.COLUMN11 || 0,
+              revenueItem.COLUMN12 || 0
+            ]
+          : [
+              revenueItem.COLUMN1 || 0,
+              revenueItem.COLUMN2 || 0,
+              revenueItem.COLUMN3 || 0,
+              revenueItem.COLUMN4 || 0,
+              revenueItem.COLUMN5 || 0,
+              revenueItem.COLUMN6 || 0,
+              revenueItem.COLUMN7 || 0,
+              revenueItem.COLUMN8 || 0,
+              revenueItem.COLUMN9 || 0,
+              revenueItem.COLUMN10 || 0,
+              revenueItem.COLUMN11 || 0,
+              revenueItem.COLUMN12 || 0
+            ])
+      : Array(isOctober ? 10 : 12).fill(0);
+    
+    const profit = profitItem 
+      ? (isOctober
+          ? [
+              profitItem.COLUMN3 || 0,
+              profitItem.COLUMN4 || 0,
+              profitItem.COLUMN5 || 0,
+              profitItem.COLUMN6 || 0,
+              profitItem.COLUMN7 || 0,
+              profitItem.COLUMN8 || 0,
+              profitItem.COLUMN9 || 0,
+              profitItem.COLUMN10 || 0,
+              profitItem.COLUMN11 || 0,
+              profitItem.COLUMN12 || 0
+            ]
+          : [
+              profitItem.COLUMN1 || 0,
+              profitItem.COLUMN2 || 0,
+              profitItem.COLUMN3 || 0,
+              profitItem.COLUMN4 || 0,
+              profitItem.COLUMN5 || 0,
+              profitItem.COLUMN6 || 0,
+              profitItem.COLUMN7 || 0,
+              profitItem.COLUMN8 || 0,
+              profitItem.COLUMN9 || 0,
+              profitItem.COLUMN10 || 0,
+              profitItem.COLUMN11 || 0,
+              profitItem.COLUMN12 || 0
+            ])
+      : Array(isOctober ? 10 : 12).fill(0);
+    
     return {
       name: parentType,
       color: color,
-      revenue: revenueItem ? [
-        revenueItem.COLUMN1 || 0,  // 억원 단위 그대로
-        revenueItem.COLUMN2 || 0,
-        revenueItem.COLUMN3 || 0,
-        revenueItem.COLUMN4 || 0,
-        revenueItem.COLUMN5 || 0,
-        revenueItem.COLUMN6 || 0,
-        revenueItem.COLUMN7 || 0,
-        revenueItem.COLUMN8 || 0,
-        revenueItem.COLUMN9 || 0,
-        revenueItem.COLUMN10 || 0,
-        revenueItem.COLUMN11 || 0,
-        revenueItem.COLUMN12 || 0
-      ] : Array(12).fill(0),
-      profit: profitItem ? [
-        profitItem.COLUMN1 || 0,  // 억원 단위 그대로
-        profitItem.COLUMN2 || 0,
-        profitItem.COLUMN3 || 0,
-        profitItem.COLUMN4 || 0,
-        profitItem.COLUMN5 || 0,
-        profitItem.COLUMN6 || 0,
-        profitItem.COLUMN7 || 0,
-        profitItem.COLUMN8 || 0,
-        profitItem.COLUMN9 || 0,
-        profitItem.COLUMN10 || 0,
-        profitItem.COLUMN11 || 0,
-        profitItem.COLUMN12 || 0
-      ] : Array(12).fill(0)
+      revenue: revenue,
+      profit: profit
     };
   });
   

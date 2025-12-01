@@ -19,12 +19,12 @@ interface DivisionData {
 interface PerformanceTableProps {
   data?: DivisionData[];
   loading?: boolean;
-  periodType?: 'monthly' | 'cumulative';
+  yearType?: 'planned' | 'previous';
   currentYear?: number;
   currentMonth?: number;
 }
 
-export function PerformanceTable({ data, loading, periodType, currentYear, currentMonth }: PerformanceTableProps) {
+export function PerformanceTable({ data, loading, yearType = 'planned', currentYear, currentMonth }: PerformanceTableProps) {
   useEffect(() => {
     // PerformanceTable mounted
   }, []);
@@ -73,7 +73,10 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                 backdropFilter: 'blur(12px)'
               }}
             >
-              계획 ('{currentYear}년 {periodType === 'cumulative' ? `1~${currentMonth}월 누적` : `${currentMonth}월`})
+              {yearType === 'previous' 
+                ? `직전년도(${currentYear - 1}년 1~${currentMonth}월 누적)`
+                : `계획(${currentYear}년 1~${currentMonth}월 누적)`
+              }
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center backdrop-blur-md border-r-4 border-emerald-400/50 py-4"
@@ -83,7 +86,7 @@ export function PerformanceTable({ data, loading, periodType, currentYear, curre
                 backdropFilter: 'blur(12px)'
               }}
             >
-              실적 ('{currentYear}년 {periodType === 'cumulative' ? `1~${currentMonth}월 누적` : `${currentMonth}월`})
+              실적 ({currentYear}년 1~{currentMonth}월 누적)
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center backdrop-blur-md py-4"

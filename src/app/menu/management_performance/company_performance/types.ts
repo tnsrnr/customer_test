@@ -24,6 +24,8 @@ export interface CompanyPerformanceData {
       actualOpMargin: number;          // ACTUAL_OP_MARGIN (%)
       salesAchievement: number;        // SALES_ACHIEVEMENT (%)
       opProfitAchievement: number;     // OP_PROFIT_ACHIEVEMENT (%)
+      yoySalesChange?: number;         // 전년대비 매출 차이 (억원) - 하드코딩 가능
+      yoyOpProfitChange?: number;      // 전년대비 영업이익 차이 (억원) - 하드코딩 가능
     }>;
   };
   // 3번째 API: 하단 첫 번째 카드 데이터

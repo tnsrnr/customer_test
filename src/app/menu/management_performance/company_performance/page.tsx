@@ -280,6 +280,7 @@ export default function CompanyPerformancePage() {
                 yearType={yearType}
                 currentYear={currentYear}
                 currentMonth={currentMonth}
+                kpiMetrics={data.kpiMetrics}
               />
             </div>
 

@@ -294,12 +294,12 @@ export default function HQPerformancePage() {
                       },
                       layout: {
                         padding: {
-                          top: 5,
-                          bottom: 5,
-                          left: 5,
-                          right: 5
-                        }
+                          top: 1,
+                          bottom: 1,
+                          left: 1,
+                          right: 1
                       }
+                    }
                     }}
                   />
                 </div>
@@ -354,10 +354,10 @@ export default function HQPerformancePage() {
                       },
                       layout: {
                         padding: {
-                          top: 5,
-                          bottom: 5,
-                          left: 5,
-                          right: 5
+                          top: 1,
+                          bottom: 1,
+                          left: 1,
+                          right: 1
                       }
                     }
                   }}

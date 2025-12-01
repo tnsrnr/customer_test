@@ -100,10 +100,10 @@ const ChartCard: React.FC<ChartCardProps> = ({
           },
           layout: {
             padding: {
-              top: 10,
-              bottom: 10,
-              left: 10,
-              right: 10
+              top: 1,
+              bottom: 1,
+              left: 1,
+              right: 1
             }
           }
         }} 

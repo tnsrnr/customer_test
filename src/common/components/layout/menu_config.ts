@@ -46,6 +46,12 @@ export const menuItems: MenuItem[] = [
     description: '본사 실적 현황'
   },
   { 
+    name: '사업부실적', 
+    path: '/menu/management_performance/business_division', 
+    icon: Building2,
+    description: '사업부별 실적 현황'
+  },
+  { 
     name: '재무현황', 
     path: '/menu/management_performance/finance', 
     icon: PieChart,
@@ -107,12 +113,6 @@ export const menuItems: MenuItem[] = [
     path: '/menu/management_performance/overseas_subsidiaries', 
     icon: Globe,
     description: '해외 자회사 현황'
-  },
-  { 
-    name: '사업부실적', 
-    path: '/menu/management_performance/business_division', 
-    icon: Building2,
-    description: '사업부별 실적 현황'
   },
   { 
     name: '국내', 

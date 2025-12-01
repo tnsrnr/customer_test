@@ -14,6 +14,8 @@ interface DivisionData {
   actualOpMargin: number;          // ACTUAL_OP_MARGIN (%)
   salesAchievement: number;        // SALES_ACHIEVEMENT (%)
   opProfitAchievement: number;     // OP_PROFIT_ACHIEVEMENT (%)
+  yoySalesChange?: number;         // 전년대비 매출 차이 (억원) - 하드코딩 가능
+  yoyOpProfitChange?: number;      // 전년대비 영업이익 차이 (억원) - 하드코딩 가능
 }
 
 interface PerformanceTableProps {
@@ -22,9 +24,15 @@ interface PerformanceTableProps {
   yearType?: 'planned' | 'previous';
   currentYear?: number;
   currentMonth?: number;
+  kpiMetrics?: {
+    ACTUAL_SALES: number;
+    ACTUAL_OP_PROFIT: number;
+    ACTUAL_SALES_CHANGE: number;
+    ACTUAL_OP_PROFIT_CHANGE: number;
+  };
 }
 
-export function PerformanceTable({ data, loading, yearType = 'planned', currentYear, currentMonth }: PerformanceTableProps) {
+export function PerformanceTable({ data, loading, yearType = 'planned', currentYear, currentMonth, kpiMetrics }: PerformanceTableProps) {
   useEffect(() => {
     // PerformanceTable mounted
   }, []);
@@ -74,8 +82,8 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
               }}
             >
               {yearType === 'previous' 
-                ? `직전년도(${currentYear - 1}년 1~${currentMonth}월 누적)`
-                : `계획(${currentYear}년 1~${currentMonth}월 누적)`
+                ? `직전년도(${(currentYear || new Date().getFullYear()) - 1}년 1~${currentMonth || 1}월 누적)`
+                : `계획(${currentYear || new Date().getFullYear()}년 1~${currentMonth || 1}월 누적)`
               }
             </TableHead>
             <TableHead 
@@ -86,7 +94,7 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
                 backdropFilter: 'blur(12px)'
               }}
             >
-              실적 ({currentYear}년 1~{currentMonth}월 누적)
+              실적 ({currentYear || new Date().getFullYear()}년 1~{currentMonth || 1}월 누적)
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center backdrop-blur-md py-4"
@@ -96,7 +104,7 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
                 backdropFilter: 'blur(12px)'
               }}
             >
-              달성율 (계획 比)
+              {yearType === 'previous' ? '전년대비' : '달성율 (계획 比)'}
             </TableHead>
           </TableRow>
           {/* 하위 헤더 행 */}
@@ -216,27 +224,86 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
                   className={division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}
                 />
               </TableCell>
-              {/* 달성율 데이터 */}
-              <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-orange-500/5">
-                <CountUp 
-                  end={division.salesAchievement} 
-                  duration={1.5}
-                  separator=","
-                  decimal="."
-                  suffix="%"
-                  className="text-white"
-                />
-              </TableCell>
-              <TableCell className="text-white text-xl text-center py-4 bg-orange-500/5">
-                <CountUp 
-                  end={division.opProfitAchievement} 
-                  duration={1.5}
-                  separator=","
-                  decimal="."
-                  suffix="%"
-                  className="text-white"
-                />
-              </TableCell>
+              {/* 달성율 데이터 또는 YOY 차이 */}
+              {yearType === 'previous' ? (
+                <>
+                  <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-orange-500/5 ${
+                    (() => {
+                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+                      const yoySalesChange = division.yoySalesChange !== undefined 
+                        ? division.yoySalesChange 
+                        : division.actualSales - division.plannedSales;
+                      return yoySalesChange >= 0 ? 'text-emerald-400' : 'text-red-400';
+                    })()
+                  }`}>
+                    {(() => {
+                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+                      const yoySalesChange = division.yoySalesChange !== undefined 
+                        ? division.yoySalesChange 
+                        : division.actualSales - division.plannedSales;
+                      return (
+                        <CountUp 
+                          end={yoySalesChange} 
+                          duration={1.5}
+                          separator=","
+                          decimal="."
+                          prefix={yoySalesChange >= 0 ? '+' : ''}
+                          className={yoySalesChange >= 0 ? 'text-emerald-400' : 'text-red-400'}
+                        />
+                      );
+                    })()}
+                  </TableCell>
+                  <TableCell className={`text-xl text-center py-4 bg-orange-500/5 ${
+                    (() => {
+                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+                      const yoyOpProfitChange = division.yoyOpProfitChange !== undefined 
+                        ? division.yoyOpProfitChange 
+                        : division.actualOpProfit - division.plannedOpProfit;
+                      return yoyOpProfitChange >= 0 ? 'text-emerald-400' : 'text-red-400';
+                    })()
+                  }`}>
+                    {(() => {
+                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+                      const yoyOpProfitChange = division.yoyOpProfitChange !== undefined 
+                        ? division.yoyOpProfitChange 
+                        : division.actualOpProfit - division.plannedOpProfit;
+                      return (
+                        <CountUp 
+                          end={yoyOpProfitChange} 
+                          duration={1.5}
+                          separator=","
+                          decimal="."
+                          prefix={yoyOpProfitChange >= 0 ? '+' : ''}
+                          className={yoyOpProfitChange >= 0 ? 'text-emerald-400' : 'text-red-400'}
+                        />
+                      );
+                    })()}
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-orange-500/5">
+                    <CountUp 
+                      end={division.salesAchievement} 
+                      duration={1.5}
+                      separator=","
+                      decimal="."
+                      suffix="%"
+                      className="text-white"
+                    />
+                  </TableCell>
+                  <TableCell className="text-white text-xl text-center py-4 bg-orange-500/5">
+                    <CountUp 
+                      end={division.opProfitAchievement} 
+                      duration={1.5}
+                      separator=","
+                      decimal="."
+                      suffix="%"
+                      className="text-white"
+                    />
+                  </TableCell>
+                </>
+              )}
             </TableRow>
           ))}
         </TableBody>

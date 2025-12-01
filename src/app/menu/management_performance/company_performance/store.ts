@@ -74,7 +74,9 @@ const company_performance_grid = async (year: number, month: number, periodType:
         actualOpProfit: Math.round(item.ACTUAL_OP_PROFIT / 100000000),
         actualOpMargin: item.ACTUAL_OP_MARGIN,
         salesAchievement: item.SALES_ACHIEVEMENT,
-        opProfitAchievement: item.OP_PROFIT_ACHIEVEMENT
+        opProfitAchievement: item.OP_PROFIT_ACHIEVEMENT,
+        yoySalesChange: undefined,  // 전년대비 매출 차이 - 하드코딩으로 설정 가능
+        yoyOpProfitChange: undefined // 전년대비 영업이익 차이 - 하드코딩으로 설정 가능
       }));
       
       return { divisions: gridData };
@@ -340,7 +342,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
         if (month === 8) {
           console.log('🎯 8월 데이터: 템프 데이터를 사용합니다.');
         
-        const tempData: CompanyPerformanceData = {
+          const tempData: CompanyPerformanceData = {
           // 1번째 API: 상단 4개 KPI 카드 (왼쪽 -> 오른쪽)
           kpiMetrics: {
             ACTUAL_SALES: 4090,              // 1: 총 매출액
@@ -450,20 +452,43 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
         
         // 직전년도일 때 계획 필드만 직접 숫자로 설정
         if (yearType === 'previous' && tempData.gridData.divisions) {
-          // 각 division별 계획 필드 값 (직접 수정 가능)
+          // 각 division별 계획 필드 값 (직접 수정 가능) - 2024년 실제 값
           const previousYearPlannedValues = [
-            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 },  // 본사
-            { plannedSales: 4, plannedOpProfit: 5, plannedOpMargin: 6 },  // 국내 자회사
-            { plannedSales: 7, plannedOpProfit: 8, plannedOpMargin: 9 },  // 해외 자회사
-            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 }   // 합계
+            { plannedSales: 2368, plannedOpProfit: -17.1, plannedOpMargin: -0.7 },  // 본사
+            { plannedSales: 848, plannedOpProfit: 8, plannedOpMargin: 0.9 },  // 국내 자회사
+            { plannedSales: 3176, plannedOpProfit: 34, plannedOpMargin: 1.1 },  // 해외 자회사
+            { plannedSales: 6393, plannedOpProfit: 24, plannedOpMargin: 0.4 }   // 합계
           ];
           
-          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => ({
-            ...division,
-            plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
-            plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
-            plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
-          }));
+          // 전년대비 차이 값 (직접 수정 가능) - 8월에서는 계산값 사용 (필요시 하드코딩 가능)
+          const yoyChangeValues: Array<{ yoySalesChange?: number; yoyOpProfitChange?: number }> = [
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 본사 - 계산값 사용
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 국내 자회사 - 계산값 사용
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 해외 자회사 - 계산값 사용
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined }   // 합계 - 계산값 사용
+          ];
+          
+          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => {
+            const previousYearData = previousYearPlannedValues[index];
+            const yoyData = yoyChangeValues[index];
+            const updatedDivision = {
+              ...division,
+              plannedSales: previousYearData?.plannedSales ?? division.plannedSales,
+              plannedOpProfit: previousYearData?.plannedOpProfit ?? division.plannedOpProfit,
+              plannedOpMargin: previousYearData?.plannedOpMargin ?? division.plannedOpMargin
+            };
+            
+            // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+            return {
+              ...updatedDivision,
+              yoySalesChange: yoyData?.yoySalesChange !== undefined 
+                ? yoyData.yoySalesChange 
+                : updatedDivision.actualSales - updatedDivision.plannedSales,
+              yoyOpProfitChange: yoyData?.yoyOpProfitChange !== undefined 
+                ? yoyData.yoyOpProfitChange 
+                : updatedDivision.actualOpProfit - updatedDivision.plannedOpProfit
+            };
+          });
         }
         
         set({ data: tempData, loading: false, error: null });
@@ -584,20 +609,43 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
         
         // 직전년도일 때 계획 필드만 직접 숫자로 설정
         if (yearType === 'previous' && tempData.gridData.divisions) {
-          // 각 division별 계획 필드 값 (직접 수정 가능)
+          // 각 division별 계획 필드 값 (직접 수정 가능) - 2024년 실제 값
           const previousYearPlannedValues = [
-            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 },  // 본사
-            { plannedSales: 4, plannedOpProfit: 5, plannedOpMargin: 6 },  // 국내 자회사
-            { plannedSales: 7, plannedOpProfit: 8, plannedOpMargin: 9 },  // 해외 자회사
-            { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 }   // 합계
+            { plannedSales: 2368, plannedOpProfit: -17.1, plannedOpMargin: -0.7 },  // 본사
+            { plannedSales: 848, plannedOpProfit: 8, plannedOpMargin: 0.9 },  // 국내 자회사
+            { plannedSales: 3176, plannedOpProfit: 34, plannedOpMargin: 1.1 },  // 해외 자회사
+            { plannedSales: 6393, plannedOpProfit: 24, plannedOpMargin: 0.4 }   // 합계
           ];
           
-          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => ({
-            ...division,
-            plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
-            plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
-            plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
-          }));
+          // 전년대비 차이 값 (직접 수정 가능) - 9월에서는 계산값 사용 (필요시 하드코딩 가능)
+          const yoyChangeValues: Array<{ yoySalesChange?: number; yoyOpProfitChange?: number }> = [
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 본사 - 계산값 사용
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 국내 자회사 - 계산값 사용
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 해외 자회사 - 계산값 사용
+            { yoySalesChange: undefined, yoyOpProfitChange: undefined }   // 합계 - 계산값 사용
+          ];
+          
+          tempData.gridData.divisions = tempData.gridData.divisions.map((division, index) => {
+            const previousYearData = previousYearPlannedValues[index];
+            const yoyData = yoyChangeValues[index];
+            const updatedDivision = {
+              ...division,
+              plannedSales: previousYearData?.plannedSales ?? division.plannedSales,
+              plannedOpProfit: previousYearData?.plannedOpProfit ?? division.plannedOpProfit,
+              plannedOpMargin: previousYearData?.plannedOpMargin ?? division.plannedOpMargin
+            };
+            
+            // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+            return {
+              ...updatedDivision,
+              yoySalesChange: yoyData?.yoySalesChange !== undefined 
+                ? yoyData.yoySalesChange 
+                : updatedDivision.actualSales - updatedDivision.plannedSales,
+              yoyOpProfitChange: yoyData?.yoyOpProfitChange !== undefined 
+                ? yoyData.yoyOpProfitChange 
+                : updatedDivision.actualOpProfit - updatedDivision.plannedOpProfit
+            };
+          });
         }
         
         set({ data: tempData, loading: false, error: null });
@@ -676,7 +724,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
             PLANNED_SALES: 7172,         // 41
             ACTUAL_SALES: 5070,          // 42
             PLANNED_OP_PROFIT: 188,     // 43
-            ACTUAL_OP_PROFIT: 60       // 44
+            ACTUAL_OP_PROFIT: 56       // 44
           },
           // 4번째 API: 하단 두 번째 카드 (매출액 바 차트)
           chartData2: {
@@ -777,21 +825,51 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
           // gridData 처리: 직전년도일 때 계획 필드만 직접 숫자로 설정
           let processedGridData = gridData || { divisions: [] };
           if (yearType === 'previous' && processedGridData.divisions) {
-            // 각 division별 계획 필드 값 (직접 수정 가능)
+            // 각 division별 계획 필드 값 (직접 수정 가능) - 2024년 실제 값
             const previousYearPlannedValues = [
-              { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 },  // 본사
-              { plannedSales: 4, plannedOpProfit: 5, plannedOpMargin: 6 },  // 국내 자회사
-              { plannedSales: 7, plannedOpProfit: 8, plannedOpMargin: 9 },  // 해외 자회사
-              { plannedSales: 1, plannedOpProfit: 2, plannedOpMargin: 3 }   // 합계
+              { plannedSales: 2368, plannedOpProfit: -17.1, plannedOpMargin: -0.7 },  // 본사
+              { plannedSales: 848, plannedOpProfit: 8, plannedOpMargin: 0.9 },  // 국내 자회사
+              { plannedSales: 3176, plannedOpProfit: 34, plannedOpMargin: 1.1 },  // 해외 자회사
+              { plannedSales: 6393, plannedOpProfit: 24, plannedOpMargin: 0.4 }   // 합계
             ];
             
+            // 전년대비 차이 값 (직접 수정 가능) - 10월일 때는 1~8, 그 외에는 계산값 또는 하드코딩
+            const yoyChangeValues = month === 10 
+              ? [
+                  { yoySalesChange: 1, yoyOpProfitChange: 2 },  // 본사
+                  { yoySalesChange: 3, yoyOpProfitChange: 4 },  // 국내 자회사
+                  { yoySalesChange: 5, yoyOpProfitChange: 6 },  // 해외 자회사
+                  { yoySalesChange: 7, yoyOpProfitChange: 8 }   // 합계
+                ]
+              : [
+                  { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 본사 - 계산값 사용
+                  { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 국내 자회사 - 계산값 사용
+                  { yoySalesChange: undefined, yoyOpProfitChange: undefined },  // 해외 자회사 - 계산값 사용
+                  { yoySalesChange: undefined, yoyOpProfitChange: undefined }   // 합계 - 계산값 사용
+                ];
+            
             processedGridData = {
-              divisions: processedGridData.divisions.map((division, index) => ({
-                ...division,
-                plannedSales: previousYearPlannedValues[index]?.plannedSales ?? 0,
-                plannedOpProfit: previousYearPlannedValues[index]?.plannedOpProfit ?? 0,
-                plannedOpMargin: previousYearPlannedValues[index]?.plannedOpMargin ?? 0
-              }))
+              divisions: processedGridData.divisions.map((division, index) => {
+                const previousYearData = previousYearPlannedValues[index];
+                const yoyData = yoyChangeValues[index];
+                const updatedDivision = {
+                  ...division,
+                  plannedSales: previousYearData?.plannedSales ?? division.plannedSales,
+                  plannedOpProfit: previousYearData?.plannedOpProfit ?? division.plannedOpProfit,
+                  plannedOpMargin: previousYearData?.plannedOpMargin ?? division.plannedOpMargin
+                };
+                
+                // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
+                return {
+                  ...updatedDivision,
+                  yoySalesChange: yoyData?.yoySalesChange !== undefined 
+                    ? yoyData.yoySalesChange 
+                    : updatedDivision.actualSales - updatedDivision.plannedSales,
+                  yoyOpProfitChange: yoyData?.yoyOpProfitChange !== undefined 
+                    ? yoyData.yoyOpProfitChange 
+                    : updatedDivision.actualOpProfit - updatedDivision.plannedOpProfit
+                };
+              })
             };
           }
           

@@ -279,7 +279,7 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
                 },
                 achievement: {
                   sales: 70,        // 13
-                  profit: -23        // 14
+                  profit: 0        // 14
                 },
                 totalData: {
                   sales: 819,        // 15

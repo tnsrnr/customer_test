@@ -655,14 +655,14 @@ export const usePersonnelStore = create<PersonnelStore>((set, get) => {
         const tempData: PersonnelData = {
           // 상단 4개 KPI 카드 (우측 → 좌측 순서)
           kpiMetrics: {
-            headquarters: 153,                    // 7: 본사 (좌측 끝)
-            headquartersChange: 1,              // 8: 본사 변화
-            domesticSubsidiaries: 762,            // 5: 국내 계열사 (우측에서 3번째)
-            domesticSubsidiariesChange: 2,      // 6: 국내 계열사 변화
-            overseasSubsidiaries: 870,            // 3: 해외 계열사 (우측에서 2번째)
-            overseasSubsidiariesChange: -5,      // 4: 해외 계열사 변화
-            total: 1785,                           // 1: 총 인원 (우측 끝)
-            totalChange: -4                      // 2: 총 인원 변화
+            headquarters: 143,                    // 7: 본사 (좌측 끝)
+            headquartersChange: -10,              // 8: 본사 변화
+            domesticSubsidiaries: 757,            // 5: 국내 계열사 (우측에서 3번째)
+            domesticSubsidiariesChange: -5,      // 6: 국내 계열사 변화
+            overseasSubsidiaries: 864,            // 3: 해외 계열사 (우측에서 2번째)
+            overseasSubsidiariesChange: -6,      // 4: 해외 계열사 변화
+            total: 1764,                           // 1: 총 인원 (우측 끝)
+            totalChange: -21                      // 2: 총 인원 변화
           },
           // 하단 테이블 (좌측 → 우측, 상단 → 하단) - 첫 번째 불필요한 "소계" 행 제거
           gridData: {

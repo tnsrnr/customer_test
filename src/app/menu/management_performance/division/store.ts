@@ -875,8 +875,8 @@ export const useDivisionStore = create<DivisionState>((set, get) => ({
           COLUMN9: 17,   // 8월 - 10월의 COLUMN10
           COLUMN10: 19,   // 9월 - 10월의 COLUMN11
           COLUMN11: 18,  // 10월 - 10월의 COLUMN12
-          COLUMN12: 18,  // 11월 - 새로운 값
-          COLUMN13: (0 + 16 + 16 + 16 + 16 + 16 + 17 + 17 + 17 + 19 + 18 + 18)  // 누계
+          COLUMN12: 17,  // 11월 - 새로운 값
+          COLUMN13: (0 + 16 + 16 + 16 + 16 + 16 + 17 + 17 + 17 + 19 + 18 + 17)  // 누계
         },
         {
           PARENT_DIVISION_TYPE: '창고',

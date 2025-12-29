@@ -610,13 +610,13 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
           // 상단 4개 KPI 카드 (왼쪽 → 오른쪽)
           kpiMetrics: {
             actualSales: 1987,                    // 1: 매출
-            actualSalesChange: 0,              // 2: 매출 변화
+            actualSalesChange: -591,              // 2: 매출 변화
             actualPurchases: 1925,                // 3: 매입
-            actualPurchasesChange: 0,          // 4: 매입 변화
+            actualPurchasesChange: -797,          // 4: 매입 변화
             actualOpProfit: -25.7,                 // 5: 영업이익
-            actualOpProfitChange: 0,           // 6: 영업이익 변화
+            actualOpProfitChange: -4,           // 6: 영업이익 변화
             actualOpMargin: -1.3,                 // 7: 영업이익율
-            actualOpMarginChange: 0            // 8: 영업이익율 변화
+            actualOpMarginChange: -0.5            // 8: 영업이익율 변화
           },
           // 차트 데이터
           chartData: {
@@ -695,9 +695,9 @@ export const useHQPerformanceStore = create<HQPerformanceStore>((set, get) => {
                 column8: 176,               // 7월
                 column9: 170,               // 8월
                 column10: 180,              // 9월
-                column11: 162,              // 10월
-                column12: 164,              // 11월
-                column13: 1747                // 합계
+                column11: 164,              // 10월
+                column12: 175,              // 11월
+                column13: 1925                // 합계
               },
               {
                 column1: '매출총이익',       // 65

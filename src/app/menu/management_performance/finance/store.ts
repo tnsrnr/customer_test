@@ -325,11 +325,11 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
           totalAssets: 2735,
           totalLiabilities: 1160,
           totalEquity: 1575,
-          debtWeight: 0,
-          totalAssetsChange: -0,
-          totalLiabilitiesChange: -0,
-          totalEquityChange: 0,
-          debtWeightChange: -0
+          debtWeight: 74,
+          totalAssetsChange: -7,
+          totalLiabilitiesChange: -3,
+          totalEquityChange: 1,
+          debtWeightChange: -6
         };
 
         // 차트 데이터 하드코딩
@@ -352,7 +352,7 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
         const tempTrendData = {
           labels: Array.from({ length: 10 }, (_, i) => (currentYear - 9 + i).toString()),
           totalLoan: [344, 382, 171, 188, 392, 586, 453, 436, 861, 804], // 10년간 차입금 (실제 데이터)
-          debtRatio: [195, 195, 86, 88, 154, 169, 111, 66, 80, 69],  // 10년간 부채비율 (실제 데이터)
+          debtRatio: [195, 195, 86, 88, 154, 169, 111, 66, 80, 74],  // 10년간 부채비율 (실제 데이터)
           equityRatio: [41, 42, 43, 44, 45, 46, 47, 48, 49, 50], // 10년간 자본비율
           returnOnEquity: [51, 52, 53, 54, 55, 56, 57, 58, 59, 60], // 10년간 자기자본이익률
           returnOnAssets: [61, 62, 63, 64, 65, 66, 67, 68, 69, 70] // 10년간 총자산이익률

@@ -55,19 +55,9 @@ export default function CompanyPerformancePage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(15,23,42,0.2),transparent_50%)]"></div>
       
       <div className="relative z-10 h-[calc(100vh-64px)] p-4 space-y-4 overflow-hidden">
-        {/* 년도 선택 버튼 */}
+        {/* 년도 선택 버튼 - 계획대비 숨김, 직전년도만 표시 */}
         <div className="flex justify-end mb-2">
           <div className="flex space-x-1 p-0.5 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-            <button
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                yearType === 'planned' 
-                  ? 'bg-white/20 text-white shadow-md border border-white/30' 
-                  : 'text-blue-100 hover:bg-white/10 hover:text-white'
-              }`}
-              onClick={() => setYearType('planned')}
-            >
-              계획대비
-            </button>
             <button
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
                 yearType === 'previous' 

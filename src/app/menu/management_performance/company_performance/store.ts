@@ -323,7 +323,7 @@ export const useCompanyPerformanceStore = create<CompanyPerformanceStore>((set, 
     data: null,
     loading: false,
     error: null,
-    yearType: 'planned',  // 기본값: 계획년도
+    yearType: 'previous',  // 기본값: 직전년도
     currentYear: new Date().getFullYear(),
     currentMonth: new Date().getMonth() + 1,
 

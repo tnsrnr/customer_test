@@ -36,7 +36,7 @@ export const useGlobalStore = create<GlobalStore>()(
       isRefreshing: false,
       currentPage: 'page1',
       selectedYear: new Date().getFullYear(),
-      selectedMonth: 10, // 기본값을 10월로 고정
+      selectedMonth: 11, // 기본값을 11월로 고정
       menuOrder: menuItems.map(item => item.path), // 모든 메뉴들의 기본 순서
       isMenuEditMode: false,
       
@@ -116,7 +116,7 @@ export const useGlobalStore = create<GlobalStore>()(
       version: 2, // 버전 업데이트하여 localStorage 초기화 (권역실적 추가)
       partialize: (state) => ({
         selectedYear: state.selectedYear,
-        // selectedMonth는 persist에서 제외 - 항상 기본값(10월)으로 시작
+        // selectedMonth는 persist에서 제외 - 항상 기본값(11월)으로 시작
         menuOrder: state.menuOrder,
         currentPage: state.currentPage,
       }),

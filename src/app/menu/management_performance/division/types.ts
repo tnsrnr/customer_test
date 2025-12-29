@@ -123,8 +123,10 @@ export const generateMonthHeaders = (selectedYear?: number, selectedMonth?: numb
   ];
   
   // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
+  // 11월일 때는 작년 12월을 제외하고 11개월만 표시
   const isOctober = selectedMonth === 10;
-  const startIndex = isOctober ? 9 : 11; // 10월이면 9부터 시작 (작년 11월, 12월 제외)
+  const isNovember = selectedMonth === 11;
+  const startIndex = isOctober ? 9 : isNovember ? 10 : 11; // 10월이면 9, 11월이면 10, 그 외는 11부터 시작
   
   // 선택된 월부터 역순으로 생성
   for (let i = startIndex; i >= 0; i--) {

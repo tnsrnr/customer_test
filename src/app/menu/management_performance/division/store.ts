@@ -28,11 +28,13 @@ const generateCurrentMonths = (selectedYear?: number, selectedMonth?: number): s
     '7월', '8월', '9월', '10월', '11월', '12월'
   ];
   
-  const months = [];
+  const months: string[] = [];
   
   // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
+  // 11월일 때는 작년 12월을 제외하고 11개월만 표시
   const isOctober = selectedMonth === 10;
-  const startIndex = isOctober ? 9 : 11; // 10월이면 9부터 시작 (작년 11월, 12월 제외)
+  const isNovember = selectedMonth === 11;
+  const startIndex = isOctober ? 9 : isNovember ? 10 : 11; // 10월이면 9, 11월이면 10, 그 외는 11부터 시작
   
   // 선택된 월부터 역순으로 생성
   for (let i = startIndex; i >= 0; i--) {
@@ -202,8 +204,8 @@ const generateDivisionCardsFromBackend = (backendData: any[]) => {
 };
 
 // 12개월 랜덤 매출 데이터 생성 함수
-const generateRandomMonthlyData = (baseValue: number, variance: number = 0.3) => {
-  const data = [];
+const generateRandomMonthlyData = (baseValue: number, variance: number = 0.3): number[] => {
+  const data: number[] = [];
   for (let i = 0; i < 12; i++) {
     const randomFactor = 1 + (Math.random() - 0.5) * variance * 2;
     data.push(Math.round(baseValue * randomFactor));
@@ -254,12 +256,15 @@ const generateMockDivisionMonthlyDetails = (selectedYear?: number, selectedMonth
 // 차트용 기존 데이터 구조 생성 함수
 const generateMockDivisionTable = (selectedYear?: number, selectedMonth?: number) => {
   const isOctober = selectedMonth === 10;
+  const isNovember = selectedMonth === 11;
   const months = generateCurrentMonths(selectedYear, selectedMonth);
   
-  // 10월일 때는 10개월 데이터만 생성
+  // 10월일 때는 10개월 데이터만 생성, 11월일 때는 11개월 데이터만 생성
   const generateMonthlyData = (baseValue: number, variance: number) => {
     const data = generateRandomMonthlyData(baseValue, variance);
-    return isOctober ? data.slice(2) : data; // 10월이면 처음 2개(작년 11월, 12월) 제외
+    if (isOctober) return data.slice(2); // 10월이면 처음 2개(작년 11월, 12월) 제외
+    if (isNovember) return data.slice(1); // 11월이면 처음 1개(작년 12월) 제외
+    return data;
   };
   
   return {
@@ -358,6 +363,7 @@ const parseDivisionData = (backendData: any, selectedYear?: number, selectedMont
 const generateChartDataFromBackend = (backendData: any[], selectedYear?: number, selectedMonth?: number) => {
   const months = generateCurrentMonths(selectedYear, selectedMonth);
   const isOctober = selectedMonth === 10;
+  const isNovember = selectedMonth === 11;
   
   // PARENT_DIVISION_TYPE별로 데이터 그룹화
   const divisionGroups = backendData.reduce((acc: any, item: any) => {
@@ -390,9 +396,24 @@ const generateChartDataFromBackend = (backendData: any[], selectedYear?: number,
     const color = divisionConfig[parentType] || 'blue';
     
     // 10월일 때는 COLUMN1, COLUMN2(작년 11월, 12월)를 제외하고 COLUMN3부터 시작
+    // 11월일 때는 COLUMN1(작년 12월)을 제외하고 COLUMN2부터 시작
     const revenue = revenueItem 
       ? (isOctober
           ? [
+              revenueItem.COLUMN3 || 0,
+              revenueItem.COLUMN4 || 0,
+              revenueItem.COLUMN5 || 0,
+              revenueItem.COLUMN6 || 0,
+              revenueItem.COLUMN7 || 0,
+              revenueItem.COLUMN8 || 0,
+              revenueItem.COLUMN9 || 0,
+              revenueItem.COLUMN10 || 0,
+              revenueItem.COLUMN11 || 0,
+              revenueItem.COLUMN12 || 0
+            ]
+          : isNovember
+          ? [
+              revenueItem.COLUMN2 || 0,
               revenueItem.COLUMN3 || 0,
               revenueItem.COLUMN4 || 0,
               revenueItem.COLUMN5 || 0,
@@ -418,11 +439,25 @@ const generateChartDataFromBackend = (backendData: any[], selectedYear?: number,
               revenueItem.COLUMN11 || 0,
               revenueItem.COLUMN12 || 0
             ])
-      : Array(isOctober ? 10 : 12).fill(0);
+      : Array(isOctober ? 10 : isNovember ? 11 : 12).fill(0);
     
     const profit = profitItem 
       ? (isOctober
           ? [
+              profitItem.COLUMN3 || 0,
+              profitItem.COLUMN4 || 0,
+              profitItem.COLUMN5 || 0,
+              profitItem.COLUMN6 || 0,
+              profitItem.COLUMN7 || 0,
+              profitItem.COLUMN8 || 0,
+              profitItem.COLUMN9 || 0,
+              profitItem.COLUMN10 || 0,
+              profitItem.COLUMN11 || 0,
+              profitItem.COLUMN12 || 0
+            ]
+          : isNovember
+          ? [
+              profitItem.COLUMN2 || 0,
               profitItem.COLUMN3 || 0,
               profitItem.COLUMN4 || 0,
               profitItem.COLUMN5 || 0,
@@ -448,7 +483,7 @@ const generateChartDataFromBackend = (backendData: any[], selectedYear?: number,
               profitItem.COLUMN11 || 0,
               profitItem.COLUMN12 || 0
             ])
-      : Array(isOctober ? 10 : 12).fill(0);
+      : Array(isOctober ? 10 : isNovember ? 11 : 12).fill(0);
     
     return {
       name: parentType,
@@ -702,6 +737,231 @@ export const useDivisionStore = create<DivisionState>((set, get) => ({
           COLUMN11: -1.5,    // 9월
           COLUMN12: -1.3,   // 10월
           COLUMN13: (4 + 4 + -4.3 + -0.9 + -0.7 + -0.6 + -0.5 + -0.6 + -1.2 + -1.2 + -1.5 + -1.3)  // 누계
+        }
+      ];
+      
+      const parsedData = parseDivisionData(tempBackendData, currentYear, currentMonth);
+      set({ data: parsedData, loading: false });
+      return; // API 호출 없이 리턴
+    }
+    
+    // ⭐ 11월 조건 체크 - 템프 데이터 사용 (10월 데이터 참고)
+    if (currentMonth === 11) {
+      console.log('🎯 11월 데이터: 템프 데이터를 사용합니다. (부문별 실적)');
+      
+      // 소수점 이하 1자리로 반올림하는 헬퍼 함수
+      const roundTo1Decimal = (value: number): number => {
+        return Math.round(value * 10) / 10;
+      };
+      
+      // 제공된 데이터를 백엔드 구조에 맞게 변환 (억원 단위 그대로 저장)
+      // 11월 조회 시: COLUMN1=12월(전년), COLUMN2=1월, ..., COLUMN11=10월, COLUMN12=11월
+      // 10월 데이터에서: COLUMN2(12월 전년) -> 11월의 COLUMN1, COLUMN3(1월) -> 11월의 COLUMN2, ..., COLUMN12(10월) -> 11월의 COLUMN11
+      const tempBackendData: any[] = [
+        // 매출 데이터
+        {
+          PARENT_DIVISION_TYPE: '항공',
+          DIVISION_TYPE: '매출',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 64,   // 1월 - 10월의 COLUMN3
+          COLUMN3: 56,   // 2월 - 10월의 COLUMN4
+          COLUMN4: 68,   // 3월 - 10월의 COLUMN5
+          COLUMN5: 104,  // 4월 - 10월의 COLUMN6
+          COLUMN6: 75,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 70,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 83,   // 7월 - 10월의 COLUMN9
+          COLUMN9: 80,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 87,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 81,  // 10월 - 10월의 COLUMN12
+          COLUMN12: 86,  // 11월 - 새로운 값
+          COLUMN13: (0 + 64 + 56 + 68 + 104 + 75 + 70 + 83 + 80 + 87 + 81 + 86)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '항공',
+          DIVISION_TYPE: '영업이익',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: -2,   // 1월 - 10월의 COLUMN3
+          COLUMN3: -3,   // 2월 - 10월의 COLUMN4
+          COLUMN4: -2,   // 3월 - 10월의 COLUMN5
+          COLUMN5: -3,   // 4월 - 10월의 COLUMN6
+          COLUMN6: -2,   // 5월 - 10월의 COLUMN7
+          COLUMN7: -3,   // 6월 - 10월의 COLUMN8
+          COLUMN8: -2,    // 7월 - 10월의 COLUMN9
+          COLUMN9: 0,    // 8월 - 10월의 COLUMN10
+          COLUMN10: -2,    // 9월 - 10월의 COLUMN11
+          COLUMN11: -3,  // 10월 - 10월의 COLUMN12
+          COLUMN12: -2,  // 11월 - 새로운 값
+          COLUMN13: (0 + -2 + -3 + -2 + -3 + -2 + -3 + -2 + 0 + -2 + -3 + -2)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '해상',
+          DIVISION_TYPE: '매출',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 41,   // 1월 - 10월의 COLUMN3
+          COLUMN3: 40,   // 2월 - 10월의 COLUMN4
+          COLUMN4: 56,   // 3월 - 10월의 COLUMN5
+          COLUMN5: 33,   // 4월 - 10월의 COLUMN6
+          COLUMN6: 34,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 34,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 28,   // 7월 - 10월의 COLUMN9
+          COLUMN9: 29,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 32,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 24,  // 10월 - 10월의 COLUMN12
+          COLUMN12: 25,  // 11월 - 새로운 값
+          COLUMN13: (0 + 41 + 40 + 56 + 33 + 34 + 34 + 28 + 29 + 32 + 24 + 25)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '해상',
+          DIVISION_TYPE: '영업이익',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 0,      // 1월 - 10월의 COLUMN3
+          COLUMN3: -1,    // 2월 - 10월의 COLUMN4
+          COLUMN4: 1,      // 3월 - 10월의 COLUMN5
+          COLUMN5: 0,      // 4월 - 10월의 COLUMN6
+          COLUMN6: 0,       // 5월 - 10월의 COLUMN7
+          COLUMN7: 1,     // 6월 - 10월의 COLUMN8
+          COLUMN8: 0,       // 7월 - 10월의 COLUMN9
+          COLUMN9: 0.0,       // 8월 - 10월의 COLUMN10
+          COLUMN10: 0,      // 9월 - 10월의 COLUMN11
+          COLUMN11: 0,    // 10월 - 10월의 COLUMN12
+          COLUMN12: 0,    // 11월 - 새로운 값
+          COLUMN13: (0 + 0 + -1 + 1 + 0 + 0 + 1 + 0 + 0 + 0 + 0 + 0)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '운송',
+          DIVISION_TYPE: '매출',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 26,   // 1월 - 10월의 COLUMN3
+          COLUMN3: 27,   // 2월 - 10월의 COLUMN4
+          COLUMN4: 27,   // 3월 - 10월의 COLUMN5
+          COLUMN5: 28,   // 4월 - 10월의 COLUMN6
+          COLUMN6: 27,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 26,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 28,   // 7월 - 10월의 COLUMN9
+          COLUMN9: 28,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 28,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 24,  // 10월 - 10월의 COLUMN12
+          COLUMN12: 27,  // 11월 - 새로운 값
+          COLUMN13: (0 + 26 + 27 + 27 + 28 + 27 + 26 + 28 + 28 + 28 + 24 + 27)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '운송',
+          DIVISION_TYPE: '영업이익',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 1,     // 1월 - 10월의 COLUMN3
+          COLUMN3: 0,     // 2월 - 10월의 COLUMN4
+          COLUMN4: 1,     // 3월 - 10월의 COLUMN5
+          COLUMN5: 1,     // 4월 - 10월의 COLUMN6
+          COLUMN6: 1,     // 5월 - 10월의 COLUMN7
+          COLUMN7: 1,     // 6월 - 10월의 COLUMN8
+          COLUMN8: 1,     // 7월 - 10월의 COLUMN9
+          COLUMN9: 1,     // 8월 - 10월의 COLUMN10
+          COLUMN10: 0,     // 9월 - 10월의 COLUMN11
+          COLUMN11: 1,    // 10월 - 10월의 COLUMN12
+          COLUMN12: 0,    // 11월 - 새로운 값
+          COLUMN13: (0 + 1 + 0 + 1 + 1 + 1 + 1 + 1 + 0 + 1 + 0 + 0)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '창고',
+          DIVISION_TYPE: '매출',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 16,   // 1월 - 10월의 COLUMN3
+          COLUMN3: 16,   // 2월 - 10월의 COLUMN4
+          COLUMN4: 16,   // 3월 - 10월의 COLUMN5
+          COLUMN5: 16,   // 4월 - 10월의 COLUMN6
+          COLUMN6: 16,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 17,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 17,   // 7월 - 10월의 COLUMN9
+          COLUMN9: 17,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 19,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 18,  // 10월 - 10월의 COLUMN12
+          COLUMN12: 18,  // 11월 - 새로운 값
+          COLUMN13: (0 + 16 + 16 + 16 + 16 + 16 + 17 + 17 + 17 + 19 + 18 + 18)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '창고',
+          DIVISION_TYPE: '영업이익',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: -1,    // 1월 - 10월의 COLUMN3
+          COLUMN3: -2,   // 2월 - 10월의 COLUMN4
+          COLUMN4: -2,   // 3월 - 10월의 COLUMN5
+          COLUMN5: -3,   // 4월 - 10월의 COLUMN6
+          COLUMN6: 0,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 0,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 0,   // 7월 - 10월의 COLUMN9
+          COLUMN9: 0,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 0,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 0,  // 10월 - 10월의 COLUMN12
+          COLUMN12: 0,  // 11월 - 새로운 값
+          COLUMN13: (0 + -1 + -2 + -2 + -3 + 0 + 0 + 0 + 0 + 0 + 0 + 0)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '도급',
+          DIVISION_TYPE: '매출',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 18,   // 1월 - 10월의 COLUMN3
+          COLUMN3: 17,   // 2월 - 10월의 COLUMN4
+          COLUMN4: 19,   // 3월 - 10월의 COLUMN5
+          COLUMN5: 19,   // 4월 - 10월의 COLUMN6
+          COLUMN6: 20,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 20,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 22,   // 7월 - 10월의 COLUMN9
+          COLUMN9: 19,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 18,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 18,  // 10월 - 10월의 COLUMN12
+          COLUMN12: 18,  // 11월 - 새로운 값
+          COLUMN13: (0 + 18 + 17 + 19 + 19 + 20 + 20 + 22 + 19 + 18 + 18 + 18)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '도급',
+          DIVISION_TYPE: '영업이익',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 1,      // 1월 - 10월의 COLUMN3
+          COLUMN3: 1,     // 2월 - 10월의 COLUMN4
+          COLUMN4: 1,     // 3월 - 10월의 COLUMN5
+          COLUMN5: 1,     // 4월 - 10월의 COLUMN6
+          COLUMN6: 1,     // 5월 - 10월의 COLUMN7
+          COLUMN7: 1,     // 6월 - 10월의 COLUMN8
+          COLUMN8: 1,    // 7월 - 10월의 COLUMN9
+          COLUMN9: 1,     // 8월 - 10월의 COLUMN10
+          COLUMN10: 1,    // 9월 - 10월의 COLUMN11
+          COLUMN11: 1,    // 10월 - 10월의 COLUMN12
+          COLUMN12: 1,    // 11월 - 새로운 값
+          COLUMN13: (0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '기타',
+          DIVISION_TYPE: '매출',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: 4,    // 1월 - 10월의 COLUMN3
+          COLUMN3: 6,    // 2월 - 10월의 COLUMN4
+          COLUMN4: 5,    // 3월 - 10월의 COLUMN5
+          COLUMN5: 7,   // 4월 - 10월의 COLUMN6
+          COLUMN6: 13,   // 5월 - 10월의 COLUMN7
+          COLUMN7: 6,   // 6월 - 10월의 COLUMN8
+          COLUMN8: 5,    // 7월 - 10월의 COLUMN9
+          COLUMN9: 6,   // 8월 - 10월의 COLUMN10
+          COLUMN10: 4,   // 9월 - 10월의 COLUMN11
+          COLUMN11: 4,   // 10월 - 10월의 COLUMN12
+          COLUMN12: 8,   // 11월 - 새로운 값
+          COLUMN13: (0 + 4 + 6 + 5 + 7 + 13 + 6 + 5 + 6 + 4 + 4 + 8)  // 누계
+        },
+        {
+          PARENT_DIVISION_TYPE: '기타',
+          DIVISION_TYPE: '영업이익',
+          COLUMN1: 0,   // 12월 (전년) - 10월의 COLUMN2
+          COLUMN2: -4,      // 1월 - 10월의 COLUMN3
+          COLUMN3: -1,    // 2월 - 10월의 COLUMN4
+          COLUMN4: -1,    // 3월 - 10월의 COLUMN5
+          COLUMN5: -1,    // 4월 - 10월의 COLUMN6
+          COLUMN6: 0,    // 5월 - 10월의 COLUMN7
+          COLUMN7: -1,    // 6월 - 10월의 COLUMN8
+          COLUMN8: -1,    // 7월 - 10월의 COLUMN9
+          COLUMN9: -1,    // 8월 - 10월의 COLUMN10
+          COLUMN10: -1,    // 9월 - 10월의 COLUMN11
+          COLUMN11: -1,   // 10월 - 10월의 COLUMN12
+          COLUMN12: -1,   // 11월 - 새로운 값
+          COLUMN13: (0 + -4 + -1 + -1 + -1 + 0 + -1 + -1 + -1 + -1 + -1 + -1)  // 누계
         }
       ];
       

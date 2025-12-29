@@ -16,9 +16,10 @@ export interface MonthlyDetailData {
   column7: number;           // 고정 컬럼명 (COLUMN7) - 6월 데이터
   column8: number;           // 고정 컬럼명 (COLUMN8) - 7월 데이터
   column9: number;           // 고정 컬럼명 (COLUMN9) - 8월 데이터
-  column10: number;          // 고정 컬럼명 (COLUMN10) - 9월 데이터 (9월 조회 시) 또는 10월 데이터 (10월 조회 시)
+  column10: number;          // 고정 컬럼명 (COLUMN10) - 9월 데이터
   column11: number;          // 고정 컬럼명 (COLUMN11) - 합계 (9월 조회 시) 또는 10월 데이터 (10월 조회 시)
-  column12?: number;         // 고정 컬럼명 (COLUMN12) - 합계 (10월 조회 시에만 사용)
+  column12?: number;         // 고정 컬럼명 (COLUMN12) - 합계 (10월 조회 시) 또는 11월 데이터 (11월 조회 시)
+  column13?: number;         // 고정 컬럼명 (COLUMN13) - 합계 (11월 조회 시에만 사용)
 }
 
 // HQ Performance 데이터 타입 정의
@@ -64,11 +65,16 @@ export interface ChartData {
 export const generateGridColumns = (monthLabels: string[]): GridColumn[] => {
   const columns: GridColumn[] = [];
   
-  // 10월 조회 시 column12까지 사용, 9월 조회 시 column11까지 사용
-  const isOctober = monthLabels.length === 10;
-  const fixedColumns = isOctober 
-    ? ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12']
-    : ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
+  // 11월 조회 시 column13까지 사용, 10월 조회 시 column12까지 사용, 9월 조회 시 column11까지 사용
+  const monthCount = monthLabels.length;
+  let fixedColumns: string[];
+  if (monthCount === 11) {
+    fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12', 'column13'];
+  } else if (monthCount === 10) {
+    fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12'];
+  } else {
+    fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
+  }
   
   fixedColumns.forEach((columnKey, index) => {
     if (index === 0) {

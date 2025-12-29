@@ -150,6 +150,186 @@ export const useRegionalPerformanceStore = create<RegionalPerformanceStore>((set
         //   regional_performance_regions(year, month)
         // ]);
         
+        // ⭐ 10월 조건 체크 - 템프 데이터 사용
+        if (month === 10) {
+          console.log('🎯 10월 데이터: 템프 데이터를 사용합니다. (권역별 실적)');
+          
+          const tempData: RegionalPerformanceData = {
+            kpiMetrics: {
+              totalSales: 2682,        // 1
+              totalProfit: 534,      // 2
+              totalOpProfit: 70,     // 3
+              totalOpMargin: 3      // 4
+            },
+            regions: [
+              {
+                name: '중국권역',
+                icon: '🇨🇳',
+                variant: 'china',
+                monthlyData: {
+                  sales: 47,         // 5
+                  profit: 0         // 6
+                },
+                achievement: {
+                  sales: 42,         // 7
+                  profit: 166         // 8
+                },
+                totalData: {
+                  sales: 678,         // 9
+                  profit: 44        // 10
+                }
+              },
+              {
+                name: '아시아권역',
+                icon: '🌏',
+                variant: 'asia',
+                monthlyData: {
+                  sales: 65,        // 11
+                  profit: -0.1        // 12
+                },
+                achievement: {
+                  sales: 69,        // 13
+                  profit: 0        // 14
+                },
+                totalData: {
+                  sales: 730,        // 15
+                  profit: -7.9        // 16
+                }
+              },
+              {
+                name: '유럽권역',
+                icon: '🇪🇺',
+                variant: 'europe',
+                monthlyData: {
+                  sales: 127,        // 17
+                  profit: 1.3        // 18
+                },
+                achievement: {
+                  sales: 81,        // 19
+                  profit: 91        // 20
+                },
+                totalData: {
+                  sales: 1127,        // 21
+                  profit: 28        // 22
+                }
+              },
+              {
+                name: '미국권역',
+                icon: '🇺🇸',
+                variant: 'usa',
+                monthlyData: {
+                  sales: 22,        // 23
+                  profit: 2        // 24
+                },
+                achievement: {
+                  sales: 60,        // 25
+                  profit: 163        // 26
+                },
+                totalData: {
+                  sales: 197,        // 27
+                  profit: 6        // 28
+                }
+              }
+            ]
+          };
+          
+          set({ 
+            data: tempData,
+            loading: false 
+          });
+          return; // API 호출 없이 리턴
+        }
+        
+        // ⭐ 11월 조건 체크 - 템프 데이터 사용 (1부터 시작해서 순차적으로 증가)
+        if (month === 11) {
+          console.log('🎯 11월 데이터: 템프 데이터를 사용합니다. (권역별 실적)');
+          
+          const tempData: RegionalPerformanceData = {
+            kpiMetrics: {
+              totalSales: 2938,        // 1
+              totalProfit: 587,      // 2
+              totalOpProfit: 72,     // 3
+              totalOpMargin: 2.5      // 4
+            },
+            regions: [
+              {
+                name: '중국권역',
+                icon: '🇨🇳',
+                variant: 'china',
+                monthlyData: {
+                  sales: 47,         // 5
+                  profit: 0         // 6
+                },
+                achievement: {
+                  sales: 41,         // 7
+                  profit: 135         // 8
+                },
+                totalData: {
+                  sales: 671,         // 9
+                  profit: 39        // 10
+                }
+              },
+              {
+                name: '아시아권역',
+                icon: '🌏',
+                variant: 'asia',
+                monthlyData: {
+                  sales: 76,        // 11
+                  profit: 1        // 12
+                },
+                achievement: {
+                  sales: 70,        // 13
+                  profit: -23        // 14
+                },
+                totalData: {
+                  sales: 819,        // 15
+                  profit: -8        // 16
+                }
+              },
+              {
+                name: '유럽권역',
+                icon: '🇪🇺',
+                variant: 'europe',
+                monthlyData: {
+                  sales: 110,        // 17
+                  profit: 2        // 18
+                },
+                achievement: {
+                  sales: 80,        // 19
+                  profit: 95        // 20
+                },
+                totalData: {
+                  sales: 1229,        // 21
+                  profit: 32        // 22
+                }
+              },
+              {
+                name: '미국권역',
+                icon: '🇺🇸',
+                variant: 'usa',
+                monthlyData: {
+                  sales: 23,        // 23
+                  profit: 2        // 24
+                },
+                achievement: {
+                  sales: 61,        // 25
+                  profit: 208        // 26
+                },
+                totalData: {
+                  sales: 220,        // 27
+                  profit: 8        // 28
+                }
+              }
+            ]
+          };
+          
+          set({ 
+            data: tempData,
+            loading: false 
+          });
+          return; // API 호출 없이 리턴
+        }
+        
         // 임시 하드코딩 데이터 (서버 API 연결 전까지 사용)
         // 1부터 시작해서 1씩 순서대로 증감하는 값
         const tempData: RegionalPerformanceData = {

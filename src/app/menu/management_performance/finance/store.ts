@@ -316,6 +316,58 @@ export const useFinanceStore = create<FinanceStore>((set, get) => {
         return;
       }
       
+      // ⭐ 11월 조건 체크 - 모든 데이터 하드코딩 (10월과 동일한 값으로 시작)
+      if (currentMonth === 11) {
+        console.log('🎯 11월 데이터: 모든 데이터를 하드코딩합니다. (재무현황)');
+        
+        // KPI 메트릭스 하드코딩 (10월과 동일한 값)
+        const tempKpiMetrics = {
+          totalAssets: 2735,
+          totalLiabilities: 1160,
+          totalEquity: 1575,
+          debtWeight: 0,
+          totalAssetsChange: -0,
+          totalLiabilitiesChange: -0,
+          totalEquityChange: 0,
+          debtWeightChange: -0
+        };
+
+        // 차트 데이터 하드코딩
+        const tempChartData = {
+          capitalStructure: {
+            labels: [`${currentYear - 1}`, `${currentYear}`],
+            capital: [1564, 1575], // 자본
+            debt: [1249, 1160], // 부채
+            assets: [2813, 2735] // 자산
+          },
+          loanStructure: {
+            labels: [`${currentYear - 1}`, `${currentYear}`],
+            shortTermLoan: [844, 787], // 단기차입금
+            longTermLoan: [17, 17], // 장기차입금
+            totalLoan: [861, 804] // 총차입금
+          }
+        };
+
+        // 트렌드 데이터 하드코딩 (10년간 데이터)
+        const tempTrendData = {
+          labels: Array.from({ length: 10 }, (_, i) => (currentYear - 9 + i).toString()),
+          totalLoan: [344, 382, 171, 188, 392, 586, 453, 436, 861, 804], // 10년간 차입금 (실제 데이터)
+          debtRatio: [195, 195, 86, 88, 154, 169, 111, 66, 80, 69],  // 10년간 부채비율 (실제 데이터)
+          equityRatio: [41, 42, 43, 44, 45, 46, 47, 48, 49, 50], // 10년간 자본비율
+          returnOnEquity: [51, 52, 53, 54, 55, 56, 57, 58, 59, 60], // 10년간 자기자본이익률
+          returnOnAssets: [61, 62, 63, 64, 65, 66, 67, 68, 69, 70] // 10년간 총자산이익률
+        };
+
+        const combinedData: FinanceData = {
+          kpiMetrics: tempKpiMetrics,
+          chartData: tempChartData,
+          trendData: tempTrendData
+        };
+
+        set({ data: combinedData, loading: false });
+        return;
+      }
+      
       try {
         const [kpiMetrics, chartData, trendData] = await Promise.all([
           finance_overview_kpi(currentYear, currentMonth),

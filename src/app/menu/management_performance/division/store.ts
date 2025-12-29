@@ -954,7 +954,7 @@ export const useDivisionStore = create<DivisionState>((set, get) => ({
           COLUMN3: -1,    // 2월 - 10월의 COLUMN4
           COLUMN4: -1,    // 3월 - 10월의 COLUMN5
           COLUMN5: -1,    // 4월 - 10월의 COLUMN6
-          COLUMN6: 0,    // 5월 - 10월의 COLUMN7
+          COLUMN6: -1,    // 5월 - 10월의 COLUMN7
           COLUMN7: -1,    // 6월 - 10월의 COLUMN8
           COLUMN8: -1,    // 7월 - 10월의 COLUMN9
           COLUMN9: -1,    // 8월 - 10월의 COLUMN10

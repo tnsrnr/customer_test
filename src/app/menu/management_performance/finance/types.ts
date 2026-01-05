@@ -29,9 +29,6 @@ export interface FinanceData {
     labels: string[];
     totalLoan: number[];
     debtRatio: number[];
-    equityRatio: number[];
-    returnOnEquity: number[];
-    returnOnAssets: number[];
   };
 }
 

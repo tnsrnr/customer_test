@@ -5,6 +5,7 @@ import { menuItems, MenuItem } from '@/common/components/layout/menu_config';
 interface GlobalStore {
   // 전역 조회 상태
   isRefreshing: boolean;
+  refreshTrigger: number; // 조회 클릭 시마다 증가 → 페이지에서 이 값 변경으로 fetch 실행
   currentPage: 'page1' | 'page2' | 'page3';
   
   // 년/월 정보
@@ -34,6 +35,7 @@ export const useGlobalStore = create<GlobalStore>()(
     (set, get) => ({
       // 초기 상태
       isRefreshing: false,
+      refreshTrigger: 0,
       currentPage: 'page1',
       selectedYear: new Date().getFullYear(),
       selectedMonth: 11, // 기본값을 11월로 고정
@@ -52,17 +54,10 @@ export const useGlobalStore = create<GlobalStore>()(
         set({ selectedMonth: month });
       },
       
-      // 전역 조회 트리거
+      // 전역 조회 트리거 (refreshTrigger 증가 → 각 페이지 useEffect에서 감지 후 fetch)
       triggerGlobalRefresh: () => {
-        set({ isRefreshing: true });
-        
-        // 현재 페이지에 따라 다른 조회 로직 실행
-        const currentPage = get().currentPage;
-        
-        // 1초 후 상태 초기화
-        setTimeout(() => {
-          set({ isRefreshing: false });
-        }, 1000);
+        set((s) => ({ isRefreshing: true, refreshTrigger: s.refreshTrigger + 1 }));
+        setTimeout(() => set({ isRefreshing: false }), 1000);
       },
       
       // 메뉴 순서 관리 액션

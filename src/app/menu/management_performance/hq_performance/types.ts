@@ -5,7 +5,7 @@ export interface GridColumn {
   colSpan?: number;
 }
 
-// 고정 월별 데이터 인터페이스 (컬럼명은 고정, 라벨만 동적) - 9개월 확장, 성장률 제거
+// 고정 월별 데이터 인터페이스 (1~12월 고정 + 합계)
 export interface MonthlyDetailData {
   column1: string;           // 고정 컬럼명 (COLUMN1) - 구분
   column2: number;           // 고정 컬럼명 (COLUMN2) - 1월 데이터
@@ -17,9 +17,10 @@ export interface MonthlyDetailData {
   column8: number;           // 고정 컬럼명 (COLUMN8) - 7월 데이터
   column9: number;           // 고정 컬럼명 (COLUMN9) - 8월 데이터
   column10: number;          // 고정 컬럼명 (COLUMN10) - 9월 데이터
-  column11: number;          // 고정 컬럼명 (COLUMN11) - 합계 (9월 조회 시) 또는 10월 데이터 (10월 조회 시)
-  column12?: number;         // 고정 컬럼명 (COLUMN12) - 합계 (10월 조회 시) 또는 11월 데이터 (11월 조회 시)
-  column13?: number;         // 고정 컬럼명 (COLUMN13) - 합계 (11월 조회 시에만 사용)
+  column11: number;          // 고정 컬럼명 (COLUMN11) - 10월 데이터
+  column12: number;          // 고정 컬럼명 (COLUMN12) - 11월 데이터
+  column13: number;          // 고정 컬럼명 (COLUMN13) - 12월 데이터
+  column14: number;          // 고정 컬럼명 (COLUMN14) - 합계
 }
 
 // HQ Performance 데이터 타입 정의
@@ -61,25 +62,18 @@ export interface ChartData {
   }[];
 }
 
-// 고정 컬럼명 기반 그리드 컬럼 생성 함수 (9개월 확장, 성장률 제거)
-export const generateGridColumns = (monthLabels: string[]): GridColumn[] => {
+// 고정 컬럼명 기반 그리드 컬럼 생성 함수 (1~12월 고정 + 합계)
+export const generateGridColumns = (): GridColumn[] => {
   const columns: GridColumn[] = [];
   
-  // 11월 조회 시 column13까지 사용, 10월 조회 시 column12까지 사용, 9월 조회 시 column11까지 사용
-  const monthCount = monthLabels.length;
-  let fixedColumns: string[];
-  if (monthCount === 11) {
-    fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12', 'column13'];
-  } else if (monthCount === 10) {
-    fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12'];
-  } else {
-    fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11'];
-  }
+  // 1~12월 고정 컬럼 + 합계
+  const fixedColumns = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7', 'column8', 'column9', 'column10', 'column11', 'column12', 'column13', 'column14'];
+  const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
   
   fixedColumns.forEach((columnKey, index) => {
     if (index === 0) {
       columns.push({ key: columnKey, label: '구분' });
-    } else if (index <= monthLabels.length) {
+    } else if (index <= 12) {
       columns.push({ 
         key: columnKey, 
         label: monthLabels[index - 1] || `${index}월` 
@@ -92,12 +86,12 @@ export const generateGridColumns = (monthLabels: string[]): GridColumn[] => {
   return columns;
 };
 
-// 동적 그리드 헤더 생성 함수 (성장률 제거)
-export const generateGridHeaders = (monthLabels: string[]): { topRow: GridColumn[] } => {
+// 동적 그리드 헤더 생성 함수 (1~12월 고정)
+export const generateGridHeaders = (): { topRow: GridColumn[] } => {
   return {
     topRow: [
       { key: 'category', label: '구분', colSpan: 1 },
-      { key: 'monthly', label: '월별', colSpan: monthLabels.length },
+      { key: 'monthly', label: '월별', colSpan: 12 },
       { key: 'total', label: '합계', colSpan: 1 }
     ]
   };

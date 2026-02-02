@@ -1,0 +1,165 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.htns.framework.restful.G1E000000SVC"%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<%
+	/***** SESSION CHECK*****/
+	//기존에 session정보가 존재한다면 메인페이지로 redirect
+	if(G1E000000SVC.getSessionBean() == null) {
+		String szUrl = "location.href = '/index.html'";
+		
+		out.println("<script>");
+		out.println(szUrl);
+		out.println("</script>");
+		return;
+	}
+
+	String sErrMsg = (String)request.getAttribute("errMsg");
+	/***** SESSION CHECK*****/
+%>
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title> LV ONE </title>
+<link href="resources/css/login.css" rel="stylesheet" type="text/css" />
+
+<script language="javascript">
+function checkEnter()
+{
+	if (event.keyCode==13){
+		log_on();
+	}
+}
+
+function log_on()
+{
+	if(document.login.USER_ID.value == "" ) {
+		alert("Enter your ID,please! ");
+		document.login.USER_ID.focus();
+		return;
+	}
+
+	if(document.login.PW.value == "") {
+		alert("Enter your PassWord,please!");
+		document.login.PW.focus();
+		return;
+	}
+	
+	document.login.submit();
+}
+
+function getPW()
+{
+	//화면 가운데로 배치
+  	var dim = new Array(2);
+
+  	dim = ToCenter(300,600);
+  	var top = dim[0];
+  	var left = dim[1];
+
+    url = "/pwfind.jsp";
+	window.open( url, 'Password', 'left='+left+', top='+top+', width=600, height=300, toolbar=no, menubar=no, status=no, scrollbars=no, resizable=no');
+} 
+
+function ToCenter(height,width)
+{
+//	var outx = screen.height;
+//	var outy = screen.width;
+	var outx = window.innerHeight;
+	var outy = window.innerWidth;
+
+	var x = (outx - height)/2;
+	var y = (outy - width)/2;
+	dim = new Array(2);
+	dim[0] = x;
+	dim[1] = y;
+	
+	return  dim;
+}		
+</script>
+</head>
+
+<body class="login">
+<div id="wrapper">
+	<!-- loginArea_s -->
+	<div class="loginArea">
+		<div class="top">
+			<!-- <form name="frm" action="j_spring_security_check" method="post"> -->
+			<!-- <form name="frm" action="/htns_security" method="post"> -->
+			<form name="login" action="/htns_sec" method="post">
+				<input type="hidden" name="_spring_security_remember_me" value="true" />
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				
+				<input type="text" placeholder="USER ID" name="USER_ID" value=""  tabindex=1/>
+	<!-- <input type="text" name="j_username" value="cdyoo42"> --> 
+				<input type="password" placeholder="PASSWORD" name="PW" value="" onkeydown="if (event.keyCode == 13) { return checkEnter(); }"  tabindex=2/>
+	<!-- <input type="text"  name="j_password" value="cdyoo42"> --> 
+				<a href="javascript:log_on();"><img src="resources/images/login/btn_login.gif" alt="login" tabindex=3/></a>
+			</form>
+		</div>
+		<div class="state">
+			<% if(sErrMsg != null && !sErrMsg.equals("")){ %>
+			<span class="failed">${errMsg }</span><!-- Failed to connect to HTNS Service! -->
+			<% }else{ %>
+			<span class="default">Login state</span>
+			<span class="success off">Login Success!</span>
+			<% } %>
+		</div>		
+<!-- 		<div class="bottom">
+			<a href="javascript:getPW();">
+			<img src="resources/images/login/txt_forgot_u_pass.png" alt="Forgot your password?"/>
+			</a>
+		</div> -->
+	</div>
+      <div
+        id="terms-link-container"
+        style="
+          font-size: '12px';
+          font-weight: 1000;
+          position: absolute;
+          bottom: 0;
+          padding-bottom: 15px;
+          left: 50%;
+          transform: translateX(-50%);
+        "
+      />
+      <!--// loginArea_e -->
+    </div>
+  </body>
+</html>
+
+<script>
+  if (window.location.origin === 'https://hicos.htns.com') {
+    const locationTermsLink = document.createElement('span');
+    locationTermsLink.innerHTML = '위치기반서비스 이용약관';
+    Object.assign(locationTermsLink.style, {
+      color: '#fff',
+      cursor: 'pointer',
+    });
+    locationTermsLink.onclick = () =>
+      window.open('/terms/location-terms-current.html', 'newwindow', 'width=500');
+
+    const personalInformationTermsLink = document.createElement('span');
+    personalInformationTermsLink.innerHTML = '개인정보 처리방침';
+    Object.assign(personalInformationTermsLink.style, {
+      color: '#fff',
+      cursor: 'pointer',
+    });
+    personalInformationTermsLink.onclick = () =>
+      window.open('/terms/personal-information-terms-current.html', 'newwindow', 'width=500');
+
+    const slash = document.createElement('span');
+    slash.innerHTML = ' / ';
+    Object.assign(slash.style, {
+      color: '#fff',
+    });
+
+    document.getElementById('terms-link-container').appendChild(personalInformationTermsLink);
+    document.getElementById('terms-link-container').appendChild(slash);
+    document.getElementById('terms-link-container').appendChild(locationTermsLink);
+  }
+</script>
+

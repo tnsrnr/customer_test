@@ -25,19 +25,19 @@ export default function CompanyPerformancePage() {
     currentMonth
   } = useCompanyPerformanceStore();
 
-  const { setCurrentPage, isRefreshing } = useGlobalStore();
+  const { setCurrentPage, isRefreshing, refreshTrigger } = useGlobalStore();
 
   // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
     fetchAllData();
   }, [fetchAllData]);
 
-  // 전역 조회 이벤트 감지
+  // 전역 조회 버튼 클릭 시 (refreshTrigger 증가로 감지)
   useEffect(() => {
-    if (isRefreshing) {
+    if (refreshTrigger > 0) {
       fetchAllData();
     }
-  }, [isRefreshing, fetchAllData]);
+  }, [refreshTrigger, fetchAllData]);
 
   // 년도 타입 변경 시 데이터 재로드 (부드러운 전환)
   useEffect(() => {

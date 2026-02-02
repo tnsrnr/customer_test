@@ -12,20 +12,18 @@ export interface CompanyPerformanceData {
     ACTUAL_OP_MARGIN_CHANGE: number;     // 전월대비 영업이익률 증가액
     SALES_ACHIEVEMENT_CHANGE: number;    // 전월대비 매출 달성률 증가액
   };
-  // 2번째 API: 중간 그리드 테이블 데이터
+  // 2번째 API: 중간 그리드 테이블 데이터 (컬럼 순서: DIVISION, PREV_ACTUAL_*, ACTUAL_*, YOY_*)
   gridData: {
     divisions: Array<{
-      name: string;                    // DIVISION
-      plannedSales: number;            // PLANNED_SALES (억원)
-      plannedOpProfit: number;         // PLANNED_OP_PROFIT (억원)
-      plannedOpMargin: number;         // PLANNED_OP_MARGIN (%)
-      actualSales: number;             // ACTUAL_SALES (억원)
-      actualOpProfit: number;          // ACTUAL_OP_PROFIT (억원)
-      actualOpMargin: number;          // ACTUAL_OP_MARGIN (%)
-      salesAchievement: number;        // SALES_ACHIEVEMENT (%)
-      opProfitAchievement: number;     // OP_PROFIT_ACHIEVEMENT (%)
-      yoySalesChange?: number;         // 전년대비 매출 차이 (억원) - 하드코딩 가능
-      yoyOpProfitChange?: number;      // 전년대비 영업이익 차이 (억원) - 하드코딩 가능
+      name: string;                         // DIVISION
+      prevActualSales: number;               // PREV_ACTUAL_SALES (억원)
+      prevActualOpProfit: number;           // PREV_ACTUAL_OP_PROFIT (억원)
+      prevActualOpMargin: number;           // PREV_ACTUAL_OP_MARGIN (%)
+      actualSales: number;                   // ACTUAL_SALES (억원)
+      actualOpProfit: number;                // ACTUAL_OP_PROFIT (억원)
+      actualOpMargin: number;                // ACTUAL_OP_MARGIN (%)
+      yoySalesIncrease: number;              // YOY_SALES_INCREASE (억원)
+      yoyOperatingProfitIncrease: number;   // YOY_OPERATING_PROFIT_INCREASE (억원)
     }>;
   };
   // 3번째 API: 하단 첫 번째 카드 데이터

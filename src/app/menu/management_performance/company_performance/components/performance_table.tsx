@@ -5,17 +5,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import CountUp from 'react-countup';
 
 interface DivisionData {
-  name: string;                    // DIVISION
-  plannedSales: number;            // PLANNED_SALES (억원)
-  plannedOpProfit: number;         // PLANNED_OP_PROFIT (억원)
-  plannedOpMargin: number;         // PLANNED_OP_MARGIN (%)
-  actualSales: number;             // ACTUAL_SALES (억원)
-  actualOpProfit: number;          // ACTUAL_OP_PROFIT (억원)
-  actualOpMargin: number;          // ACTUAL_OP_MARGIN (%)
-  salesAchievement: number;        // SALES_ACHIEVEMENT (%)
-  opProfitAchievement: number;     // OP_PROFIT_ACHIEVEMENT (%)
-  yoySalesChange?: number;         // 전년대비 매출 차이 (억원) - 하드코딩 가능
-  yoyOpProfitChange?: number;      // 전년대비 영업이익 차이 (억원) - 하드코딩 가능
+  name: string;                         // DIVISION
+  prevActualSales: number;              // PREV_ACTUAL_SALES (억원)
+  prevActualOpProfit: number;          // PREV_ACTUAL_OP_PROFIT (억원)
+  prevActualOpMargin: number;          // PREV_ACTUAL_OP_MARGIN (%)
+  actualSales: number;                  // ACTUAL_SALES (억원)
+  actualOpProfit: number;              // ACTUAL_OP_PROFIT (억원)
+  actualOpMargin: number;              // ACTUAL_OP_MARGIN (%)
+  yoySalesIncrease: number;            // YOY_SALES_INCREASE (억원)
+  yoyOperatingProfitIncrease: number;  // YOY_OPERATING_PROFIT_INCREASE (억원)
 }
 
 interface PerformanceTableProps {
@@ -81,10 +79,7 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
                 backdropFilter: 'blur(12px)'
               }}
             >
-              {yearType === 'previous' 
-                ? `직전년도(${(currentYear || new Date().getFullYear()) - 1}년 1~${currentMonth || 1}월 누적)`
-                : `계획(${currentYear || new Date().getFullYear()}년 1~${currentMonth || 1}월 누적)`
-              }
+              직전년도({(currentYear || new Date().getFullYear()) - 1}년 1~{currentMonth || 1}월 누적)
             </TableHead>
             <TableHead 
               className="text-white font-bold text-2xl text-center backdrop-blur-md border-r-4 border-emerald-400/50 py-4"
@@ -104,7 +99,7 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
                 backdropFilter: 'blur(12px)'
               }}
             >
-              {yearType === 'previous' ? '전년대비' : '달성율 (계획 比)'}
+              전년대비
             </TableHead>
           </TableRow>
           {/* 하위 헤더 행 */}
@@ -112,7 +107,7 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
             <TableHead className="text-white font-bold text-xl text-center border-r-2 border-white/40 py-4">
               구분
             </TableHead>
-            {/* 계획 섹션 */}
+            {/* 직전년도: PREV_ACTUAL_SALES, PREV_ACTUAL_OP_PROFIT, PREV_ACTUAL_OP_MARGIN */}
             <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-blue-500/10">
               매출액
             </TableHead>
@@ -122,7 +117,7 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
             <TableHead className="text-white font-bold text-xl text-center border-r-4 border-blue-400/50 py-4 bg-blue-500/10">
               영업이익율
             </TableHead>
-            {/* 실적 섹션 */}
+            {/* 실적: ACTUAL_SALES, ACTUAL_OP_PROFIT, ACTUAL_OP_MARGIN */}
             <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-emerald-500/10">
               매출액
             </TableHead>
@@ -132,9 +127,9 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
             <TableHead className="text-white font-bold text-xl text-center border-r-4 border-emerald-400/50 py-4 bg-emerald-500/10">
               영업이익율
             </TableHead>
-            {/* 달성률 섹션 */}
+            {/* 전년대비: YOY_SALES_INCREASE, YOY_OPERATING_PROFIT_INCREASE */}
             <TableHead className="text-white font-bold text-xl text-center border-r border-white/20 py-4 bg-orange-500/10">
-              매출액
+              매출
             </TableHead>
             <TableHead className="text-white font-bold text-xl text-center py-4 bg-orange-500/10">
               영업이익
@@ -152,158 +147,33 @@ export function PerformanceTable({ data, loading, yearType = 'planned', currentY
               <TableCell className="text-white font-semibold text-xl text-center border-r-2 border-white/40 py-4">
                 {division.name}
               </TableCell>
-              {/* 계획 데이터 */}
+              {/* 직전년도: PREV_ACTUAL_SALES, PREV_ACTUAL_OP_PROFIT, PREV_ACTUAL_OP_MARGIN */}
               <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-blue-500/5">
-                <CountUp 
-                  end={division.plannedSales} 
-                  duration={1.5}
-                  separator=","
-                  decimal="."
-                  className="text-white"
-                />
+                <CountUp end={division.prevActualSales} duration={1.5} separator="," decimal="." className="text-white" />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-blue-500/5 ${
-                division.plannedOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                <CountUp 
-                  end={division.plannedOpProfit} 
-                  duration={1.5}
-                  separator=","
-                  decimal="."
-                  prefix={division.plannedOpProfit >= 0 ? '+' : ''}
-                  className={division.plannedOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                />
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-blue-500/5 ${division.prevActualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <CountUp end={division.prevActualOpProfit} duration={1.5} separator="," decimal="." prefix={division.prevActualOpProfit >= 0 ? '+' : ''} className={division.prevActualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'} />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r-4 border-blue-400/50 py-4 bg-blue-500/5 ${
-                division.plannedOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                <CountUp 
-                  end={division.plannedOpMargin} 
-                  duration={1.5}
-                  separator=","
-                  decimals={1}
-                  decimal="."
-                  prefix={division.plannedOpMargin >= 0 ? '+' : ''}
-                  suffix="%"
-                  className={division.plannedOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                />
+              <TableCell className={`text-xl text-center border-r-4 border-blue-400/50 py-4 bg-blue-500/5 ${division.prevActualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <CountUp end={division.prevActualOpMargin} duration={1.5} separator="," decimals={1} decimal="." prefix={division.prevActualOpMargin >= 0 ? '+' : ''} suffix="%" className={division.prevActualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'} />
               </TableCell>
-              {/* 실적 데이터 */}
+              {/* 실적: ACTUAL_SALES, ACTUAL_OP_PROFIT, ACTUAL_OP_MARGIN */}
               <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-emerald-500/5">
-                <CountUp 
-                  end={division.actualSales} 
-                  duration={1.5}
-                  separator=","
-                  decimal="."
-                  className="text-white"
-                />
+                <CountUp end={division.actualSales} duration={1.5} separator="," decimal="." className="text-white" />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-emerald-500/5 ${
-                division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                <CountUp 
-                  end={division.actualOpProfit} 
-                  duration={1.5}
-                  separator=","
-                  decimal="."
-                  prefix={division.actualOpProfit >= 0 ? '+' : ''}
-                  className={division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                />
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-emerald-500/5 ${division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <CountUp end={division.actualOpProfit} duration={1.5} separator="," decimal="." prefix={division.actualOpProfit >= 0 ? '+' : ''} className={division.actualOpProfit >= 0 ? 'text-emerald-400' : 'text-red-400'} />
               </TableCell>
-              <TableCell className={`text-xl text-center border-r-4 border-emerald-400/50 py-4 bg-emerald-500/5 ${
-                division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                <CountUp 
-                  end={division.actualOpMargin} 
-                  duration={1.5}
-                  separator=","
-                  decimals={1}
-                  decimal="."
-                  prefix={division.actualOpMargin >= 0 ? '+' : ''}
-                  suffix="%"
-                  className={division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                />
+              <TableCell className={`text-xl text-center border-r-4 border-emerald-400/50 py-4 bg-emerald-500/5 ${division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <CountUp end={division.actualOpMargin} duration={1.5} separator="," decimals={1} decimal="." prefix={division.actualOpMargin >= 0 ? '+' : ''} suffix="%" className={division.actualOpMargin >= 0 ? 'text-emerald-400' : 'text-red-400'} />
               </TableCell>
-              {/* 달성율 데이터 또는 YOY 차이 */}
-              {yearType === 'previous' ? (
-                <>
-                  <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-orange-500/5 ${
-                    (() => {
-                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
-                      const yoySalesChange = division.yoySalesChange !== undefined 
-                        ? division.yoySalesChange 
-                        : division.actualSales - division.plannedSales;
-                      return yoySalesChange >= 0 ? 'text-emerald-400' : 'text-red-400';
-                    })()
-                  }`}>
-                    {(() => {
-                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
-                      const yoySalesChange = division.yoySalesChange !== undefined 
-                        ? division.yoySalesChange 
-                        : division.actualSales - division.plannedSales;
-                      return (
-                        <CountUp 
-                          end={yoySalesChange} 
-                          duration={1.5}
-                          separator=","
-                          decimal="."
-                          prefix={yoySalesChange >= 0 ? '+' : ''}
-                          className={yoySalesChange >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                        />
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell className={`text-xl text-center py-4 bg-orange-500/5 ${
-                    (() => {
-                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
-                      const yoyOpProfitChange = division.yoyOpProfitChange !== undefined 
-                        ? division.yoyOpProfitChange 
-                        : division.actualOpProfit - division.plannedOpProfit;
-                      return yoyOpProfitChange >= 0 ? 'text-emerald-400' : 'text-red-400';
-                    })()
-                  }`}>
-                    {(() => {
-                      // 전년대비 차이: 하드코딩 값이 있으면 사용, 없으면 계산
-                      const yoyOpProfitChange = division.yoyOpProfitChange !== undefined 
-                        ? division.yoyOpProfitChange 
-                        : division.actualOpProfit - division.plannedOpProfit;
-                      return (
-                        <CountUp 
-                          end={yoyOpProfitChange} 
-                          duration={1.5}
-                          separator=","
-                          decimal="."
-                          prefix={yoyOpProfitChange >= 0 ? '+' : ''}
-                          className={yoyOpProfitChange >= 0 ? 'text-emerald-400' : 'text-red-400'}
-                        />
-                      );
-                    })()}
-                  </TableCell>
-                </>
-              ) : (
-                <>
-                  <TableCell className="text-white text-xl text-center border-r border-white/20 py-4 bg-orange-500/5">
-                    <CountUp 
-                      end={division.salesAchievement} 
-                      duration={1.5}
-                      separator=","
-                      decimal="."
-                      suffix="%"
-                      className="text-white"
-                    />
-                  </TableCell>
-                  <TableCell className="text-white text-xl text-center py-4 bg-orange-500/5">
-                    <CountUp 
-                      end={division.opProfitAchievement} 
-                      duration={1.5}
-                      separator=","
-                      decimal="."
-                      suffix="%"
-                      className="text-white"
-                    />
-                  </TableCell>
-                </>
-              )}
+              {/* 전년대비: YOY_SALES_INCREASE, YOY_OPERATING_PROFIT_INCREASE */}
+              <TableCell className={`text-xl text-center border-r border-white/20 py-4 bg-orange-500/5 ${division.yoySalesIncrease >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <CountUp end={division.yoySalesIncrease} duration={1.5} separator="," decimal="." prefix={division.yoySalesIncrease >= 0 ? '+' : ''} className={division.yoySalesIncrease >= 0 ? 'text-emerald-400' : 'text-red-400'} />
+              </TableCell>
+              <TableCell className={`text-xl text-center py-4 bg-orange-500/5 ${division.yoyOperatingProfitIncrease >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <CountUp end={division.yoyOperatingProfitIncrease} duration={1.5} separator="," decimal="." prefix={division.yoyOperatingProfitIncrease >= 0 ? '+' : ''} className={division.yoyOperatingProfitIncrease >= 0 ? 'text-emerald-400' : 'text-red-400'} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

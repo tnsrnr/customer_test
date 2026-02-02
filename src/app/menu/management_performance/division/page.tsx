@@ -131,8 +131,22 @@ export default function DivisionPage() {
 
 
 
+  // 모든 부문 카드의 합계 계산
   const totalRevenue = data?.divisionCards.reduce((sum, item) => sum + item.revenue, 0) || 0;
   const totalProfit = data?.divisionCards.reduce((sum, item) => sum + item.profit, 0) || 0;
+  
+  // 합계 growth 계산 (전월 대비)
+  const totalPreviousRevenue = data?.divisionCards.reduce((sum, item) => {
+    // 각 부문의 전월 매출 계산 (growth 역산)
+    const prevRevenue = item.growth !== 0 && item.revenue !== 0 
+      ? item.revenue / (1 + item.growth / 100)
+      : item.revenue;
+    return sum + prevRevenue;
+  }, 0) || 0;
+  
+  const totalGrowth = totalPreviousRevenue > 0 
+    ? ((totalRevenue - totalPreviousRevenue) / totalPreviousRevenue) * 100 
+    : 0;
 
   function DivisionPageContent() {
     
@@ -209,7 +223,14 @@ export default function DivisionPage() {
                             </div>
                           </div>
                           <div className="col-span-4 text-center">
-                            <span className="text-base text-blue-400">▼11%</span>
+                            <div className="flex items-center justify-center gap-1 min-w-0">
+                              <span className={`text-lg font-semibold ${totalGrowth >= 0 ? 'text-emerald-400' : 'text-blue-400'} truncate`}>
+                                {totalGrowth >= 0 ? '▲' : '▼'}
+                              </span>
+                              <span className={`text-lg font-semibold ${totalGrowth >= 0 ? 'text-emerald-400' : 'text-blue-400'} truncate`}>
+                                {formatNumber(Math.abs(totalGrowth), 1)}%
+                              </span>
+                            </div>
                           </div>
                           <div className="col-span-3 text-center">
                             <div className="flex items-center justify-center gap-1">

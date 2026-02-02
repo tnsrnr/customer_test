@@ -30,38 +30,11 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
     );
   }
 
-  // 동적 헤더 생성 (탑네비게이션 월에 따라)
-  const dynamicHeaders = generateMonthHeaders(selectedYear, selectedMonth);
+  // 동적 헤더 생성 (1~12월 고정)
+  const dynamicHeaders = generateMonthHeaders();
   
-  // 월 라벨 생성 함수
-  function generateMonthLabels(selectedYear?: number, selectedMonth?: number): string[] {
-    const monthNames = [
-      '1월', '2월', '3월', '4월', '5월', '6월',
-      '7월', '8월', '9월', '10월', '11월', '12월'
-    ];
-    
-    const months = [];
-    const currentMonth = selectedMonth ? selectedMonth - 1 : new Date().getMonth(); // 0-11
-    const currentYear = selectedYear || new Date().getFullYear();
-    
-    // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
-    // 11월일 때는 작년 12월을 제외하고 11개월만 표시
-    const isOctober = selectedMonth === 10;
-    const isNovember = selectedMonth === 11;
-    const startIndex = isOctober ? 9 : isNovember ? 10 : 11; // 10월이면 9, 11월이면 10, 그 외는 11부터 시작
-    
-    // 선택된 월부터 역순으로 생성
-    for (let i = startIndex; i >= 0; i--) {
-      const targetDate = new Date(currentYear, currentMonth - i, 1);
-      const month = targetDate.getMonth();
-      months.push(monthNames[month]);
-    }
-    
-    return months;
-  }
-  
-  // 월 라벨 생성
-  const monthLabels = generateMonthLabels(selectedYear, selectedMonth);
+  // 월 라벨 생성 (1~12월 고정)
+  const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
 
   // 색상 매핑 함수
   const getColorClasses = (color: string, type: 'bg' | 'text' | 'border') => {
@@ -143,91 +116,90 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
     return value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   };
 
-  // 부문별 색상 매핑
-  const getDivisionColor = (parentDivisionType: string) => {
-    const colorMap: { [key: string]: string } = {
-      '항공': 'blue',
-      '해상': 'emerald',
-      '운송': 'yellow',
-      '창고': 'orange',
-      '도급': 'pink',
-      '기타': 'cyan'
-    };
-    return colorMap[parentDivisionType] || 'blue';
-  };
 
-  // 백엔드 데이터를 기존 구조로 변환 (매출과 영업이익 데이터 모두 사용)
-  const isOctober = selectedMonth === 10;
-  const isNovember = selectedMonth === 11;
-  const convertedData = data
-    .filter(item => item.DIVISION_TYPE === '매출') // 매출 데이터만 사용
-    .map(item => {
-      const color = getDivisionColor(item.PARENT_DIVISION_TYPE);
+  // PARENT_DIVISION_TYPE별로 데이터 그룹화
+  const divisionGroups: { [key: string]: { revenue?: any; profit?: any } } = {};
+  
+  data.forEach((item: any) => {
+    const parentDivision = item.PARENT_DIVISION_TYPE || '기타';
+    if (!divisionGroups[parentDivision]) {
+      divisionGroups[parentDivision] = {};
+    }
+    
+    if (item.DIVISION_TYPE === '매출') {
+      divisionGroups[parentDivision].revenue = item;
+    } else if (item.DIVISION_TYPE === '영업이익') {
+      divisionGroups[parentDivision].profit = item;
+    }
+  });
+  
+  // 부문별 색상 매핑
+  const divisionColors: { [key: string]: string } = {
+    '합계': 'blue',
+    '기타': 'cyan',
+    '도급': 'pink',
+    '운송': 'yellow',
+    '창고': 'orange',
+    '항공': 'blue',
+    '해상': 'emerald'
+  };
+  
+  // 부문 순서: monthlyDetails(백엔드 순서)에서 처음 등장한 PARENT_DIVISION_TYPE 순서
+  const divisionOrder = data.reduce((acc: string[], item: any) => {
+    const p = item.PARENT_DIVISION_TYPE || '기타';
+    if (!acc.includes(p)) acc.push(p);
+    return acc;
+  }, []);
+
+  // 변환된 데이터 생성
+  const convertedData = divisionOrder
+    .filter(divisionName => divisionGroups[divisionName])
+    .map(divisionName => {
+      const group = divisionGroups[divisionName];
+      const revenueItem = group.revenue;
+      const profitItem = group.profit;
       
-      // 10월일 때는 COLUMN1, COLUMN2(작년 11월, 12월)를 제외하고 COLUMN3부터 시작
-      // 11월일 때는 COLUMN1(작년 12월)을 제외하고 COLUMN2부터 시작
-      const revenueData = isOctober
+      const revenueData = revenueItem
         ? [
-            item.COLUMN3, item.COLUMN4, item.COLUMN5, item.COLUMN6,
-            item.COLUMN7, item.COLUMN8, item.COLUMN9, item.COLUMN10, item.COLUMN11, item.COLUMN12
+            revenueItem.COLUMN1 || 0,
+            revenueItem.COLUMN2 || 0,
+            revenueItem.COLUMN3 || 0,
+            revenueItem.COLUMN4 || 0,
+            revenueItem.COLUMN5 || 0,
+            revenueItem.COLUMN6 || 0,
+            revenueItem.COLUMN7 || 0,
+            revenueItem.COLUMN8 || 0,
+            revenueItem.COLUMN9 || 0,
+            revenueItem.COLUMN10 || 0,
+            revenueItem.COLUMN11 || 0,
+            revenueItem.COLUMN12 || 0
           ]
-        : isNovember
+        : Array(12).fill(0);
+      
+      const profitData = profitItem
         ? [
-            item.COLUMN2, item.COLUMN3, item.COLUMN4, item.COLUMN5, item.COLUMN6,
-            item.COLUMN7, item.COLUMN8, item.COLUMN9, item.COLUMN10, item.COLUMN11, item.COLUMN12
+            profitItem.COLUMN1 || 0,
+            profitItem.COLUMN2 || 0,
+            profitItem.COLUMN3 || 0,
+            profitItem.COLUMN4 || 0,
+            profitItem.COLUMN5 || 0,
+            profitItem.COLUMN6 || 0,
+            profitItem.COLUMN7 || 0,
+            profitItem.COLUMN8 || 0,
+            profitItem.COLUMN9 || 0,
+            profitItem.COLUMN10 || 0,
+            profitItem.COLUMN11 || 0,
+            profitItem.COLUMN12 || 0
           ]
-        : [
-            item.COLUMN1, item.COLUMN2, item.COLUMN3, item.COLUMN4, item.COLUMN5, item.COLUMN6,
-            item.COLUMN7, item.COLUMN8, item.COLUMN9, item.COLUMN10, item.COLUMN11, item.COLUMN12
-          ];
-      
-      // 해당 부문의 영업이익 데이터 찾기
-      const profitItem = data.find(profitData => 
-        profitData.PARENT_DIVISION_TYPE === item.PARENT_DIVISION_TYPE && 
-        profitData.DIVISION_TYPE === '영업이익'
-      );
-      
-      // 10월일 때는 COLUMN1, COLUMN2(작년 11월, 12월)를 제외하고 COLUMN3부터 시작
-      // 11월일 때는 COLUMN1(작년 12월)을 제외하고 COLUMN2부터 시작
-      const profitData = profitItem 
-        ? (isOctober
-            ? [
-                profitItem.COLUMN3 || 0, profitItem.COLUMN4 || 0, profitItem.COLUMN5 || 0, 
-                profitItem.COLUMN6 || 0, profitItem.COLUMN7 || 0, profitItem.COLUMN8 || 0,
-                profitItem.COLUMN9 || 0, profitItem.COLUMN10 || 0, profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
-              ]
-            : isNovember
-            ? [
-                profitItem.COLUMN2 || 0, profitItem.COLUMN3 || 0, profitItem.COLUMN4 || 0, 
-                profitItem.COLUMN5 || 0, profitItem.COLUMN6 || 0, profitItem.COLUMN7 || 0,
-                profitItem.COLUMN8 || 0, profitItem.COLUMN9 || 0, profitItem.COLUMN10 || 0, 
-                profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
-              ]
-            : [
-                profitItem.COLUMN1 || 0, profitItem.COLUMN2 || 0, profitItem.COLUMN3 || 0, 
-                profitItem.COLUMN4 || 0, profitItem.COLUMN5 || 0, profitItem.COLUMN6 || 0,
-                profitItem.COLUMN7 || 0, profitItem.COLUMN8 || 0, profitItem.COLUMN9 || 0, 
-                profitItem.COLUMN10 || 0, profitItem.COLUMN11 || 0, profitItem.COLUMN12 || 0
-              ])
-        : Array(isOctober ? 10 : isNovember ? 11 : 12).fill(0); // 영업이익 데이터가 없으면 0으로 설정
+        : Array(12).fill(0);
       
       return {
-        name: item.PARENT_DIVISION_TYPE, // 부문명만 표시
-        color: color,
+        name: divisionName,
+        color: divisionColors[divisionName] || 'blue',
         revenue: revenueData,
         profit: profitData
       };
     });
-
-  // 부문 순서를 명시적으로 지정 (왼쪽과 동일한 순서)
-  const orderedDivisions = [
-    { name: '항공', color: 'blue' },
-    { name: '해상', color: 'emerald' },
-    { name: '운송', color: 'purple' },
-    { name: '창고', color: 'orange' },
-    { name: '도급', color: 'pink' },
-    { name: '기타', color: 'cyan' }
-  ];
 
   // 실제 데이터가 있는 부문만 표시
   const sortedDivisions = convertedData;
@@ -256,132 +228,37 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
           </TableRow>
         </TableHeader>
         <TableBody className="text-lg">
-          {sortedDivisions.map((division, divisionIndex) => (
-            <>
-              {/* 매출 행 */}
-              <TableRow 
-                key={`${division.name}-revenue`}
-                className="hover:bg-white/10 transition-all duration-300 border-b border-white/30"
-              >
-                {/* 부문명 */}
-                <TableCell 
-                  className={`py-2 px-2 text-center font-bold text-white border-r border-white/30 ${getColorClasses(division.color, 'bg')}`}
-                  rowSpan={2}
-                >
-                  {division.name}
-                </TableCell>
-                
-                {/* 구분 */}
-                <TableCell className={`py-2 px-2 text-center font-semibold text-white border-r border-white/30 ${getColorClasses(division.color, 'bg')}`}>
-                  매출
-                </TableCell>
-                
-                {/* 월별 매출 데이터 */}
-                {division.revenue.map((value, monthIndex) => (
-                  <TableCell 
-                    key={`revenue-${monthIndex}`}
-                    className={`py-2 px-2 text-center text-white border-r border-white/30 ${getColorClasses(division.color, 'bg')}`}
-                  >
-                    <span className="text-white">
-                      {formatNumber(value)}
-                    </span>
-                  </TableCell>
-                ))}
-                
-                {/* 누계 매출 */}
-                <TableCell className={`py-2 px-2 text-center font-bold text-white border-r border-white/30 ${getColorClasses(division.color, 'bg')}`}>
-                    <span className="text-white">
-                      {formatNumber(calculateTotal(division.revenue))}
-                    </span>
-                </TableCell>
-              </TableRow>
-              
-              {/* 영업이익 행 */}
-              <TableRow 
-                key={`${division.name}-profit`}
-                className="hover:bg-white/10 transition-all duration-300 border-b border-white/30"
-              >
-                {/* 구분 */}
-                <TableCell className={`py-2 px-2 text-center font-semibold border-r border-white/30 ${getColorClasses(division.color, 'bg')} ${
-                  division.profit.some(p => p >= 0) ? 'text-white' : 'text-red-300'
-                }`}>
-                  영업이익
-                </TableCell>
-                
-                {/* 월별 영업이익 데이터 */}
-                {division.profit.map((value, monthIndex) => (
-                  <TableCell 
-                    key={`profit-${monthIndex}`}
-                    className={`py-2 px-2 text-center border-r border-white/30 ${getColorClasses(division.color, 'bg')} ${
-                      value >= 0 ? 'text-white' : 'text-red-300'
-                    }`}
-                  >
-                    <span className={value >= 0 ? 'text-white' : 'text-red-300'}>
-                      {formatNumber(value)}
-                    </span>
-                  </TableCell>
-                ))}
-                
-                {/* 누계 영업이익 */}
-                <TableCell className={`py-2 px-2 text-center font-bold border-r border-white/30 ${getColorClasses(division.color, 'bg')} ${
-                  calculateTotal(division.profit) >= 0 ? 'text-white' : 'text-red-300'
-                }`}>
-                  <span className={calculateTotal(division.profit) >= 0 ? 'text-white' : 'text-red-300'}>
-                    {formatNumber(calculateTotal(division.profit))}
-                  </span>
-                </TableCell>
-              </TableRow>
-            </>
-          ))}
-          
-          {/* 합계 행 */}
-          {(() => {
-            // 월별 매출 합계 계산
-            const monthlyRevenueTotals = monthLabels?.map((_, monthIndex) => {
-              const sum = sortedDivisions.reduce((acc, division) => {
-                const value = division.revenue[monthIndex] || 0;
-                return acc + Number(value);
-              }, 0);
-              return sum;
-            }) || [];
-            
-            // 월별 영업이익 합계 계산
-            const monthlyProfitTotals = monthLabels?.map((_, monthIndex) => {
-              const sum = sortedDivisions.reduce((acc, division) => {
-                const value = division.profit[monthIndex] || 0;
-                return acc + Number(value);
-              }, 0);
-              return sum;
-            }) || [];
-            
-            // 전체 매출 합계
-            const totalRevenue = calculateTotal(monthlyRevenueTotals);
-            
-            // 전체 영업이익 합계
-            const totalProfit = calculateTotal(monthlyProfitTotals);
+          {sortedDivisions.map((division, divisionIndex) => {
+            // "합계"는 특별한 스타일 적용
+            const isSpecialRow = division.name === '합계';
+            const bgClass = isSpecialRow ? 'bg-white/20' : getColorClasses(division.color, 'bg');
+            const borderClass = isSpecialRow ? 'border-t-2 border-white/50' : '';
             
             return (
               <>
-                {/* 합계 매출 행 */}
-                <TableRow className="border-t-2 border-white/50 bg-white/10">
+                {/* 매출 행 */}
+                <TableRow 
+                  key={`${division.name}-revenue`}
+                  className={`hover:bg-white/10 transition-all duration-300 border-b border-white/30 ${borderClass}`}
+                >
                   {/* 부문명 */}
                   <TableCell 
-                    className="py-2 px-2 text-center font-bold text-white border-r border-white/30 bg-white/20"
+                    className={`py-2 px-2 text-center font-bold text-white border-r border-white/30 ${bgClass}`}
                     rowSpan={2}
                   >
-                    합계
+                    {division.name}
                   </TableCell>
                   
                   {/* 구분 */}
-                  <TableCell className="py-2 px-2 text-center font-semibold text-white border-r border-white/30 bg-white/20">
+                  <TableCell className={`py-2 px-2 text-center font-semibold text-white border-r border-white/30 ${bgClass}`}>
                     매출
                   </TableCell>
                   
-                  {/* 월별 매출 합계 */}
-                  {monthlyRevenueTotals.map((value, monthIndex) => (
+                  {/* 월별 매출 데이터 */}
+                  {division.revenue.map((value, monthIndex) => (
                     <TableCell 
-                      key={`total-revenue-${monthIndex}`}
-                      className="py-2 px-2 text-center font-bold text-white border-r border-white/30 bg-white/20"
+                      key={`revenue-${monthIndex}`}
+                      className={`py-2 px-2 text-center text-white border-r border-white/30 ${bgClass}`}
                     >
                       <span className="text-white">
                         {formatNumber(value)}
@@ -389,28 +266,31 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                     </TableCell>
                   ))}
                   
-                  {/* 전체 매출 합계 */}
-                  <TableCell className="py-2 px-2 text-center font-bold text-white border-r border-white/30 bg-white/20">
-                    <span className="text-white">
-                      {formatNumber(totalRevenue)}
-                    </span>
+                  {/* 누계 매출 */}
+                  <TableCell className={`py-2 px-2 text-center font-bold text-white border-r border-white/30 ${bgClass}`}>
+                      <span className="text-white">
+                        {formatNumber(calculateTotal(division.revenue))}
+                      </span>
                   </TableCell>
                 </TableRow>
                 
-                {/* 합계 영업이익 행 */}
-                <TableRow className="bg-white/10">
+                {/* 영업이익 행 */}
+                <TableRow 
+                  key={`${division.name}-profit`}
+                  className={`hover:bg-white/10 transition-all duration-300 border-b border-white/30 ${borderClass}`}
+                >
                   {/* 구분 */}
-                  <TableCell className={`py-2 px-2 text-center font-semibold border-r border-white/30 bg-white/20 ${
-                    totalProfit >= 0 ? 'text-white' : 'text-red-300'
+                  <TableCell className={`py-2 px-2 text-center font-semibold border-r border-white/30 ${bgClass} ${
+                    division.profit.some(p => p >= 0) ? 'text-white' : 'text-red-300'
                   }`}>
                     영업이익
                   </TableCell>
                   
-                  {/* 월별 영업이익 합계 */}
-                  {monthlyProfitTotals.map((value, monthIndex) => (
+                  {/* 월별 영업이익 데이터 */}
+                  {division.profit.map((value, monthIndex) => (
                     <TableCell 
-                      key={`total-profit-${monthIndex}`}
-                      className={`py-2 px-2 text-center font-bold border-r border-white/30 bg-white/20 ${
+                      key={`profit-${monthIndex}`}
+                      className={`py-2 px-2 text-center border-r border-white/30 ${bgClass} ${
                         value >= 0 ? 'text-white' : 'text-red-300'
                       }`}
                     >
@@ -420,18 +300,19 @@ export function DivisionTable({ data, loading, selectedYear, selectedMonth }: Di
                     </TableCell>
                   ))}
                   
-                  {/* 전체 영업이익 합계 */}
-                  <TableCell className={`py-2 px-2 text-center font-bold border-r border-white/30 bg-white/20 ${
-                    totalProfit >= 0 ? 'text-white' : 'text-red-300'
+                  {/* 누계 영업이익 */}
+                  <TableCell className={`py-2 px-2 text-center font-bold border-r border-white/30 ${bgClass} ${
+                    calculateTotal(division.profit) >= 0 ? 'text-white' : 'text-red-300'
                   }`}>
-                    <span className={totalProfit >= 0 ? 'text-white' : 'text-red-300'}>
-                      {formatNumber(totalProfit)}
+                    <span className={calculateTotal(division.profit) >= 0 ? 'text-white' : 'text-red-300'}>
+                      {formatNumber(calculateTotal(division.profit))}
                     </span>
                   </TableCell>
                 </TableRow>
               </>
             );
-          })()}
+          })}
+          
         </TableBody>
       </Table>
     </div>

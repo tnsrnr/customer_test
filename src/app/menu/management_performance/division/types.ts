@@ -13,7 +13,7 @@ export interface DivisionData {
     icon: any;
   }>;
   
-  // 부문별 상세 테이블 데이터 (백엔드 구조: PARENT_DIVISION_TYPE, DIVISION_TYPE, COLUMN1~13)
+  // 부문별 상세 테이블 데이터 (백엔드: PARENT_DIVISION_TYPE, DIVISION_TYPE, MONTH1~MONTH13 → 내부 COLUMN1~COLUMN13)
   divisionTable: {
     monthlyDetails: DivisionMonthlyDetailData[];  // 백엔드 컬럼명 기반 데이터
     monthLabels: string[];      // 월 라벨 배열 (예: ['1월', '2월', '3월', '4월', '5월'])
@@ -28,23 +28,22 @@ export interface DivisionData {
   };
 }
 
-// 백엔드 데이터 구조에 맞는 월별 상세 데이터 인터페이스
+// 월별 상세 데이터 (백엔드 컬럼: PARENT_DIVISION_TYPE, DIVISION_TYPE, MONTH1~MONTH13 → 매핑 후 COLUMN1~COLUMN13)
 export interface DivisionMonthlyDetailData {
-  PARENT_DIVISION_TYPE: string;  // 상위 부문 타입
-  DIVISION_TYPE: string;         // 부문 타입
-  COLUMN1: number;               // 첫 번째 월 데이터
-  COLUMN2: number;               // 두 번째 월 데이터
-  COLUMN3: number;               // 세 번째 월 데이터
-  COLUMN4: number;               // 네 번째 월 데이터
-  COLUMN5: number;               // 다섯 번째 월 데이터
-  COLUMN6: number;               // 여섯 번째 월 데이터
-  COLUMN7: number;               // 일곱 번째 월 데이터
-  COLUMN8: number;               // 여덟 번째 월 데이터
-  COLUMN9: number;               // 아홉 번째 월 데이터
-  COLUMN10: number;              // 열 번째 월 데이터
-  COLUMN11: number;              // 열한 번째 월 데이터
-  COLUMN12: number;              // 열두 번째 월 데이터
-  COLUMN13: number;              // 누계
+  DIVISION_TYPE: string;         // 부문 타입 (매출/영업이익)
+  COLUMN1: number;               // MONTH1 매핑
+  COLUMN2: number;               // MONTH2 매핑
+  COLUMN3: number;               // MONTH3 매핑
+  COLUMN4: number;               // MONTH4 매핑
+  COLUMN5: number;               // MONTH5 매핑
+  COLUMN6: number;               // MONTH6 매핑
+  COLUMN7: number;               // MONTH7 매핑
+  COLUMN8: number;               // MONTH8 매핑
+  COLUMN9: number;               // MONTH9 매핑
+  COLUMN10: number;              // MONTH10 매핑
+  COLUMN11: number;              // MONTH11 매핑
+  COLUMN12: number;              // MONTH12 매핑
+  COLUMN13?: number;             // 누계 (선택 연도 1~M 합계, 백엔드 MONTH13 사용 안 함)
 }
 
 // 그리드 테이블 컬럼 정의
@@ -71,30 +70,16 @@ export interface DivisionHeader {
 }
 
 // 백엔드 컬럼명 기반 그리드 컬럼 생성 함수
-export const generateGridColumns = (monthLabels: string[]): GridColumn[] => {
+export const generateGridColumns = (): GridColumn[] => {
   const columns: GridColumn[] = [];
   
-  // 백엔드 컬럼명 순서: PARENT_DIVISION_TYPE, DIVISION_TYPE, COLUMN1~13
-  const backendColumns = [
-    'PARENT_DIVISION_TYPE', 'DIVISION_TYPE', 
-    'COLUMN1', 'COLUMN2', 'COLUMN3', 'COLUMN4', 'COLUMN5', 'COLUMN6', 
-    'COLUMN7', 'COLUMN8', 'COLUMN9', 'COLUMN10', 'COLUMN11', 'COLUMN12', 'COLUMN13'
-  ];
-  
-  backendColumns.forEach((columnKey, index) => {
-    if (index === 0) {
-      columns.push({ key: columnKey, label: '상위부문' });
-    } else if (index === 1) {
-      columns.push({ key: columnKey, label: '부문' });
-    } else if (index <= 13) {
-      columns.push({ 
-        key: columnKey, 
-        label: monthLabels[index - 2] || `${index - 1}월` 
-      });
-    } else {
-      columns.push({ key: columnKey, label: '누계' });
-    }
+  // 백엔드 순서: PARENT_DIVISION_TYPE, DIVISION_TYPE, MONTH1~MONTH13 → 표시는 COLUMN1~COLUMN13
+  columns.push({ key: 'DIVISION_TYPE', label: '구분' });
+  const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+  monthLabels.forEach((label, index) => {
+    columns.push({ key: `COLUMN${index + 1}`, label });
   });
+  columns.push({ key: 'COLUMN13', label: '누계' });
   
   return columns;
 };
@@ -111,44 +96,22 @@ export const generateGridHeaders = (monthLabels: string[]): { topRow: GridColumn
   };
 };
 
-// 현재월 기준 12개월 헤더 생성 함수 (탑네비게이션 월에 따라 동적 생성)
-export const generateMonthHeaders = (selectedYear?: number, selectedMonth?: number) => {
-  const currentDate = new Date();
-  const currentMonth = selectedMonth ? selectedMonth - 1 : currentDate.getMonth(); // 0-11
-  const currentYear = selectedYear || currentDate.getFullYear();
-  
+// 12개월 헤더 생성 함수 (1~12월 고정)
+export const generateMonthHeaders = () => {
   const headers = [
     { key: 'division', label: '부문', colSpan: 1 },
     { key: 'type', label: '구분', colSpan: 1 }
   ];
   
-  // 10월일 때는 작년 11월, 12월을 제외하고 10개월만 표시
-  // 11월일 때는 작년 12월을 제외하고 11개월만 표시
-  const isOctober = selectedMonth === 10;
-  const isNovember = selectedMonth === 11;
-  const startIndex = isOctober ? 9 : isNovember ? 10 : 11; // 10월이면 9, 11월이면 10, 그 외는 11부터 시작
-  
-  // 선택된 월부터 역순으로 생성
-  for (let i = startIndex; i >= 0; i--) {
-    const targetDate = new Date(currentYear, currentMonth - i, 1);
-    const month = targetDate.getMonth();
-    const year = targetDate.getFullYear();
-    
-    // 월 이름 (한국어)
-    const monthNames = [
-      '1월', '2월', '3월', '4월', '5월', '6월',
-      '7월', '8월', '9월', '10월', '11월', '12월'
-    ];
-    
-    const monthLabel = monthNames[month];
-    const key = `month_${i}`;
-    
+  // 1~12월 고정 헤더 추가
+  const monthLabels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+  monthLabels.forEach((label, index) => {
     headers.push({
-      key,
-      label: monthLabel,
+      key: `COLUMN${index + 1}`,
+      label: label,
       colSpan: 1
     });
-  }
+  });
   
   // 누계 추가
   headers.push({ key: 'total', label: '누계', colSpan: 1 });

@@ -331,7 +331,7 @@ export function Header() {
   const handleGlobalRefresh = () => {
     const currentPage = pathname || '';
     // 현재 페이지에 따라 다른 조회 로직 실행
-    if (currentPage.includes('/menu/company-performance')) {
+    if (currentPage.includes('/menu/management_performance/company_performance') || currentPage.includes('/menu/company-performance')) {
       triggerGlobalRefresh();
     } else if (currentPage.includes('/menu/personnel')) {
       triggerGlobalRefresh();

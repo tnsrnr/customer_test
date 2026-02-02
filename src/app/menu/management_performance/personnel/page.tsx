@@ -94,7 +94,7 @@ export default function PersonnelPage() {
                     </div>
                   </div>
                   <span className="text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm text-emerald-300 bg-emerald-600/30 border-emerald-400/30">
-                    {data.kpiMetrics.headquartersChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.headquartersChange)}명
+                    {data.kpiMetrics.headquartersChange > 0 ? '▼' : '▲'} {Math.abs(data.kpiMetrics.headquartersChange)}명
                   </span>
                 </div>
                 
@@ -132,7 +132,7 @@ export default function PersonnelPage() {
                     </div>
                   </div>
                   <span className="text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm text-blue-300 bg-blue-600/30 border-blue-400/30">
-                    {data.kpiMetrics.domesticSubsidiariesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.domesticSubsidiariesChange)}명
+                    {data.kpiMetrics.domesticSubsidiariesChange > 0 ? '▼' : '▲'} {Math.abs(data.kpiMetrics.domesticSubsidiariesChange)}명
                   </span>
                 </div>
                 
@@ -169,7 +169,7 @@ export default function PersonnelPage() {
                     </div>
                   </div>
                   <span className="text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm text-orange-300 bg-orange-600/30 border-orange-400/30">
-                    {data.kpiMetrics.overseasSubsidiariesChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.overseasSubsidiariesChange)}명
+                    {data.kpiMetrics.overseasSubsidiariesChange > 0 ? '▼' : '▲'} {Math.abs(data.kpiMetrics.overseasSubsidiariesChange)}명
                   </span>
                 </div>
                 
@@ -206,7 +206,7 @@ export default function PersonnelPage() {
                     </div>
                   </div>
                   <span className="text-xs font-medium px-2 py-1 rounded-full border backdrop-blur-sm text-purple-300 bg-purple-600/30 border-purple-400/30">
-                    {data.kpiMetrics.totalChange > 0 ? '▲' : '▼'} {Math.abs(data.kpiMetrics.totalChange)}명
+                    {data.kpiMetrics.totalChange > 0 ? '▼' : '▲'} {Math.abs(data.kpiMetrics.totalChange)}명
                   </span>
                 </div>
                 

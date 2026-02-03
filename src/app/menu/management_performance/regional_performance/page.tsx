@@ -74,29 +74,35 @@ export default function RegionalPerformancePage() {
               <AnimatedCard delay={200} direction="left">
                 <MetricCard
                   title="매출액(누적)"
-                      value={formatCurrency(data.kpiMetrics.totalSales)}
+                  value={formatCurrency(data.kpiMetrics.ACTUAL_SALES)}
                   bgColorClass="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700"
+                  changeText={`${(data.kpiMetrics.ACTUAL_SALES_CHANGE ?? 0) >= 0 ? '+' : ''}${data.kpiMetrics.ACTUAL_SALES_CHANGE?.toLocaleString() ?? 0}억원`}
+                  changePositive={(data.kpiMetrics.ACTUAL_SALES_CHANGE ?? 0) >= 0}
                 />
               </AnimatedCard>
               <AnimatedCard delay={400} direction="left">
                 <MetricCard
-                  title="매출이익(누적)"
-                      value={formatCurrency(data.kpiMetrics.totalProfit)}
+                  title="영업이익(누적)"
+                  value={formatCurrency(data.kpiMetrics.ACTUAL_OP_PROFIT)}
                   bgColorClass="bg-gradient-to-br from-cyan-700 via-cyan-600 to-cyan-500"
                   textColorClass="text-cyan-50"
+                  changeText={`${(data.kpiMetrics.ACTUAL_OP_PROFIT_CHANGE ?? 0) >= 0 ? '+' : ''}${data.kpiMetrics.ACTUAL_OP_PROFIT_CHANGE?.toLocaleString() ?? 0}억원`}
+                  changePositive={(data.kpiMetrics.ACTUAL_OP_PROFIT_CHANGE ?? 0) >= 0}
                 />
               </AnimatedCard>
               <AnimatedCard delay={600} direction="right">
                 <MetricCard
-                  title="영업이익(누적)"
-                      value={formatCurrency(data.kpiMetrics.totalOpProfit)}
+                  title="영업이익률(누적)"
+                  value={formatPercent(data.kpiMetrics.ACTUAL_OP_MARGIN)}
                   bgColorClass="bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600"
+                  changeText={`${(data.kpiMetrics.ACTUAL_OP_MARGIN_CHANGE ?? 0) >= 0 ? '+' : ''}${data.kpiMetrics.ACTUAL_OP_MARGIN_CHANGE?.toFixed(2) ?? 0}%`}
+                  changePositive={(data.kpiMetrics.ACTUAL_OP_MARGIN_CHANGE ?? 0) >= 0}
                 />
               </AnimatedCard>
               <AnimatedCard delay={800} direction="right">
                 <MetricCard
-                  title="영업이익률(누적)"
-                      value={formatPercent(data.kpiMetrics.totalOpMargin)}
+                  title="매출 증감률(누적)"
+                  value={formatPercent(data.kpiMetrics.SALES_ACHIEVEMENT)}
                   bgColorClass="bg-gradient-to-br from-slate-700 via-slate-600 to-slate-500"
                   textColorClass="text-slate-50"
                 />

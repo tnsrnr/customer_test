@@ -83,7 +83,7 @@ export function RegionCard({ title, icon, monthlyData, achievement, totalData, v
             </div>
             <div className="bg-slate-50/80 rounded-lg p-3 md:p-4 border border-slate-100">
               <div className="text-sm md:text-base text-slate-600 text-center mb-1.5">영업이익</div>
-              <div className={`text-lg md:text-xl lg:text-2xl font-bold ${classes.text} text-center tracking-tight`}>
+              <div className={`text-lg md:text-xl lg:text-2xl font-bold text-center tracking-tight ${monthlyData.profit < 0 ? 'text-red-600' : classes.text}`}>
                 {formatNumber(monthlyData.profit)}억원
               </div>
             </div>
@@ -133,7 +133,7 @@ export function RegionCard({ title, icon, monthlyData, achievement, totalData, v
             </div>
             <div className="bg-slate-50/80 rounded-lg p-3 md:p-4 border border-slate-100">
               <div className="text-sm md:text-base text-slate-600 text-center mb-1.5">영업이익</div>
-              <div className={`text-lg md:text-xl lg:text-2xl font-bold ${classes.text} text-center tracking-tight`}>
+              <div className={`text-lg md:text-xl lg:text-2xl font-bold text-center tracking-tight ${totalData.profit < 0 ? 'text-red-600' : classes.text}`}>
                 {formatNumber(totalData.profit)}억원
               </div>
             </div>
